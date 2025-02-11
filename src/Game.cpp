@@ -1,3 +1,6 @@
+
+// NOTE: When path creation is completed, press t on the keyboard to go to play mode
+
 #include "Game.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
