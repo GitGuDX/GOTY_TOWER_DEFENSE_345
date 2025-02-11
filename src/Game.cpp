@@ -13,9 +13,11 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
     // Set previous game mode to initial set up. Later, this helps track when the game mode changes for the first time.
     , m_ePrevGameMode(GameMode::InitialSetUp)
-    , m_vGameWindowSize(initialWindowWidth, initialWindowWidth)                                 // Set default game window size
+    , m_iTileSize(50)                                                                          // Set Tile size to 50px
+    , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                     // Set Window size
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)                                                                            
 {
+    m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
 
 
@@ -49,7 +51,7 @@ void Game::Run()
         {
             // Load MapEditorMode assets only when MapEditorMode is first initialized
             if (m_ePrevGameMode != MapEditorMode) {
-                m_Window.create(VideoMode(m_vGameWindowSize.x * m_iTileSize, m_vGameWindowSize.y * m_iTileSize), "New Game");
+                m_Window.create(VideoMode(m_vWindowSize.x, m_vWindowSize.y), "New Game");
                 LoadMapEditorAssets(); 
                 m_ePrevGameMode = MapEditorMode;
             }
@@ -84,13 +86,13 @@ void Game::LoadInitialSetUpAssets()
     // Reset the origin to the center of the text
     m_EnterSizeText.setOrigin(Vector2f(fEnterSizeTextWidth/2, fEnterSizeTextHeight/2));
     // Set "Enter Size" text to the center of the screen
-    m_EnterSizeText.setPosition(Vector2f(m_vGameWindowSize.x/2, m_vGameWindowSize.y/3));
+    m_EnterSizeText.setPosition(Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/3));
     m_EnterSizeText.setFillColor(Color::White);
 
     //Initialize width input box and store them in an array (index 0)
     RectangleShape InputBoxWidth(Vector2f(m_iInputFontSize * 2.5, m_iInputFontSize));
     InputBoxWidth.setOrigin(InputBoxWidth.getSize().x/2, InputBoxWidth.getSize().y/2);
-    InputBoxWidth.setPosition(m_vGameWindowSize.x*1/4, m_vGameWindowSize.y/2);
+    InputBoxWidth.setPosition(Vector2f(m_vWindowSize.x*1/4, m_vWindowSize.y/2));
     InputBoxWidth.setFillColor(Color::White);
     // InputBoxHeight.setOutlineColor(Color(128,128,128));
     // InputBoxHeight.setOutlineThickness(3.f);
@@ -99,7 +101,6 @@ void Game::LoadInitialSetUpAssets()
     // Initialize window Width size input Text
     m_WidthSizeInput.setFont(m_Font);
     m_WidthSizeInput.setCharacterSize(m_iInputFontSize);
-    //m_WidthSizeInput.setString(std::to_string(m_vGameWindowSize.y));                          // Get default window size as placeholder
     m_WidthSizeInput.setString("10");                                                           // For test
     m_WidthSizeInput.setFillColor(Color::Red);
     float fWidthSizeInputHeight = m_WidthSizeInput.getLocalBounds().height;
@@ -110,7 +111,7 @@ void Game::LoadInitialSetUpAssets()
     //Initialize height input box and store them in an array (index 1)
     RectangleShape InputBoxHeight(Vector2f(m_iInputFontSize * 2.5, m_iInputFontSize));
     InputBoxHeight.setOrigin(InputBoxHeight.getSize().x/2, InputBoxHeight.getSize().y/2);
-    InputBoxHeight.setPosition(m_vGameWindowSize.x*3/4, m_vGameWindowSize.y/2);
+    InputBoxHeight.setPosition(Vector2f(m_vWindowSize.x*3/4, m_vWindowSize.y/2));
     InputBoxHeight.setFillColor(Color::White);
     // InputBoxHeight.setOutlineColor(Color(128,128,128));
     // InputBoxHeight.setOutlineThickness(3.f);
@@ -120,7 +121,6 @@ void Game::LoadInitialSetUpAssets()
     // Initialize window height size input Text
     m_HeightSizeInput.setFont(m_Font);
     m_HeightSizeInput.setCharacterSize(m_iInputFontSize);
-    //m_HeightSizeInput.setString(std::to_string(m_vGameWindowSize.y));                               // Get default window size as placeholder
     m_HeightSizeInput.setString("10");                                                                // For test
     m_HeightSizeInput.setFillColor(Color::Red);
     float fHeightSizeInputHeight = m_HeightSizeInput.getLocalBounds().height;
@@ -133,14 +133,14 @@ void Game::LoadInitialSetUpAssets()
     Sprite submitButton(m_SubmitButtonTexture);
     submitButton.setScale(Vector2f(5.f, 5.f));
     submitButton.setOrigin(m_SubmitButtonTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
-    submitButton.setPosition(Vector2f(m_vGameWindowSize.x/2,m_vGameWindowSize.y*2/3));
+    submitButton.setPosition(Vector2f(m_vWindowSize.x/2,m_vWindowSize.y*2/3));
     m_aButtonBoxes.emplace_back(submitButton);
     //Initialise submit button text
     m_SubmitButtonPressedTexture.loadFromFile("../Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
     Sprite submitButtonPressed(m_SubmitButtonPressedTexture);
     submitButtonPressed.setScale(Vector2f(5.f, 5.f));
     submitButtonPressed.setOrigin(m_SubmitButtonPressedTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
-    submitButtonPressed.setPosition(Vector2f(m_vGameWindowSize.x/2,m_vGameWindowSize.y*2/3));
+    submitButtonPressed.setPosition(Vector2f(m_vWindowSize.x/2,m_vWindowSize.y*2/3));
     m_aButtonBoxes.emplace_back(submitButtonPressed);
 }
 
@@ -155,10 +155,10 @@ void Game::LoadMapEditorAssets()
     // Create grass tiles and store them in a 2D array. The position of the item in the array correspond to the position of the tile in the game
     // (e.g. tile at [0][0] is displayed at the top left corner) 
     m_aTiles.clear();
-    for (int i = 0; i < m_vGameWindowSize.y; ++i)
+    for (int i = 0; i < m_vGridSize.y; ++i)
     {
         std::vector<Tile> row;
-        for (int j = 0; j < m_vGameWindowSize.x; ++j)
+        for (int j = 0; j < m_vGridSize.x; ++j)
         {
             Tile tempGrassTile;
             tempGrassTile.SetTexture(m_GrassTexture);
@@ -182,11 +182,11 @@ void Game::LoadMapEditorAssets()
         // If 'i' is odd, make the highlight a tall vertical rectangle
         if (i % 2 == 0)
         {             
-            highlight.setSize(Vector2f(m_vGameWindowSize.x * m_iTileSize, m_iTileSize));
+            highlight.setSize(Vector2f(m_vGridSize.x * m_iTileSize, m_iTileSize));
         }
         else
         {
-            highlight.setSize(Vector2f(m_iTileSize, m_vGameWindowSize.y * m_iTileSize));
+            highlight.setSize(Vector2f(m_iTileSize, m_vGridSize.y * m_iTileSize));
         }
         // Assign color based on index
         // First 4 highlights are green and Last 4 highlights are red
@@ -201,12 +201,12 @@ void Game::LoadMapEditorAssets()
         // If 'i' is 2 or 6, place it at the bottom-left corner
         if (i == 2 || i == 6)
         {
-            highlight.setPosition(Vector2f(0.f, m_vGameWindowSize.y * m_iTileSize - m_iTileSize));
+            highlight.setPosition(Vector2f(0.f, m_vGridSize.y * m_iTileSize - m_iTileSize));
         }
         // If 'i' is 3 or 7, place it at the top-right corner
         else if (i == 3 || i == 7)
         {
-            highlight.setPosition(Vector2f(m_vGameWindowSize.x * m_iTileSize - m_iTileSize, 0.f));
+            highlight.setPosition(Vector2f(m_vGridSize.x * m_iTileSize - m_iTileSize, 0.f));
         }
         // Default position is the top-left corner (0,0)
         else 
@@ -273,9 +273,11 @@ void Game::HandleInput()
                 if (m_aButtonBoxes[1].getGlobalBounds().contains(translatedPosition))
                 {
                     m_SubmitButtonClicked = false;
-                    // convert the user input string to unsigned int and resize the window
-                    m_vGameWindowSize.x = std::stoi(m_WidthSizeInput.getString().toAnsiString());                // converting sf::String -> std::string -> unsigned int
-                    m_vGameWindowSize.y = std::stoi(m_HeightSizeInput.getString().toAnsiString());
+                    // convert the user input string to unsigned int and reassign the new grid size
+                    m_vGridSize.x = std::stoi(m_WidthSizeInput.getString().toAnsiString());                // converting sf::String -> std::string -> unsigned int
+                    m_vGridSize.y = std::stoi(m_HeightSizeInput.getString().toAnsiString());
+                    // Reset window size
+                    m_vWindowSize = Vector2i(m_vGridSize.x*m_iTileSize, m_vGridSize.y*m_iTileSize);
                     m_eGameMode = GameMode::MapEditorMode;
                 }
             }
@@ -596,9 +598,9 @@ void Game::DrawPlayMode()
 bool Game::isEdgeTile(sf::Vector2f tile)
 {
     // Check if the tile is on the left or right edge
-    bool isOnHorizontalEdge = (tile.x <= m_iTileSize / 2) || (tile.x >= (m_vGameWindowSize.x - 1) * m_iTileSize + m_iTileSize / 2);
+    bool isOnHorizontalEdge = (tile.x <= m_iTileSize / 2) || (tile.x >= (m_vGridSize.x - 1) * m_iTileSize + m_iTileSize / 2);
     // Check if the tile is on the top or bottom edge
-    bool isOnVerticalEdge = (tile.y <= m_iTileSize / 2) || (tile.y >= (m_vGameWindowSize.y - 1) * m_iTileSize + m_iTileSize / 2);
+    bool isOnVerticalEdge = (tile.y <= m_iTileSize / 2) || (tile.y >= (m_vGridSize.y - 1) * m_iTileSize + m_iTileSize / 2);
 
     return isOnHorizontalEdge || isOnVerticalEdge;
 }

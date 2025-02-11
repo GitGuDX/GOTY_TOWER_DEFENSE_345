@@ -10,7 +10,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense 1")
     , m_eGameMode(GameMode::InitialSetUp)
     , m_ePrevGameMode(GameMode::InitialSetUp)
-    , m_vGameWindowSize(initialWindowWidth, initialWindowWidth)                                                               // Set default game window size
+    , m_vGridSize(initialWindowWidth, initialWindowWidth)                                                               // Set default game window size
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)                                              
 {
     m_Window.setFramerateLimit(60);
@@ -45,7 +45,7 @@ void Game::Run()
         case MapEditorMode:
         {
             if (m_ePrevGameMode != MapEditorMode) {
-                m_Window.create(VideoMode(m_vGameWindowSize.x * m_iTileSize, m_vGameWindowSize.y * m_iTileSize), "New Game");
+                m_Window.create(VideoMode(m_vGridSize.x * m_iTileSize, m_vGridSize.y * m_iTileSize), "New Game");
                 LoadMapEditorAssets(); 
                 m_ePrevGameMode = MapEditorMode;
             }
@@ -74,13 +74,13 @@ void Game::LoadInitialSetUpAssets()
     // Reset the origin to the center of the text
     m_EnterSizeText.setOrigin(Vector2f(fEnterSizeTextWidth/2, fEnterSizeTextHeight/2));
     // Set "Enter Size" text to the center of the screen
-    m_EnterSizeText.setPosition(Vector2f(m_vGameWindowSize.x/2, m_vGameWindowSize.y/3));
+    m_EnterSizeText.setPosition(Vector2f(m_vGridSize.x/2, m_vGridSize.y/3));
     m_EnterSizeText.setFillColor(Color::White);
 
     //Initialize width input box and store them in an array (index 0)
     RectangleShape InputBoxWidth(Vector2f(m_iInputFontSize * 2.5, m_iInputFontSize));
     InputBoxWidth.setOrigin(InputBoxWidth.getSize().x/2, InputBoxWidth.getSize().y/2);
-    InputBoxWidth.setPosition(m_vGameWindowSize.x*1/4, m_vGameWindowSize.y/2);
+    InputBoxWidth.setPosition(m_vGridSize.x*1/4, m_vGridSize.y/2);
     InputBoxWidth.setFillColor(Color::White);
     // InputBoxHeight.setOutlineColor(Color(128,128,128));
     // InputBoxHeight.setOutlineThickness(3.f);
@@ -89,7 +89,7 @@ void Game::LoadInitialSetUpAssets()
     // Initialize window Width size input Text
     m_WidthSizeInput.setFont(m_Font);
     m_WidthSizeInput.setCharacterSize(m_iInputFontSize);
-    //m_WidthSizeInput.setString(std::to_string(m_vGameWindowSize.y));                          // Get default window size as placeholder
+    //m_WidthSizeInput.setString(std::to_string(m_vGridSize.y));                          // Get default window size as placeholder
     m_WidthSizeInput.setString("10");                                                           // For test
     m_WidthSizeInput.setFillColor(Color::Red);
     float fWidthSizeInputHeight = m_WidthSizeInput.getLocalBounds().height;
@@ -100,7 +100,7 @@ void Game::LoadInitialSetUpAssets()
     //Initialize height input box and store them in an array (index 1)
     RectangleShape InputBoxHeight(Vector2f(m_iInputFontSize * 2.5, m_iInputFontSize));
     InputBoxHeight.setOrigin(InputBoxHeight.getSize().x/2, InputBoxHeight.getSize().y/2);
-    InputBoxHeight.setPosition(m_vGameWindowSize.x*3/4, m_vGameWindowSize.y/2);
+    InputBoxHeight.setPosition(m_vGridSize.x*3/4, m_vGridSize.y/2);
     InputBoxHeight.setFillColor(Color::White);
     // InputBoxHeight.setOutlineColor(Color(128,128,128));
     // InputBoxHeight.setOutlineThickness(3.f);
@@ -110,7 +110,7 @@ void Game::LoadInitialSetUpAssets()
     // Initialize window height size input Text
     m_HeightSizeInput.setFont(m_Font);
     m_HeightSizeInput.setCharacterSize(m_iInputFontSize);
-    //m_HeightSizeInput.setString(std::to_string(m_vGameWindowSize.y));                               // Get default window size as placeholder
+    //m_HeightSizeInput.setString(std::to_string(m_vGridSize.y));                               // Get default window size as placeholder
     m_HeightSizeInput.setString("10");                                                                // For test
     m_HeightSizeInput.setFillColor(Color::Red);
     float fHeightSizeInputHeight = m_HeightSizeInput.getLocalBounds().height;
@@ -123,14 +123,14 @@ void Game::LoadInitialSetUpAssets()
     Sprite submitButton(m_SubmitButtonTexture);
     submitButton.setScale(Vector2f(5.f, 5.f));
     submitButton.setOrigin(m_SubmitButtonTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
-    submitButton.setPosition(Vector2f(m_vGameWindowSize.x/2,m_vGameWindowSize.y*2/3));
+    submitButton.setPosition(Vector2f(m_vGridSize.x/2,m_vGridSize.y*2/3));
     m_aButtonBoxes.emplace_back(submitButton);
     //Initialise submit button text
     m_SubmitButtonPressedTexture.loadFromFile("../Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
     Sprite submitButtonPressed(m_SubmitButtonPressedTexture);
     submitButtonPressed.setScale(Vector2f(5.f, 5.f));
     submitButtonPressed.setOrigin(m_SubmitButtonPressedTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
-    submitButtonPressed.setPosition(Vector2f(m_vGameWindowSize.x/2,m_vGameWindowSize.y*2/3));
+    submitButtonPressed.setPosition(Vector2f(m_vGridSize.x/2,m_vGridSize.y*2/3));
     m_aButtonBoxes.emplace_back(submitButtonPressed);
 }
 
@@ -145,10 +145,10 @@ void Game::LoadMapEditorAssets()
     m_GrassTexture.loadFromFile("../Images/grass_tile.png");
 
     m_aTiles.clear();
-    for (int i = 0; i < m_vGameWindowSize.y; ++i)
+    for (int i = 0; i < m_vGridSize.y; ++i)
     {
         std::vector<Entity> row;
-        for (int j = 0; j < m_vGameWindowSize.x; ++j)
+        for (int j = 0; j < m_vGridSize.x; ++j)
         {
             Tile tempGrassTile;
             tempGrassTile.SetTexture(m_GrassTexture);
@@ -203,8 +203,8 @@ void Game::HandleInput()
                 {
                     m_SubmitButtonClicked = false;
                     // convert the user input string to unsigned int and resize the window
-                    m_vGameWindowSize.x = std::stoi(m_WidthSizeInput.getString().toAnsiString());                // converting sf::String -> std::string -> unsigned int
-                    m_vGameWindowSize.y = std::stoi(m_HeightSizeInput.getString().toAnsiString());
+                    m_vGridSize.x = std::stoi(m_WidthSizeInput.getString().toAnsiString());                // converting sf::String -> std::string -> unsigned int
+                    m_vGridSize.y = std::stoi(m_HeightSizeInput.getString().toAnsiString());
                     m_eGameMode = GameMode::MapEditorMode;
                 }
             }

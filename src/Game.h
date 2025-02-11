@@ -65,7 +65,8 @@ private:
     Time m_DeltaTime;
     float m_fTimeInPlayMode = 0.0f;
 
-    Vector2i m_vGameWindowSize;
+    Vector2i m_vWindowSize;
+    Vector2i m_vGridSize;
     const int m_iTileSize = 50;
 
     float m_fElapesdTimeInSeconds;

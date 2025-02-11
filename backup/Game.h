@@ -48,7 +48,7 @@ private:
     GameMode m_eGameMode;
     GameMode m_ePrevGameMode;
 
-    Vector2i m_vGameWindowSize;
+    Vector2i m_vGridSize;
     const int m_iTileSize = 50;
 
     // Initial SetUp 
