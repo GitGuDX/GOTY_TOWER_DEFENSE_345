@@ -9,11 +9,12 @@
 using namespace sf;
 
 Game::Game(int initialWindowWidth, int initialWindowHeight)
-    : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense 1")
-    , m_eGameMode(GameMode::InitialSetUp)
+    : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense 1")           // Initiliaze window screen
+    , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
+    // Set previous game mode to initial set up. Later, this helps track when the game mode changes for the first time.
     , m_ePrevGameMode(GameMode::InitialSetUp)
-    , m_vGameWindowSize(initialWindowWidth, initialWindowWidth)                                                               // Set default game window size
-    , m_eCurrentlyActiveInputBox(ClickedInputBox::None)                                            
+    , m_vGameWindowSize(initialWindowWidth, initialWindowWidth)                                 // Set default game window size
+    , m_eCurrentlyActiveInputBox(ClickedInputBox::None)                                                                            
 {
     m_Window.setFramerateLimit(60);
 
