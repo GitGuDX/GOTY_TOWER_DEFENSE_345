@@ -52,7 +52,7 @@ void Game::Run()
         }
         case MapEditorMode:
         {
-            // Load MapEditorMode assets only when MapEditorMode is first initialized
+            // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode) {
                 m_Window.create(VideoMode(m_vWindowSize.x, m_vWindowSize.y), "New Game");
                 LoadMapEditorAssets(); 
@@ -66,7 +66,14 @@ void Game::Run()
         }
         case PlayMode:
         {
-            LoadPlayModeAssets();
+            // Load Play Mode assets once only when PlayMode is initialized for the first time then set previous mode to PlayMode so this condition
+            // only triggers once
+            if (m_ePrevGameMode != PlayMode)
+            {
+                std::cout << "Im here\n";
+                LoadPlayModeAssets();
+                m_ePrevGameMode = PlayMode;
+            }
 
             DrawPlayMode();
         }
@@ -229,8 +236,10 @@ void Game::LoadPlayModeAssets()
     m_MonsterTexture.loadFromFile("../Images/monster_1.png");
     m_MonsterTemplate.SetTexture(m_MonsterTexture);
     m_MonsterTemplate.SetScale(Vector2f(0.06f, 0.06f));
-    //m_MonsterTemplate.SetOrigin(m_MonsterTemplate.);
-    
+    // Get Monster sprite width and height
+    FloatRect monsterSize = m_MonsterTemplate.m_Sprite.getLocalBounds();
+    // Set Monster anchor to the center of the sprite
+    m_MonsterTemplate.SetOrigin(Vector2f(monsterSize.width / 2, monsterSize.height / 2));
     // Set test monster's starting position to the entry tile
     m_MonsterTemplate.SetPosition(m_aPath[0]);
 }
@@ -471,6 +480,7 @@ void Game::UpdateTiles()
 
 void Game::UpdateMonsters()
 {
+    /*
     // Get the time passed since the last frame to make movement framerate independent
     m_fTimeInPlayMode += m_DeltaTime.asSeconds();
     // Get test monster's current path index
@@ -498,6 +508,7 @@ void Game::UpdateMonsters()
         }
 
     }
+     */
 }
 
 void Game::DrawInitialSetUp()
