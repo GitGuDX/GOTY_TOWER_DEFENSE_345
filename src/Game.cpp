@@ -321,7 +321,6 @@ void Game::HandleInput()
                     {
                         if (isEdgeTile(gridPos))
                         {
-                            //std::cout << clickedTileIndex.x << " " << clickedTileIndex.y << '\n';
                             m_vEntryTile = gridPos;
                             m_eCurrentEditState = ExitState;
                             m_aPath.clear();
@@ -351,7 +350,7 @@ void Game::HandleInput()
             // Enable dragging mouse for linking path
             if (event.type == sf::Event::MouseMoved && m_eCurrentEditState == PathState)
             {
-                std::cout << m_aPath.size() <<'\n';
+                std::cout << "Number of path tiles created: " << m_aPath.size() <<'\n';
                 if (m_IsPathingMousePressed && m_eCurrentEditState == PathState)
                 {
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
@@ -367,11 +366,11 @@ void Game::HandleInput()
                              
                         }
                         // Prevent backtracking
-                        // else if (m_aPath.size() > 1 && m_aPath[m_aPath.size() - 2] == gridPos)
-                        // {
-                        //     m_aPath.pop_back();
-                        //     m_sfPathLines.resize(m_aPath.size());
-                        // }
+                        else if (m_aPath.size() > 1 && m_aPath[m_aPath.size() - 2] == gridPos)
+                        {
+                            m_aPath.pop_back();
+                            m_sfPathLines.resize(m_aPath.size());
+                        }
                         // Normal pathing. first check if the current tile is not the previous tile then append path tile
                         else if (m_aPath.back().x != gridPos.x || m_aPath.back().y != gridPos.y)
                         {
