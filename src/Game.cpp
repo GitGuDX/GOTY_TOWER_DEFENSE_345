@@ -326,7 +326,7 @@ void Game::HandleInput()
             if (event.type == sf::Event::MouseButtonPressed) 
             {
                 sf::Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
-                sf::Vector2f gridPos = MathHelpers::snapToGrid(clickedPos, m_iTileSize);
+                sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
                 sf::Vector2i clickedTileIndex = Vector2i(static_cast<int>(gridPos.x/m_iTileSize), static_cast<int>(gridPos.y/m_iTileSize));
                 if (event.mouseButton.button == sf::Mouse::Left) 
                 {
@@ -369,7 +369,7 @@ void Game::HandleInput()
                 if (m_IsPathingMousePressed && m_eCurrentEditState == PathState)
                 {
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
-                    sf::Vector2f gridPos = MathHelpers::snapToGrid(mousePos, m_iTileSize);      // Snap the mouse position to the grid
+                    sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(mousePos, m_iTileSize);      // Snap the mouse position to the grid
                     if (!m_aPath.empty() && MathHelpers::isAdjacent(m_aPath.back(), gridPos, m_iTileSize))
                     {
                         // When the path tile overlaps with the exit tile, we reached the end of pathing. Append exit tile. Ensure we don't move beyond the exit tile
@@ -497,6 +497,7 @@ void Game::UpdateMonsters()
     std::cout << "delta time: " << m_DeltaTime.asSeconds() << '\n';
     std::cout << "normalized distance: " << tileToMonster.x << ' ' << tileToMonster.y << '\n';
     m_MonsterTemplate.Move(tileToMonster * m_DeltaTime.asSeconds() * m_MonsterTemplate.GetSpeed());
+
 
     /*
     // Get the time passed since the last frame to make movement framerate independent
