@@ -70,10 +70,11 @@ void Game::Run()
             // only triggers once
             if (m_ePrevGameMode != PlayMode)
             {
-                std::cout << "Im here\n";
                 LoadPlayModeAssets();
                 m_ePrevGameMode = PlayMode;
             }
+            
+            UpdateMonsters();
 
             DrawPlayMode();
         }
@@ -242,6 +243,8 @@ void Game::LoadPlayModeAssets()
     m_MonsterTemplate.SetOrigin(Vector2f(monsterSize.width / 2, monsterSize.height / 2));
     // Set test monster's starting position to the entry tile
     m_MonsterTemplate.SetPosition(m_aPath[0]);
+    // Set Monster speed
+    m_MonsterTemplate.SetSpeed(100.f);
 }
 
 void Game::HandleInput()
@@ -480,6 +483,21 @@ void Game::UpdateTiles()
 
 void Game::UpdateMonsters()
 {
+    /////////// To move Monster to the next path tile
+    // std::cout << m_MonsterTemplate.GetCurrentPathIndex() << '\n';
+    // std::cout << m_aPath[m_MonsterTemplate.GetCurrentPathIndex()].x << ' ' << m_aPath[m_MonsterTemplate.GetCurrentPathIndex()].y << '\n';
+    // Get the position of the next tile
+    Vector2f nextTilePos = m_aPath[m_MonsterTemplate.GetCurrentPathIndex() + 1];
+    // Get the vector difference between the monster and the next tile
+    Vector2f tileToMonster = nextTilePos - m_MonsterTemplate.GetPosition();
+    // Normalize the distance
+    tileToMonster = MathHelpers::getNormalize(tileToMonster);
+    // Move enemy to the next tile according to the distance*time elapsed*speed
+    std::cout << "monster speed: " << m_MonsterTemplate.GetSpeed() << '\n';
+    std::cout << "delta time: " << m_DeltaTime.asSeconds() << '\n';
+    std::cout << "normalized distance: " << tileToMonster.x << ' ' << tileToMonster.y << '\n';
+    m_MonsterTemplate.Move(tileToMonster * m_DeltaTime.asSeconds() * m_MonsterTemplate.GetSpeed());
+
     /*
     // Get the time passed since the last frame to make movement framerate independent
     m_fTimeInPlayMode += m_DeltaTime.asSeconds();

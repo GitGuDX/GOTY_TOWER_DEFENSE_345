@@ -19,6 +19,11 @@ public:
         return m_stCurrentPathIndex;
     }
 
+    void SetSpeed(float newSpeed)
+    {
+        m_fSpeed = newSpeed;
+    }
+
     void SetCurrentPathIndex(size_t newIndex)
     {
         m_stCurrentPathIndex = newIndex;
