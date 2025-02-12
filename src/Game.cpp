@@ -554,7 +554,7 @@ void Game::DrawMapEditorMode()
 	m_Window.clear();
 
     // Draw all tiles
-    for (std::vector row : m_aTiles)
+    for (std::vector<Tile> row : m_aTiles)
     {
         for (Entity tile : row)
         {
