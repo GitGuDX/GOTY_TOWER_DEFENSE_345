@@ -71,7 +71,7 @@ private:
 
     Vector2i m_vWindowSize;
     Vector2i m_vGridSize;
-    const int m_iTileSize = 50;
+    const int m_iTileSize;
 
     float m_fElapesdTimeInSeconds;
 
