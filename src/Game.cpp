@@ -17,8 +17,11 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     // Set previous game mode to initial set up. Later, this helps track when the game mode changes for the first time.
     , m_ePrevGameMode(GameMode::InitialSetUp)
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
-    , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                     // Set Window size
-    , m_eCurrentlyActiveInputBox(ClickedInputBox::None)                                                                            
+    , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
+    , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
+    // Monster generator initiliazed with base number of monsters and their increase rate per level                
+    , m_MonsterGenerator(1, 2)
+    , m_iCurrentLevel(1)                                                                                                             
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
@@ -52,7 +55,7 @@ void Game::Run()
         }
         case MapEditorMode:
         {
-            // Load MapEditorMode assets only when MapEditorMode is first initialized
+            // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode) {
                 m_Window.create(VideoMode(m_vWindowSize.x, m_vWindowSize.y), "New Game");
                 LoadMapEditorAssets(); 
@@ -66,7 +69,15 @@ void Game::Run()
         }
         case PlayMode:
         {
-            LoadPlayModeAssets();
+            // Load Play Mode assets once only when PlayMode is initialized for the first time then set previous mode to PlayMode so this condition
+            // only triggers once
+            if (m_ePrevGameMode != PlayMode)
+            {
+                LoadPlayModeAssets();
+                m_ePrevGameMode = PlayMode;
+            }
+            
+            UpdateMonsters();
 
             DrawPlayMode();
         }
@@ -225,14 +236,9 @@ void Game::LoadMapEditorAssets()
 
 void Game::LoadPlayModeAssets()
 {
-    // Load a single monster asset for TESTING
+    // Load monster texture
     m_MonsterTexture.loadFromFile("../Images/monster_1.png");
-    m_MonsterTemplate.SetTexture(m_MonsterTexture);
-    m_MonsterTemplate.SetScale(Vector2f(0.06f, 0.06f));
-    //m_MonsterTemplate.SetOrigin(m_MonsterTemplate.);
-    
-    // Set test monster's starting position to the entry tile
-    m_MonsterTemplate.SetPosition(m_aPath[0]);
+
 }
 
 void Game::HandleInput()
@@ -314,7 +320,7 @@ void Game::HandleInput()
             if (event.type == sf::Event::MouseButtonPressed) 
             {
                 sf::Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
-                sf::Vector2f gridPos = MathHelpers::snapToGrid(clickedPos, m_iTileSize);
+                sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
                 sf::Vector2i clickedTileIndex = Vector2i(static_cast<int>(gridPos.x/m_iTileSize), static_cast<int>(gridPos.y/m_iTileSize));
                 if (event.mouseButton.button == sf::Mouse::Left) 
                 {
@@ -357,7 +363,7 @@ void Game::HandleInput()
                 if (m_IsPathingMousePressed && m_eCurrentEditState == PathState)
                 {
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
-                    sf::Vector2f gridPos = MathHelpers::snapToGrid(mousePos, m_iTileSize);      // Snap the mouse position to the grid
+                    sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(mousePos, m_iTileSize);      // Snap the mouse position to the grid
                     if (!m_aPath.empty() && MathHelpers::isAdjacent(m_aPath.back(), gridPos, m_iTileSize))
                     {
                         // When the path tile overlaps with the exit tile, we reached the end of pathing. Append exit tile. Ensure we don't move beyond the exit tile
@@ -471,33 +477,51 @@ void Game::UpdateTiles()
 
 void Game::UpdateMonsters()
 {
-    // Get the time passed since the last frame to make movement framerate independent
-    m_fTimeInPlayMode += m_DeltaTime.asSeconds();
-    // Get test monster's current path index
-    size_t currentIndex = m_MonsterTemplate.GetCurrentPathIndex();
-    // If the monster's next path index is still within the bounds of the path
-    if (currentIndex + 1 < m_aPath.size())
+    // Generate the first monster and add it to the array
+    if (m_aMonstersQueue.empty())
     {
-        // Get the current position of the entity
-        sf::Vector2f currentPos = m_MonsterTemplate.GetPosition();
-        // Get the next path position
-        sf::Vector2f targetPos = m_aPath[currentIndex + 1];
-        // Calculate the direction vector from current position to target position
-        sf::Vector2f direction = MathHelpers::getNormalize(targetPos - currentPos);
-        // Calculate the velocity vector based on the direction and speed
-        sf::Vector2f velocity = direction * m_MonsterTemplate.GetSpeed() * m_fTimeInPlayMode;
-        // Check if the entity has reached the target position or passed it
-        if (MathHelpers::getMagnitude(targetPos - (currentPos + velocity)) < m_MonsterTemplate.GetSpeed() * m_fTimeInPlayMode) {
-            // Set entity's position to the target position
-            m_MonsterTemplate.SetPosition(targetPos); 
-            // Move to the next target in the path
-            m_MonsterTemplate.SetCurrentPathIndex(currentIndex + 1);                                              
-        } else {
-            // Move the entity in the calculated direction
-            m_MonsterTemplate.Move(velocity);
-        }
-
+        m_MonsterGenerator.generateMonster(m_iCurrentLevel, m_aMonstersQueue, m_MonsterTexture, m_aPath[0]);
     }
+    /////////// To move Monster to the next path tile
+    //std::cout << m_aMonstersQueue.size() <<'\n';
+    for (Monster& monster : m_aMonstersQueue)
+    {
+        // Get Monster's current tile index
+        size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
+        // While Monster's current index is less than the size of the path array move the monster
+        if (monsterCurrentTileIndex < m_aPath.size())
+        {
+            // Get the position of the next tile
+            Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
+            // Get the vector difference between the monster and the next tile
+            Vector2f tileToMonster = nextTilePos - monster.GetPosition();
+            // Normalize the distance
+            tileToMonster = MathHelpers::getNormalize(tileToMonster);
+            // Check if the monster is close enough to the target tile (e.g., within 0.1f units).
+            if (std::abs(monster.GetPosition().x - nextTilePos.x) < 0.1f &&
+                std::abs(monster.GetPosition().y - nextTilePos.y) < 0.1f)
+            {
+                std::cout << "Im here\n";
+                // The reason for set position is needed here despite the fact that the move function would have already adjusted the monster's position is that 
+                // the Move adjusts the position by a very small increment. This presents a floating-point precision errors and small misalignment can add up over time.
+                // Without "snapping" to the next tile position, the monster might slowly drift off the grid, causing pathfinding position check to become inaccurate.
+                monster.SetPosition(nextTilePos);
+                monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
+                ///////////
+                m_MonsterGenerator.generateMonster(m_iCurrentLevel, m_aMonstersQueue, m_MonsterTexture, m_aPath[0]);
+            }
+            else
+            {
+                // std::cout << m_DeltaTime.asSeconds() <<"\n";
+                // std::cout << monster.GetSpeed() <<"\n";
+                // std::cout << tileToMonster.x << ' ' << tileToMonster.y << '\n';
+                //Vector2f test = tileToMonster * m_DeltaTime.asSeconds() * monster.GetSpeed();
+                //std::cout << test.x << ' ' << test.y << '\n';
+                monster.Move(tileToMonster * m_DeltaTime.asSeconds() * monster.GetSpeed());
+            }    
+        }
+    }
+    
 }
 
 void Game::DrawInitialSetUp()
@@ -577,17 +601,23 @@ void Game::DrawPlayMode()
 
     m_Window.clear();
     
-    // Draw Tiles
-    for (std::vector row : m_aTiles)
+    ////// Draw Tiles
+    for (std::vector<Tile>& row : m_aTiles)
     {
-        for (Entity tile : row)
+        for (Entity& tile : row)
         {
             m_Window.draw(tile.m_Sprite);
         }
     }
 
-    // Draw test monster
-    m_Window.draw(m_MonsterTemplate);
+    ////// Draw test monster
+    for (Monster& monster : m_aMonstersQueue)
+    {
+        if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        {
+            m_Window.draw(monster);
+        }
+    }
     
 
     m_Window.display();

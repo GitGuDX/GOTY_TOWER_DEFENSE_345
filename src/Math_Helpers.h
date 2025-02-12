@@ -8,7 +8,7 @@ namespace MathHelpers
 {
 
     // returns the center of nearest tile when given position
-    sf::Vector2f snapToGrid(sf::Vector2f pos, int tileSize) {
+    sf::Vector2f getNearestTileCenterPosition(sf::Vector2f pos, int tileSize) {
         return sf::Vector2f(
             std::floor(pos.x / tileSize) * tileSize + tileSize / 2,
             std::floor(pos.y / tileSize) * tileSize + tileSize / 2

@@ -1,3 +1,6 @@
+#ifndef GAME_H
+#define GAME_H
+
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <array>
@@ -5,6 +8,7 @@
 
 #include "Tile.h"
 #include "Monster.h"
+#include "Monster_Generator.h"
 
 using namespace sf;
 
@@ -108,8 +112,16 @@ private:
 
 
     // Play mode 
+    MonsterGenerator m_MonsterGenerator;
+
+    int m_iCurrentLevel;
+
     Texture m_MonsterTexture;
     Monster m_MonsterTemplate;
 
+    std::vector<Monster> m_aMonstersQueue;
     
 };
+
+
+#endif

@@ -1,5 +1,5 @@
 #ifndef MONSTER_H
-#define MOSNTER_H
+#define MONSTER_H
 
 #include "Entity.h"
 
@@ -17,6 +17,11 @@ public:
     size_t GetCurrentPathIndex()
     {
         return m_stCurrentPathIndex;
+    }
+
+    void SetSpeed(float newSpeed)
+    {
+        m_fSpeed = newSpeed;
     }
 
     void SetCurrentPathIndex(size_t newIndex)

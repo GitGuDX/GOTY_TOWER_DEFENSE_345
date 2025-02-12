@@ -77,6 +77,11 @@ public:
 		target.draw(m_Sprite, states);
 	}
 
+    Vector2f GetOrigin()
+    {
+        return m_Sprite.getOrigin();
+    }
+
 public:
     Sprite m_Sprite;
    
