@@ -25,7 +25,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
-
+    m_Window.setVerticalSyncEnabled(true);
 
     // Render Initial SetUp assets
     LoadInitialSetUpAssets(); 
@@ -43,7 +43,7 @@ void Game::Run()
         m_DeltaTime = clock.restart();      // get elapsed time
 
         HandleInput();
-
+        //m_Window.clear();
         // Depending on the game mode, update then draw
         switch (m_eGameMode)
         {
@@ -80,6 +80,7 @@ void Game::Run()
             UpdateMonsters();
 
             DrawPlayMode();
+            break;
         }
         case Pause:
         {
@@ -87,7 +88,7 @@ void Game::Run()
         }
         }
         
-        m_Window.display();                 //Placeholder, create new method
+        //m_Window.display();                 //Placeholder, create new method
     }
 }
 
@@ -406,7 +407,7 @@ void Game::HandleInput()
             //// For test. 
             // In normal game, user should be allowed to place towers then press play button to start game
             static bool bTWasPressedLastUpdate = false;
-        	if (sf::Keyboard::isKeyPressed(sf::Keyboard::T))
+        	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
         	{
         		if (!bTWasPressedLastUpdate)
         		{
@@ -552,6 +553,7 @@ void Game::DrawInitialSetUp()
     {
         m_Window.draw(m_aButtonBoxes[0]);
     }
+    m_Window.display();
 }
 
 void Game::DrawMapEditorMode()
