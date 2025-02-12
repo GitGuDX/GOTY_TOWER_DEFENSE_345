@@ -17,8 +17,11 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     // Set previous game mode to initial set up. Later, this helps track when the game mode changes for the first time.
     , m_ePrevGameMode(GameMode::InitialSetUp)
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
-    , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                     // Set Window size
-    , m_eCurrentlyActiveInputBox(ClickedInputBox::None)                                                                            
+    , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
+    , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
+    // Monster generator initiliazed with base number of monsters and their increase rate per level                
+    , m_MonsterGenerator(1, 2)
+    , m_iCurrentLevel(1)                                                                                                             
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
@@ -233,18 +236,9 @@ void Game::LoadMapEditorAssets()
 
 void Game::LoadPlayModeAssets()
 {
-    // Load a single monster asset for TESTING
+    // Load monster texture
     m_MonsterTexture.loadFromFile("../Images/monster_1.png");
-    m_MonsterTemplate.SetTexture(m_MonsterTexture);
-    m_MonsterTemplate.SetScale(Vector2f(0.06f, 0.06f));
-    // Get Monster sprite width and height
-    FloatRect monsterSize = m_MonsterTemplate.m_Sprite.getLocalBounds();
-    // Set Monster anchor to the center of the sprite
-    m_MonsterTemplate.SetOrigin(Vector2f(monsterSize.width / 2, monsterSize.height / 2));
-    // Set test monster's starting position to the entry tile
-    m_MonsterTemplate.SetPosition(m_aPath[0]);
-    // Set Monster speed
-    m_MonsterTemplate.SetSpeed(100.f);
+
 }
 
 void Game::HandleInput()
@@ -483,34 +477,51 @@ void Game::UpdateTiles()
 
 void Game::UpdateMonsters()
 {
-    /////////// To move Monster to the next path tile
-    // Get Monster's current tile index
-    size_t monsterCurrentTileIndex = m_MonsterTemplate.GetCurrentPathIndex();
-    
-    // While Monster's current index is less than the size of the path array move the monster
-    if (monsterCurrentTileIndex < m_aPath.size())
+    // Generate the first monster and add it to the array
+    if (m_aMonstersQueue.empty())
     {
-        // Get the position of the next tile
-        Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
-        // Get the vector difference between the monster and the next tile
-        Vector2f tileToMonster = nextTilePos - m_MonsterTemplate.GetPosition();
-        // Normalize the distance
-        tileToMonster = MathHelpers::getNormalize(tileToMonster);
-        // Check if the monster is close enough to the target tile (e.g., within 0.1f units).
-        if (std::abs(m_MonsterTemplate.GetPosition().x - nextTilePos.x) < 0.1f &&
-            std::abs(m_MonsterTemplate.GetPosition().y - nextTilePos.y) < 0.1f)
-        {
-            // The reason for set position is needed here despite the fact that the move function would have already adjusted the monster's position is that 
-            // the Move adjusts the position by a very small increment. This presents a floating-point precision errors and small misalignment can add up over time.
-            // Without "snapping" to the next tile position, the monster might slowly drift off the grid, causing pathfinding position check to become inaccurate.
-            m_MonsterTemplate.SetPosition(nextTilePos);
-            m_MonsterTemplate.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
-        }
-        else
-        {
-            m_MonsterTemplate.Move(tileToMonster * m_DeltaTime.asSeconds() * m_MonsterTemplate.GetSpeed());
-        }    
+        m_MonsterGenerator.generateMonster(m_iCurrentLevel, m_aMonstersQueue, m_MonsterTexture, m_aPath[0]);
     }
+    /////////// To move Monster to the next path tile
+    //std::cout << m_aMonstersQueue.size() <<'\n';
+    for (Monster& monster : m_aMonstersQueue)
+    {
+        // Get Monster's current tile index
+        size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
+        // While Monster's current index is less than the size of the path array move the monster
+        if (monsterCurrentTileIndex < m_aPath.size())
+        {
+            // Get the position of the next tile
+            Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
+            // Get the vector difference between the monster and the next tile
+            Vector2f tileToMonster = nextTilePos - monster.GetPosition();
+            // Normalize the distance
+            tileToMonster = MathHelpers::getNormalize(tileToMonster);
+            // Check if the monster is close enough to the target tile (e.g., within 0.1f units).
+            if (std::abs(monster.GetPosition().x - nextTilePos.x) < 0.1f &&
+                std::abs(monster.GetPosition().y - nextTilePos.y) < 0.1f)
+            {
+                std::cout << "Im here\n";
+                // The reason for set position is needed here despite the fact that the move function would have already adjusted the monster's position is that 
+                // the Move adjusts the position by a very small increment. This presents a floating-point precision errors and small misalignment can add up over time.
+                // Without "snapping" to the next tile position, the monster might slowly drift off the grid, causing pathfinding position check to become inaccurate.
+                monster.SetPosition(nextTilePos);
+                monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
+                ///////////
+                m_MonsterGenerator.generateMonster(m_iCurrentLevel, m_aMonstersQueue, m_MonsterTexture, m_aPath[0]);
+            }
+            else
+            {
+                // std::cout << m_DeltaTime.asSeconds() <<"\n";
+                // std::cout << monster.GetSpeed() <<"\n";
+                // std::cout << tileToMonster.x << ' ' << tileToMonster.y << '\n';
+                //Vector2f test = tileToMonster * m_DeltaTime.asSeconds() * monster.GetSpeed();
+                //std::cout << test.x << ' ' << test.y << '\n';
+                monster.Move(tileToMonster * m_DeltaTime.asSeconds() * monster.GetSpeed());
+            }    
+        }
+    }
+    
 }
 
 void Game::DrawInitialSetUp()
@@ -591,19 +602,21 @@ void Game::DrawPlayMode()
     m_Window.clear();
     
     ////// Draw Tiles
-    for (std::vector row : m_aTiles)
+    for (std::vector<Tile>& row : m_aTiles)
     {
-        for (Entity tile : row)
+        for (Entity& tile : row)
         {
             m_Window.draw(tile.m_Sprite);
         }
     }
 
     ////// Draw test monster
-    // PLACEHOLDER condition. Only move monster when its current path index is less than the size of the path array
-    if (m_MonsterTemplate.GetCurrentPathIndex() < m_aPath.size() - 1)
+    for (Monster& monster : m_aMonstersQueue)
     {
-        m_Window.draw(m_MonsterTemplate);
+        if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        {
+            m_Window.draw(monster);
+        }
     }
     
 
