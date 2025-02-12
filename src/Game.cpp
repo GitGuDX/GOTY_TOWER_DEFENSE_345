@@ -16,8 +16,8 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
     // Set previous game mode to initial set up. Later, this helps track when the game mode changes for the first time.
     , m_ePrevGameMode(GameMode::InitialSetUp)
-    , m_iTileSize(50)                                                                          // Set Tile size to 50px
     , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
+    , m_iTileSize(50)                                                                          // Set Tile size to 50px
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
     // Monster generator initiliazed with base number of monsters and their increase rate per level                
     , m_MonsterGenerator(1, 2)
@@ -81,6 +81,10 @@ void Game::Run()
 
             DrawPlayMode();
         }
+        case Pause:
+        {
+            break;
+        }
         }
         
         m_Window.display();                 //Placeholder, create new method
@@ -130,7 +134,6 @@ void Game::LoadInitialSetUpAssets()
     // InputBoxHeight.setOutlineColor(Color(128,128,128));
     // InputBoxHeight.setOutlineThickness(3.f);
     m_aUserInputBoxWindowSize[1] = InputBoxHeight;
-    FloatRect InputBoxHeightBounds = InputBoxHeight.getLocalBounds();
 
     // Initialize window height size input Text
     m_HeightSizeInput.setFont(m_Font);
@@ -297,18 +300,22 @@ void Game::HandleInput()
                 switch (m_eCurrentlyActiveInputBox)
                 {
                 case ClickedInputBox::Width:
-                    {
-                        String currentText = m_WidthSizeInput.getString();
-                        ChangeSizeInputText(event, currentText);
-                        m_WidthSizeInput.setString(currentText);
-                        break;
-                    }
+                {
+                    String currentText = m_WidthSizeInput.getString();
+                    ChangeSizeInputText(event, currentText);
+                    m_WidthSizeInput.setString(currentText);
+                    break;
+                }
                 case ClickedInputBox::Height:
-                    {
-                        String currentText = m_HeightSizeInput.getString();
-                        ChangeSizeInputText(event, currentText);
-                        m_HeightSizeInput.setString(currentText);
-                    }
+                {
+                    String currentText = m_HeightSizeInput.getString();
+                    ChangeSizeInputText(event, currentText);
+                    m_HeightSizeInput.setString(currentText);
+                }
+                case ClickedInputBox::None:
+                {
+                    break;
+                }
                 }
             }
         }
@@ -321,7 +328,6 @@ void Game::HandleInput()
             {
                 sf::Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
                 sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
-                sf::Vector2i clickedTileIndex = Vector2i(static_cast<int>(gridPos.x/m_iTileSize), static_cast<int>(gridPos.y/m_iTileSize));
                 if (event.mouseButton.button == sf::Mouse::Left) 
                 {
                     
