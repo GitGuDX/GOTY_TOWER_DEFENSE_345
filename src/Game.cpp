@@ -484,50 +484,33 @@ void Game::UpdateTiles()
 void Game::UpdateMonsters()
 {
     /////////// To move Monster to the next path tile
-    // std::cout << m_MonsterTemplate.GetCurrentPathIndex() << '\n';
-    // std::cout << m_aPath[m_MonsterTemplate.GetCurrentPathIndex()].x << ' ' << m_aPath[m_MonsterTemplate.GetCurrentPathIndex()].y << '\n';
-    // Get the position of the next tile
-    Vector2f nextTilePos = m_aPath[m_MonsterTemplate.GetCurrentPathIndex() + 1];
-    // Get the vector difference between the monster and the next tile
-    Vector2f tileToMonster = nextTilePos - m_MonsterTemplate.GetPosition();
-    // Normalize the distance
-    tileToMonster = MathHelpers::getNormalize(tileToMonster);
-    // Move enemy to the next tile according to the distance*time elapsed*speed
-    std::cout << "monster speed: " << m_MonsterTemplate.GetSpeed() << '\n';
-    std::cout << "delta time: " << m_DeltaTime.asSeconds() << '\n';
-    std::cout << "normalized distance: " << tileToMonster.x << ' ' << tileToMonster.y << '\n';
-    m_MonsterTemplate.Move(tileToMonster * m_DeltaTime.asSeconds() * m_MonsterTemplate.GetSpeed());
-
-
-    /*
-    // Get the time passed since the last frame to make movement framerate independent
-    m_fTimeInPlayMode += m_DeltaTime.asSeconds();
-    // Get test monster's current path index
-    size_t currentIndex = m_MonsterTemplate.GetCurrentPathIndex();
-    // If the monster's next path index is still within the bounds of the path
-    if (currentIndex + 1 < m_aPath.size())
+    // Get Monster's current tile index
+    size_t monsterCurrentTileIndex = m_MonsterTemplate.GetCurrentPathIndex();
+    
+    // While Monster's current index is less than the size of the path array move the monster
+    if (monsterCurrentTileIndex < m_aPath.size())
     {
-        // Get the current position of the entity
-        sf::Vector2f currentPos = m_MonsterTemplate.GetPosition();
-        // Get the next path position
-        sf::Vector2f targetPos = m_aPath[currentIndex + 1];
-        // Calculate the direction vector from current position to target position
-        sf::Vector2f direction = MathHelpers::getNormalize(targetPos - currentPos);
-        // Calculate the velocity vector based on the direction and speed
-        sf::Vector2f velocity = direction * m_MonsterTemplate.GetSpeed() * m_fTimeInPlayMode;
-        // Check if the entity has reached the target position or passed it
-        if (MathHelpers::getMagnitude(targetPos - (currentPos + velocity)) < m_MonsterTemplate.GetSpeed() * m_fTimeInPlayMode) {
-            // Set entity's position to the target position
-            m_MonsterTemplate.SetPosition(targetPos); 
-            // Move to the next target in the path
-            m_MonsterTemplate.SetCurrentPathIndex(currentIndex + 1);                                              
-        } else {
-            // Move the entity in the calculated direction
-            m_MonsterTemplate.Move(velocity);
+        // Get the position of the next tile
+        Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
+        // Get the vector difference between the monster and the next tile
+        Vector2f tileToMonster = nextTilePos - m_MonsterTemplate.GetPosition();
+        // Normalize the distance
+        tileToMonster = MathHelpers::getNormalize(tileToMonster);
+        // Check if the monster is close enough to the target tile (e.g., within 0.1f units).
+        if (std::abs(m_MonsterTemplate.GetPosition().x - nextTilePos.x) < 0.1f &&
+            std::abs(m_MonsterTemplate.GetPosition().y - nextTilePos.y) < 0.1f)
+        {
+            // The reason for set position is needed here despite the fact that the move function would have already adjusted the monster's position is that 
+            // the Move adjusts the position by a very small increment. This presents a floating-point precision errors and small misalignment can add up over time.
+            // Without "snapping" to the next tile position, the monster might slowly drift off the grid, causing pathfinding position check to become inaccurate.
+            m_MonsterTemplate.SetPosition(nextTilePos);
+            m_MonsterTemplate.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
         }
-
+        else
+        {
+            m_MonsterTemplate.Move(tileToMonster * m_DeltaTime.asSeconds() * m_MonsterTemplate.GetSpeed());
+        }    
     }
-     */
 }
 
 void Game::DrawInitialSetUp()
@@ -607,7 +590,7 @@ void Game::DrawPlayMode()
 
     m_Window.clear();
     
-    // Draw Tiles
+    ////// Draw Tiles
     for (std::vector row : m_aTiles)
     {
         for (Entity tile : row)
@@ -616,8 +599,12 @@ void Game::DrawPlayMode()
         }
     }
 
-    // Draw test monster
-    m_Window.draw(m_MonsterTemplate);
+    ////// Draw test monster
+    // PLACEHOLDER condition. Only move monster when its current path index is less than the size of the path array
+    if (m_MonsterTemplate.GetCurrentPathIndex() < m_aPath.size() - 1)
+    {
+        m_Window.draw(m_MonsterTemplate);
+    }
     
 
     m_Window.display();
