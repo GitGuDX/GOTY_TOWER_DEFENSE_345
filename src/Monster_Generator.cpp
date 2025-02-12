@@ -1,7 +1,5 @@
 #include "Monster_Generator.h"
-#include "Game.h"
 #include <iostream>
-
 #include <vector>
 
 MonsterGenerator::MonsterGenerator(int baseMonsters, int monsterIncreaseRate)

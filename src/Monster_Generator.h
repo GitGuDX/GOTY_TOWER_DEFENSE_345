@@ -1,10 +1,15 @@
 #ifndef MONSTER_GENERATOR_H
 #define MONSTER_GENERATOR_H
 
+#include "Monster.h"
 #include <vector>
 #include <SFML/Graphics.hpp>
 
-class Monster;
+/////// ADD more logic for generating monster
+/////// Currently, the logic covers how many monsters to generate depending on the current level of the game multiplied by 
+/////// the number of base monsters and the monster increase rate. 
+/////// Need to also cover what type of monster to generate (high hp, high speed, or both). Possibly through random choice while 
+/////// keeping the intigrity of increasing difficulty each level
 
 class MonsterGenerator
 {
