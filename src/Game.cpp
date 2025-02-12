@@ -501,13 +501,12 @@ void Game::UpdateMonsters()
             if (std::abs(monster.GetPosition().x - nextTilePos.x) < 0.1f &&
                 std::abs(monster.GetPosition().y - nextTilePos.y) < 0.1f)
             {
-                std::cout << "Im here\n";
                 // The reason for set position is needed here despite the fact that the move function would have already adjusted the monster's position is that 
                 // the Move adjusts the position by a very small increment. This presents a floating-point precision errors and small misalignment can add up over time.
                 // Without "snapping" to the next tile position, the monster might slowly drift off the grid, causing pathfinding position check to become inaccurate.
                 monster.SetPosition(nextTilePos);
                 monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
-                ///////////
+                /////////// Generate Monsters - need update
                 m_MonsterGenerator.generateMonster(m_iCurrentLevel, m_aMonstersQueue, m_MonsterTexture, m_aPath[0]);
             }
             else
