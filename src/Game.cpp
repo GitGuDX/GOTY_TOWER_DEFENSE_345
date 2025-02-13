@@ -94,7 +94,7 @@ void Game::Run()
 
 void Game::LoadInitialSetUpAssets()
 {
-    m_Font.loadFromFile("../Fonts/Kreon-Medium.ttf");
+    m_Font.loadFromFile("Fonts/Kreon-Medium.ttf");
     
     // Initialize "Enter Size" text
     m_EnterSizeText.setFont(m_Font);
@@ -147,14 +147,14 @@ void Game::LoadInitialSetUpAssets()
     m_HeightSizeInput.setPosition(InputBoxHeight.getPosition().x - InputBoxHeight.getSize().x/2 + 3, InputBoxHeight.getPosition().y + 1);
 
     // Initialize submit button and store it in the m_abuttonboxes array
-    m_SubmitButtonTexture.loadFromFile("../Images/placeholder_play_button.png");                    // placeholder image. Change button image
+    m_SubmitButtonTexture.loadFromFile("Images/placeholder_play_button.png");                    // placeholder image. Change button image
     Sprite submitButton(m_SubmitButtonTexture);
     submitButton.setScale(Vector2f(5.f, 5.f));
     submitButton.setOrigin(m_SubmitButtonTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
     submitButton.setPosition(Vector2f(m_vWindowSize.x/2,m_vWindowSize.y*2/3));
     m_aButtonBoxes.emplace_back(submitButton);
     //Initialise submit button text
-    m_SubmitButtonPressedTexture.loadFromFile("../Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
     Sprite submitButtonPressed(m_SubmitButtonPressedTexture);
     submitButtonPressed.setScale(Vector2f(5.f, 5.f));
     submitButtonPressed.setOrigin(m_SubmitButtonPressedTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
@@ -165,10 +165,10 @@ void Game::LoadInitialSetUpAssets()
 void Game::LoadMapEditorAssets()
 {
     // Map editor mode assets
-    m_GrassTexture.loadFromFile("../Images/grass_Tile.png");
-    m_PathTexture.loadFromFile("../Images/path_Tile.png");
-    m_EntryTileTexture.loadFromFile("../Images/entry_Zone_Tile.png");
-    m_ExitTileTexture.loadFromFile("../Images/exit_Zone_Tile.png");
+    m_GrassTexture.loadFromFile("Images/grass_Tile.png");
+    m_PathTexture.loadFromFile("Images/path_Tile.png");
+    m_EntryTileTexture.loadFromFile("Images/entry_Zone_Tile.png");
+    m_ExitTileTexture.loadFromFile("Images/exit_Zone_Tile.png");
 
     // Create grass tiles and store them in a 2D array. The position of the item in the array correspond to the position of the tile in the game
     // (e.g. tile at [0][0] is displayed at the top left corner) 
@@ -241,7 +241,7 @@ void Game::LoadMapEditorAssets()
 void Game::LoadPlayModeAssets()
 {
     // Load monster texture
-    m_MonsterTexture.loadFromFile("../Images/monster_1.png");
+    m_MonsterTexture.loadFromFile("Images/monster_1.png");
 
 }
 
