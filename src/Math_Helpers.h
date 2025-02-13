@@ -8,7 +8,7 @@ namespace MathHelpers
 {
 
     // returns the center of nearest tile when given position
-    sf::Vector2f getNearestTileCenterPosition(sf::Vector2f pos, int tileSize) {
+    sf::Vector2f getNearestTileCenterPosition(sf::Vector2f& pos, int tileSize) {
         return sf::Vector2f(
             std::floor(pos.x / tileSize) * tileSize + tileSize / 2,
             std::floor(pos.y / tileSize) * tileSize + tileSize / 2
@@ -16,7 +16,7 @@ namespace MathHelpers
     }
 
     //Checks if two tiles are adjacent (only horizontal or vertical movement allowed).
-    bool isAdjacent(sf::Vector2f a, sf::Vector2f b, int tileSize) {
+    bool isAdjacent(sf::Vector2f& a, sf::Vector2f& b, int tileSize) {
         return (std::abs(a.x - b.x) == tileSize && a.y == b.y) ||  (std::abs(a.y - b.y) == tileSize && a.x == b.x);
     }
 
@@ -28,6 +28,11 @@ namespace MathHelpers
 
     // Get unit vector
     sf::Vector2f getNormalize(const sf::Vector2f& vector) {
+        // If vector is (0,0) return vector right away to avoid dividing by 0
+        if (vector.x == 0 && vector.y == 0)
+        {
+            return vector;
+        }
         float magnitude = getMagnitude(vector);                                             
         return (magnitude != 0) ? sf::Vector2f(vector.x / magnitude, vector.y / magnitude) : sf::Vector2f(0, 0); 
     }
