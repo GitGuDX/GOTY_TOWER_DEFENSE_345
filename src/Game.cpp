@@ -1,4 +1,3 @@
-
 // NOTE: When path creation is completed, press t on the keyboard to go to play mode
 
 #include "Game.h"
@@ -366,7 +365,7 @@ void Game::HandleInput()
             // Enable dragging mouse for linking path
             if (event.type == sf::Event::MouseMoved && m_eCurrentEditState == PathState)
             {
-                std::cout << "Number of path tiles created: " << m_aPath.size() <<'\n';
+                //std::cout << "Number of path tiles created: " << m_aPath.size() <<'\n';
                 if (m_IsPathingMousePressed && m_eCurrentEditState == PathState)
                 {
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
@@ -401,24 +400,28 @@ void Game::HandleInput()
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
+                   // std::cout << "[DEBUG] " << std::endl;
+
                     m_IsPathingMousePressed = false;
                 }
             }
             //// For test. 
             // In normal game, user should be allowed to place towers then press play button to start game
             static bool bTWasPressedLastUpdate = false;
-        	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-        	{
-        		if (!bTWasPressedLastUpdate)
-        		{
-        			m_eGameMode = PlayMode;
-        		}
-        		bTWasPressedLastUpdate = true;
-        	}
-        	else
-        	{
-        		bTWasPressedLastUpdate = false;
-        	}
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+            {
+                std::cout << "one of the keys was pressed! " << std::endl;
+                if (!bTWasPressedLastUpdate)
+                {
+                    std::cout << "play mode activated" << std::endl;
+                    m_eGameMode = PlayMode;
+                }
+                bTWasPressedLastUpdate = true;
+            }
+            else
+            {
+                bTWasPressedLastUpdate = false;
+            }
         }
         
     }
