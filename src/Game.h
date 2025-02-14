@@ -121,6 +121,8 @@ private:
 
     std::vector<Monster> m_aMonstersQueue;
     
+
+    friend class MonsterGenerator;                  // make MonsterGenerator friend of Game so that MonsterGenerator has access to Game class's private members
 };
 
 

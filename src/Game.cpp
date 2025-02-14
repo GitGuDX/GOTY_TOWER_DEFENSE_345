@@ -487,7 +487,7 @@ void Game::UpdateMonsters()
     // Generate the first monster and add it to the array
     if (m_aMonstersQueue.empty())
     {
-        m_MonsterGenerator.generateMonster(m_iCurrentLevel, m_aMonstersQueue, m_MonsterTexture, m_aPath[0]);
+        m_MonsterGenerator.generateMonster(*this);              // Dereference the pointer and pass the address of 'this'. generateMonstert takes pass by reference
     }
     /////////// To move Monster to the next path tile
     //std::cout << m_aMonstersQueue.size() <<'\n';
@@ -514,7 +514,7 @@ void Game::UpdateMonsters()
                 monster.SetPosition(nextTilePos);
                 monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
                 /////////// Generate Monsters - need update
-                m_MonsterGenerator.generateMonster(m_iCurrentLevel, m_aMonstersQueue, m_MonsterTexture, m_aPath[0]);
+                m_MonsterGenerator.generateMonster(*this);
             }
             else
             {
