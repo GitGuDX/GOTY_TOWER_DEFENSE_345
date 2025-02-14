@@ -34,6 +34,11 @@ public:
         return m_iLevel;
     }
 
+    int GetStrength()
+    {
+        return m_istrength;
+    }
+
     void SetHealth(int newHealth)
     {
         m_iHealth = newHealth;
@@ -54,11 +59,17 @@ public:
         m_iLevel = newLevel;
     }
 
+    void SetStrength(int newStrength)
+    {
+        m_istrength = newStrength;
+    }
+
 private:
     size_t m_stCurrentPathIndex;           // index of the monster's current path
     int m_iHealth;
     float m_fSpeed;
     int m_iLevel;
+    int m_istrength;                           // Determines the rate that the monster steals coin from the player
     /////// add monster type, levels, etc
 };
 
