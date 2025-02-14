@@ -37,11 +37,6 @@ class Monster : public Entity
 public:
     Monster();
     ~Monster();
-
-    float GetSpeed()
-    {
-        return m_fSpeed;
-    }
     
     size_t GetCurrentPathIndex()
     {
@@ -73,6 +68,11 @@ public:
         return m_iReward;
     }
 
+    void SetCurrentPathIndex(size_t newIndex)
+    {
+        m_stCurrentPathIndex = newIndex;
+    }
+
     void SetHealth(int newHealth)
     {
         m_iHealth = newHealth;
@@ -81,11 +81,6 @@ public:
     void SetSpeed(float newSpeed)
     {
         m_fSpeed = newSpeed;
-    }
-
-    void SetCurrentPathIndex(size_t newIndex)
-    {
-        m_stCurrentPathIndex = newIndex;
     }
 
     void SetLevel(int newLevel)
