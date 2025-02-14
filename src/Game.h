@@ -55,6 +55,7 @@ private:
     void UpdateInitialPrompt();
     void UpdateTiles();
     void UpdateMonsters();
+    void UpdateTowers();
 
     void DrawInitialSetUp();
     void DrawMapEditorMode();
@@ -105,6 +106,9 @@ private:
 
     std::vector<std::vector<Tile>> m_aTiles;
     std::vector<Tower> m_aTowers;
+    Entity m_AxeTemplate;
+	std::vector<Entity> m_Axes;
+    Texture m_AxeTexture;
     
     std::array<RectangleShape, 8> m_ahighlights;
 

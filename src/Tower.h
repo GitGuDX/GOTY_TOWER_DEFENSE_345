@@ -15,12 +15,12 @@ public:
     {
         std::cout << "Tower Position: " << GetPosition().x << "," << GetPosition().y << "\n"
                   << "Health: " << m_iHealth << "\n"
-                  << "Speed: " << m_fSpeed << "\n";
+                  << "Speed: " << m_fDamage << "\n";
     }
 
-    float GetSpeed()
+    float GetDamage()
     {
-        return m_fSpeed;
+        return m_fDamage;
     }
     
     size_t GetCurrentPathIndex()
@@ -28,9 +28,9 @@ public:
         return m_stCurrentPathIndex;
     }
 
-    void SetSpeed(float newSpeed)
+    void SetDamage(float newDamage)
     {
-        m_fSpeed = newSpeed;
+        m_fDamage = newDamage;
     }
 
     void SetCurrentPathIndex(size_t newIndex)
@@ -39,7 +39,7 @@ public:
     }
 private:
     int m_iHealth;
-    float m_fSpeed;
+    float m_fDamage;
     size_t m_stCurrentPathIndex;           // index of the Tower's current path
     /////// add Tower type, levels, etc
 };

@@ -20,14 +20,17 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
     // Monster generator initiliazed with base number of monsters and their increase rate per level                
     , m_MonsterGenerator(1, 2)
-    , m_iCurrentLevel(1)                                                                                                             
+    , m_iCurrentLevel(1)
+    ,m_AxeTemplate()                                                                                                             
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
     m_Window.setVerticalSyncEnabled(true);
 
+    
     // Render Initial SetUp assets
     LoadInitialSetUpAssets(); 
+
 }
 
 Game::~Game()
@@ -77,7 +80,7 @@ void Game::Run()
             }
             
             UpdateMonsters();
-
+            UpdateTowers();
             DrawPlayMode();
             break;
         }
@@ -243,6 +246,11 @@ void Game::LoadPlayModeAssets()
     m_MonsterTexture.loadFromFile("Images/monster_1.png");
     m_TowerTexture.loadFromFile("Images/tower.png");
     m_TowerTexture.setSmooth(true);
+    m_AxeTexture.loadFromFile("Images/Axe.png");
+	m_AxeTemplate.SetTexture(m_AxeTexture);
+	m_AxeTemplate.SetScale(sf::Vector2f(5, 5));
+	m_AxeTemplate.SetOrigin(sf::Vector2f(8, 8));
+
 
 }
 
@@ -414,10 +422,10 @@ void Game::HandleInput()
             static bool bTWasPressedLastUpdate = false;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
             {
-                std::cout << "one of the keys was pressed! " << std::endl;
+             //   std::cout << "one of the keys was pressed! " << std::endl;
                 if (!bTWasPressedLastUpdate)
                 {
-                    std::cout << "play mode activated" << std::endl;
+                 //   std::cout << "play mode activated" << std::endl;
                     m_eGameMode = PlayMode;
                 }
                 bTWasPressedLastUpdate = true;
@@ -567,6 +575,44 @@ void Game::UpdateMonsters()
         }
     }
     
+}
+
+void Game::UpdateTowers()
+{
+    for (Entity& tower : m_aTowers)
+    {
+        Entity* pNearestEnemy = nullptr;
+        float fShortestDistance  = std::numeric_limits<float>::max();
+        for  (Entity& monster : m_aMonstersQueue)
+        {
+            sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
+            float fDistance = MathHelpers::Length(vTowerToMonster);
+            if (fDistance < fShortestDistance)
+            {
+                fShortestDistance = fDistance;
+                pNearestEnemy = &monster;
+            }
+            Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);
+            newAxe.SetPosition(tower.GetPosition());
+            vTowerToMonster = MathHelpers::Normalize(vTowerToMonster);
+            newAxe.SetVelocity(vTowerToMonster * 500.0f);
+        }
+
+        // Debug print to show closest monster info
+        if (pNearestEnemy != nullptr)
+        {
+            std::cout << "Tower at (" << tower.GetPosition().x << "," << tower.GetPosition().y 
+                      << ") -> Nearest monster at (" << pNearestEnemy->GetPosition().x 
+                      << "," << pNearestEnemy->GetPosition().y 
+                      << ") Distance: " << fShortestDistance << "\n";
+        }
+        else
+        {
+            std::cout << "Tower at (" << tower.GetPosition().x << "," << tower.GetPosition().y 
+                      << ") -> No monsters in range\n";
+        }
+    }
+    // Update tower logic
 }
 
 void Game::DrawInitialSetUp()
