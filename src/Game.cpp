@@ -241,6 +241,7 @@ void Game::LoadPlayModeAssets()
 {
     // Load monster texture
     m_MonsterTexture.loadFromFile("Images/monster_1.png");
+    m_TowerTexture.loadFromFile("Images/tower.png");
 
 }
 
@@ -318,6 +319,8 @@ void Game::HandleInput()
                 }
                 }
             }
+
+
         }
         // Handle inputs for Map Editor Mode //
         if (m_eGameMode == MapEditorMode)
@@ -421,6 +424,24 @@ void Game::HandleInput()
             else
             {
                 bTWasPressedLastUpdate = false;
+            }
+        }
+
+        if (m_eGameMode == PlayMode) {
+            if (event.type == Event::MouseButtonPressed) {
+                if (event.mouseButton.button == Mouse::Left) {
+                    Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
+                    Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
+                    
+                    // Check if tile is valid for tower placement
+                    Vector2i tileIndex = tileCenterPosToIndex(gridPos);
+                    if (m_aTiles[tileIndex.y][tileIndex.x].getType() == Tile::Type::Grass) {
+                        Tower newTower;
+                        newTower.SetTexture(m_TowerTexture);
+                        newTower.SetPosition(gridPos);
+                        m_aTowers.push_back(newTower);
+                    }
+                }
             }
         }
         
@@ -620,6 +641,10 @@ void Game::DrawPlayMode()
         }
     }
 
+    for (Tower& tower : m_aTowers) {
+        m_Window.draw(tower);
+    }
+
     ////// Draw test monster
     for (Monster& monster : m_aMonstersQueue)
     {
@@ -628,6 +653,8 @@ void Game::DrawPlayMode()
             m_Window.draw(monster);
         }
     }
+
+    
     
 
     m_Window.display();

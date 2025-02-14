@@ -9,6 +9,7 @@
 #include "Tile.h"
 #include "Monster.h"
 #include "Monster_Generator.h"
+#include "Tower.h"
 
 using namespace sf;
 
@@ -100,8 +101,10 @@ private:
     Texture m_ExitTileTexture;
     Texture m_GrassTexture;
     Texture m_PathTexture;
+    Texture m_TowerTexture;
 
     std::vector<std::vector<Tile>> m_aTiles;
+    std::vector<Tower> m_aTowers;
     
     std::array<RectangleShape, 8> m_ahighlights;
 
