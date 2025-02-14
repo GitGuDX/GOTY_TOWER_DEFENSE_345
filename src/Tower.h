@@ -2,6 +2,7 @@
 #define TOWER_H
 
 #include "Entity.h"
+#include <iostream>
 
 
 class Tower : public Entity
@@ -9,6 +10,13 @@ class Tower : public Entity
 public:
     Tower();
     ~Tower();
+
+    void DebugPrint() const 
+    {
+        std::cout << "Tower Position: " << GetPosition().x << "," << GetPosition().y << "\n"
+                  << "Health: " << m_iHealth << "\n"
+                  << "Speed: " << m_fSpeed << "\n";
+    }
 
     float GetSpeed()
     {

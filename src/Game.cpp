@@ -242,6 +242,7 @@ void Game::LoadPlayModeAssets()
     // Load monster texture
     m_MonsterTexture.loadFromFile("Images/monster_1.png");
     m_TowerTexture.loadFromFile("Images/tower.png");
+    m_TowerTexture.setSmooth(true);
 
 }
 
@@ -432,12 +433,26 @@ void Game::HandleInput()
                 if (event.mouseButton.button == Mouse::Left) {
                     Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
                     Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
-                    
-                    // Check if tile is valid for tower placement
-                    Vector2i tileIndex = tileCenterPosToIndex(gridPos);
+                    std::cout << "Click detected at: " << clickedPos.x << "," << clickedPos.y << "\n";
+                std::cout << "Snapped to grid: " << gridPos.x << "," << gridPos.y << "\n";
+        
+                Vector2i tileIndex = tileCenterPosToIndex(gridPos);
+                std::cout << "Tile index: " << tileIndex.x << "," << tileIndex.y << "\n";
+        
+        // Validate tile bounds
+                if (tileIndex.x >= 0 && tileIndex.x < m_vGridSize.x && 
+                 tileIndex.y >= 0 && tileIndex.y < m_vGridSize.y) {
+            // ...existing placement code...
+                    } else {
+                std::cout << "Invalid tile position!\n";
+         }
                     if (m_aTiles[tileIndex.y][tileIndex.x].getType() == Tile::Type::Grass) {
                         Tower newTower;
                         newTower.SetTexture(m_TowerTexture);
+                        newTower.SetScale(Vector2f(1.0f, 1.0f));  // Adjust scale to fit one tile
+                        newTower.SetTextureRect(sf::IntRect(0, 0, 50, 50));
+                        Vector2f towerOrigin(m_iTileSize / 2.0f, m_iTileSize / 2.0f);  // Center point of tower
+                        newTower.SetOrigin(towerOrigin);
                         newTower.SetPosition(gridPos);
                         m_aTowers.push_back(newTower);
                     }
@@ -643,6 +658,8 @@ void Game::DrawPlayMode()
 
     for (Tower& tower : m_aTowers) {
         m_Window.draw(tower);
+        tower.DebugPrint();
+
     }
 
     ////// Draw test monster

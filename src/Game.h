@@ -123,6 +123,13 @@ private:
     Monster m_MonsterTemplate;
 
     std::vector<Monster> m_aMonstersQueue;
+
+    void DebugPrintGameState() const {
+        std::cout << "Game State:\n"
+                  << "Mode: " << m_eGameMode << "\n"
+                  << "Grid Size: " << m_vGridSize.x << "x" << m_vGridSize.y << "\n"
+                  << "Tower Count: " << m_aTowers.size() << "\n";
+    }
     
 };
 
