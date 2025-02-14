@@ -19,16 +19,16 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
-    // Monster generator initiliazed with base number of monsters and their increase rate per level                
+    // Monster generator initiliazed with base number of monsters and their increase rate per level
     , m_MonsterGenerator(1, 2)
-    , m_iCurrentLevel(1)                                                                                                             
+    , m_iCurrentLevel(1)
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
 
 
     // Render Initial SetUp assets
-    LoadInitialSetUpAssets(); 
+    LoadInitialSetUpAssets();
 }
 
 Game::~Game()
@@ -57,11 +57,12 @@ void Game::Run()
         {
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode) {
-                m_Window.create(VideoMode(m_vWindowSize.x, m_vWindowSize.y), "New Game");
-                LoadMapEditorAssets(); 
+                m_Window.create(VideoMode(m_vWindowSize.x + 250, m_vWindowSize.y), "New Game");
+                LoadMapEditorAssets();
                 m_ePrevGameMode = MapEditorMode;
             }
 
+            UpdateText();
             UpdateTiles();
             
             DrawMapEditorMode();
@@ -87,7 +88,7 @@ void Game::Run()
         }
         }
         
-        m_Window.display();                 //Placeholder, create new method
+        //m_Window.display();                 //Placeholder, create new method
     }
 }
 
@@ -123,8 +124,8 @@ void Game::LoadInitialSetUpAssets()
     m_WidthSizeInput.setFillColor(Color::Red);
     float fWidthSizeInputHeight = m_WidthSizeInput.getLocalBounds().height;
     m_WidthSizeInput.setOrigin(0, fWidthSizeInputHeight);
-    // Set position relative to the input box       
-    m_WidthSizeInput.setPosition(InputBoxWidth.getPosition().x - InputBoxWidth.getSize().x/2 + 3, InputBoxWidth.getPosition().y + 1);  
+    // Set position relative to the input box
+    m_WidthSizeInput.setPosition(InputBoxWidth.getPosition().x - InputBoxWidth.getSize().x/2 + 3, InputBoxWidth.getPosition().y + 1);
 
     //Initialize height input box and store them in an array (index 1)
     RectangleShape InputBoxHeight(Vector2f(m_iInputFontSize * 2.5, m_iInputFontSize));
@@ -169,8 +170,9 @@ void Game::LoadMapEditorAssets()
     m_EntryTileTexture.loadFromFile("../Images/entry_Zone_Tile.png");
     m_ExitTileTexture.loadFromFile("../Images/exit_Zone_Tile.png");
 
+
     // Create grass tiles and store them in a 2D array. The position of the item in the array correspond to the position of the tile in the game
-    // (e.g. tile at [0][0] is displayed at the top left corner) 
+    // (e.g. tile at [0][0] is displayed at the top left corner)
     m_aTiles.clear();
     for (int i = 0; i < m_vGridSize.y; ++i)
     {
@@ -193,12 +195,12 @@ void Game::LoadMapEditorAssets()
     // Loop to create 8 highlight rectangles
     for (int i = 0; i < 8; ++i)
     {
-        RectangleShape highlight;                                                                   
+        RectangleShape highlight;
         // Determine the size of the highlight based on whether 'i' is even or odd
         // If 'i' is even, make the highlight a wide horizontal rectangle
         // If 'i' is odd, make the highlight a tall vertical rectangle
         if (i % 2 == 0)
-        {             
+        {
             highlight.setSize(Vector2f(m_vGridSize.x * m_iTileSize, m_iTileSize));
         }
         else
@@ -270,13 +272,13 @@ void Game::HandleInput()
                 }
                 else                                                                                    // If clicked anywhere outside the input box
                 {
-                    m_eCurrentlyActiveInputBox = ClickedInputBox::None;                                 
+                    m_eCurrentlyActiveInputBox = ClickedInputBox::None;
                 }
 
                 // When submit button is clicked
                 if (m_aButtonBoxes[0].getGlobalBounds().contains(translatedPosition))
                 {
-                    m_SubmitButtonClicked = true;   
+                    m_SubmitButtonClicked = true;
                 }
             }
             if (event.type == Event::MouseButtonReleased)
@@ -328,7 +330,7 @@ void Game::HandleInput()
             {
                 sf::Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
                 sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
-                if (event.mouseButton.button == sf::Mouse::Left) 
+                if (event.mouseButton.button == sf::Mouse::Left)
                 {
                     
                     // If EntryState, check if the tile clicked is from the edge tiles then save the clicked tile as the entry tile then append is to the arrays
@@ -370,6 +372,7 @@ void Game::HandleInput()
                 {
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
                     sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(mousePos, m_iTileSize);      // Snap the mouse position to the grid
+                    std::cout << gridPos.x << gridPos.y << "\n";
                     if (!m_aPath.empty() && MathHelpers::isAdjacent(m_aPath.back(), gridPos, m_iTileSize))
                     {
                         // When the path tile overlaps with the exit tile, we reached the end of pathing. Append exit tile. Ensure we don't move beyond the exit tile
@@ -384,6 +387,7 @@ void Game::HandleInput()
                         else if (m_aPath.size() > 1 && m_aPath[m_aPath.size() - 2] == gridPos)
                         {
                             m_aPath.pop_back();
+                            
                             m_sfPathLines.resize(m_aPath.size());
                         }
                         // Normal pathing. first check if the current tile is not the previous tile then append path tile
@@ -481,6 +485,29 @@ void Game::UpdateTiles()
 
 }
 
+void Game::UpdateText()
+{
+    scoreTextPosition = Vector2f(m_vWindowSize.x + 100, 75);
+    levelTextPosition = Vector2f(m_vWindowSize.x + 100, 100);
+
+    m_Text.setFont(m_Font);               // Set font
+    m_Text.setString("Score: " + std::to_string(m_iCurrentLevel));   // Set text
+    m_Text.setCharacterSize(20);        // Set size
+    m_Text.setFillColor(Color::Red);     // Set color
+    m_Text.setPosition(scoreTextPosition);       // Set position
+
+    m_Text1.setFont(m_Font);               // Set font
+    m_Text1.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
+    m_Text1.setCharacterSize(20);        // Set size
+    m_Text1.setFillColor(Color::Red);     // Set color
+    m_Text1.setPosition(levelTextPosition);       // Set position
+
+    if(m_eCurrentEditState == ExitState){
+
+    }
+}
+
+
 void Game::UpdateMonsters()
 {
     // Generate the first monster and add it to the array
@@ -523,7 +550,7 @@ void Game::UpdateMonsters()
                 //Vector2f test = tileToMonster * m_DeltaTime.asSeconds() * monster.GetSpeed();
                 //std::cout << test.x << ' ' << test.y << '\n';
                 monster.Move(tileToMonster * m_DeltaTime.asSeconds() * monster.GetSpeed());
-            }    
+            }
         }
     }
     
@@ -552,6 +579,9 @@ void Game::DrawInitialSetUp()
     {
         m_Window.draw(m_aButtonBoxes[0]);
     }
+
+    m_Window.display();
+
 }
 
 void Game::DrawMapEditorMode()
@@ -567,6 +597,8 @@ void Game::DrawMapEditorMode()
             m_Window.draw(tile.m_Sprite);
         }
     }
+
+    
 
     ////////// Redo highlight logic??
     // Highlight tiles that are available to choose for the entry (green) and the exit (red) tiles
@@ -594,6 +626,8 @@ void Game::DrawMapEditorMode()
         }
     }
     
+    m_Window.draw(m_Text);  // Draw text
+    m_Window.draw(m_Text1);  // Draw text
 
     m_Window.draw(m_sfPathLines);
     //m_Window.draw(m_MonsterTemplate.m_Sprite);
@@ -623,6 +657,9 @@ void Game::DrawPlayMode()
             m_Window.draw(monster);
         }
     }
+
+    m_Window.draw(m_Text);
+    m_Window.draw(m_Text1);
     
 
     m_Window.display();

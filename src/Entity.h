@@ -84,7 +84,6 @@ public:
 
 public:
     Sprite m_Sprite;
-   
 };
 
 

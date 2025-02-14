@@ -54,6 +54,7 @@ private:
     void UpdateInitialPrompt();
     void UpdateTiles();
     void UpdateMonsters();
+    void UpdateText();
 
     void DrawInitialSetUp();
     void DrawMapEditorMode();
@@ -75,7 +76,7 @@ private:
 
     float m_fElapesdTimeInSeconds;
 
-    // Initial SetUp 
+    // Initial SetUp
     Font m_Font;
     Text m_EnterSizeText;
     int m_iInputFontSize = 30;
@@ -120,6 +121,14 @@ private:
     Monster m_MonsterTemplate;
 
     std::vector<Monster> m_aMonstersQueue;
+
+
+    // UI Info
+    Text m_Text;
+    Text m_Text1;
+
+    Vector2f scoreTextPosition;
+    Vector2f levelTextPosition;
     
 };
 

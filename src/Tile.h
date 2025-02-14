@@ -17,7 +17,7 @@ public:
         Exit
     };
 
-    virtual Type getType() 
+    virtual Type getType()
     {
         return m_type;
     }

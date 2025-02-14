@@ -28,7 +28,7 @@ namespace MathHelpers
 
     // Get unit vector
     sf::Vector2f getNormalize(const sf::Vector2f& vector) {
-        float magnitude = getMagnitude(vector);                                             
+        float magnitude = getMagnitude(vector);
         return (magnitude != 0) ? sf::Vector2f(vector.x / magnitude, vector.y / magnitude) : sf::Vector2f(0, 0); 
     }
 
