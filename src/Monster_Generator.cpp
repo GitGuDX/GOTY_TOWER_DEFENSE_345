@@ -1,4 +1,9 @@
-#include "Game.h"                           // Include Game.h so that Monster_Generator.cpp has full definition of Game
+// Include Game.h so that Monster_Generator.cpp has full definition of Game
+// The reason for including Game.h here and not in Monster_Generator.h is because
+// Game.h already includes Monster_Generator.h and if Monster_Generator.h includes Game.h, this presents circular dependency.
+// Circular dependency means neither files can be fully defined without the other.
+// Now, .cpp files are compiled individually, so having the Game.h included here and not in the .h file avoids circular dependencies.
+#include "Game.h"                          
 #include "Monster_Generator.h"
 #include <iostream>
 #include <vector>
