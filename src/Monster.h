@@ -15,8 +15,10 @@ Monsters will have five stats.
     Reward  (Reward is amount of coin the player wins for eliminating the monster)
 Monster also has a m_stCurrentPathIndex member variable that keeps track of the index of its current tile it is on.
 
+Base monster stat - Level 1, Health 100, Speed 100.0f, Strength 10, Reward 20
+
 There are ___ classes of monsters
-    Average monster - Speed +0, Health +0, Strength +0, Wave strength +0, reward +0
+    Normal monster - Speed +0, Health +0, Strength +0, Wave strength +0, reward +0
     Rogue monster - Speed +1, Health -1, Strength +1, Wave strength +0, reward +1
     Tank monster - Speed -2, Health +3, Strength +2, Wave strength -1, reward +2
     Swarm monster - Speed +2, Health -2, Strength -2, Wave strength +2, reward -2
@@ -37,7 +39,27 @@ class Monster : public Entity
 public:
     Monster();
     ~Monster();
-    
+
+    enum class Type
+    {
+        Normal, 
+        Rogue,
+        Tank,
+        Swarm,
+        Elite
+    };
+
+private:
+    struct BaseStats
+    {
+        int level = 1;
+        int health = 100;
+        float speed = 100.f;
+        int strength = 10;
+        int reward = 20;
+    };
+
+public:
     size_t GetCurrentPathIndex()
     {
         return m_stCurrentPathIndex;
@@ -105,7 +127,6 @@ private:
     int m_iLevel;
     int m_iStrength;                           // Determines the rate that the monster steals coin from the player
     int m_iReward;
-    /////// add monster type, levels, etc
 };
 
 #endif
