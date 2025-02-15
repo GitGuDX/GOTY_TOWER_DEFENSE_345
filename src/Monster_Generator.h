@@ -37,7 +37,7 @@ class MonsterGenerator
 {
 public:
     // Constructor initializes base number of monsters and their increase rate per level
-    MonsterGenerator(int baseMonsters, int monsterIncreaseRate);
+    MonsterGenerator(int baseMonsters, int monsterSpawnRate);
 
     enum class Type
     {
@@ -48,30 +48,32 @@ public:
         Elite
     };
 
+    // Create monster according to their type and level
+
     // Generate a new monster if needed, pass Game instance as reference
     void generateMonster(Game& game);
 
 private:
     struct BaseStats
     {
-        int level = 1;
-        int health = 100;
-        float speed = 100.f;
-        int strength = 10;
-        int reward = 20;
+        int iLevel = 1;
+        int iHealth = 100;
+        float fSpeed = 100.f;
+        int iStrength = 10;
+        int iReward = 20;
     };
 
     struct StatsLevelUpRate
     {
-        float healthLevelUpRate = 1.05f;
-        float speedLevelUpRate = 1.03f;
-        float strengthLevelUpRate = 1.03f;
-        float rewardLevelUpRate = 1.02f;
+        float fHealthLevelUpRate = 1.05f;
+        float fSpeedLevelUpRate = 1.03f;
+        float fStrengthLevelUpRate = 1.03f;
+        float fRewardLevelUpRate = 1.02f;
     };
 
-    int m_BaseMonsters;
-    int m_MonsterIncreaseRate;
-    int m_CurrentMonsterIndex;  // To track how many monsters have been generated for this wave
+    int m_iBaseMonsters;
+    int m_iMonsterSpawnRate;
+    int m_iCurrentMonsterIndex;  // To track how many monsters have been generated for this wave
 };
 
 

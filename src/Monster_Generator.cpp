@@ -8,8 +8,8 @@
 #include <iostream>
 #include <vector>
 
-MonsterGenerator::MonsterGenerator(int baseMonsters, int monsterIncreaseRate)
-    : m_BaseMonsters(baseMonsters), m_MonsterIncreaseRate(monsterIncreaseRate), m_CurrentMonsterIndex(0)
+MonsterGenerator::MonsterGenerator(int baseMonsters, int monsterSpawnRate)
+    : m_iBaseMonsters(baseMonsters), m_iMonsterSpawnRate(monsterSpawnRate), m_iCurrentMonsterIndex(0)
 {
 }
 
@@ -17,10 +17,10 @@ MonsterGenerator::MonsterGenerator(int baseMonsters, int monsterIncreaseRate)
 void MonsterGenerator::generateMonster(Game& game)          
 {
     /////// Logic for generating monsters according to the game level
-    int numMonsters = m_BaseMonsters + game.m_iCurrentLevel * m_MonsterIncreaseRate;
+    int numMonsters = m_iBaseMonsters + game.m_iCurrentLevel * m_iMonsterSpawnRate;
 
     // Check if we have any monsters left to spawn then generate a monster if true
-    if (m_CurrentMonsterIndex < numMonsters) {
+    if (m_iCurrentMonsterIndex < numMonsters) {
         Monster newMonster;
         newMonster.SetTexture(game.m_MonsterTexture);
         newMonster.SetScale(sf::Vector2f(0.06f, 0.06f));
@@ -34,6 +34,6 @@ void MonsterGenerator::generateMonster(Game& game)
         newMonster.SetSpeed(100.f);
         newMonster.SetCurrentPathIndex(0);
         game.m_aMonstersQueue.emplace_back(newMonster);
-        m_CurrentMonsterIndex++;
+        m_iCurrentMonsterIndex++;
     }
 }
