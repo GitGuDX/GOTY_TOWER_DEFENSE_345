@@ -82,8 +82,13 @@ public:
         return m_Sprite.getOrigin();
     }
 
+    
+
 public:
     Sprite m_Sprite;
+	sf::Vector2f m_Direction;  // Store initial direction
+
+  
    
 };
 

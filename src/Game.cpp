@@ -1,4 +1,3 @@
-
 // NOTE: When path creation is completed, press t on the keyboard to go to play mode
 
 #include "Game.h"
@@ -21,14 +20,17 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
     // Monster generator initiliazed with base number of monsters and their increase rate per level                
     , m_MonsterGenerator(1, 2)
-    , m_iCurrentLevel(1)                                                                                                             
+    , m_iCurrentLevel(1)
+    ,m_AxeTemplate()                                                                                                             
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
     m_Window.setVerticalSyncEnabled(true);
 
+    
     // Render Initial SetUp assets
     LoadInitialSetUpAssets(); 
+
 }
 
 Game::~Game()
@@ -78,7 +80,8 @@ void Game::Run()
             }
             
             UpdateMonsters();
-
+            UpdateTowers();
+            UpdateAxes();
             DrawPlayMode();
             break;
         }
@@ -94,7 +97,7 @@ void Game::Run()
 
 void Game::LoadInitialSetUpAssets()
 {
-    m_Font.loadFromFile("../Fonts/Kreon-Medium.ttf");
+    m_Font.loadFromFile("Fonts/Kreon-Medium.ttf");
     
     // Initialize "Enter Size" text
     m_EnterSizeText.setFont(m_Font);
@@ -147,14 +150,14 @@ void Game::LoadInitialSetUpAssets()
     m_HeightSizeInput.setPosition(InputBoxHeight.getPosition().x - InputBoxHeight.getSize().x/2 + 3, InputBoxHeight.getPosition().y + 1);
 
     // Initialize submit button and store it in the m_abuttonboxes array
-    m_SubmitButtonTexture.loadFromFile("../Images/placeholder_play_button.png");                    // placeholder image. Change button image
+    m_SubmitButtonTexture.loadFromFile("Images/placeholder_play_button.png");                    // placeholder image. Change button image
     Sprite submitButton(m_SubmitButtonTexture);
     submitButton.setScale(Vector2f(5.f, 5.f));
     submitButton.setOrigin(m_SubmitButtonTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
     submitButton.setPosition(Vector2f(m_vWindowSize.x/2,m_vWindowSize.y*2/3));
     m_aButtonBoxes.emplace_back(submitButton);
     //Initialise submit button text
-    m_SubmitButtonPressedTexture.loadFromFile("../Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
     Sprite submitButtonPressed(m_SubmitButtonPressedTexture);
     submitButtonPressed.setScale(Vector2f(5.f, 5.f));
     submitButtonPressed.setOrigin(m_SubmitButtonPressedTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
@@ -165,10 +168,10 @@ void Game::LoadInitialSetUpAssets()
 void Game::LoadMapEditorAssets()
 {
     // Map editor mode assets
-    m_GrassTexture.loadFromFile("../Images/grass_Tile.png");
-    m_PathTexture.loadFromFile("../Images/path_Tile.png");
-    m_EntryTileTexture.loadFromFile("../Images/entry_Zone_Tile.png");
-    m_ExitTileTexture.loadFromFile("../Images/exit_Zone_Tile.png");
+    m_GrassTexture.loadFromFile("Images/grass_Tile.png");
+    m_PathTexture.loadFromFile("Images/path_Tile.png");
+    m_EntryTileTexture.loadFromFile("Images/entry_Zone_Tile.png");
+    m_ExitTileTexture.loadFromFile("Images/exit_Zone_Tile.png");
 
     // Create grass tiles and store them in a 2D array. The position of the item in the array correspond to the position of the tile in the game
     // (e.g. tile at [0][0] is displayed at the top left corner) 
@@ -241,7 +244,14 @@ void Game::LoadMapEditorAssets()
 void Game::LoadPlayModeAssets()
 {
     // Load monster texture
-    m_MonsterTexture.loadFromFile("../Images/monster_1.png");
+    m_MonsterTexture.loadFromFile("Images/monster_1.png");
+    m_TowerTexture.loadFromFile("Images/tower.png");
+    m_TowerTexture.setSmooth(true);
+    m_AxeTexture.loadFromFile("Images/Axe.png");
+	m_AxeTemplate.SetTexture(m_AxeTexture);
+	m_AxeTemplate.SetScale(sf::Vector2f(0.05, 0.05));
+	m_AxeTemplate.SetOrigin(sf::Vector2f(8, 8));
+
 
 }
 
@@ -319,6 +329,8 @@ void Game::HandleInput()
                 }
                 }
             }
+
+
         }
         // Handle inputs for Map Editor Mode //
         if (m_eGameMode == MapEditorMode)
@@ -366,7 +378,7 @@ void Game::HandleInput()
             // Enable dragging mouse for linking path
             if (event.type == sf::Event::MouseMoved && m_eCurrentEditState == PathState)
             {
-                std::cout << "Number of path tiles created: " << m_aPath.size() <<'\n';
+                //std::cout << "Number of path tiles created: " << m_aPath.size() <<'\n';
                 if (m_IsPathingMousePressed && m_eCurrentEditState == PathState)
                 {
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
@@ -401,24 +413,60 @@ void Game::HandleInput()
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
+                   // std::cout << "[DEBUG] " << std::endl;
+
                     m_IsPathingMousePressed = false;
                 }
             }
             //// For test. 
             // In normal game, user should be allowed to place towers then press play button to start game
             static bool bTWasPressedLastUpdate = false;
-        	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-        	{
-        		if (!bTWasPressedLastUpdate)
-        		{
-        			m_eGameMode = PlayMode;
-        		}
-        		bTWasPressedLastUpdate = true;
-        	}
-        	else
-        	{
-        		bTWasPressedLastUpdate = false;
-        	}
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+            {
+             //   std::cout << "one of the keys was pressed! " << std::endl;
+                if (!bTWasPressedLastUpdate)
+                {
+                 //   std::cout << "play mode activated" << std::endl;
+                    m_eGameMode = PlayMode;
+                }
+                bTWasPressedLastUpdate = true;
+            }
+            else
+            {
+                bTWasPressedLastUpdate = false;
+            }
+        }
+
+        if (m_eGameMode == PlayMode) {
+            if (event.type == Event::MouseButtonPressed) {
+                if (event.mouseButton.button == Mouse::Left) {
+                    Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
+                    Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
+                    std::cout << "Click detected at: " << clickedPos.x << "," << clickedPos.y << "\n";
+                std::cout << "Snapped to grid: " << gridPos.x << "," << gridPos.y << "\n";
+        
+                Vector2i tileIndex = tileCenterPosToIndex(gridPos);
+                std::cout << "Tile index: " << tileIndex.x << "," << tileIndex.y << "\n";
+        
+        // Validate tile bounds
+                if (tileIndex.x >= 0 && tileIndex.x < m_vGridSize.x && 
+                 tileIndex.y >= 0 && tileIndex.y < m_vGridSize.y) {
+            // ...existing placement code...
+                    } else {
+                std::cout << "Invalid tile position!\n";
+         }
+                    if (m_aTiles[tileIndex.y][tileIndex.x].getType() == Tile::Type::Grass) {
+                        Tower newTower;
+                        newTower.SetTexture(m_TowerTexture);
+                        newTower.SetScale(Vector2f(1.0f, 1.0f));  // Adjust scale to fit one tile
+                        newTower.SetTextureRect(sf::IntRect(0, 0, 50, 50));
+                        Vector2f towerOrigin(m_iTileSize / 2.0f, m_iTileSize / 2.0f);  // Center point of tower
+                        newTower.SetOrigin(towerOrigin);
+                        newTower.SetPosition(gridPos);
+                        m_aTowers.push_back(newTower);
+                    }
+                }
+            }
         }
         
     }
@@ -530,6 +578,82 @@ void Game::UpdateMonsters()
     
 }
 
+void Game::UpdateTowers()
+{
+    static float shootCooldown = 0.0f;  // Track time since last shot
+
+    // Update cooldown timer
+    shootCooldown -= m_DeltaTime.asSeconds();
+    for (Entity& tower : m_aTowers)
+    {
+        if (shootCooldown <= 0.0f) {
+            Entity* pNearestEnemy = nullptr;
+            float fShortestDistance  = std::numeric_limits<float>::max();
+            for  (Entity& monster : m_aMonstersQueue)
+            {
+                sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
+                float fDistance = MathHelpers::Length(vTowerToMonster);
+                if (fDistance < fShortestDistance)
+                {
+                    fShortestDistance = fDistance;
+                    pNearestEnemy = &monster;
+                }
+                
+            }
+    
+            if (pNearestEnemy != nullptr && fShortestDistance < 300.0f) // 300 is attack range
+            {
+                // Create and setup new axe
+                Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);
+                newAxe.SetPosition(tower.GetPosition());
+                
+                // Calculate direction to enemy
+                sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
+                vTowerToMonster = MathHelpers::getNormalize(vTowerToMonster);
+                newAxe.m_Direction = vTowerToMonster;// Store initial direction
+
+                // Debug: Print axe creation and movement info
+                std::cout << "Axe created at: (" << tower.GetPosition().x << "," << tower.GetPosition().y << ")\n";
+                std::cout << "Target monster at: (" << pNearestEnemy->GetPosition().x << "," 
+                          << pNearestEnemy->GetPosition().y << ")\n";
+                std::cout << "Direction vector: (" << vTowerToMonster.x << "," << vTowerToMonster.y << ")\n";
+                std::cout << "Movement speed: " << 500.0f * m_DeltaTime.asSeconds() << "\n";
+                
+                // Move axe in that direction
+              //  newAxe.Move(vTowerToMonster * 500.0f * m_DeltaTime.asSeconds());
+                shootCooldown = 3.0f;  // Reset cooldown timer
+                
+                // Debug: Print new axe position after movement
+                std::cout << "Axe new position: (" << newAxe.GetPosition().x << "," 
+                          << newAxe.GetPosition().y << ")\n";
+                std::cout << "Total axes in game: " << m_Axes.size() << "\n\n";
+            }
+        }
+    }
+    // Update tower logic
+}
+
+void Game::UpdateAxes()
+{
+    for (auto it = m_Axes.begin(); it != m_Axes.end();)
+    {
+        // Use stored direction to move axe
+        it->Move(it->m_Direction * 1000.0f * m_DeltaTime.asSeconds());
+        
+        // Remove if off screen
+        sf::Vector2f pos = it->GetPosition();
+        if (pos.x < 0 || pos.x > m_vWindowSize.x || 
+            pos.y < 0 || pos.y > m_vWindowSize.y)
+        {
+            it = m_Axes.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+
 void Game::DrawInitialSetUp()
 {
     // Erases everything that was drawn last frame
@@ -617,6 +741,17 @@ void Game::DrawPlayMode()
         }
     }
 
+    for (Tower& tower : m_aTowers) {
+        m_Window.draw(tower);
+        //tower.DebugPrint();
+
+    }
+
+    for (const Entity& axe : m_Axes)
+    {
+        m_Window.draw(axe);
+    }
+
     ////// Draw test monster
     for (Monster& monster : m_aMonstersQueue)
     {
@@ -625,6 +760,8 @@ void Game::DrawPlayMode()
             m_Window.draw(monster);
         }
     }
+
+    
     
 
     m_Window.display();
