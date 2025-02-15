@@ -46,6 +46,22 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "__bits": "cpp",
+        "__config": "cpp",
+        "__debug": "cpp",
+        "cstring": "cpp",
+        "ios": "cpp",
+        "__bit_reference": "cpp",
+        "__hash_table": "cpp",
+        "__node_handle": "cpp",
+        "__split_buffer": "cpp",
+        "__tuple": "cpp",
+        "__verbose_abort": "cpp",
+        "ratio": "cpp",
+        "variant": "cpp",
+        "__nullptr": "cpp",
+        "__string": "cpp",
+        "filesystem": "cpp"
     }
 }
