@@ -2,6 +2,7 @@
 #define MONSTER_H
 
 #include "Entity.h"
+#include "Monster_Generator.h"
 
 ////////// Monster Class ////////////
 /*
@@ -15,8 +16,6 @@ Monsters will have five stats.
     Reward  (Reward is amount of coin the player wins for eliminating the monster)
 Monster also has a m_stCurrentPathIndex member variable that keeps track of the index of its current tile it is on.
 */
-
-class MonsterGenerator;
 
 class Monster : public Entity
 {
