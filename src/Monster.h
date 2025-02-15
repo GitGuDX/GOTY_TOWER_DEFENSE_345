@@ -14,25 +14,9 @@ Monsters will have five stats.
     Strength (Strength impacts the amount of coin it steals from the player once it reaches the exit tile)
     Reward  (Reward is amount of coin the player wins for eliminating the monster)
 Monster also has a m_stCurrentPathIndex member variable that keeps track of the index of its current tile it is on.
-
-Base monster stat - Level 1, Health 100, Speed 100.0f, Strength 10, Reward 20
-
-There are ___ classes of monsters
-    Normal monster - Speed +0, Health +0, Strength +0, Wave strength +0, reward +0
-    Rogue monster - Speed +1, Health -1, Strength +1, Wave strength +0, reward +1
-    Tank monster - Speed -2, Health +3, Strength +2, Wave strength -1, reward +2
-    Swarm monster - Speed +2, Health -2, Strength -2, Wave strength +2, reward -2
-    Elite Monster - Speed +2, Health +2, Strength +2, Wave strength - 3, reward +3
-    ... anything else?
-
-For every level increase, all of its stats increase. At the rate of what?
-Each wave will consist of only one class ... for now.
-All classes of monster of the same level must have been spawned before the next level monsters are introduced
-The order of waves based on class can be randomized.
-E.g.) 
-    wave 1 (Average - lvl 1) -> wave 2 (Tank - lvl 1) -> wave 3 (Rogue - lvl 1) -> wave 4 (Swarm - lvl 1) ->
-    wave 5 (Tank - lvl 2) -> wave 6 (Swarm - lvl 2) -> wave 7 (Rogue - lvl 2) -> wave 8 (Average - lvl 2) -> etc.
 */
+
+class MonsterGenerator;
 
 class Monster : public Entity
 {
@@ -40,24 +24,6 @@ public:
     Monster();
     ~Monster();
 
-    enum class Type
-    {
-        Normal, 
-        Rogue,
-        Tank,
-        Swarm,
-        Elite
-    };
-
-private:
-    struct BaseStats
-    {
-        int level = 1;
-        int health = 100;
-        float speed = 100.f;
-        int strength = 10;
-        int reward = 20;
-    };
 
 public:
     size_t GetCurrentPathIndex()
@@ -90,6 +56,11 @@ public:
         return m_iReward;
     }
 
+    MonsterGenerator::Type GetMonsterType()
+    {
+        return m_eMonsterType;
+    }
+
     void SetCurrentPathIndex(size_t newIndex)
     {
         m_stCurrentPathIndex = newIndex;
@@ -120,6 +91,11 @@ public:
         m_iReward = newReward;
     }
 
+    void SetMonsterType(MonsterGenerator::Type newType)
+    {
+        m_eMonsterType = newType;
+    }
+
 private:
     size_t m_stCurrentPathIndex;           // index of the monster's current path
     int m_iHealth;
@@ -127,6 +103,7 @@ private:
     int m_iLevel;
     int m_iStrength;                           // Determines the rate that the monster steals coin from the player
     int m_iReward;
+    MonsterGenerator::Type m_eMonsterType;
 };
 
 #endif
