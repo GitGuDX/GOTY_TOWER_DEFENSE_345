@@ -7,17 +7,6 @@ using namespace sf;
 namespace MathHelpers
 {
 
-    static sf::Vector2f Normalize(const sf::Vector2f& rVector)
-    {
-        if (rVector.x == 0.0f && rVector.y == 0.0f)
-        {
-			return rVector;
-		}
-
-        float fLength = Length(rVector);
-        sf::Vector2f vNormalizedVector(rVector.x / fLength, rVector.y / fLength);
-        return vNormalizedVector;
-    }
 
     // returns the center of nearest tile when given position
     sf::Vector2f getNearestTileCenterPosition(sf::Vector2f pos, int tileSize) {
@@ -49,5 +38,7 @@ namespace MathHelpers
         float fLength = sqrt(rVector.x * rVector.x + rVector.y * rVector.y);
         return fLength;
     }
+
+   
 
 }

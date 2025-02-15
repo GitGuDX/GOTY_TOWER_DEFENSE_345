@@ -56,6 +56,7 @@ private:
     void UpdateTiles();
     void UpdateMonsters();
     void UpdateTowers();
+    void UpdateAxes();
 
     void DrawInitialSetUp();
     void DrawMapEditorMode();

@@ -81,6 +81,7 @@ void Game::Run()
             
             UpdateMonsters();
             UpdateTowers();
+            UpdateAxes();
             DrawPlayMode();
             break;
         }
@@ -248,7 +249,7 @@ void Game::LoadPlayModeAssets()
     m_TowerTexture.setSmooth(true);
     m_AxeTexture.loadFromFile("Images/Axe.png");
 	m_AxeTemplate.SetTexture(m_AxeTexture);
-	m_AxeTemplate.SetScale(sf::Vector2f(5, 5));
+	m_AxeTemplate.SetScale(sf::Vector2f(0.05, 0.05));
 	m_AxeTemplate.SetOrigin(sf::Vector2f(8, 8));
 
 
@@ -579,40 +580,78 @@ void Game::UpdateMonsters()
 
 void Game::UpdateTowers()
 {
+    static float shootCooldown = 0.0f;  // Track time since last shot
+
+    // Update cooldown timer
+    shootCooldown -= m_DeltaTime.asSeconds();
     for (Entity& tower : m_aTowers)
     {
-        Entity* pNearestEnemy = nullptr;
-        float fShortestDistance  = std::numeric_limits<float>::max();
-        for  (Entity& monster : m_aMonstersQueue)
-        {
-            sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
-            float fDistance = MathHelpers::Length(vTowerToMonster);
-            if (fDistance < fShortestDistance)
+        if (shootCooldown <= 0.0f) {
+            Entity* pNearestEnemy = nullptr;
+            float fShortestDistance  = std::numeric_limits<float>::max();
+            for  (Entity& monster : m_aMonstersQueue)
             {
-                fShortestDistance = fDistance;
-                pNearestEnemy = &monster;
+                sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
+                float fDistance = MathHelpers::Length(vTowerToMonster);
+                if (fDistance < fShortestDistance)
+                {
+                    fShortestDistance = fDistance;
+                    pNearestEnemy = &monster;
+                }
+                
             }
-            Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);
-            newAxe.SetPosition(tower.GetPosition());
-            vTowerToMonster = MathHelpers::Normalize(vTowerToMonster);
-            newAxe.SetVelocity(vTowerToMonster * 500.0f);
-        }
+    
+            if (pNearestEnemy != nullptr && fShortestDistance < 300.0f) // 300 is attack range
+            {
+                // Create and setup new axe
+                Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);
+                newAxe.SetPosition(tower.GetPosition());
+                
+                // Calculate direction to enemy
+                sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
+                vTowerToMonster = MathHelpers::getNormalize(vTowerToMonster);
+                newAxe.m_Direction = vTowerToMonster;// Store initial direction
 
-        // Debug print to show closest monster info
-        if (pNearestEnemy != nullptr)
-        {
-            std::cout << "Tower at (" << tower.GetPosition().x << "," << tower.GetPosition().y 
-                      << ") -> Nearest monster at (" << pNearestEnemy->GetPosition().x 
-                      << "," << pNearestEnemy->GetPosition().y 
-                      << ") Distance: " << fShortestDistance << "\n";
-        }
-        else
-        {
-            std::cout << "Tower at (" << tower.GetPosition().x << "," << tower.GetPosition().y 
-                      << ") -> No monsters in range\n";
+                // Debug: Print axe creation and movement info
+                std::cout << "Axe created at: (" << tower.GetPosition().x << "," << tower.GetPosition().y << ")\n";
+                std::cout << "Target monster at: (" << pNearestEnemy->GetPosition().x << "," 
+                          << pNearestEnemy->GetPosition().y << ")\n";
+                std::cout << "Direction vector: (" << vTowerToMonster.x << "," << vTowerToMonster.y << ")\n";
+                std::cout << "Movement speed: " << 500.0f * m_DeltaTime.asSeconds() << "\n";
+                
+                // Move axe in that direction
+              //  newAxe.Move(vTowerToMonster * 500.0f * m_DeltaTime.asSeconds());
+                shootCooldown = 3.0f;  // Reset cooldown timer
+                
+                // Debug: Print new axe position after movement
+                std::cout << "Axe new position: (" << newAxe.GetPosition().x << "," 
+                          << newAxe.GetPosition().y << ")\n";
+                std::cout << "Total axes in game: " << m_Axes.size() << "\n\n";
+            }
         }
     }
     // Update tower logic
+}
+
+void Game::UpdateAxes()
+{
+    for (auto it = m_Axes.begin(); it != m_Axes.end();)
+    {
+        // Use stored direction to move axe
+        it->Move(it->m_Direction * 1000.0f * m_DeltaTime.asSeconds());
+        
+        // Remove if off screen
+        sf::Vector2f pos = it->GetPosition();
+        if (pos.x < 0 || pos.x > m_vWindowSize.x || 
+            pos.y < 0 || pos.y > m_vWindowSize.y)
+        {
+            it = m_Axes.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }
 
 void Game::DrawInitialSetUp()
@@ -704,8 +743,13 @@ void Game::DrawPlayMode()
 
     for (Tower& tower : m_aTowers) {
         m_Window.draw(tower);
-        tower.DebugPrint();
+        //tower.DebugPrint();
 
+    }
+
+    for (const Entity& axe : m_Axes)
+    {
+        m_Window.draw(axe);
     }
 
     ////// Draw test monster
