@@ -1,8 +1,10 @@
 # Compiled source #
 ###################
 *.exe
+*.sh
 
 # Directory #
 #############
 /backup/
 /build/
+/.vscode/
