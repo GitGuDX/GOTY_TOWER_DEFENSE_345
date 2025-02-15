@@ -104,12 +104,14 @@ private:
     Texture m_GrassTexture;
     Texture m_PathTexture;
     Texture m_TowerTexture;
+    Texture m_AxeTexture;
+
+    Entity m_AxeTemplate;
 
     std::vector<std::vector<Tile>> m_aTiles;
     std::vector<Tower> m_aTowers;
-    Entity m_AxeTemplate;
 	std::vector<Entity> m_Axes;
-    Texture m_AxeTexture;
+    
     
     std::array<RectangleShape, 8> m_ahighlights;
 

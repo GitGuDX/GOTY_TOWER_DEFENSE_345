@@ -1,10 +1,13 @@
-// NOTE: When path creation is completed, press t on the keyboard to go to play mode
+// NOTE: When path creation is completed, press enter on the keyboard to go to play mode
+
+#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 
 #include "Game.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <limits>
 
 #include "Math_Helpers.h"
 
@@ -18,10 +21,10 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
+    , m_AxeTemplate()  
     // Monster generator initiliazed with base number of monsters and their increase rate per level                
     , m_MonsterGenerator(1, 2)
-    , m_iCurrentLevel(1)
-    ,m_AxeTemplate()                                                                                                             
+    , m_iCurrentLevel(1)                                                                                                              
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
@@ -97,7 +100,20 @@ void Game::Run()
 
 void Game::LoadInitialSetUpAssets()
 {
-    m_Font.loadFromFile("Fonts/Kreon-Medium.ttf");
+    #ifdef LINUX
+    m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf");  
+    m_SubmitButtonTexture.loadFromFile("../src/Images/placeholder_play_button.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("../src/Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+    #endif
+    #ifdef MAC
+    m_Font.loadFromFile("Fonts/Kreon-Medium.ttf");    
+    m_SubmitButtonTexture.loadFromFile("Images/placeholder_play_button.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+    #endif
+    #ifdef WINDOW
+    // add for window
+    #endif
+    
     
     // Initialize "Enter Size" text
     m_EnterSizeText.setFont(m_Font);
@@ -150,14 +166,12 @@ void Game::LoadInitialSetUpAssets()
     m_HeightSizeInput.setPosition(InputBoxHeight.getPosition().x - InputBoxHeight.getSize().x/2 + 3, InputBoxHeight.getPosition().y + 1);
 
     // Initialize submit button and store it in the m_abuttonboxes array
-    m_SubmitButtonTexture.loadFromFile("Images/placeholder_play_button.png");                    // placeholder image. Change button image
     Sprite submitButton(m_SubmitButtonTexture);
     submitButton.setScale(Vector2f(5.f, 5.f));
     submitButton.setOrigin(m_SubmitButtonTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
     submitButton.setPosition(Vector2f(m_vWindowSize.x/2,m_vWindowSize.y*2/3));
     m_aButtonBoxes.emplace_back(submitButton);
     //Initialise submit button text
-    m_SubmitButtonPressedTexture.loadFromFile("Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
     Sprite submitButtonPressed(m_SubmitButtonPressedTexture);
     submitButtonPressed.setScale(Vector2f(5.f, 5.f));
     submitButtonPressed.setOrigin(m_SubmitButtonPressedTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
@@ -168,10 +182,21 @@ void Game::LoadInitialSetUpAssets()
 void Game::LoadMapEditorAssets()
 {
     // Map editor mode assets
+    #ifdef LINUX
+    m_GrassTexture.loadFromFile("../src/Images/grass_Tile.png");
+    m_PathTexture.loadFromFile("../src/Images/path_Tile.png");
+    m_EntryTileTexture.loadFromFile("../src/Images/entry_Zone_Tile.png");
+    m_ExitTileTexture.loadFromFile("../src/Images/exit_Zone_Tile.png");
+    #endif
+    #ifdef MAC
     m_GrassTexture.loadFromFile("Images/grass_Tile.png");
     m_PathTexture.loadFromFile("Images/path_Tile.png");
     m_EntryTileTexture.loadFromFile("Images/entry_Zone_Tile.png");
     m_ExitTileTexture.loadFromFile("Images/exit_Zone_Tile.png");
+    #endif
+    #ifdef WINDOW
+    // add for window
+    #endif
 
     // Create grass tiles and store them in a 2D array. The position of the item in the array correspond to the position of the tile in the game
     // (e.g. tile at [0][0] is displayed at the top left corner) 
@@ -244,10 +269,21 @@ void Game::LoadMapEditorAssets()
 void Game::LoadPlayModeAssets()
 {
     // Load monster texture
+    #ifdef LINUX
+    m_MonsterTexture.loadFromFile("../src/Images/monster_1.png");
+    m_TowerTexture.loadFromFile("../src/Images/tower.png");
+    m_AxeTexture.loadFromFile("../src/Images/Axe.png");
+    #endif
+    #ifdef MAC
     m_MonsterTexture.loadFromFile("Images/monster_1.png");
     m_TowerTexture.loadFromFile("Images/tower.png");
-    m_TowerTexture.setSmooth(true);
     m_AxeTexture.loadFromFile("Images/Axe.png");
+    #endif
+    #ifdef WINDOW
+    // add for window
+    #endif
+
+    m_TowerTexture.setSmooth(true);
 	m_AxeTemplate.SetTexture(m_AxeTexture);
 	m_AxeTemplate.SetScale(sf::Vector2f(0.05, 0.05));
 	m_AxeTemplate.SetOrigin(sf::Vector2f(8, 8));
@@ -604,8 +640,11 @@ void Game::UpdateTowers()
             if (pNearestEnemy != nullptr && fShortestDistance < 300.0f) // 300 is attack range
             {
                 // Create and setup new axe
-                Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);
-                newAxe.SetPosition(tower.GetPosition());
+                //Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);      
+                Entity newAxe;                                              // Create an axe entity
+                newAxe.SetTexture(m_AxeTexture);                            // give it a texture
+                newAxe.SetPosition(tower.GetPosition());                    // set its position
+                                                                            // Set scale, origin, speed?
                 
                 // Calculate direction to enemy
                 sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
