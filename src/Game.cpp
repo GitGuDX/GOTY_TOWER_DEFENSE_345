@@ -499,6 +499,7 @@ void Game::HandleInput()
                         Vector2f towerOrigin(m_iTileSize / 2.0f, m_iTileSize / 2.0f);  // Center point of tower
                         newTower.SetOrigin(towerOrigin);
                         newTower.SetPosition(gridPos);
+                        newTower.SetRange(300.0f); // Can be different for different tower types
                         m_aTowers.push_back(newTower);
                     }
                 }
@@ -616,27 +617,28 @@ void Game::UpdateMonsters()
 
 void Game::UpdateTowers()
 {
-    static float shootCooldown = 0.0f;  // Track time since last shot
-
-    // Update cooldown timer
-    shootCooldown -= m_DeltaTime.asSeconds();
-    for (Entity& tower : m_aTowers)
+    for (Tower& tower : m_aTowers)
     {
-        if (shootCooldown <= 0.0f) {
+        // Update individual tower cooldown
+        tower.UpdateCooldown(m_DeltaTime.asSeconds());
+
+        if (tower.CanShoot()) {
             Entity* pNearestEnemy = nullptr;
             float fShortestDistance = std::numeric_limits<float>::max();
+            
+            // Find nearest monster within this tower's range
             for (Entity& monster : m_aMonstersQueue)
             {
                 sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
                 float fDistance = MathHelpers::Length(vTowerToMonster);
-                if (fDistance < fShortestDistance)
+                if (fDistance < fShortestDistance && fDistance < tower.GetRange())
                 {
                     fShortestDistance = fDistance;
                     pNearestEnemy = &monster;
                 }
             }
     
-            if (pNearestEnemy != nullptr && fShortestDistance < 300.0f) // 300 is attack range
+            if (pNearestEnemy != nullptr)
             {
                 // Create and setup new axe
                 Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);
@@ -645,9 +647,9 @@ void Game::UpdateTowers()
                 // Calculate direction to enemy
                 sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
                 vTowerToMonster = MathHelpers::getNormalize(vTowerToMonster);
-                newAxe.SetDirection(vTowerToMonster); // Store direction in axe
+                newAxe.SetDirection(vTowerToMonster);
                 
-                shootCooldown = 3.0f;  // Reset cooldown timer
+                tower.ResetCooldown(); // Reset this tower's cooldown
             }
         }
     }
