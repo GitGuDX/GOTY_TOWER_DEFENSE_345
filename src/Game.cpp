@@ -624,8 +624,8 @@ void Game::UpdateTowers()
     {
         if (shootCooldown <= 0.0f) {
             Entity* pNearestEnemy = nullptr;
-            float fShortestDistance  = std::numeric_limits<float>::max();
-            for  (Entity& monster : m_aMonstersQueue)
+            float fShortestDistance = std::numeric_limits<float>::max();
+            for (Entity& monster : m_aMonstersQueue)
             {
                 sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
                 float fDistance = MathHelpers::Length(vTowerToMonster);
@@ -634,55 +634,59 @@ void Game::UpdateTowers()
                     fShortestDistance = fDistance;
                     pNearestEnemy = &monster;
                 }
-                
             }
     
             if (pNearestEnemy != nullptr && fShortestDistance < 300.0f) // 300 is attack range
             {
                 // Create and setup new axe
-                //Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);      
-                Entity newAxe;                                              // Create an axe entity
-                newAxe.SetTexture(m_AxeTexture);                            // give it a texture
-                newAxe.SetPosition(tower.GetPosition());                    // set its position
-                                                                            // Set scale, origin, speed?
+                Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);
+                newAxe.SetPosition(tower.GetPosition());
                 
                 // Calculate direction to enemy
                 sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
                 vTowerToMonster = MathHelpers::getNormalize(vTowerToMonster);
-                newAxe.m_Direction = vTowerToMonster;// Store initial direction
-
-                // Debug: Print axe creation and movement info
-                std::cout << "Axe created at: (" << tower.GetPosition().x << "," << tower.GetPosition().y << ")\n";
-                std::cout << "Target monster at: (" << pNearestEnemy->GetPosition().x << "," 
-                          << pNearestEnemy->GetPosition().y << ")\n";
-                std::cout << "Direction vector: (" << vTowerToMonster.x << "," << vTowerToMonster.y << ")\n";
-                std::cout << "Movement speed: " << 500.0f * m_DeltaTime.asSeconds() << "\n";
+                newAxe.SetDirection(vTowerToMonster); // Store direction in axe
                 
-                // Move axe in that direction
-              //  newAxe.Move(vTowerToMonster * 500.0f * m_DeltaTime.asSeconds());
                 shootCooldown = 3.0f;  // Reset cooldown timer
-                
-                // Debug: Print new axe position after movement
-                std::cout << "Axe new position: (" << newAxe.GetPosition().x << "," 
-                          << newAxe.GetPosition().y << ")\n";
-                std::cout << "Total axes in game: " << m_Axes.size() << "\n\n";
             }
         }
     }
-    // Update tower logic
 }
 
 void Game::UpdateAxes()
 {
+    const float AXE_SPEED = 500.0f; // Adjust speed as needed
+    const float COLLISION_DISTANCE = 25.0f; // Adjust collision radius as needed
+
     for (auto it = m_Axes.begin(); it != m_Axes.end();)
     {
-        // Use stored direction to move axe
-        it->Move(it->m_Direction * 1000.0f * m_DeltaTime.asSeconds());
+        bool hitMonster = false;
         
-        // Remove if off screen
-        sf::Vector2f pos = it->GetPosition();
-        if (pos.x < 0 || pos.x > m_vWindowSize.x || 
-            pos.y < 0 || pos.y > m_vWindowSize.y)
+        // Move axe
+        it->Move(it->GetDirection() * AXE_SPEED * m_DeltaTime.asSeconds());
+        
+        // Check collision with monsters
+        for (auto& monster : m_aMonstersQueue)
+        {
+            sf::Vector2f diff = monster.GetPosition() - it->GetPosition();
+            float distance = MathHelpers::Length(diff);
+            
+            if (distance < COLLISION_DISTANCE)
+            {
+                std::cout << "Debug: Axe hit monster at position (" 
+                          << monster.GetPosition().x << ", " 
+                          << monster.GetPosition().y << ")" << std::endl;
+                hitMonster = true;
+                break;
+            }
+        }
+        
+        // Remove axe if it hit something or went off screen
+        if (hitMonster || 
+            it->GetPosition().x < 0 || 
+            it->GetPosition().x > m_vWindowSize.x ||
+            it->GetPosition().y < 0 || 
+            it->GetPosition().y > m_vWindowSize.y)
         {
             it = m_Axes.erase(it);
         }

@@ -82,7 +82,8 @@ public:
         return m_Sprite.getOrigin();
     }
 
-    
+    void SetDirection(sf::Vector2f direction) { m_Direction = direction; }
+    sf::Vector2f GetDirection() const { return m_Direction; }
 
 public:
     Sprite m_Sprite;
