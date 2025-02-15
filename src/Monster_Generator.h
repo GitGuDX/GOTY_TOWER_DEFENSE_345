@@ -12,15 +12,63 @@ class Game;                             // Forward declare Game class so Monster
 /////// Need to also cover what type of monster to generate (high hp, high speed, or both). Possibly through random choice while 
 /////// keeping the intigrity of increasing difficulty each level
 
+/*
+Base monster stat - Level 1, Health 100, Speed 100.0f, Strength 10, Reward 20
+
+There are ___ classes of monsters
+    Normal monster - Speed +0, Health +0, Strength +0, Wave strength +0, reward +0
+    Rogue monster - Speed +2, Health -2, Strength +2, Wave strength +0, reward +1
+    Tank monster - Speed -2, Health +5, Strength +2, Wave strength -1, reward +3
+    Swarm monster - Speed +3, Health -3, Strength -1, Wave strength +2, reward -3
+    Elite Monster - Speed +2, Health +4, Strength +3, Wave strength - 3, reward +5
+    ... anything else?
+
+For every level increase, all of its stats increase. At the rate of what?
+    Let's start with 5% increase in health, 3% increase in speed, 3% increase in strength, and 2% increase in reward.
+Each wave will consist of only one class ... for now.
+All classes of monster of the same level must have been spawned before the next level monsters are introduced
+The order of waves based on class can be randomized.
+E.g.) 
+    wave 1 (Average - lvl 1) -> wave 2 (Tank - lvl 1) -> wave 3 (Rogue - lvl 1) -> wave 4 (Swarm - lvl 1) ->
+    wave 5 (Tank - lvl 2) -> wave 6 (Swarm - lvl 2) -> wave 7 (Rogue - lvl 2) -> wave 8 (Average - lvl 2) -> etc.
+*/
+
 class MonsterGenerator
 {
 public:
     // Constructor initializes base number of monsters and their increase rate per level
     MonsterGenerator(int baseMonsters, int monsterIncreaseRate);
+
+    enum class Type
+    {
+        Normal, 
+        Rogue,
+        Tank,
+        Swarm,
+        Elite
+    };
+
     // Generate a new monster if needed, pass Game instance as reference
     void generateMonster(Game& game);
 
 private:
+    struct BaseStats
+    {
+        int level = 1;
+        int health = 100;
+        float speed = 100.f;
+        int strength = 10;
+        int reward = 20;
+    };
+
+    struct StatsLevelUpRate
+    {
+        float healthLevelUpRate = 1.05f;
+        float speedLevelUpRate = 1.03f;
+        float strengthLevelUpRate = 1.03f;
+        float rewardLevelUpRate = 1.02f;
+    };
+
     int m_BaseMonsters;
     int m_MonsterIncreaseRate;
     int m_CurrentMonsterIndex;  // To track how many monsters have been generated for this wave

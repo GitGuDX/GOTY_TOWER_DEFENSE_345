@@ -9,6 +9,7 @@
 #include "Tile.h"
 #include "Monster.h"
 #include "Monster_Generator.h"
+#include "Tower.h"
 
 using namespace sf;
 using namespace std;
@@ -55,6 +56,8 @@ private:
     void UpdateInitialPrompt();
     void UpdateTiles();
     void UpdateMonsters();
+    void UpdateTowers();
+    void UpdateAxes();
     void UpdateText();
     void UpdateUI();
 
@@ -103,8 +106,15 @@ private:
     Texture m_ExitTileTexture;
     Texture m_GrassTexture;
     Texture m_PathTexture;
+    Texture m_TowerTexture;
+    Texture m_AxeTexture;
+
+    Entity m_AxeTemplate;
 
     std::vector<std::vector<Tile>> m_aTiles;
+    std::vector<Tower> m_aTowers;
+	std::vector<Entity> m_Axes;
+    
     
     std::array<RectangleShape, 8> m_ahighlights;
 
@@ -124,6 +134,13 @@ private:
     Monster m_MonsterTemplate;
 
     std::vector<Monster> m_aMonstersQueue;
+
+    void DebugPrintGameState() const {
+        std::cout << "Game State:\n"
+                  << "Mode: " << m_eGameMode << "\n"
+                  << "Grid Size: " << m_vGridSize.x << "x" << m_vGridSize.y << "\n"
+                  << "Tower Count: " << m_aTowers.size() << "\n";
+    }
     
 
     friend class MonsterGenerator;                  // make MonsterGenerator friend of Game so that MonsterGenerator has access to Game class's private members
