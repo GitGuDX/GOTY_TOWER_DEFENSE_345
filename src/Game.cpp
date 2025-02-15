@@ -19,9 +19,9 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
-    // Monster generator initiliazed with base number of monsters and their increase rate per level                
+    // Monster generator initiliazed with base number of monsters and their increase rate per level
     , m_MonsterGenerator(1, 2)
-    , m_iCurrentLevel(1)                                                                                                             
+    , m_iCurrentLevel(1)
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
@@ -57,12 +57,13 @@ void Game::Run()
         {
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode) {
-                m_Window.create(VideoMode(m_vWindowSize.x, m_vWindowSize.y), "New Game");
+                m_Window.create(VideoMode(m_vWindowSize.x + 300, m_vWindowSize.y), "New Game");
                 LoadMapEditorAssets(); 
                 m_ePrevGameMode = MapEditorMode;
             }
 
             UpdateTiles();
+            UpdateUI();
             
             DrawMapEditorMode();
             break;
@@ -78,6 +79,7 @@ void Game::Run()
             }
             
             UpdateMonsters();
+            UpdateUI();
 
             DrawPlayMode();
             break;
@@ -329,9 +331,8 @@ void Game::HandleInput()
             {
                 sf::Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
                 sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
-                if (event.mouseButton.button == sf::Mouse::Left) 
+                if (event.mouseButton.button == sf::Mouse::Left && clickedPos.x <= m_vWindowSize.x && clickedPos.y <= m_vWindowSize.y)
                 {
-                    
                     // If EntryState, check if the tile clicked is from the edge tiles then save the clicked tile as the entry tile then append is to the arrays
                     if (m_eCurrentEditState == EntryState)
                     {
@@ -361,7 +362,6 @@ void Game::HandleInput()
                         m_IsPathingMousePressed = true;
                     }
                 }
-
             }
             // Enable dragging mouse for linking path
             if (event.type == sf::Event::MouseMoved && m_eCurrentEditState == PathState)
@@ -379,7 +379,6 @@ void Game::HandleInput()
                             m_aPath.push_back(m_vExitTile);
                             m_sfPathLines.append(sf::Vertex(m_vExitTile, sf::Color::Red));
                             m_eCurrentEditState = FinishedPathingState;
-                             
                         }
                         // Prevent backtracking
                         else if (m_aPath.size() > 1 && m_aPath[m_aPath.size() - 2] == gridPos)
@@ -404,6 +403,44 @@ void Game::HandleInput()
                     m_IsPathingMousePressed = false;
                 }
             }
+
+
+
+
+            
+                if (event.mouseButton.button == sf::Mouse::Left && m_eCurrentEditState == FinishedPathingState) {
+                    bool isDragging = false;
+                    sf::Vector2f offset;  // Offset between the mouse and sprite position
+                    Entity* draggedTile = nullptr;  // To store the reference of the dragged tile
+
+                    // Check if the mouse click is inside any tile
+                    for (auto& tile : a_tower) {
+                        if (tile.GetSpriteNonConst().getGlobalBounds().contains(m_Window.mapPixelToCoords({event.mouseButton.x, event.mouseButton.y}))) {
+                            std::cout << "\nCLICKED\n";
+                            isDragging = true;
+                            draggedTile = &tile;  // Store the reference to the clicked tile
+                            offset = tile.GetPosition() - m_Window.mapPixelToCoords({event.mouseButton.x, event.mouseButton.y});  // Calculate offset
+                            break;
+                        }
+                    }
+
+                    // Handle mouse release event
+                    if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+                        std::cout << "\nUNCLICKED\n";
+                        isDragging = false;
+                        draggedTile = nullptr;  // Reset dragged tile when mouse is released
+                    }
+
+                    // If dragging, update the position of the dragged tile
+                    if (isDragging && draggedTile != nullptr) {
+                        draggedTile->GetSpriteNonConst().setPosition(m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window)) + offset);  // Update position
+                    }
+                }
+
+
+
+
+
             //// For test. 
             // In normal game, user should be allowed to place towers then press play button to start game
             static bool bTWasPressedLastUpdate = false;
@@ -527,13 +564,104 @@ void Game::UpdateMonsters()
             }    
         }
     }
-    
 }
+
+
+void Game::UpdateUI()
+{
+
+    scoreTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 10);
+    levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
+    instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 115);
+
+    // Get the text's bounding box
+    /*    FloatRect levelTextbounds = m_levelText.getLocalBounds();
+    FloatRect instructionTextbounds = m_instructionText.getLocalBounds();
+    instructionTextbounds.setOrigin(bounds.width / 2, bounds.height / 2);*/
+
+    m_scoreText.setFont(m_Font);               // Set font
+    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
+    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
+    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
+    m_scoreText.setCharacterSize(20);        // Set size
+    m_scoreText.setFillColor(Color::Red);     // Set color
+    m_scoreText.setPosition(scoreTextPosition);       // Set position
+
+    m_levelText.setFont(m_Font);               // Set font
+    m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
+    FloatRect levelTextBounds = m_levelText.getLocalBounds();
+    m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
+    m_levelText.setCharacterSize(20);        // Set size
+    m_levelText.setFillColor(Color::Red);     // Set color
+    m_levelText.setPosition(levelTextPosition);       // Set position
+
+    if (m_eCurrentEditState == ExitState){
+        m_instructionText.setFont(m_Font);               // Set font
+        m_instructionText.setString("Choose an exit Tile...");   // Set text
+        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
+        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
+        m_instructionText.setCharacterSize(20);        // Set size
+        m_instructionText.setFillColor(Color::Red);     // Set color
+        m_instructionText.setPosition(instructionTextPosition);       // Set position
+    } else if (m_eCurrentEditState == EntryState){
+        m_instructionText.setFont(m_Font);               // Set font
+        m_instructionText.setString("Choose an entry Tile...");   // Set text
+        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
+        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
+        m_instructionText.setCharacterSize(20);        // Set size
+        m_instructionText.setFillColor(Color::Red);     // Set color
+        m_instructionText.setPosition(instructionTextPosition);       // Set position
+    } else if (m_eCurrentEditState == PathState){
+        m_instructionText.setFont(m_Font);               // Set font
+        m_instructionText.setString("Draw a path\nstarting from entrance\nand click enter\nto start...");   // Set text
+        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
+        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
+        m_instructionText.setCharacterSize(20);        // Set size
+        m_instructionText.setFillColor(Color::Red);     // Set color
+        m_instructionText.setPosition(instructionTextPosition);       // Set position
+    } else {
+        m_instructionText.setFont(m_Font);               // Set font
+        m_instructionText.setString("Tower Selection");   // Set text
+        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
+        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
+        m_instructionText.setCharacterSize(20);        // Set size
+        m_instructionText.setFillColor(Color::Red);     // Set color
+        m_instructionText.setPosition(instructionTextPosition);       // Set position
+
+        //Loading tower selection
+        Tile tower1;
+        m_towerTexture1.loadFromFile("../Images/grass_Tile.png");
+        tower1.SetTexture(m_towerTexture1);
+        tower1.SetScale(Vector2f(1.f, 1.f));
+        FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+        tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
+        tower1.SetTextureRect(sf::IntRect(0,0,50,50));
+        tower1.SetPosition(Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 55));
+        tower1.setType(Tile::Type::Grass);                               // Define its tile type
+        a_tower.push_back(tower1);
+
+        Tile tower2;
+        m_towerTexture2.loadFromFile("../Images/grass_Tile.png");
+        tower2.SetTexture(m_towerTexture1);
+        FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+        tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
+        tower2.SetScale(Vector2f(1.f, 1.f));
+        tower2.SetTextureRect(sf::IntRect(0,0,50,50));
+        tower2.SetPosition(Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/3 + 55));
+        tower2.setType(Tile::Type::Grass);                               // Define its tile type
+        a_tower.push_back(tower2);
+
+
+    }
+}
+
 
 void Game::DrawInitialSetUp()
 {
     // Erases everything that was drawn last frame
 	m_Window.clear();
+
+    m_iCurrentWealth = 0;
 
     m_Window.draw(m_EnterSizeText);
 
@@ -596,7 +724,14 @@ void Game::DrawMapEditorMode()
         }
     }
     
-
+    m_Window.draw(m_scoreText);
+    m_Window.draw(m_instructionText);
+    m_Window.draw(m_levelText);
+    if(m_eCurrentEditState == FinishedPathingState){
+        for (auto& tower : a_tower) {
+            m_Window.draw(tower);  // If Tile is derived from sf::Drawable
+        }
+    }
     m_Window.draw(m_sfPathLines);
     //m_Window.draw(m_MonsterTemplate.m_Sprite);
     
@@ -625,8 +760,16 @@ void Game::DrawPlayMode()
             m_Window.draw(monster);
         }
     }
-    
 
+    m_iCurrentWealth += 1000;
+    m_Window.draw(m_scoreText);
+    m_Window.draw(m_levelText);
+    m_Window.draw(m_instructionText);
+    if(m_eCurrentEditState == FinishedPathingState){
+        for (auto& tower : a_tower) {
+            m_Window.draw(tower);  // If Tile is derived from sf::Drawable
+        }
+    }
     m_Window.display();
 }
 

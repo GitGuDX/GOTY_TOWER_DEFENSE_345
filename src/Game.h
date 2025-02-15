@@ -11,6 +11,7 @@
 #include "Monster_Generator.h"
 
 using namespace sf;
+using namespace std;
 
 class Game
 {
@@ -54,6 +55,8 @@ private:
     void UpdateInitialPrompt();
     void UpdateTiles();
     void UpdateMonsters();
+    void UpdateText();
+    void UpdateUI();
 
     void DrawInitialSetUp();
     void DrawMapEditorMode();
@@ -115,6 +118,7 @@ private:
     MonsterGenerator m_MonsterGenerator;
 
     int m_iCurrentLevel;
+    int m_iCurrentWealth;
 
     Texture m_MonsterTexture;
     Monster m_MonsterTemplate;
@@ -123,6 +127,26 @@ private:
     
 
     friend class MonsterGenerator;                  // make MonsterGenerator friend of Game so that MonsterGenerator has access to Game class's private members
+
+
+
+    // UI Info
+    Text m_scoreText;
+    Text m_levelText;
+    Text m_instructionText;
+
+    Vector2f scoreTextPosition;
+    Vector2f levelTextPosition;
+    Vector2f instructionTextPosition;
+    vector<Entity> a_tower;
+
+
+    Texture m_towerTexture1;
+    Texture m_towerTexture2;
+    Tile tower1;
+    Tile tower2;
+
+
 };
 
 

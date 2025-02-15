@@ -38,7 +38,7 @@ public:
 	}
 
 	void SetSprite(const sf::Sprite& sprite)
-	{
+	{												//Necessary?
 		m_Sprite = sprite;
 	}
 
@@ -84,7 +84,6 @@ public:
 
 public:
     Sprite m_Sprite;
-   
 };
 
 
