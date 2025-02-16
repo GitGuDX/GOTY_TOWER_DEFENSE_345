@@ -47,6 +47,10 @@ public:
         m_Sprite.setTextureRect(intRectValue);
     }
 
+	void SetRotation(float angle) {
+    m_Sprite.setRotation(angle);  // Assuming m_Sprite is your sprite
+	}
+
 	sf::Vector2f GetPosition() const
 	{
 		return m_Sprite.getPosition();
@@ -85,12 +89,19 @@ public:
     void SetDirection(sf::Vector2f direction) { m_Direction = direction; }
     sf::Vector2f GetDirection() const { return m_Direction; }
 
+	float GetSpeed() const { return m_speed; }
+
+	float GetDamage() const { return m_fDamage; }
+
 public:
     Sprite m_Sprite;
 	sf::Vector2f m_Direction;  // Store initial direction
-
+	float m_speed; // Adjust speed as needed
+	float m_fDamage;
   
-   
+   	bool operator==(const Entity& other) const {
+        return this->GetPosition() == other.GetPosition(); // Example, compare based on position or any other criteria
+    }
 };
 
 

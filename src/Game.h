@@ -109,12 +109,11 @@ private:
     Texture m_GrassTexture;
     Texture m_PathTexture;
     Texture m_TowerTexture;
-    Texture m_AxeTexture;
+    Texture m_BulletTexture;
 
     Entity m_AxeTemplate;
 
     std::vector<std::vector<Tile>> m_aTiles;
-    std::vector<Tower> m_aTowers;
 	std::vector<Entity> m_aAxes;
     
     
@@ -144,7 +143,7 @@ private:
         std::cout << "Game State:\n"
                   << "Mode: " << m_eGameMode << "\n"
                   << "Grid Size: " << m_vGridSize.x << "x" << m_vGridSize.y << "\n"
-                  << "Tower Count: " << m_aTowers.size() << "\n";
+                  << "Tower Count: " << a_allActiveTowers.size() << "\n";
     }
     
 
