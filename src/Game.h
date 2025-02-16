@@ -55,6 +55,7 @@ private:
     
     void UpdateInitialPrompt();
     void UpdateTiles();
+    void UpdatePlay();
     void UpdateMonsters();
     void UpdateTowers();
     void UpdateAxes();
@@ -127,6 +128,8 @@ private:
 
     // Play mode 
     MonsterGenerator m_MonsterGenerator;
+    bool m_bIsRoundEnded = false;
+    bool m_bIsMonsterGeneratorUpdated = false;
 
     int m_iCurrentLevel;
     int m_iCurrentWealth;
@@ -135,6 +138,7 @@ private:
     Monster m_MonsterTemplate;
 
     std::vector<Monster> m_aMonstersQueue;
+    std::vector<Monster*> m_aEliminatedMonstersQueue;
 
     void DebugPrintGameState() const {
         std::cout << "Game State:\n"
