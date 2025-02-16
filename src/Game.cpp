@@ -99,7 +99,7 @@ void Game::Run()
                     m_bIsMonsterGeneratorUpdated = true;
                 }
             }
-            
+            UpdateUI();
             DrawPlayMode();
             break;
         }
@@ -288,19 +288,19 @@ void Game::LoadPlayModeAssets()
     #ifdef LINUX
     m_MonsterTexture.loadFromFile("../src/Images/monster_1.png");
     m_TowerTexture.loadFromFile("../src/Images/tower.png");
-    m_AxeTexture.loadFromFile("../src/Images/Axe.png");
+    m_BulletTexture.loadFromFile("../src/Images/Bullet.png");
     #endif
     #ifdef MAC
     m_MonsterTexture.loadFromFile("Images/monster_1.png");
     m_TowerTexture.loadFromFile("Images/tower.png");
-    m_AxeTexture.loadFromFile("Images/Axe.png");
+    m_BulletTexture.loadFromFile("Images/Bullet.png");
     #endif
     #ifdef WINDOW
     // add for window
     #endif
 
     m_TowerTexture.setSmooth(true);
-	m_AxeTemplate.SetTexture(m_AxeTexture);
+	m_AxeTemplate.SetTexture(m_BulletTexture);
 	m_AxeTemplate.SetScale(sf::Vector2f(0.05, 0.05));
 	m_AxeTemplate.SetOrigin(sf::Vector2f(8, 8));
 
@@ -559,10 +559,14 @@ void Game::HandleInput()
                     draggedTower.SetPosition(snapGrid);
 
                     if (draggedSprite->getTexture() == &m_towerTexture1) {
+                        draggedTower.SetType(TowerType::Rapid);
+                        cout << static_cast<int>(draggedTower.GetType());
                         a_activeWoodTowers.push_back(draggedTower);
                         a_allActiveTowers.push_back(draggedTower);
                     }
                     if(draggedSprite->getTexture() == &m_towerTexture2){
+                        draggedTower.SetType(TowerType::Sniper);
+                        cout << static_cast<int>(draggedTower.GetType());
                         a_activeStoneTowers.push_back(draggedTower);
                         a_allActiveTowers.push_back(draggedTower);
                     }
@@ -594,59 +598,6 @@ void Game::HandleInput()
             }
         }
 
-
-        /*
-        if (m_eGameMode == PlayMode) {
-            if (event.type == Event::MouseButtonPressed) {
-                if (event.mouseButton.button == Mouse::Left) {
-                    Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
-                    Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
-                    std::cout << "Click detected at: " << clickedPos.x << "," << clickedPos.y << "\n";
-                std::cout << "Snapped to grid: " << gridPos.x << "," << gridPos.y << "\n";
-        
-                Vector2i tileIndex = tileCenterPosToIndex(gridPos);
-                std::cout << "Tile index: " << tileIndex.x << "," << tileIndex.y << "\n";
-        
-        // Validate tile bounds
-                if (tileIndex.x >= 0 && tileIndex.x < m_vGridSize.x && 
-                 tileIndex.y >= 0 && tileIndex.y < m_vGridSize.y) {
-            // ...existing placement code...
-                    } else {
-                std::cout << "Invalid tile position!\n";
-         }
-                    if (m_aTiles[tileIndex.y][tileIndex.x].getType() == Tile::Type::Grass) {
-                        Tower newTower;
-                        newTower.SetTexture(m_TowerTexture);
-                        newTower.SetScale(Vector2f(1.0f, 1.0f));  // Adjust scale to fit one tile
-                        newTower.SetTextureRect(sf::IntRect(0, 0, 50, 50));
-                        Vector2f towerOrigin(m_iTileSize / 2.0f, m_iTileSize / 2.0f);  // Center point of tower
-                        newTower.SetOrigin(towerOrigin);
-                        newTower.SetPosition(gridPos);
-                        newTower.SetRange(300.0f); // Can be different for different tower types
-                        m_aTowers.push_back(newTower);
-                    }
-                }
-            }
-            // TO start a new round
-            static bool bTWasPressedLastUpdate = false;
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-            {
-             //   std::cout << "one of the keys was pressed! " << std::endl;
-                if (!bTWasPressedLastUpdate)
-                {
-                 //   std::cout << "play mode activated" << std::endl;
-                    m_eGameMode = PlayMode;
-                    m_bIsRoundEnded = false;
-                    m_bIsMonsterGeneratorUpdated = false;
-                }
-                bTWasPressedLastUpdate = true;
-            }
-            else
-            {
-                bTWasPressedLastUpdate = false;
-            }
-        }
-        */
     }
 }
 
@@ -763,33 +714,6 @@ void Game::UpdateMonsters()
 }
 
 
-/*void Game::Animate()
-{
-//Loading tower selection
-    Tower tower1;
-    m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
-    tower1.SetTexture(m_towerTexture1);
-    tower1.SetScale(Vector2f(0.7f, 0.7f));
-    FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-    tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
-    tower1.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower1.SetPosition(Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 75));
-    a_towerMenu.push_back(tower1);
-
-
-
-    Tower tower2;
-    // Load the textures (Make sure these files exist in the "Images" folder)
-    for (int i = 1; i <= 6; ++i) {
-        Texture tower2TempTexture;
-        if (!tower2TempTexture.loadFromFile("Images/Tower2_Frame_" + std::to_string(i) + ".png")) {
-            std::cerr << "Failed to load Tower2_Frame" << i << ".png\n";
-        }
-        a_activeTowers[i].SetTexture(m_towerTexture2);
-    }
-}*/
-    
-
 
 void Game::UpdateUI()
 {
@@ -897,7 +821,7 @@ void Game::UpdateUI()
 
 void Game::UpdateTowers()
 {
-    for (Tower& tower : m_aTowers)
+    for (Tower& tower : a_allActiveTowers)
     {
         // Update individual tower cooldown
         tower.UpdateCooldown(m_DeltaTime.asSeconds());
@@ -924,13 +848,24 @@ void Game::UpdateTowers()
                 //Entity& newAxe = m_aAxes.emplace_back(m_AxeTemplate);
                 m_aAxes.push_back(m_AxeTemplate);
                 Entity& newAxe = m_aAxes.back();
-                //newAxe.SetPosition(tower.GetPosition());
+                FloatRect newAxeBounds = newAxe.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+                newAxe.SetOrigin(Vector2f(newAxeBounds.width / 2, newAxeBounds.height / 2));
+                newAxe.SetPosition(Vector2f(tower.GetPosition().x, tower.GetPosition().y));
+                newAxe.SetScale(Vector2f(0.3f, 0.3f));
+
+                //Depending on tower the bullet will be faster or slower and do more or less damage
+                newAxe.m_speed = tower.GetSpeed();
+                newAxe.m_fDamage = tower.GetDamage();
                 
                 // Calculate direction to enemy
                 sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
                 vTowerToMonster = MathHelpers::getNormalize(vTowerToMonster);
+                // Calculate the angle in degrees
+                float angle = atan2(vTowerToMonster.y, vTowerToMonster.x) * 180.0f / M_PI + 90.0f;
                 newAxe.SetDirection(vTowerToMonster);
+                newAxe.SetRotation(angle);
                 
+
                 tower.ResetCooldown(); // Reset this tower's cooldown
             }
         }
@@ -939,7 +874,6 @@ void Game::UpdateTowers()
 
 void Game::UpdateAxes()
 {
-    const float AXE_SPEED = 500.0f; // Adjust speed as needed
     const float COLLISION_DISTANCE = 25.0f; // Adjust collision radius as needed
 
     for (auto it = m_aAxes.begin(); it != m_aAxes.end();)
@@ -947,7 +881,7 @@ void Game::UpdateAxes()
         bool hitMonster = false;
         
         // Move axe
-        it->Move(it->GetDirection() * AXE_SPEED * m_DeltaTime.asSeconds());
+        it->Move(it->GetDirection() * it->GetSpeed() * m_DeltaTime.asSeconds());
         
         // Check collision with monsters
         for (auto& monster : m_aMonstersQueue)
@@ -957,10 +891,22 @@ void Game::UpdateAxes()
             
             if (distance < COLLISION_DISTANCE)
             {
-                std::cout << "Debug: Axe hit monster at position (" 
-                          << monster.GetPosition().x << ", " 
+                std::cout << "Debug: Axe hit monster at position ("
+                          << monster.GetPosition().x << ", "
                           << monster.GetPosition().y << ")" << std::endl;
                 hitMonster = true;
+                cout << "\n"<<monster.GetHealth()<<"\n";
+                monster.SetHealth(monster.GetHealth()-it->GetDamage());
+                if (monster.GetHealth() <= 0){
+                    // Handle the monster's death (e.g., remove it from the queue)
+                    std::cout << "Monster destroyed!" << std::endl;
+                    // Remove the monster from the queue (if applicable)
+                    auto monsterIt = std::find(m_aMonstersQueue.begin(), m_aMonstersQueue.end(), monster);
+                    if (monsterIt != m_aMonstersQueue.end()) {
+                        m_aMonstersQueue.erase(monsterIt);
+                        m_iCurrentWealth += 100;
+                    }
+                }
                 break;
             }
         }
@@ -1082,20 +1028,6 @@ void Game::DrawPlayMode()
 {
 
     m_Window.clear();
-    
-
-    Tower newTower;
-    newTower.SetTexture(tower1TempTexture);
-    newTower.SetScale(Vector2f(0.7f, 0.7f));  // Adjust scale to fit one tile
-    newTower.SetTextureRect(sf::IntRect(0, 0, 70, 100));
-    //Vector2f towerOrigin(m_iTileSize / 2.0f, m_iTileSize / 2.0f);  // Center point of tower
-    //newTower.SetOrigin(towerOrigin);
-    newTower.SetPosition(Vector2f(100, 100));
-    newTower.SetRange(300.0f); // Can be different for different tower types
-    m_aTowers.push_back(newTower);
-    
-    
-
 
     ////// Draw Tiles
     for (std::vector<Tile>& row : m_aTiles)
@@ -1104,17 +1036,6 @@ void Game::DrawPlayMode()
         {
             m_Window.draw(tile.m_Sprite);
         }
-    }
-
-    for (Tower& tower : m_aTowers) {
-        m_Window.draw(tower);
-        //tower.DebugPrint();
-
-    }
-
-    for (const Entity& axe : m_aAxes)
-    {
-        m_Window.draw(axe);
     }
 
 
@@ -1158,7 +1079,6 @@ void Game::DrawPlayMode()
     }
 
     // UI RELATED
-    m_iCurrentWealth += 0;
     m_Window.draw(m_scoreText);
     m_Window.draw(m_levelText);
     m_Window.draw(m_instructionText);
@@ -1227,6 +1147,10 @@ void Game::DrawPlayMode()
         for (auto& tower : a_activeWoodTowers) {
             m_Window.draw(tower);  // If Tile is derived from sf::Drawable
         }
+    }
+    for (const Entity& bullet : m_aAxes)
+    {
+        m_Window.draw(bullet);
     }
 
         if(draggedSprite != nullptr){
