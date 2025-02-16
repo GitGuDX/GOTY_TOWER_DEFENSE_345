@@ -594,6 +594,7 @@ void Game::HandleInput()
                         Vector2f towerOrigin(m_iTileSize / 2.0f, m_iTileSize / 2.0f);  // Center point of tower
                         newTower.SetOrigin(towerOrigin);
                         newTower.SetPosition(gridPos);
+                        newTower.SetRange(300.0f); // Can be different for different tower types
                         m_aTowers.push_back(newTower);
                     }
                 }
@@ -706,201 +707,83 @@ void Game::UpdateMonsters()
             }    
         }
     }
-}
-
-/*void Game::Animate()
-{
-//Loading tower selection
-    Tower tower1;
-    m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
-    tower1.SetTexture(m_towerTexture1);
-    tower1.SetScale(Vector2f(0.7f, 0.7f));
-    FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-    tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
-    tower1.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower1.SetPosition(Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 75));
-    a_towerMenu.push_back(tower1);
-
-
-
-    Tower tower2;
-    // Load the textures (Make sure these files exist in the "Images" folder)
-    for (int i = 1; i <= 6; ++i) {
-        Texture tower2TempTexture;
-        if (!tower2TempTexture.loadFromFile("Images/Tower2_Frame_" + std::to_string(i) + ".png")) {
-            std::cerr << "Failed to load Tower2_Frame" << i << ".png\n";
-        }
-        a_activeTowers[i].SetTexture(m_towerTexture2);
-    }
-}*/
     
-
-
-void Game::UpdateUI()
-{
-
-    scoreTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 10);
-    levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
-    instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
-    warningTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y - 30);
-    modeTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 65);
-
-    // Score text 
-    m_scoreText.setFont(m_Font);               // Set font
-    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
-    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
-    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
-    m_scoreText.setCharacterSize(25);        // Set size
-    m_scoreText.setFillColor(Color::Red);     // Set color
-    m_scoreText.setPosition(scoreTextPosition);       // Set position
-
-    // Level text 
-    m_levelText.setFont(m_Font);               // Set font
-    m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
-    FloatRect levelTextBounds = m_levelText.getLocalBounds();
-    m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
-    m_levelText.setCharacterSize(25);        // Set size
-    m_levelText.setFillColor(Color::Red);     // Set color
-    m_levelText.setPosition(levelTextPosition);       // Set position
-
-    // Warning text 
-    m_warningText.setFont(m_Font);               // Set font
-    m_warningText.setString(currentWarning);   // Set text
-    FloatRect warningTextBounds = m_warningText.getLocalBounds();
-    m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
-    m_warningText.setCharacterSize(15);        // Set size
-    m_warningText.setPosition(warningTextPosition);       // Set position
-    if(warningShown.getElapsedTime().asSeconds() > 3){
-        currentWarning = "";
-    }
-
-    // Current mode text 
-    m_modeText.setFont(m_Font);               // Set font
-    m_modeText.setString(currentMode);   // Set text
-    FloatRect modeTextBounds = m_modeText.getLocalBounds();
-    m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
-    m_modeText.setCharacterSize(18);        // Set size
-    m_modeText.setFillColor(Color::Red);     // Set color
-    m_modeText.setPosition(modeTextPosition);       // Set position
-
-    m_instructionText.setFont(m_Font);               // Set font
-    m_instructionText.setCharacterSize(20);        // Set size
-    m_instructionText.setPosition(instructionTextPosition);       // Set position
-    if (m_eCurrentEditState == ExitState){
-        m_instructionText.setString("Choose an exit Tile...");   // Set text
-        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
-        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
-        m_instructionText.setFillColor(Color::Red);     // Set color
-    } else if (m_eCurrentEditState == EntryState){
-        m_instructionText.setString("Choose an entry Tile...");   // Set text
-        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
-        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
-        m_instructionText.setFillColor(Color::Green);     // Set color
-    } else if (m_eCurrentEditState == PathState){
-        m_instructionText.setString("Draw a path\nstarting from entrance\nand click enter\nto start...");   // Set text
-        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
-        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
-        m_instructionText.setFillColor(Color::Blue);     // Set color
-    } else {
-        m_instructionText.setString("Tower Selection");   // Set text
-        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
-        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
-        m_instructionText.setFillColor(Color::White);     // Set color
-
-        //Loading tower selection
-        Tower tower1;
-        m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
-        tower1.SetTexture(m_towerTexture1);
-        tower1.SetScale(Vector2f(0.7f, 0.7f));
-        FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-        tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
-        tower1.SetTextureRect(sf::IntRect(0,0,70,100));
-        tower1.SetPosition(Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 75));
-        a_towerMenu.push_back(tower1);
-
-        Tower tower2;
-        m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
-        tower2.SetTexture(m_towerTexture2);
-        FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-        tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
-        tower2.SetScale(Vector2f(0.7f, 0.7f));
-        tower2.SetTextureRect(sf::IntRect(0,0,70,100));
-        tower2.SetPosition(Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/3 + 75));
-        a_towerMenu.push_back(tower2);
-
-    }
 }
-
 
 void Game::UpdateTowers()
 {
-    static float shootCooldown = 0.0f;  // Track time since last shot
-
-    // Update cooldown timer
-    shootCooldown -= m_DeltaTime.asSeconds();
-    for (Entity& tower : m_aTowers)
+    for (Tower& tower : m_aTowers)
     {
-        if (shootCooldown <= 0.0f) {
+        // Update individual tower cooldown
+        tower.UpdateCooldown(m_DeltaTime.asSeconds());
+
+        if (tower.CanShoot()) {
             Entity* pNearestEnemy = nullptr;
-            float fShortestDistance  = std::numeric_limits<float>::max();
-            for  (Entity& monster : m_aMonstersQueue)
+            float fShortestDistance = std::numeric_limits<float>::max();
+            
+            // Find nearest monster within this tower's range
+            for (Entity& monster : m_aMonstersQueue)
             {
                 sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
                 float fDistance = MathHelpers::Length(vTowerToMonster);
-                if (fDistance < fShortestDistance)
+                if (fDistance < fShortestDistance && fDistance < tower.GetRange())
                 {
                     fShortestDistance = fDistance;
                     pNearestEnemy = &monster;
                 }
-                
             }
     
-            if (pNearestEnemy != nullptr && fShortestDistance < 300.0f) // 300 is attack range
+            if (pNearestEnemy != nullptr)
             {
                 // Create and setup new axe
-                //Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);      
-                Entity newAxe;                                              // Create an axe entity
-                newAxe.SetTexture(m_AxeTexture);                            // give it a texture
-                newAxe.SetPosition(tower.GetPosition());                    // set its position
-                                                                            // Set scale, origin, speed?
+                Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);
+                newAxe.SetPosition(tower.GetPosition());
                 
                 // Calculate direction to enemy
                 sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
                 vTowerToMonster = MathHelpers::getNormalize(vTowerToMonster);
-                newAxe.m_Direction = vTowerToMonster;// Store initial direction
-
-                // Debug: Print axe creation and movement info
-                std::cout << "Axe created at: (" << tower.GetPosition().x << "," << tower.GetPosition().y << ")\n";
-                std::cout << "Target monster at: (" << pNearestEnemy->GetPosition().x << "," 
-                << pNearestEnemy->GetPosition().y << ")\n";
-                std::cout << "Direction vector: (" << vTowerToMonster.x << "," << vTowerToMonster.y << ")\n";
-                std::cout << "Movement speed: " << 500.0f * m_DeltaTime.asSeconds() << "\n";
+                newAxe.SetDirection(vTowerToMonster);
                 
-                // Move axe in that direction
-              //  newAxe.Move(vTowerToMonster * 500.0f * m_DeltaTime.asSeconds());
-                shootCooldown = 3.0f;  // Reset cooldown timer
-                
-                // Debug: Print new axe position after movement
-                std::cout << "Axe new position: (" << newAxe.GetPosition().x << "," 
-                          << newAxe.GetPosition().y << ")\n";
-                std::cout << "Total axes in game: " << m_Axes.size() << "\n\n";
+                tower.ResetCooldown(); // Reset this tower's cooldown
             }
         }
     }
-    // Update tower logic
 }
 
 void Game::UpdateAxes()
 {
+    const float AXE_SPEED = 500.0f; // Adjust speed as needed
+    const float COLLISION_DISTANCE = 25.0f; // Adjust collision radius as needed
+
     for (auto it = m_Axes.begin(); it != m_Axes.end();)
     {
-        // Use stored direction to move axe
-        it->Move(it->m_Direction * 1000.0f * m_DeltaTime.asSeconds());
+        bool hitMonster = false;
         
-        // Remove if off screen
-        sf::Vector2f pos = it->GetPosition();
-        if (pos.x < 0 || pos.x > m_vWindowSize.x || 
-            pos.y < 0 || pos.y > m_vWindowSize.y)
+        // Move axe
+        it->Move(it->GetDirection() * AXE_SPEED * m_DeltaTime.asSeconds());
+        
+        // Check collision with monsters
+        for (auto& monster : m_aMonstersQueue)
+        {
+            sf::Vector2f diff = monster.GetPosition() - it->GetPosition();
+            float distance = MathHelpers::Length(diff);
+            
+            if (distance < COLLISION_DISTANCE)
+            {
+                std::cout << "Debug: Axe hit monster at position (" 
+                          << monster.GetPosition().x << ", " 
+                          << monster.GetPosition().y << ")" << std::endl;
+                hitMonster = true;
+                break;
+            }
+        }
+        
+        // Remove axe if it hit something or went off screen
+        if (hitMonster || 
+            it->GetPosition().x < 0 || 
+            it->GetPosition().x > m_vWindowSize.x ||
+            it->GetPosition().y < 0 || 
+            it->GetPosition().y > m_vWindowSize.y)
         {
             it = m_Axes.erase(it);
         }
