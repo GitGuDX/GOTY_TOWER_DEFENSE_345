@@ -1,6 +1,6 @@
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 
 #include "Game.h"
 #include <SFML/Graphics.hpp>
@@ -21,10 +21,10 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
-    , m_AxeTemplate()  
-    // Monster generator initiliazed with base number of monsters and their increase rate per level                
+    , m_AxeTemplate()
+    // Monster generator initiliazed with base number of monsters and their increase rate per level
     , m_MonsterGenerator(5)
-    , m_iCurrentLevel(1)                                                                                                              
+    , m_iCurrentLevel(1)
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
@@ -32,7 +32,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
 
     
     // Render Initial SetUp assets
-    LoadInitialSetUpAssets(); 
+    LoadInitialSetUpAssets();
 
 }
 
@@ -722,81 +722,44 @@ void Game::UpdatePlay()
 
 void Game::UpdateMonsters()
 {
-    // Increment the time since the last generation
+    // Generate monsters FIRST, before movement updates
     m_MonsterGenerator.incrementTimeSinceLastGeneration(m_DeltaTime.asSeconds());
-    // Generate the first monster and add it to the array
-    if (m_aMonstersQueue.empty())
+    if (m_aMonstersQueue.empty() || m_MonsterGenerator.hasPassedGenerationCoolDown())
     {
-        m_MonsterGenerator.generateMonster(*this);              // Dereference the pointer and pass the address of 'this'. generateMonstert takes pass by reference
-        m_MonsterGenerator.resetTimeSinceLastGeneration();      // Reset timer after generation
+        m_MonsterGenerator.generateMonster(*this);
+        m_MonsterGenerator.resetTimeSinceLastGeneration();
     }
 
-    // Remove monsters if...
+    // Remove finished monsters
     m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
-        [this](Monster& monster)
-        {
-            // remove monster if it has reached an axit tile
-            if (monster.GetCurrentPathIndex() >= m_aPath.size() - 1)
-            {
-                std::cout << "A monster reached the exit!" << std::endl;
+        [this](Monster& monster) {
+            return monster.GetCurrentPathIndex() >= m_aPath.size() - 1;
+        }), m_aMonstersQueue.end());
 
-                // ADD: reduce player coins depending on the monster's strength
-                
-                return true; // Remove this monster
-            }
-            // ADD here when projectile touches the monster
-            // else if () {...}
-            return false; // Keep this monster
-        }),
-        m_aMonstersQueue.end());
-    
-    /////////// To move Monster to the next path tile
+    // Update monster positions
     for (Monster& monster : m_aMonstersQueue)
     {
-        // Get Monster's current tile index
         size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
-
-        // While Monster's current index is less than the size of the path array move the monster
-        if (monsterCurrentTileIndex < m_aPath.size())
+        if (monsterCurrentTileIndex < m_aPath.size() - 1)
         {
-            
-            // Get the position of the next tile
             Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
-            // Get the vector difference between the monster and the next tile
             Vector2f tileToMonster = nextTilePos - monster.GetPosition();
-            // Normalize the distance
-            tileToMonster = MathHelpers::getNormalize(tileToMonster);
-            // Check if the monster is close enough to the target tile (e.g., within 0.1f units).
-            if (std::abs(monster.GetPosition().x - nextTilePos.x) < 0.1f &&
-                std::abs(monster.GetPosition().y - nextTilePos.y) < 0.1f)
+            float distanceToNext = MathHelpers::Length(tileToMonster);
+
+            if (distanceToNext < 1.0f)  // Increased threshold
             {
-                // The reason for set position is needed here despite the fact that the move function would have already adjusted the monster's position is that 
-                // the Move adjusts the position by a very small increment. This presents a floating-point precision errors and small misalignment can add up over time.
-                // Without "snapping" to the next tile position, the monster might slowly drift off the grid, causing pathfinding position check to become inaccurate.
+                // Snap to position and increment path index
                 monster.SetPosition(nextTilePos);
                 monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
-                /////////// Generate Monsters
-                
-                // When elpased time is over the cooldown, generate a new monster
-                if (m_MonsterGenerator.hasPassedGenerationCoolDown())
-                {
-                    std::cout << m_aMonstersQueue.size() << '\n';
-                    m_MonsterGenerator.generateMonster(*this);                      // Generate a new monster
-                    m_MonsterGenerator.resetTimeSinceLastGeneration();              // Reset the timer after generation
-                }
             }
             else
             {
-                // std::cout << m_DeltaTime.asSeconds() <<"\n";
-                // std::cout << monster.GetSpeed() <<"\n";
-                // std::cout << tileToMonster.x << ' ' << tileToMonster.y << '\n';
-                //Vector2f test = tileToMonster * m_DeltaTime.asSeconds() * monster.GetSpeed();
-                //std::cout << test.x << ' ' << test.y << '\n';
-                monster.Move(tileToMonster * m_DeltaTime.asSeconds() * monster.GetSpeed());
-            }    
+                // Move towards next position
+                Vector2f direction = MathHelpers::getNormalize(tileToMonster);
+                monster.Move(direction * m_DeltaTime.asSeconds() * monster.GetSpeed());
+            }
         }
     }
-    
 }
 
 
@@ -958,10 +921,10 @@ void Game::UpdateTowers()
             if (pNearestEnemy != nullptr)
             {
                 // Create and setup new axe
-                //Entity& newAxe = m_Axes.emplace_back(m_AxeTemplate);
-                Entity newAxe;
-                //newAxe.SetTexture(m_axeTexture);
-                newAxe.SetPosition(tower.GetPosition());
+                //Entity& newAxe = m_aAxes.emplace_back(m_AxeTemplate);
+                m_aAxes.push_back(m_AxeTemplate);
+                Entity& newAxe = m_aAxes.back();
+                //newAxe.SetPosition(tower.GetPosition());
                 
                 // Calculate direction to enemy
                 sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
@@ -979,7 +942,7 @@ void Game::UpdateAxes()
     const float AXE_SPEED = 500.0f; // Adjust speed as needed
     const float COLLISION_DISTANCE = 25.0f; // Adjust collision radius as needed
 
-    for (auto it = m_Axes.begin(); it != m_Axes.end();)
+    for (auto it = m_aAxes.begin(); it != m_aAxes.end();)
     {
         bool hitMonster = false;
         
@@ -1009,7 +972,7 @@ void Game::UpdateAxes()
             it->GetPosition().y < 0 || 
             it->GetPosition().y > m_vWindowSize.y)
         {
-            it = m_Axes.erase(it);
+            it = m_aAxes.erase(it);
         }
         else
         {
@@ -1120,6 +1083,20 @@ void Game::DrawPlayMode()
 
     m_Window.clear();
     
+
+    Tower newTower;
+    newTower.SetTexture(tower1TempTexture);
+    newTower.SetScale(Vector2f(0.7f, 0.7f));  // Adjust scale to fit one tile
+    newTower.SetTextureRect(sf::IntRect(0, 0, 70, 100));
+    //Vector2f towerOrigin(m_iTileSize / 2.0f, m_iTileSize / 2.0f);  // Center point of tower
+    //newTower.SetOrigin(towerOrigin);
+    newTower.SetPosition(Vector2f(100, 100));
+    newTower.SetRange(300.0f); // Can be different for different tower types
+    m_aTowers.push_back(newTower);
+    
+    
+
+
     ////// Draw Tiles
     for (std::vector<Tile>& row : m_aTiles)
     {
@@ -1135,7 +1112,7 @@ void Game::DrawPlayMode()
 
     }
 
-    for (const Entity& axe : m_Axes)
+    for (const Entity& axe : m_aAxes)
     {
         m_Window.draw(axe);
     }
@@ -1256,6 +1233,7 @@ void Game::DrawPlayMode()
             m_Window.draw(draggedTower);
         }
         m_Window.draw(m_sfPathLines);
+
         m_Window.display();
 }
 

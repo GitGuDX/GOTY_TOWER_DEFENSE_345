@@ -115,7 +115,7 @@ private:
 
     std::vector<std::vector<Tile>> m_aTiles;
     std::vector<Tower> m_aTowers;
-	std::vector<Entity> m_Axes;
+	std::vector<Entity> m_aAxes;
     
     
     std::array<RectangleShape, 8> m_ahighlights;
