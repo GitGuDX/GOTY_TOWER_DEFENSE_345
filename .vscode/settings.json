@@ -78,6 +78,9 @@
         "__nullptr": "cpp",
         "__string": "cpp",
         "filesystem": "cpp",
-        "stack": "cpp"
-}
+        "stack": "cpp",
+        "format": "cpp",
+        "span": "cpp",
+        "text_encoding": "cpp"
+    }
 }
