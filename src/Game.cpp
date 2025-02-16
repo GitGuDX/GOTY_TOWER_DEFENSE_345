@@ -23,7 +23,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
     , m_AxeTemplate()  
     // Monster generator initiliazed with base number of monsters and their increase rate per level                
-    , m_MonsterGenerator(1, 2)
+    , m_MonsterGenerator(5)
     , m_iCurrentLevel(1)                                                                                                              
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
@@ -81,10 +81,22 @@ void Game::Run()
                 LoadPlayModeAssets();
                 m_ePrevGameMode = PlayMode;
             }
+
+            // If round hasn't ended, game is still playing so keep updating
+            if (!m_bIsRoundEnded)
+            {
+                UpdatePlay();
+            }
+            // If the round ended, prepare for the next round.
+            else 
+            {
+                if (!m_bIsMonsterGeneratorUpdated)
+                {
+                    m_MonsterGenerator.updateNextRoundMonsterGenerator();
+                    m_bIsMonsterGeneratorUpdated = true;
+                }
+            }
             
-            UpdateMonsters();
-            UpdateTowers();
-            UpdateAxes();
             DrawPlayMode();
             break;
         }
@@ -503,6 +515,24 @@ void Game::HandleInput()
                     }
                 }
             }
+            // TO start a new round
+            static bool bTWasPressedLastUpdate = false;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+            {
+             //   std::cout << "one of the keys was pressed! " << std::endl;
+                if (!bTWasPressedLastUpdate)
+                {
+                 //   std::cout << "play mode activated" << std::endl;
+                    m_eGameMode = PlayMode;
+                    m_bIsRoundEnded = false;
+                    m_bIsMonsterGeneratorUpdated = false;
+                }
+                bTWasPressedLastUpdate = true;
+            }
+            else
+            {
+                bTWasPressedLastUpdate = false;
+            }
         }
         
     }
@@ -566,22 +596,58 @@ void Game::UpdateTiles()
 
 }
 
+void Game::UpdatePlay()
+{
+    UpdateMonsters();
+    UpdateTowers();
+    UpdateAxes();
+
+    if (m_aMonstersQueue.empty())
+    {
+        m_bIsRoundEnded = true;
+    }
+}
+
 void Game::UpdateMonsters()
 {
+    // Increment the time since the last generation
+    m_MonsterGenerator.incrementTimeSinceLastGeneration(m_DeltaTime.asSeconds());
     // Generate the first monster and add it to the array
     if (m_aMonstersQueue.empty())
     {
         m_MonsterGenerator.generateMonster(*this);              // Dereference the pointer and pass the address of 'this'. generateMonstert takes pass by reference
+        m_MonsterGenerator.resetTimeSinceLastGeneration();      // Reset timer after generation
     }
+
+    // Remove monsters if...
+    m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
+        [this](Monster& monster)
+        {
+            // remove monster if it has reached an axit tile
+            if (monster.GetCurrentPathIndex() >= m_aPath.size() - 1)
+            {
+                std::cout << "A monster reached the exit!" << std::endl;
+
+                // ADD: reduce player coins depending on the monster's strength
+                
+                return true; // Remove this monster
+            }
+            // ADD here when projectile touches the monster
+            // else if () {...}
+            return false; // Keep this monster
+        }),
+        m_aMonstersQueue.end());
+    
     /////////// To move Monster to the next path tile
-    //std::cout << m_aMonstersQueue.size() <<'\n';
     for (Monster& monster : m_aMonstersQueue)
     {
         // Get Monster's current tile index
         size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
+
         // While Monster's current index is less than the size of the path array move the monster
         if (monsterCurrentTileIndex < m_aPath.size())
         {
+            
             // Get the position of the next tile
             Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
             // Get the vector difference between the monster and the next tile
@@ -597,8 +663,15 @@ void Game::UpdateMonsters()
                 // Without "snapping" to the next tile position, the monster might slowly drift off the grid, causing pathfinding position check to become inaccurate.
                 monster.SetPosition(nextTilePos);
                 monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
-                /////////// Generate Monsters - need update
-                m_MonsterGenerator.generateMonster(*this);
+                /////////// Generate Monsters
+                
+                // When elpased time is over the cooldown, generate a new monster
+                if (m_MonsterGenerator.hasPassedGenerationCoolDown())
+                {
+                    std::cout << m_aMonstersQueue.size() << '\n';
+                    m_MonsterGenerator.generateMonster(*this);                      // Generate a new monster
+                    m_MonsterGenerator.resetTimeSinceLastGeneration();              // Reset the timer after generation
+                }
             }
             else
             {
@@ -797,7 +870,7 @@ void Game::DrawPlayMode()
         if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
         {
             m_Window.draw(monster);
-        }
+        } 
     }
 
     

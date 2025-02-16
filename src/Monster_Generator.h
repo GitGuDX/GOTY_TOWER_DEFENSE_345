@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 class Game;                             // Forward declare Game class so MonsterGenerator as refernce to what Game type is
 
@@ -19,7 +20,7 @@ There are ___ classes of monsters
     Normal monster - Speed +0, Health +0, Strength +0, Wave strength +0, reward +0
     Rogue monster - Speed +2, Health -2, Strength +2, Wave strength +0, reward +1
     Tank monster - Speed -2, Health +5, Strength +2, Wave strength -1, reward +3
-    Swarm monster - Speed +3, Health -3, Strength -1, Wave strength +2, reward -3
+    Swarm monster - Speed +3, Health -3, Strength -1, Wave strength +3, reward -3
     Elite Monster - Speed +2, Health +4, Strength +3, Wave strength - 3, reward +5
     ... anything else?
 
@@ -33,11 +34,13 @@ E.g.)
     wave 5 (Tank - lvl 2) -> wave 6 (Swarm - lvl 2) -> wave 7 (Rogue - lvl 2) -> wave 8 (Average - lvl 2) -> etc.
 */
 
+class Monster;          // Forward declaration to know what Monster class is
+
 class MonsterGenerator
 {
 public:
     // Constructor initializes base number of monsters and their increase rate per level
-    MonsterGenerator(int baseMonsters, int monsterSpawnRate);
+    MonsterGenerator(int baseMonsters);
 
     enum class Type
     {
@@ -45,22 +48,100 @@ public:
         Rogue,
         Tank,
         Swarm,
-        Elite
+        Elite,
+        SIZE,
     };
 
-    // Create monster according to their type and level
-
+    
     // Generate a new monster if needed, pass Game instance as reference
     void generateMonster(Game& game);
+    void updateNextRoundMonsterGenerator();
+
+    float getTimeSinceLastGeneration()
+    {
+        return m_fTimeSinceLastGeneration;
+    }
+    float getGenerationCoolDown()
+    {
+        return m_fGenerationCooldown;
+    }
+    bool hasPassedGenerationCoolDown()
+    {
+        return m_fTimeSinceLastGeneration >= m_fGenerationCooldown;
+    }
+
+    void resetTimeSinceLastGeneration()
+    {
+        m_fTimeSinceLastGeneration = 0.f;
+    }
+    void incrementTimeSinceLastGeneration(float addedTime)
+    {
+        m_fTimeSinceLastGeneration += addedTime;
+    }
+    
 
 private:
-    struct BaseStats
+    void updateMonsterRoster();
+    template <Type type>
+    void updateMonsterStats(Monster& monster);
+    int getWaveStrength(MonsterGenerator::Type currentType);
+
+private:
+    struct MonsterTypeData
     {
-        int iLevel = 1;
-        int iHealth = 100;
-        float fSpeed = 100.f;
-        int iStrength = 10;
-        int iReward = 20;
+        struct BaseStats
+        {
+            static constexpr int iHealth = 100;
+            static constexpr float fSpeed = 100.f;
+            static constexpr int iStrength = 10;
+            static constexpr int iReward = 20;
+            static constexpr int iWaveStrength = 0;
+        }; 
+
+        struct Normal
+        {
+            static constexpr int iHealthDifference = 0;
+            static constexpr float fSpeedDifference = 0;
+            static constexpr int iStrengthDifference = 0;
+            static constexpr int iRewardDifference = 0;
+            static constexpr int iWaveStrength = 3;
+        };
+
+        struct Rogue
+        {
+            static constexpr int iHealthDifference = -2;
+            static constexpr float fSpeedDifference = 2.f;
+            static constexpr int iStrengthDifference = 2;
+            static constexpr int iRewardDifference = 1;
+            static constexpr int iWaveStrength = 4;
+        };
+
+        struct Tank
+        {
+            static constexpr int iHealthDifference = 5;
+            static constexpr float fSpeedDifference = -2.f;
+            static constexpr int iStrengthDifference = 2;
+            static constexpr int iRewardDifference = 3;
+            static constexpr int iWaveStrength = 2;
+        };
+
+        struct Swarm
+        {
+            static constexpr int iHealthDifference = -3;
+            static constexpr float fSpeedDifference = 3.f;
+            static constexpr int iStrengthDifference = -1;
+            static constexpr int iRewardDifference = -3;
+            static constexpr int iWaveStrength = 5;
+        };
+
+        struct Elite
+        {
+            static constexpr int iHealthDifference = 4;
+            static constexpr float fSpeedDifference = 2;
+            static constexpr int iStrengthDifference = 3;
+            static constexpr int iRewardDifference = 5;
+            static constexpr int iWaveStrength = 0;
+        };
     };
 
     struct StatsLevelUpRate
@@ -71,9 +152,12 @@ private:
         float fRewardLevelUpRate = 1.02f;
     };
 
-    int m_iBaseMonsters;
-    int m_iMonsterSpawnRate;
-    int m_iCurrentMonsterIndex;  // To track how many monsters have been generated for this wave
+    int m_iBaseMonsters;                                                // Starting monster number
+    int m_iNumberOfMonsterSpawned;                                         // To track how many monsters have been generated for this wave
+    int m_iMonsterLevel;                                                // Current monster level
+    std::vector<Type> m_aCurrentMonsterRoaster;             // Store Monster roaster size depend on the size of the Type enum
+    float m_fTimeSinceLastGeneration = 0.f;                 // Time elapsed since the last monster was generated
+    const float m_fGenerationCooldown = 0.5f;               // The cooldown time (in seconds) between monster generations
 };
 
 
