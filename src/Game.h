@@ -122,7 +122,8 @@ private:
     
     std::array<RectangleShape, 8> m_ahighlights;
 
-    std::vector<sf::Vector2f> m_aPath;                                                  // Stores the path tiles
+    std::vector<sf::Vector2f> m_aPath;
+    std::vector<sf::Vector2f> m_aDeletedPath;                                                    // Stores the path tiles
     sf::Vector2f m_vEntryTile, m_vExitTile;                                             // Entry and exit tile positions
     sf::VertexArray m_sfPathLines;                                                      // SFML Vertex Array for drawing the path
     

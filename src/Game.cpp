@@ -497,7 +497,11 @@ void Game::HandleInput()
                         // Prevent backtracking
                         else if (m_aPath.size() > 1 && m_aPath[m_aPath.size() - 2] == gridPos)
                         {
+                            // Append the path tile to the deleted path array
+                            //m_aDeletedPath.push_back(m_aPath.back());
+                            // Remove the path tile from the path array
                             m_aPath.pop_back();
+                            // Remove the path tile from the path lines array
                             m_sfPathLines.resize(m_aPath.size());
                         }
                         // Normal pathing. first check if the current tile is not the previous tile then append path tile
@@ -673,6 +677,23 @@ void Game::UpdateTiles()
         Tile& exitTile = m_aTiles[exitTileIndex.y][exitTileIndex.x];
         exitTile.m_Sprite.setTexture(m_ExitTileTexture);
         exitTile.setType(Tile::Type::Exit);
+
+        // If deleted path exist in the array, reset the tile type and texture of the deleted path for all elements in the array
+        // Then remove all elements from the array
+        // if (!m_aDeletedPath.empty())
+        // {
+        //     for (Vector2f vector : m_aDeletedPath)
+        //     {
+        //         sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
+        //         Tile& tile = m_aTiles[tileIndex.y][tileIndex.x];
+        //         //tile.setType(Tile::Type::Grass);
+        //         tile.SetTexture(m_GrassTexture);
+    
+        //     }
+        //     // Remove all elements from m_aDeletedPath
+        //     m_aDeletedPath.clear();
+        // }
+        
 
         // Set tile type and change the texture of all current path tiles
         for (Vector2f vector : m_aPath)
