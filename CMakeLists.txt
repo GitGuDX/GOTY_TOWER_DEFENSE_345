@@ -32,6 +32,9 @@ elseif(UNIX)
     set(EXECUTABLE_NAME Tower_Defense_Linux)  # Set the name for Linux
 endif()
 
+# Specify the location of SFMLConfig.cmake
+set(SFML_DIR "C:/msys64/mingw64/lib/cmake/sfml")
+
 # Find the SFML package (adjusted for any version)
 find_package(SFML REQUIRED COMPONENTS system window graphics)
 
@@ -43,7 +46,15 @@ add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
 # Link SFML libraries (adjust to match your needed components)
 #target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system X11 Xrandr Xcursor stdc++ m)
-target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system)
+
+# Link SFML libraries (adjust the version and names based on your installed version)
+if(WIN32)
+    target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system)
+elseif(UNIX AND NOT APPLE)
+    target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system)
+elseif(APPLE)
+    target_link_libraries(${EXECUTABLE_NAME} sfml-main)
+endif()
 
 # For Linux/Unix, link additional libraries if needed
 # if(UNIX)
@@ -62,6 +73,9 @@ elseif(UNIX AND NOT APPLE)
 elseif(APPLE)
     target_link_libraries(${EXECUTABLE_NAME} sfml-main)  # SFML requires sfml-main on macOS
 endif()
+
+# Set up include directories (specifically SFML includes from the src/include folder)
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
 
 # Optionally, set up include directories if needed (for fonts, images, etc.)
 # target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
