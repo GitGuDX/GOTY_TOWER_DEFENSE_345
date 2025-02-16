@@ -257,7 +257,8 @@ void Game::LoadMapEditorAssets()
             tempGrassTile.SetTexture(m_GrassTexture);
             tempGrassTile.SetScale(Vector2f(1.f, 1.f));
             tempGrassTile.SetTextureRect(sf::IntRect(0,0,50,50));
-            tempGrassTile.SetPosition(Vector2f(j * m_iTileSize, i * m_iTileSize));
+            tempGrassTile.SetOrigin(Vector2f(25, 25));
+            tempGrassTile.SetPosition(Vector2f(j * m_iTileSize + m_iTileSize / 2, i * m_iTileSize + m_iTileSize / 2));
             tempGrassTile.setType(Tile::Type::Grass);                               // Define its tile type
             row.emplace_back(tempGrassTile);
         }
