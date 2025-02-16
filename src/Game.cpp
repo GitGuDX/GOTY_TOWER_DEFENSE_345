@@ -1,6 +1,6 @@
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 
 #include "Game.h"
 #include <SFML/Graphics.hpp>
@@ -22,15 +22,9 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
     , m_AxeTemplate()  
-<<<<<<< HEAD
     // Monster generator initiliazed with base number of monsters and their increase rate per level                
     , m_MonsterGenerator(5)
     , m_iCurrentLevel(1)                                                                                                              
-=======
-    // Monster generator initiliazed with base number of monsters and their increase rate per level
-    , m_MonsterGenerator(1, 2)
-    , m_iCurrentLevel(1)
->>>>>>> origin/main
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
@@ -106,14 +100,6 @@ void Game::Run()
                 }
             }
             
-<<<<<<< HEAD
-=======
-            UpdateMonsters();
-            UpdateTowers();
-            UpdateAxes();
-            UpdateUI();
-
->>>>>>> origin/main
             DrawPlayMode();
             break;
         }
@@ -450,7 +436,7 @@ void Game::HandleInput()
 
                     for (auto& tile : a_towerMenu) {
                         if (tile.GetSpriteNonConst().getGlobalBounds().contains(mousePos)) {
-                            sf::Sprite& clickedSprite = tile.GetSpriteNonConst(); // Get the sprite
+                            //sf::Sprite& clickedSprite = tile.GetSpriteNonConst(); // Get the sprite
                             std::cout << "Clicked on a tile!\n";
                             break; // Stop after finding the first tile
                         }
@@ -587,6 +573,24 @@ void Game::HandleInput()
                 } else {
                     draggedSprite = nullptr;
                 }
+            }
+            // TO start a new round
+            static bool bTWasPressedLastUpdate = false;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+            {
+             //   std::cout << "one of the keys was pressed! " << std::endl;
+                if (!bTWasPressedLastUpdate)
+                {
+                 //   std::cout << "play mode activated" << std::endl;
+                    m_eGameMode = PlayMode;
+                    m_bIsRoundEnded = false;
+                    m_bIsMonsterGeneratorUpdated = false;
+                }
+                bTWasPressedLastUpdate = true;
+            }
+            else
+            {
+                bTWasPressedLastUpdate = false;
             }
         }
 
@@ -897,7 +901,17 @@ void Game::UpdateUI()
 
         //Loading tower selection
         Tower tower1;
+        #ifdef LINUX
+        m_towerTexture1.loadFromFile("../src/Images/Tower1_Frame_1.png");
+        m_towerTexture2.loadFromFile("../src/Images/Tower2_Frame_1.png");
+        #endif
+        #ifdef MAC
         m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
+        m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
+        #endif
+        #ifdef WINDOW
+        // Add for window
+        #endif
         tower1.SetTexture(m_towerTexture1);
         tower1.SetScale(Vector2f(0.7f, 0.7f));
         FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
@@ -907,7 +921,6 @@ void Game::UpdateUI()
         a_towerMenu.push_back(tower1);
 
         Tower tower2;
-        m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
         tower2.SetTexture(m_towerTexture2);
         FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
         tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
@@ -1132,10 +1145,19 @@ void Game::DrawPlayMode()
     if (animationDelay.getElapsedTime().asSeconds() >= frameTime) {
         if (m_eCurrentEditState == FinishedPathingState) {
             // Load the texture only when the current frame changes
+            #ifdef LINUX
+            if (!enemy1TempTexture.loadFromFile("../src/Images/monster_" + std::to_string(currentEnemyFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
+            }
+            #endif
+            #ifdef MAC
             if (!enemy1TempTexture.loadFromFile("Images/monster_" + std::to_string(currentEnemyFrame) + ".png")) {
                 std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
             }
-
+            #endif
+            #ifdef WINDOW
+            // Add for window
+            #endif
             // Set the texture for each tower
             for (auto& enemy : m_aMonstersQueue) {
                 enemy.SetTexture(enemy1TempTexture);
@@ -1175,18 +1197,29 @@ void Game::DrawPlayMode()
     if (animationDelay.getElapsedTime().asSeconds() >= frameTime) {
         if (m_eCurrentEditState == FinishedPathingState) {
             // Load the texture only when the current frame changes
+            #ifdef LINUX
+            if (!tower1TempTexture.loadFromFile("../src/Images/Tower1_Frame_" + std::to_string(currentTowerFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentTowerFrame << ".png\n";
+            }
+            if (!tower2TempTexture.loadFromFile("../src/Images/Tower2_Frame_" + std::to_string(currentTowerFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentTowerFrame << ".png\n";
+            }
+            #endif
+            #ifdef MAC
             if (!tower1TempTexture.loadFromFile("Images/Tower1_Frame_" + std::to_string(currentTowerFrame) + ".png")) {
                 std::cerr << "Failed to load Tower2_Frame_" << currentTowerFrame << ".png\n";
             }
+            if (!tower2TempTexture.loadFromFile("Images/Tower2_Frame_" + std::to_string(currentTowerFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentTowerFrame << ".png\n";
+            }
+            #endif
+            #ifdef WINDOW
+            // ADD for window
+            #endif
 
             // Set the texture for each tower
             for (auto& tower : a_activeWoodTowers) {
                 tower.SetTexture(tower1TempTexture);
-            }
-
-
-            if (!tower2TempTexture.loadFromFile("Images/Tower2_Frame_" + std::to_string(currentTowerFrame) + ".png")) {
-                std::cerr << "Failed to load Tower2_Frame_" << currentTowerFrame << ".png\n";
             }
 
             // Set the texture for each tower
