@@ -54,21 +54,24 @@ public:
         switch (type) {
             case TowerType::Basic:
                 m_fRange = 300.0f;
-                m_fMaxCooldown = 3.0f;
+                m_fMaxCooldown = 1.0f;
                 m_fDamage = 10.0f;
                 m_speed = 300.f;
+                m_iCost = 100;
                 break;
             case TowerType::Sniper:
                 m_fRange = 600.0f;
-                m_fMaxCooldown = 5.0f;
+                m_fMaxCooldown = 3.0f;
                 m_fDamage = 50.0f;
                 m_speed = 800.f;
+                m_iCost = 300;
                 break;
             case TowerType::Rapid:
                 m_fRange = 200.0f;
                 m_fMaxCooldown = 0.25f;
                 m_fDamage = 5.0f;
                 m_speed = 400.f;
+                m_iCost = 200;
                 break;
         }
     }
@@ -81,11 +84,15 @@ public:
     void UpdateCooldown(float deltaTime) { m_fShootCooldown -= deltaTime; }
 
     TowerType GetType() const { return m_eType; }
+    int GetCost() const { return m_iCost; }
+    void SetCost(int value) { m_iCost = value; }
+    
 
 private:
     TowerType m_eType;
     int m_iHealth;
     float m_fDamage;
+    float m_iCost;
     size_t m_stCurrentPathIndex;           // index of the Tower's current path
     float m_fShootCooldown;
     float m_fMaxCooldown;
