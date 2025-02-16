@@ -2,8 +2,8 @@
 
 Tower::Tower(TowerType type) 
     : m_eType(type)
-    , m_fShootCooldown(0.0f)
     , m_iHealth(100)
+    , m_fShootCooldown(0.0f)
 {
     switch(type) {
         case TowerType::Basic:
