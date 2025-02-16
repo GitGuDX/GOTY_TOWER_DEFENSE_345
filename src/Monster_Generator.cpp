@@ -3,7 +3,7 @@
 // Game.h already includes Monster_Generator.h and if Monster_Generator.h includes Game.h, this presents circular dependency.
 // Circular dependency means neither files can be fully defined without the other.
 // Now, .cpp files are compiled individually, so having the Game.h included here and not in the .h file avoids circular dependencies.
-#include "Game.h"                          
+#include "Game.h"
 #include "Monster_Generator.h"
 #include <iostream>
 #include <vector>
@@ -105,7 +105,7 @@ int MonsterGenerator::getWaveStrength(MonsterGenerator::Type currentType)
 }
 
 // Pass Game by refrence and since MonsterGenerator class is a friend of Game class, it has access to all Game class's private members
-void MonsterGenerator::generateMonster(Game& game)          
+void MonsterGenerator::generateMonster(Game& game)
 {
     ////////////////FOR TESTING///////////////
     // std::cout << m_aCurrentMonsterRoaster.size() <<'\n';

@@ -44,7 +44,7 @@ public:
 
     enum class Type
     {
-        Normal, 
+        Normal,
         Rogue,
         Tank,
         Swarm,
