@@ -4,6 +4,11 @@
 
 Follow these steps to set up the development environment and compile the game:
 
+## Prerequisites
+- MSYS2 (latest version)
+- CMake (version 3.15 or higher)
+- SFML (version 2.5.1 or higher)
+
 1. Install C++ Compiler
 
 To compile the project, you need a C++ compiler. Install MSYS2 (which provides a MinGW-w64 compiler) by following these steps:

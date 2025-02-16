@@ -85,7 +85,10 @@ private:
 
     // Initial SetUp 
     Font m_Font;
+    Text m_IntroText;
     Text m_EnterSizeText;
+    Text m_SizeLimitText;
+    bool m_bIsSizeLimitTextShown = false;
     int m_iInputFontSize = 30;
     Text m_WidthSizeInput;
     Text m_HeightSizeInput;

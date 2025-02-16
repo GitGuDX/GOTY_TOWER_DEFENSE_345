@@ -130,10 +130,23 @@ void Game::LoadInitialSetUpAssets()
     // add for window
     #endif
     
+    m_IntroText.setFont(m_Font);
+    m_IntroText.setString("Welcome to Tower Defense Game!");
+    m_IntroText.setCharacterSize(40);
+    m_IntroText.setFillColor(Color::White);
+    // Get text size
+    float fIntroTextWidth = m_IntroText.getLocalBounds().width;
+    float fIntroTextHeight = m_IntroText.getLocalBounds().height;
+    // Reset the origin to the center of the text
+    m_IntroText.setOrigin(Vector2f(fIntroTextWidth/2, fIntroTextHeight/2));
+    // Set text to the center of the screen
+    m_IntroText.setPosition(Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/5));
     
     // Initialize "Enter Size" text
     m_EnterSizeText.setFont(m_Font);
-    m_EnterSizeText.setString("Enter the size of the map");
+    m_EnterSizeText.setString("Enter map size (width x height) in tiles:");
+    m_EnterSizeText.setCharacterSize(25);
+    //m_SizeLimitText.setScale(0.80, 0.80);
     // Get "Enter Size" text size
     float fEnterSizeTextWidth = m_EnterSizeText.getLocalBounds().width;
     float fEnterSizeTextHeight = m_EnterSizeText.getLocalBounds().height;
@@ -143,10 +156,23 @@ void Game::LoadInitialSetUpAssets()
     m_EnterSizeText.setPosition(Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/3));
     m_EnterSizeText.setFillColor(Color::White);
 
+    // Initialize "Size Limit" text
+    m_SizeLimitText.setFont(m_Font);
+    m_SizeLimitText.setString("Size must be between 10 and 20");
+    m_SizeLimitText.setCharacterSize(20);
+    // Get "Size Limit" text size
+    float fSizeLimitTextWidth = m_SizeLimitText.getLocalBounds().width;
+    float fSizeLimitTextHeight = m_SizeLimitText.getLocalBounds().height;
+    // Reset the origin to the center of the text
+    m_SizeLimitText.setOrigin(Vector2f(fSizeLimitTextWidth/2, fSizeLimitTextHeight/2));
+    // Set "Size Limit" text to the center of the screen
+    m_SizeLimitText.setPosition(Vector2f(m_vWindowSize.x/2, m_vWindowSize.y*4/5));
+    m_SizeLimitText.setFillColor(Color::White);
+
     //Initialize width input box and store them in an array (index 0)
-    RectangleShape InputBoxWidth(Vector2f(m_iInputFontSize * 2.5, m_iInputFontSize));
+    RectangleShape InputBoxWidth(Vector2f(m_iInputFontSize * 1.5, m_iInputFontSize));
     InputBoxWidth.setOrigin(InputBoxWidth.getSize().x/2, InputBoxWidth.getSize().y/2);
-    InputBoxWidth.setPosition(Vector2f(m_vWindowSize.x*1/4, m_vWindowSize.y/2));
+    InputBoxWidth.setPosition(Vector2f(m_vWindowSize.x*3/8, m_vWindowSize.y/2));
     InputBoxWidth.setFillColor(Color::White);
     // InputBoxHeight.setOutlineColor(Color(128,128,128));
     // InputBoxHeight.setOutlineThickness(3.f);
@@ -163,9 +189,9 @@ void Game::LoadInitialSetUpAssets()
     m_WidthSizeInput.setPosition(InputBoxWidth.getPosition().x - InputBoxWidth.getSize().x/2 + 3, InputBoxWidth.getPosition().y + 1);  
 
     //Initialize height input box and store them in an array (index 1)
-    RectangleShape InputBoxHeight(Vector2f(m_iInputFontSize * 2.5, m_iInputFontSize));
+    RectangleShape InputBoxHeight(Vector2f(m_iInputFontSize * 1.5, m_iInputFontSize));
     InputBoxHeight.setOrigin(InputBoxHeight.getSize().x/2, InputBoxHeight.getSize().y/2);
-    InputBoxHeight.setPosition(Vector2f(m_vWindowSize.x*3/4, m_vWindowSize.y/2));
+    InputBoxHeight.setPosition(Vector2f(m_vWindowSize.x*5/8, m_vWindowSize.y/2));
     InputBoxHeight.setFillColor(Color::White);
     // InputBoxHeight.setOutlineColor(Color(128,128,128));
     // InputBoxHeight.setOutlineThickness(3.f);
@@ -351,9 +377,17 @@ void Game::HandleInput()
                     // convert the user input string to unsigned int and reassign the new grid size
                     m_vGridSize.x = std::stoi(m_WidthSizeInput.getString().toAnsiString());                // converting sf::String -> std::string -> unsigned int
                     m_vGridSize.y = std::stoi(m_HeightSizeInput.getString().toAnsiString());
-                    // Reset window size
-                    m_vWindowSize = Vector2i(m_vGridSize.x*m_iTileSize, m_vGridSize.y*m_iTileSize);
-                    m_eGameMode = GameMode::MapEditorMode;
+                    // apply input limit from 10 to 25
+                    if (m_vGridSize.x >= 10 && m_vGridSize.x <= 20 && m_vGridSize.y >= 10 && m_vGridSize.y <= 20)
+                    {
+                        // Reset window size
+                        m_vWindowSize = Vector2i(m_vGridSize.x*m_iTileSize, m_vGridSize.y*m_iTileSize);
+                        m_eGameMode = GameMode::MapEditorMode;
+                    }
+                    else
+                    {
+                        m_bIsSizeLimitTextShown = true;
+                    }
                 }
             }
 
@@ -934,7 +968,13 @@ void Game::DrawInitialSetUp()
 
     m_iCurrentWealth = 0;
 
+    // Draw all text
+    m_Window.draw(m_IntroText);
     m_Window.draw(m_EnterSizeText);
+    if (m_bIsSizeLimitTextShown)
+    {
+        m_Window.draw(m_SizeLimitText);
+    }
 
     for (RectangleShape box : m_aUserInputBoxWindowSize)
     {
