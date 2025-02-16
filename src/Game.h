@@ -50,8 +50,16 @@ private:
     void LoadMapEditorAssets();
     void LoadPlayModeAssets();
 
+    void HandleGameOver();
     void HandleInput();
     void ChangeSizeInputText(Event& event, String& currentText);
+
+    void ShowGameOverScreen();
+    void delayedTurnOffDragging();
+    //void PlayerPressedRestart();
+    //void ResetGame();
+    //void PlayerPressedMainMenu();
+    //void SwitchToMainMenu();
     
     void UpdateInitialPrompt();
     void UpdateTiles();
@@ -132,6 +140,7 @@ private:
     // Play mode 
     MonsterGenerator m_MonsterGenerator;
     bool m_bIsRoundEnded = false;
+    bool m_gameOver = false;
     bool m_bIsMonsterGeneratorUpdated = false;
 
     int m_iCurrentLevel;
@@ -142,6 +151,9 @@ private:
 
     std::vector<Monster> m_aMonstersQueue;
     std::vector<Monster*> m_aEliminatedMonstersQueue;
+    bool justPlacedTower = false;
+    sf::Clock placementTimer;  // Timer to track recent tower placements
+
 
     void DebugPrintGameState() const {
         std::cout << "Game State:\n"
@@ -161,6 +173,9 @@ private:
     Text m_instructionText;
     Text m_warningText;
     Text m_modeText;
+    Text woodTowerPrice;
+    Text stoneTowerPrice;
+    Text m_gameOverText;
     String currentWarning = "";
     String currentMode = "";
     Clock warningShown;
@@ -171,18 +186,26 @@ private:
     Vector2f instructionTextPosition;
     Vector2f warningTextPosition;
     Vector2f modeTextPosition;
+    Vector2f woodTowerPricePosition;
+    Vector2f stoneTowerPricePosition;
+    Vector2f gameOverTextPosition;
     vector<Tower> a_towerMenu;
     vector<Tower> a_allActiveTowers;
     vector<Tower> a_activeWoodTowers;
     vector<Tower> a_activeStoneTowers;
 
-
+    bool hoveringOnTower;
+    sf::Vector2f xPosition; // Center the X at the hovered tower
     Sprite* draggedSprite = nullptr;
     Texture m_towerTexture1;
     Texture m_towerTexture2;
     Tower tower1;
     Tower tower2;
     Tower draggedTower;
+    bool isDraggingTower = false;
+    sf::Clock dragTimer;
+    bool isTimerRunning = false;
+
 
 
     // Animation related
