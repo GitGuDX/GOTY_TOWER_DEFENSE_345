@@ -60,6 +60,7 @@ private:
     void UpdateAxes();
     void UpdateText();
     void UpdateUI();
+    void Animate();
 
     void DrawInitialSetUp();
     void DrawMapEditorMode();
@@ -151,17 +152,41 @@ private:
     Text m_scoreText;
     Text m_levelText;
     Text m_instructionText;
+    Text m_warningText;
+    Text m_modeText;
+    String currentWarning = "";
+    String currentMode = "";
+    Clock warningShown;
+
 
     Vector2f scoreTextPosition;
     Vector2f levelTextPosition;
     Vector2f instructionTextPosition;
-    vector<Entity> a_tower;
+    Vector2f warningTextPosition;
+    Vector2f modeTextPosition;
+    vector<Tower> a_towerMenu;
+    vector<Tower> a_allActiveTowers;
+    vector<Tower> a_activeWoodTowers;
+    vector<Tower> a_activeStoneTowers;
 
 
+    Sprite* draggedSprite = nullptr;
     Texture m_towerTexture1;
     Texture m_towerTexture2;
-    Tile tower1;
-    Tile tower2;
+    Tower tower1;
+    Tower tower2;
+    Tower draggedTower;
+
+
+    // Animation related
+    Clock animationDelay;
+    int currentTowerFrame = 1;
+    int currentEnemyFrame = 1;
+    const float frameTime = 0.1f; // Time per frame in seconds
+    Texture tower1TempTexture;
+    Texture tower2TempTexture;
+    Texture enemy1TempTexture;
+    
 
 
 };
