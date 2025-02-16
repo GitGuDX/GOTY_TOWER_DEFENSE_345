@@ -12,6 +12,7 @@
 #include "Tower.h"
 
 using namespace sf;
+using namespace std;
 
 class Game
 {
@@ -57,6 +58,9 @@ private:
     void UpdateMonsters();
     void UpdateTowers();
     void UpdateAxes();
+    void UpdateText();
+    void UpdateUI();
+    void Animate();
 
     void DrawInitialSetUp();
     void DrawMapEditorMode();
@@ -125,6 +129,7 @@ private:
     MonsterGenerator m_MonsterGenerator;
 
     int m_iCurrentLevel;
+    int m_iCurrentWealth;
 
     Texture m_MonsterTexture;
     Monster m_MonsterTemplate;
@@ -140,6 +145,50 @@ private:
     
 
     friend class MonsterGenerator;                  // make MonsterGenerator friend of Game so that MonsterGenerator has access to Game class's private members
+
+
+
+    // UI Info
+    Text m_scoreText;
+    Text m_levelText;
+    Text m_instructionText;
+    Text m_warningText;
+    Text m_modeText;
+    String currentWarning = "";
+    String currentMode = "";
+    Clock warningShown;
+
+
+    Vector2f scoreTextPosition;
+    Vector2f levelTextPosition;
+    Vector2f instructionTextPosition;
+    Vector2f warningTextPosition;
+    Vector2f modeTextPosition;
+    vector<Tower> a_towerMenu;
+    vector<Tower> a_allActiveTowers;
+    vector<Tower> a_activeWoodTowers;
+    vector<Tower> a_activeStoneTowers;
+
+
+    Sprite* draggedSprite = nullptr;
+    Texture m_towerTexture1;
+    Texture m_towerTexture2;
+    Tower tower1;
+    Tower tower2;
+    Tower draggedTower;
+
+
+    // Animation related
+    Clock animationDelay;
+    int currentTowerFrame = 1;
+    int currentEnemyFrame = 1;
+    const float frameTime = 0.1f; // Time per frame in seconds
+    Texture tower1TempTexture;
+    Texture tower2TempTexture;
+    Texture enemy1TempTexture;
+    
+
+
 };
 
 

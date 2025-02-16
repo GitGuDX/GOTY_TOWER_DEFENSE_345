@@ -71,6 +71,12 @@
         "sstream": "cpp",
         "unordered_set": "cpp",
         "variant": "cpp",
-        "codecvt": "cpp"
-    }
+        "codecvt": "cpp",
+        "__bits": "cpp",
+        "__debug": "cpp",
+        "__tuple": "cpp",
+        "__nullptr": "cpp",
+        "__string": "cpp",
+        "filesystem": "cpp"
+}
 }
