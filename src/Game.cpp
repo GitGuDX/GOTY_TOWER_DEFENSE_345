@@ -85,18 +85,22 @@ void Game::Run()
                 m_ePrevGameMode = PlayMode;
             }
 
-            // If round hasn't ended, game is still playing so keep updating
-            if (!m_bIsRoundEnded)
-            {
-                UpdatePlay();
-            }
-            // If the round ended, prepare for the next round.
-            else 
-            {
-                if (!m_bIsMonsterGeneratorUpdated)
+            if(m_gameOver){
+                HandleGameOver(); // Implement this function to show a game over screen, restart, etc.
+            } else {
+                // If round hasn't ended, game is still playing so keep updating
+                if (!m_bIsRoundEnded)
                 {
-                    m_MonsterGenerator.updateNextRoundMonsterGenerator();
-                    m_bIsMonsterGeneratorUpdated = true;
+                    UpdatePlay();
+                }
+                // If the round ended, prepare for the next round.
+                else
+                {
+                    if (!m_bIsMonsterGeneratorUpdated)
+                    {
+                        m_MonsterGenerator.updateNextRoundMonsterGenerator();
+                        m_bIsMonsterGeneratorUpdated = true;
+                    }
                 }
             }
             UpdateUI();
@@ -221,6 +225,7 @@ void Game::LoadInitialSetUpAssets()
     m_aButtonBoxes.emplace_back(submitButtonPressed);
 }
 
+
 void Game::LoadMapEditorAssets()
 {
     // Map editor mode assets
@@ -332,6 +337,34 @@ void Game::LoadPlayModeAssets()
 
 
 }
+
+void Game::ShowGameOverScreen()
+{   
+    m_Window.draw(m_gameOverText);
+}
+
+void Game::HandleGameOver()
+{
+    // Stop game logic
+    m_aMonstersQueue.clear(); // Remove all monsters
+    m_bIsRoundEnded = true; // Ensure no new rounds start
+    m_bIsMonsterGeneratorUpdated = false; // Reset for next playthrough
+
+    // Display Game Over message (implement this in your UI system)
+    ShowGameOverScreen();
+    /*
+    // Wait for user input to restart or return to main menu
+    if (PlayerPressedRestart()) // Implement input check
+    {
+        ResetGame();
+    }
+    else if (PlayerPressedMainMenu())
+    {
+        SwitchToMainMenu();
+    }
+    */
+}
+
 
 void Game::HandleInput()
 {
@@ -539,6 +572,40 @@ void Game::HandleInput()
             }
         }
 
+        //Removes built towers on click
+        if(event.mouseButton.button == sf::Mouse::Left && !isDraggingTower){
+            if (justPlacedTower && placementTimer.getElapsedTime().asMilliseconds() < 200) {
+                return;  // Ignore clicks right after placement
+            }
+            justPlacedTower = false;  // Reset flag after some time
+            sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+            Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(newPos, 50);
+
+            for (auto it = a_allActiveTowers.begin(); it != a_allActiveTowers.end(); ++it) {
+                if (it->GetPosition().x == snapGrid.x && it->GetPosition().y == snapGrid.y) {
+                    currentWarning = "Successfully removed a tower\n";
+                    m_warningText.setFillColor(Color::Green);
+                    warningShown.restart();
+                    m_iCurrentWealth += it->GetCost()/2;
+
+                    //  Remove the clicked tower
+                    if (std::find(a_activeWoodTowers.begin(), a_activeWoodTowers.end(), *it) != a_activeWoodTowers.end()) {
+                        // Tower is in wood towers list, remove it
+                        a_activeWoodTowers.erase(std::remove(a_activeWoodTowers.begin(), a_activeWoodTowers.end(), *it), a_activeWoodTowers.end());
+                    } else if (std::find(a_activeStoneTowers.begin(), a_activeStoneTowers.end(), *it) != a_activeStoneTowers.end()) {
+                        // Tower is in stone towers list, remove it
+                        a_activeStoneTowers.erase(std::remove(a_activeStoneTowers.begin(), a_activeStoneTowers.end(), *it), a_activeStoneTowers.end());
+                    }
+
+                    // Remove the tower from all active towers
+                    a_allActiveTowers.erase(it);
+                    std::cout << "Removed tower at: " << snapGrid.x << ", " << snapGrid.y << std::endl;
+                    break;  // Stop looping after removing one tower
+                }
+            }
+        }
+
+
         // TOWER DRAGGING RELATED
         if (m_eGameMode == PlayMode || m_eGameMode == MapEditorMode){
             // Handle mouse click (start dragging)
@@ -553,6 +620,7 @@ void Game::HandleInput()
                         FloatRect draggedTowerBounds = draggedTower.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
                         draggedTower.SetOrigin(Vector2f(draggedTowerBounds.width/2, draggedTowerBounds.height/2 + 10));
                         draggedTower.SetTextureRect(sf::IntRect(0,0,70,100));
+                        isDraggingTower = true;
                         break;
                     }
                 }
@@ -594,15 +662,35 @@ void Game::HandleInput()
 
                     if (draggedSprite->getTexture() == &m_towerTexture1) {
                         draggedTower.SetType(TowerType::Rapid);
-                        cout << static_cast<int>(draggedTower.GetType());
-                        a_activeWoodTowers.push_back(draggedTower);
-                        a_allActiveTowers.push_back(draggedTower);
+                        if(m_iCurrentWealth < 200){
+                            currentWarning = "Warning: Cannot afford this tower...\n";
+                            m_warningText.setFillColor(Color::Red);
+                            warningShown.restart();
+                            draggedSprite = nullptr;
+                            break;
+                        } else{
+                            m_iCurrentWealth -= 200;
+                            a_activeWoodTowers.push_back(draggedTower);
+                            a_allActiveTowers.push_back(draggedTower);
+                            justPlacedTower = true;
+                            placementTimer.restart();
+                        }
                     }
                     if(draggedSprite->getTexture() == &m_towerTexture2){
                         draggedTower.SetType(TowerType::Sniper);
-                        cout << static_cast<int>(draggedTower.GetType());
-                        a_activeStoneTowers.push_back(draggedTower);
-                        a_allActiveTowers.push_back(draggedTower);
+                        if(m_iCurrentWealth < 300){
+                            currentWarning = "Warning: Cannot afford this tower...\n";
+                            m_warningText.setFillColor(Color::Red);
+                            warningShown.restart();
+                            draggedSprite = nullptr;
+                            break;
+                        } else{
+                            m_iCurrentWealth -= 300;
+                            a_activeStoneTowers.push_back(draggedTower);
+                            a_allActiveTowers.push_back(draggedTower);
+                            justPlacedTower = true;
+                            placementTimer.restart();
+                        }
                     }
                     draggedSprite = nullptr;
                     currentWarning = "Successfully placed tile\n";
@@ -611,7 +699,9 @@ void Game::HandleInput()
                 } else {
                     draggedSprite = nullptr;
                 }
+                isDraggingTower = false;
             }
+            
             // TO start a new round
             static bool bTWasPressedLastUpdate = false;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
@@ -632,8 +722,28 @@ void Game::HandleInput()
             }
         }
 
+
+        if (event.type == sf::Event::MouseMoved && !isDraggingTower) {
+            sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
+            Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(newPos, 50);
+            hoveringOnTower = false;
+            for (auto& tower : a_allActiveTowers) {
+                if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+                    xPosition = Vector2f(snapGrid.x, snapGrid.y);
+                    hoveringOnTower = true;
+                    break;
+                }
+            }
+        }
+        
+        // Makes X go away right after releasing on them
+        if(event.type == sf::Event::MouseButtonReleased){
+            hoveringOnTower = false;
+        }
+        
     }
 }
+
 
 void Game::ChangeSizeInputText(Event& event, String& currentText)                   // Add limit condition for input (input must be between 5 and 30??)
 {
@@ -703,6 +813,10 @@ void Game::UpdatePlay()
     {
         m_bIsRoundEnded = true;
     }
+
+    if (m_iCurrentWealth < 0){
+        m_gameOver = true;
+    }
 }
 
 void Game::UpdateMonsters()
@@ -718,8 +832,13 @@ void Game::UpdateMonsters()
     // Remove finished monsters
     m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
         [this](Monster& monster) {
-            return monster.GetCurrentPathIndex() >= m_aPath.size() - 1;
+            if (monster.GetCurrentPathIndex() >= m_aPath.size() - 1) {
+                m_iCurrentWealth -= monster.GetStrength();
+                return true;
+            }
+            return false;
         }), m_aMonstersQueue.end());
+
 
     // Update monster positions
     for (Monster& monster : m_aMonstersQueue)
@@ -757,6 +876,9 @@ void Game::UpdateUI()
     instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
     warningTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y - 30);
     modeTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 65);
+    woodTowerPricePosition = Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 125);
+    stoneTowerPricePosition = Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/3 + 125);
+    gameOverTextPosition = Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/2);
 
     // Score text 
     m_scoreText.setFont(m_Font);               // Set font
@@ -787,6 +909,22 @@ void Game::UpdateUI()
         currentWarning = "";
     }
 
+    // Wood tower price
+    woodTowerPrice.setFont(m_Font);               // Set font
+    woodTowerPrice.setString("Cost: 200");   // Set text
+    FloatRect woodTowerPriceBounds = woodTowerPrice.getLocalBounds();
+    woodTowerPrice.setOrigin(woodTowerPriceBounds.width / 2, woodTowerPriceBounds.height / 2);
+    woodTowerPrice.setCharacterSize(12);        // Set size
+    woodTowerPrice.setPosition(woodTowerPricePosition);       // Set position
+
+    // Stone tower price
+    stoneTowerPrice.setFont(m_Font);               // Set font
+    stoneTowerPrice.setString("Cost: 300");   // Set text
+    FloatRect stoneTowerPriceBounds = stoneTowerPrice.getLocalBounds();
+    stoneTowerPrice.setOrigin(stoneTowerPriceBounds.width / 2, stoneTowerPriceBounds.height / 2);
+    stoneTowerPrice.setCharacterSize(12);        // Set size
+    stoneTowerPrice.setPosition(stoneTowerPricePosition);       // Set position
+
     // Current mode text 
     m_modeText.setFont(m_Font);               // Set font
     m_modeText.setString(currentMode);   // Set text
@@ -795,6 +933,16 @@ void Game::UpdateUI()
     m_modeText.setCharacterSize(18);        // Set size
     m_modeText.setFillColor(Color::Red);     // Set color
     m_modeText.setPosition(modeTextPosition);       // Set position
+
+    // Game Over text 
+    m_gameOverText.setFont(m_Font);               // Set font
+    m_gameOverText.setString("Game Over!");   // Set text
+    FloatRect gameOverTextBounds = m_gameOverText.getLocalBounds();
+    m_gameOverText.setOrigin(gameOverTextBounds.width/2, gameOverTextBounds.height/2);
+    m_gameOverText.setCharacterSize(55);        // Set size
+    m_gameOverText.setFillColor(Color::Red);     // Set color
+    m_gameOverText.setPosition(gameOverTextPosition);       // Set position
+
 
     m_instructionText.setFont(m_Font);               // Set font
     m_instructionText.setCharacterSize(20);        // Set size
@@ -929,8 +1077,8 @@ void Game::UpdateAxes()
                           << monster.GetPosition().x << ", "
                           << monster.GetPosition().y << ")" << std::endl;
                 hitMonster = true;
-                cout << "\n"<<monster.GetHealth()<<"\n";
                 monster.SetHealth(monster.GetHealth()-it->GetDamage());
+                cout << "\n"<<monster.GetHealth()<<"\n";
                 if (monster.GetHealth() <= 0){
                     // Handle the monster's death (e.g., remove it from the queue)
                     std::cout << "Monster destroyed!" << std::endl;
@@ -938,7 +1086,7 @@ void Game::UpdateAxes()
                     auto monsterIt = std::find(m_aMonstersQueue.begin(), m_aMonstersQueue.end(), monster);
                     if (monsterIt != m_aMonstersQueue.end()) {
                         m_aMonstersQueue.erase(monsterIt);
-                        m_iCurrentWealth += 100;
+                        m_iCurrentWealth += monster.GetReward();
                     }
                 }
                 break;
@@ -966,7 +1114,7 @@ void Game::DrawInitialSetUp()
     // Erases everything that was drawn last frame
 	m_Window.clear();
 
-    m_iCurrentWealth = 0;
+    m_iCurrentWealth = 500;
 
     // Draw all text
     m_Window.draw(m_IntroText);
@@ -1049,6 +1197,8 @@ void Game::DrawMapEditorMode()
         for (auto& tower : a_activeWoodTowers) {
             m_Window.draw(tower);  // If Tile is derived from sf::Drawable
         }
+        m_Window.draw(woodTowerPrice);
+        m_Window.draw(stoneTowerPrice);
     }
     if(m_eCurrentEditState == FinishedPathingState){
         for (auto& tower : a_activeStoneTowers) {
@@ -1060,6 +1210,32 @@ void Game::DrawMapEditorMode()
     }
     m_Window.draw(m_sfPathLines);
     //m_Window.draw(m_MonsterTemplate.m_Sprite);
+
+    if(hoveringOnTower){
+        sf::Vector2f position(xPosition.x-15, xPosition.y-15); // Top-left position of X
+        float lineThickness = 6.0f;     // Thickness of X
+        float lineLength = 30.0f;       // Length of each line in X
+
+        // Create two diagonal lines using RectangleShape
+        sf::RectangleShape line1(sf::Vector2f(lineLength, lineThickness));
+        line1.setFillColor(sf::Color::Red);
+        line1.setOrigin(lineLength / 2, lineThickness / 2);
+        line1.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+        line1.setRotation(45);  // Diagonal top-left to bottom-right
+
+        sf::RectangleShape line2(sf::Vector2f(lineLength, lineThickness));
+        line2.setFillColor(sf::Color::Red);
+        line2.setOrigin(lineLength / 2, lineThickness / 2);
+        line2.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+        line2.setRotation(-45); // Diagonal top-right to bottom-left
+
+        m_Window.draw(line1);
+        m_Window.draw(line2);
+    }
+
+    if(m_gameOver){
+        ShowGameOverScreen();
+    }
     
     m_Window.display();
 }
@@ -1080,6 +1256,7 @@ void Game::DrawPlayMode()
 
 
 // ALL ENEMY ANIMATION RELATED
+
     if (animationDelay.getElapsedTime().asSeconds() >= frameTime) {
         if (m_eCurrentEditState == FinishedPathingState) {
             // Load the texture only when the current frame changes
@@ -1124,6 +1301,8 @@ void Game::DrawPlayMode()
     m_Window.draw(m_instructionText);
     m_Window.draw(m_warningText);
     m_Window.draw(m_modeText);
+    m_Window.draw(woodTowerPrice);
+    m_Window.draw(stoneTowerPrice);
     if(m_eCurrentEditState == FinishedPathingState){
         for (auto& tower : a_towerMenu) {
             m_Window.draw(tower);  // If Tile is derived from sf::Drawable
@@ -1156,12 +1335,14 @@ void Game::DrawPlayMode()
 
             // Set the texture for each tower
             for (auto& tower : a_activeWoodTowers) {
-                tower.SetTexture(tower1TempTexture);
+                if (std::find(a_allActiveTowers.begin(), a_allActiveTowers.end(), tower) != a_allActiveTowers.end()) {
+                    tower.SetTexture(tower1TempTexture);
+                }
             }
-
-            // Set the texture for each tower
             for (auto& tower : a_activeStoneTowers) {
-                tower.SetTexture(tower2TempTexture);
+                if (std::find(a_allActiveTowers.begin(), a_allActiveTowers.end(), tower) != a_allActiveTowers.end()) {
+                    tower.SetTexture(tower2TempTexture);
+                }
             }
 
             // Update currentFrame and reset if necessary
@@ -1174,8 +1355,6 @@ void Game::DrawPlayMode()
             animationDelay.restart();
         }
     }
-
-    
 
     // Draw the towers and enemies (every frame, without waiting for the animation delay)
     if(m_eCurrentEditState == FinishedPathingState){
@@ -1193,12 +1372,39 @@ void Game::DrawPlayMode()
         m_Window.draw(bullet);
     }
 
-        if(draggedSprite != nullptr){
-            m_Window.draw(draggedTower);
-        }
-        m_Window.draw(m_sfPathLines);
+    if(draggedSprite != nullptr){
+        m_Window.draw(draggedTower);
+    }
+    m_Window.draw(m_sfPathLines);
 
-        m_Window.display();
+
+    if(hoveringOnTower){
+        sf::Vector2f position(xPosition.x-15, xPosition.y-15); // Top-left position of X
+        float lineThickness = 6.0f;     // Thickness of X
+        float lineLength = 30.0f;       // Length of each line in X
+
+        // Create two diagonal lines using RectangleShape
+        sf::RectangleShape line1(sf::Vector2f(lineLength, lineThickness));
+        line1.setFillColor(sf::Color::Red);
+        line1.setOrigin(lineLength / 2, lineThickness / 2);
+        line1.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+        line1.setRotation(45);  // Diagonal top-left to bottom-right
+
+        sf::RectangleShape line2(sf::Vector2f(lineLength, lineThickness));
+        line2.setFillColor(sf::Color::Red);
+        line2.setOrigin(lineLength / 2, lineThickness / 2);
+        line2.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+        line2.setRotation(-45); // Diagonal top-right to bottom-left
+
+        m_Window.draw(line1);
+        m_Window.draw(line2);
+    }
+
+    if(m_gameOver){
+        ShowGameOverScreen();
+    }
+
+    m_Window.display();
 }
 
 
