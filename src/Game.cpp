@@ -7,8 +7,8 @@
 
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
-#define DEBUG               // For debugging purposes
+#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+//#define DEBUG               // For debugging purposes
 
 #include "Game.h"
 #include <SFML/Graphics.hpp>
@@ -552,116 +552,6 @@ void Game::LoadUIAssets()
     a_towerMenu.push_back(tower2);
 }
 
-void Game::LoadUIAssets()
-{
-    scoreTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 10);
-    levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
-    instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
-    warningTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y - 30);
-    modeTextPosition = Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/10 + 65);
-    woodTowerPricePosition = Vector2f(m_vWindowSize.x + 135, m_vWindowSize.y/3 + 125);
-    stoneTowerPricePosition = Vector2f(m_vWindowSize.x + 235, m_vWindowSize.y/3 + 125);
-    gameOverTextPosition = Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/2);
-
-    // Score text 
-    m_scoreText.setFont(m_Font);               // Set font
-    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
-    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
-    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
-    m_scoreText.setCharacterSize(25);        // Set size
-    m_scoreText.setFillColor(Color::Red);     // Set color
-    m_scoreText.setPosition(scoreTextPosition);       // Set position
-
-    // Level text 
-    m_levelText.setFont(m_Font);               // Set font
-    m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
-    FloatRect levelTextBounds = m_levelText.getLocalBounds();
-    m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
-    m_levelText.setCharacterSize(25);        // Set size
-    m_levelText.setFillColor(Color::Red);     // Set color
-    m_levelText.setPosition(levelTextPosition);       // Set position
-
-    // Warning text 
-    m_warningText.setFont(m_Font);               // Set font
-    m_warningText.setString(currentWarning);   // Set text
-    FloatRect warningTextBounds = m_warningText.getLocalBounds();
-    m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
-    m_warningText.setCharacterSize(15);        // Set size
-    m_warningText.setPosition(warningTextPosition);       // Set position
-    if(warningShown.getElapsedTime().asSeconds() > 3){
-        currentWarning = "";
-    }
-
-    // Wood tower price
-    woodTowerPrice.setFont(m_Font);               // Set font
-    woodTowerPrice.setString("Cost: 200");   // Set text
-    FloatRect woodTowerPriceBounds = woodTowerPrice.getLocalBounds();
-    woodTowerPrice.setOrigin(woodTowerPriceBounds.width / 2, woodTowerPriceBounds.height / 2);
-    woodTowerPrice.setCharacterSize(12);        // Set size
-    woodTowerPrice.setPosition(woodTowerPricePosition);       // Set position
-
-    // Stone tower price
-    stoneTowerPrice.setFont(m_Font);               // Set font
-    stoneTowerPrice.setString("Cost: 300");   // Set text
-    FloatRect stoneTowerPriceBounds = stoneTowerPrice.getLocalBounds();
-    stoneTowerPrice.setOrigin(stoneTowerPriceBounds.width / 2, stoneTowerPriceBounds.height / 2);
-    stoneTowerPrice.setCharacterSize(12);        // Set size
-    stoneTowerPrice.setPosition(stoneTowerPricePosition);       // Set position
-
-    // Current mode text 
-    m_modeText.setFont(m_Font);               // Set font
-    m_modeText.setString(currentMode);   // Set text
-    FloatRect modeTextBounds = m_modeText.getLocalBounds();
-    m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
-    m_modeText.setCharacterSize(18);        // Set size
-    m_modeText.setFillColor(Color::Red);     // Set color
-    m_modeText.setPosition(modeTextPosition);       // Set position
-
-    // Game Over text 
-    m_gameOverText.setFont(m_Font);               // Set font
-    m_gameOverText.setString("Game Over!");   // Set text
-    FloatRect gameOverTextBounds = m_gameOverText.getLocalBounds();
-    m_gameOverText.setOrigin(gameOverTextBounds.width/2, gameOverTextBounds.height/2);
-    m_gameOverText.setCharacterSize(55);        // Set size
-    m_gameOverText.setFillColor(Color::Red);     // Set color
-    m_gameOverText.setPosition(gameOverTextPosition);       // Set position
-
-
-    m_instructionText.setFont(m_Font);               // Set font
-    m_instructionText.setCharacterSize(20);        // Set size
-    m_instructionText.setPosition(instructionTextPosition);       // Set position
-
-    //Loading tower selection
-    Tower tower1;
-    #ifdef LINUX
-    m_towerTexture1.loadFromFile("../src/Images/Tower1_Frame_1.png");
-    m_towerTexture2.loadFromFile("../src/Images/Tower2_Frame_1.png");
-    #endif
-    #ifdef MAC
-    m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
-    m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
-    #endif
-    #ifdef WINDOW
-    // Add for window
-    #endif
-    tower1.SetTexture(m_towerTexture1);
-    tower1.SetScale(Vector2f(0.7f, 0.7f));
-    FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-    tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
-    tower1.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower1.SetPosition(Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 75));
-    a_towerMenu.push_back(tower1);
-
-    Tower tower2;
-    tower2.SetTexture(m_towerTexture2);
-    FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-    tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
-    tower2.SetScale(Vector2f(0.7f, 0.7f));
-    tower2.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower2.SetPosition(Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/3 + 75));
-    a_towerMenu.push_back(tower2);
-}
-
 void Game::ShowGameOverScreen()
 {   
     m_Window.draw(m_gameOverText);
@@ -938,20 +828,7 @@ void Game::HandleInput()
                 for (size_t i = 0; i < a_towerMenu.size(); ++i)
                 {
                     Tower& tower = a_towerMenu[i];
-                    //sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
-                    // if (tower.GetSpriteNonConst().getGlobalBounds().contains(mousePos) && draggedSprite == nullptr) {
-                    //     //draggedSprite = &tower.GetSpriteNonConst(); // Store reference to the sprite
-                    //     draggedSprite = (tower.GetSpriteNonConst().getTexture() != nullptr) ? &tower.GetSpriteNonConst() : nullptr;     // Ensure draggedSprite is only assigned if it's valid.
-
-                    //     draggedTower.SetTexture(*draggedSprite->getTexture()); // Get texture from the clicked sprite
-                    //     draggedTower.SetScale(Vector2f(0.7f, 0.7f));
-                    //     draggedTower.SetPosition(tower.GetPosition());
-                    //     FloatRect draggedTowerBounds = draggedTower.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-                    //     draggedTower.SetOrigin(Vector2f(draggedTowerBounds.width/2, draggedTowerBounds.height/2 + 10));
-                    //     draggedTower.SetTextureRect(sf::IntRect(0,0,70,100));
-                    //     isDraggingTower = true;
-                    //     break;
-                    // }
+                    sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
                     if (tower.GetSpriteNonConst().getGlobalBounds().contains(mousePos) && draggedSprite == nullptr) 
                     {
                         draggedSprite = (tower.GetSpriteNonConst().getTexture() != nullptr) ? &tower.GetSpriteNonConst() : nullptr;
