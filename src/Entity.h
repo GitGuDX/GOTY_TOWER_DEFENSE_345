@@ -58,6 +58,11 @@ public:
     m_Sprite.setRotation(angle);  // Assuming m_Sprite is your sprite
 	}
 
+	void SetVelocity(const sf::Vector2f& velocity)
+	{
+		m_vVelocity = velocity;
+	}
+
 	sf::Vector2f GetPosition() const
 	{
 		return m_Sprite.getPosition();
@@ -76,6 +81,11 @@ public:
 	sf::Sprite& GetSpriteNonConst()
 	{
 		return m_Sprite;
+	}
+
+	sf::Vector2f GetVelocity() const
+	{
+		return m_vVelocity;
 	}
 
 	void Move(const sf::Vector2f& offset)
@@ -105,10 +115,14 @@ public:
 	sf::Vector2f m_Direction;  // Store initial direction
 	float m_speed; // Adjust speed as needed
 	float m_fDamage;
+	
   
    	bool operator==(const Entity& other) const {
         return this->GetPosition() == other.GetPosition(); // Example, compare based on position or any other criteria
     }
+
+private:
+	sf::Vector2f m_vVelocity;
 };
 
 
