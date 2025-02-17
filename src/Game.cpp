@@ -1,6 +1,6 @@
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 
 #include "Game.h"
 #include <SFML/Graphics.hpp>
@@ -323,7 +323,14 @@ void Game::LoadPlayModeAssets()
     m_BulletTexture.loadFromFile("../src/Images/Bullet.png");
     #endif
     #ifdef MAC
-    m_MonsterTexture.loadFromFile("Images/monster_1.png");
+    
+    m_SkeletonTempTexture.loadFromFile("Images/Running_Skeleton/0_Skeleton_Crusader_Running_0.png");
+    m_ReaperTempTexture.loadFromFile("Images/Running_Reaper/0_Reaper_Man_Running_0.png");
+    m_GolemTempTexture.loadFromFile("Images/Running_Golem/0_Golem_Running_0.png");
+    m_MinotaurTempTexture.loadFromFile("Images/Running_Minotaur/0_Minotaur_Running_0.png");
+    m_OgreTempTexture.loadFromFile("Images/Running_Ogre/0_Ogre_Running_0.png");
+    
+    
     m_TowerTexture.loadFromFile("Images/tower.png");
     m_BulletTexture.loadFromFile("Images/Bullet.png");
     #endif
@@ -532,13 +539,13 @@ void Game::HandleInput()
                         else if (m_aPath.size() > 1 && m_aPath[m_aPath.size() - 2] == gridPos)
                         {
                             // Append the path tile to the deleted path array
-                            //m_aDeletedPath.push_back(m_aPath.back());
+                            m_aDeletedPath.push_back(m_aPath.back());
                             // Remove the path tile from the path array
                             m_aPath.pop_back();
                             // Remove the path tile from the path lines array
                             m_sfPathLines.resize(m_aPath.size());
                         }
-                        // Normal pathing. first check if the current tile is not the previous tile then append path tile
+                        // Skeleton pathing. first check if the current tile is not the previous tile then append path tile
                         else if (m_aPath.back().x != gridPos.x || m_aPath.back().y != gridPos.y)
                         {
                             m_aPath.push_back(gridPos);
@@ -559,7 +566,7 @@ void Game::HandleInput()
             }
 
             //// For test.
-            // In normal game, user should be allowed to place towers then press play button to start game
+            // In Skeleton game, user should be allowed to place towers then press play button to start game
             static bool bTWasPressedLastUpdate = false;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
             {
@@ -828,21 +835,21 @@ void Game::UpdateTiles()
         exitTile.m_Sprite.setTexture(m_ExitTileTexture);
         exitTile.setType(Tile::Type::Exit);
 
-        // If deleted path exist in the array, reset the tile type and texture of the deleted path for all elements in the array
-        // Then remove all elements from the array
-        // if (!m_aDeletedPath.empty())
-        // {
-        //     for (Vector2f vector : m_aDeletedPath)
-        //     {
-        //         sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
-        //         Tile& tile = m_aTiles[tileIndex.y][tileIndex.x];
-        //         //tile.setType(Tile::Type::Grass);
-        //         tile.SetTexture(m_GrassTexture);
+        //If deleted path exist in the array, reset the tile type and texture of the deleted path for all elements in the array
+        //Then remove all elements from the array
+        if (!m_aDeletedPath.empty())
+        {
+            for (Vector2f vector : m_aDeletedPath)
+            {
+                sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
+                Tile& tile = m_aTiles[tileIndex.y][tileIndex.x];
+                tile.setType(Tile::Type::Grass);
+                tile.SetTexture(m_GrassTexture);
     
-        //     }
-        //     // Remove all elements from m_aDeletedPath
-        //     m_aDeletedPath.clear();
-        // }
+            }
+            // Remove all elements from m_aDeletedPath
+            m_aDeletedPath.clear();
+        }
         
 
         // Set tile type and change the texture of all current path tiles
@@ -1341,12 +1348,36 @@ void Game::DrawPlayMode()
         if (m_eCurrentEditState == FinishedPathingState) {
             // Load the texture only when the current frame changes
             #ifdef LINUX
-            if (!enemy1TempTexture.loadFromFile("../src/Images/monster_" + std::to_string(currentEnemyFrame) + ".png")) {
+            if (!SkeletonTempTexture.loadFromFile("Images/Running_Skeleton/0_Skeleton_Crusader_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
+            }
+            if (!ReaperTempTexture.loadFromFile("Images/Running_Reaper/0_Reaper_Man_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
+            }
+            if (!GolemTempTexture.loadFromFile("Images/Running_Golem/0_Golem_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
+            }
+            if (!MinotauTempTexture.loadFromFile("Images/Running_Minotaur/0_Minotaur_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
+            }
+            if (!OgreTempTexture.loadFromFile("Images/Running_Ogre/0_Ogre_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
                 std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
             }
             #endif
             #ifdef MAC
-            if (!enemy1TempTexture.loadFromFile("Images/monster_" + std::to_string(currentEnemyFrame) + ".png")) {
+            if (!m_SkeletonTempTexture.loadFromFile("Images/Running_Skeleton/0_Skeleton_Crusader_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
+            }
+            if (!m_ReaperTempTexture.loadFromFile("Images/Running_Reaper/0_Reaper_Man_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
+            }
+            if (!m_GolemTempTexture.loadFromFile("Images/Running_Golem/0_Golem_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
+            }
+            if (!m_MinotaurTempTexture.loadFromFile("Images/Running_Minotaur/0_Minotaur_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
+                std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
+            }
+            if (!m_OgreTempTexture.loadFromFile("Images/Running_Ogre/0_Ogre_Running_" + std::to_string(currentEnemyFrame) + ".png")) {
                 std::cerr << "Failed to load Tower2_Frame_" << currentEnemyFrame << ".png\n";
             }
             #endif
@@ -1355,12 +1386,26 @@ void Game::DrawPlayMode()
             #endif
             // Set the texture for each tower
             for (auto& enemy : m_aMonstersQueue) {
-                enemy.SetTexture(enemy1TempTexture);
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Skeleton){
+                    enemy.SetTexture(m_SkeletonTempTexture);
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Reaper){
+                    enemy.SetTexture(m_ReaperTempTexture);
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Golem){
+                    enemy.SetTexture(m_GolemTempTexture);
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Minotaur){
+                    enemy.SetTexture(m_MinotaurTempTexture);
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Ogre){
+                    enemy.SetTexture(m_OgreTempTexture);
+                }
             }
 
             currentEnemyFrame++;
-            if (currentEnemyFrame > 2) {
-                currentEnemyFrame = 1;
+            if (currentEnemyFrame > 11) {
+                currentEnemyFrame = 0;
             }
         }
     }
