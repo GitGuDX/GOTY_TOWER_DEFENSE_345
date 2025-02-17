@@ -95,6 +95,7 @@ private:
 
     void ShowGameOverScreen();
     void delayedTurnOffDragging();
+    void LoadMonsterTextures();
     //void PlayerPressedRestart();
     //void ResetGame();
     //void PlayerPressedMainMenu();
