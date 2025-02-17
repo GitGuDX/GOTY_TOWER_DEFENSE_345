@@ -15,7 +15,7 @@ MonsterGenerator::MonsterGenerator(int baseMonsters)
     , m_iNumberOfMonsterSpawned(0)
     , m_iMonsterLevel(0)                                                                            // Set initial monster level
     // Set initial monster roaster to teach players about the types of monster 
-    , m_aCurrentMonsterRoaster{Type::Ogre, Type::Minotaur, Type::Golem, Type::Reaper, Type::Skeleton}        
+    , m_aCurrentMonsterRoaster{Type::Minotaur, Type::Golem, Type::Reaper, Type::Ogre, Type::Skeleton}        
 {
 }
 
@@ -139,30 +139,35 @@ void MonsterGenerator::generateMonster(Game& game)
         case Type::Skeleton:
         {
             newMonster.SetTexture(game.m_SkeletonTempTexture);
+            newMonster.SetMonsterType(Type::Skeleton);                         // Set monster type
             updateMonsterStats<Type::Skeleton>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
         case Type::Reaper:
         {
             newMonster.SetTexture(game.m_ReaperTempTexture);
+            newMonster.SetMonsterType(Type::Reaper);
             updateMonsterStats<Type::Reaper>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
         case Type::Golem:
         {
             newMonster.SetTexture(game.m_GolemTempTexture);
+            newMonster.SetMonsterType(Type::Golem);
             updateMonsterStats<Type::Golem>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
         case Type::Minotaur:
         {
             newMonster.SetTexture(game.m_MinotaurTempTexture);
+            newMonster.SetMonsterType(Type::Minotaur);
             updateMonsterStats<Type::Minotaur>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
         case Type::Ogre:
         {
             newMonster.SetTexture(game.m_OgreTempTexture);
+            newMonster.SetMonsterType(Type::Ogre);
             updateMonsterStats<Type::Ogre>(newMonster);                     // Set monster stat accoring to its type
             break;
         }

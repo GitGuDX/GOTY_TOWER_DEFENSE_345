@@ -113,8 +113,8 @@ private:
 
         struct Reaper
         {
-            static constexpr int iHealthDifference = -2;
-            static constexpr float fSpeedDifference = 2.f;
+            static constexpr int iHealthDifference = 40;
+            static constexpr float fSpeedDifference = 10.f;
             static constexpr int iStrengthDifference = 2;
             static constexpr int iRewardDifference = 1;
             static constexpr int iWaveStrength = 4;
@@ -122,26 +122,26 @@ private:
 
         struct Golem
         {
-            static constexpr int iHealthDifference = 5;
-            static constexpr float fSpeedDifference = -2.f;
+            static constexpr int iHealthDifference = 120;
+            static constexpr float fSpeedDifference = -40.f;
             static constexpr int iStrengthDifference = 2;
             static constexpr int iRewardDifference = 3;
             static constexpr int iWaveStrength = 2;
         };
 
-        struct Minotaur
+        struct Ogre
         {
-            static constexpr int iHealthDifference = -3;
-            static constexpr float fSpeedDifference = 3.f;
+            static constexpr int iHealthDifference = 20;
+            static constexpr float fSpeedDifference = 10.f;
             static constexpr int iStrengthDifference = -1;
             static constexpr int iRewardDifference = -3;
             static constexpr int iWaveStrength = 5;
         };
 
-        struct Ogre
+        struct Minotaur
         {
-            static constexpr int iHealthDifference = 4;
-            static constexpr float fSpeedDifference = 2;
+            static constexpr int iHealthDifference = 80;
+            static constexpr float fSpeedDifference = 15.f;
             static constexpr int iStrengthDifference = 3;
             static constexpr int iRewardDifference = 5;
             static constexpr int iWaveStrength = 0;
@@ -150,10 +150,10 @@ private:
 
     struct StatsLevelUpRate
     {
-        float fHealthLevelUpRate = 1.05f;
-        float fSpeedLevelUpRate = 1.03f;
-        float fStrengthLevelUpRate = 1.03f;
-        float fRewardLevelUpRate = 1.02f;
+        float fHealthLevelUpRate = 1.15f;
+        float fSpeedLevelUpRate = 1.05f;
+        float fStrengthLevelUpRate = 1.10f;
+        float fRewardLevelUpRate = 1.05f;
     };
 
     int m_iBaseMonsters;                                                // Starting monster number
