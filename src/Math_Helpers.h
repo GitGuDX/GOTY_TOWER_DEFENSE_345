@@ -41,8 +41,18 @@ namespace MathHelpers
         {
             return vector;
         }
-        float magnitude = getMagnitude(vector);                                             
-        return (magnitude != 0) ? sf::Vector2f(vector.x / magnitude, vector.y / magnitude) : sf::Vector2f(0, 0); 
+
+        float magnitude = getMagnitude(vector); 
+
+        // Handle case where magnitude is very small, preventing divide-by-zero or precision issues
+        const float epsilon = 1e-6f; // A small threshold value
+        if (magnitude < epsilon) 
+        {
+            return sf::Vector2f(0, 0);  // Return a zero vector to avoid invalid directions
+        }
+        return sf::Vector2f(vector.x / magnitude, vector.y / magnitude);
+
+        //return (magnitude != 0) ? sf::Vector2f(vector.x / magnitude, vector.y / magnitude) : sf::Vector2f(0, 0); 
     }
 
     static float Length(const sf::Vector2f& rVector)

@@ -994,7 +994,7 @@ void Game::UpdatePlay()
     }
 
     if (m_iCurrentWealth < 0){
-        m_gameOver = true;
+        //m_gameOver = true;
     }
 }
 
@@ -1062,17 +1062,24 @@ void Game::UpdateMonsters()
             Vector2f tileToMonster = nextTilePos - monster.GetPosition();
             float distanceToNext = MathHelpers::Length(tileToMonster);
 
-            if (distanceToNext < 1.0f)  // Increased threshold
+            // Calculate movement step based on speed and time
+            float dt = std::min(m_DeltaTime.asSeconds(), 0.1f);                 // Fix delta time fluctuations
+            float moveStep = dt * monster.GetSpeed();
+
+            // Ensure we don't overshoot
+            moveStep = std::min(moveStep, distanceToNext);
+
+            // Normalize safely
+            Vector2f direction = (distanceToNext > 1e-6f) ? MathHelpers::getNormalize(tileToMonster) : Vector2f(0, 0);
+
+            // Move the monster with the adjusted moveStep
+            monster.Move(direction * moveStep);
+
+            // If the monster has reached the tile, update its path index
+            if (distanceToNext <= moveStep + 1e-6f)  // Small epsilon to handle float precision issues
             {
-                // Snap to position and increment path index
-                monster.SetPosition(nextTilePos);
                 monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
-            }
-            else
-            {
-                // Move towards next position
-                Vector2f direction = MathHelpers::getNormalize(tileToMonster);
-                monster.Move(direction * m_DeltaTime.asSeconds() * monster.GetSpeed());
+                monster.SetPosition(nextTilePos); // Snap position exactly
             }
         }
     }
