@@ -8,6 +8,7 @@
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
 #define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+//#define DEBUG               // For debugging purposes
 
 #include "Game.h"
 #include <SFML/Graphics.hpp>
@@ -32,6 +33,11 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     // Monster generator initiliazed with base number of monsters and their increase rate per level
     , m_MonsterGenerator(3)
     , m_iCurrentLevel(1)
+    #ifndef DEBUG
+    , m_iCurrentWealth(500)
+    #else
+    , m_iCurrentWealth(10000)
+    #endif
 {
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
     m_Window.setFramerateLimit(60);
@@ -1349,8 +1355,6 @@ void Game::DrawInitialSetUp()
     // Erases everything that was drawn last frame
 	m_Window.clear();
 
-    m_iCurrentWealth = 500;
-
     // Draw all text
     m_Window.draw(m_IntroText);
     m_Window.draw(m_EnterSizeText);
@@ -1578,8 +1582,11 @@ void Game::DrawPlayMode()
     if(draggedSprite != nullptr){
         m_Window.draw(draggedTower);
     }
-    m_Window.draw(m_sfPathLines);
 
+    #ifdef DEBUG
+    // Draw path lines
+    m_Window.draw(m_sfPathLines);
+    #endif
 
     if(hoveringOnTower){
         sf::Vector2f position(xPosition.x-15, xPosition.y-15); // Top-left position of X
