@@ -65,6 +65,10 @@ public:
     {
         return m_fGenerationCooldown;
     }
+    bool getIsAllMonstersSpawned()
+    {
+        return isAllMonstersSpawned;
+    }
     bool hasPassedGenerationCoolDown()
     {
         return m_fTimeSinceLastGeneration >= m_fGenerationCooldown;
@@ -158,6 +162,7 @@ private:
     std::vector<Type> m_aCurrentMonsterRoaster;             // Store Monster roaster size depend on the size of the Type enum
     float m_fTimeSinceLastGeneration = 0.f;                 // Time elapsed since the last monster was generated
     const float m_fGenerationCooldown = 0.5f;               // The cooldown time (in seconds) between monster generations
+    bool isAllMonstersSpawned = false;
 };
 
 

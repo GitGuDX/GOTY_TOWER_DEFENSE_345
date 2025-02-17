@@ -338,6 +338,12 @@ void Game::LoadPlayModeAssets()
     // add for window
     #endif
 
+    // Reset entry and exit tile texture back to grass texture
+    sf::Vector2i entryTileIndex = tileCenterPosToIndex(m_vEntryTile);
+    m_aTiles[entryTileIndex.y][entryTileIndex.x].m_Sprite.setTexture(m_PathTexture);
+    sf::Vector2i exitTileIndex = tileCenterPosToIndex(m_vExitTile);
+    m_aTiles[exitTileIndex.y][exitTileIndex.x].m_Sprite.setTexture(m_PathTexture);
+
     m_TowerTexture.setSmooth(true);
 	m_AxeTemplate.SetTexture(m_BulletTexture);
 	m_AxeTemplate.SetScale(sf::Vector2f(0.05, 0.05));
@@ -540,6 +546,10 @@ void Game::HandleInput()
                         {
                             // Append the path tile to the deleted path array
                             m_aDeletedPath.push_back(m_aPath.back());
+<<<<<<< HEAD
+=======
+                            
+>>>>>>> 5171fe3 (Working on pathing issue)
                             // Remove the path tile from the path array
                             m_aPath.pop_back();
                             // Remove the path tile from the path lines array
@@ -649,7 +659,7 @@ void Game::HandleInput()
                 Vector2i mousePos = sf::Mouse::getPosition(m_Window);
                 Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
                 Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
-
+                std::cout << "Mouse released\n";
                 for (auto& tower : a_allActiveTowers) {
                     if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y && draggedSprite != nullptr) {
                         currentWarning = "Warning: Theres already a tower here...\n";
@@ -659,7 +669,9 @@ void Game::HandleInput()
                         break;
                     }
                 }
+                int count = 0;
                 for (auto& tilePos : m_aPath) {
+                    std::cout << count++ << ": " << tilePos.x << ", " << tilePos.y << std::endl;
                     if (tilePos.x == snapGrid.x && tilePos.y == snapGrid.y && draggedSprite != nullptr) {
                         currentWarning = "Warning: Cannot place on path...\n";
                         m_warningText.setFillColor(Color::Red);
@@ -668,42 +680,63 @@ void Game::HandleInput()
                         break;
                     }
                 }
-
+                std::cout << "For loop done\n";
                 if(mouseWorldPos.x <= m_vWindowSize.x && mouseWorldPos.y <= m_vWindowSize.y && draggedSprite != nullptr){
                     draggedTower.SetPosition(snapGrid);
-
-                    if (draggedSprite->getTexture() == &m_towerTexture1) {
+                    std::cout << (draggedSprite->getTexture() == &m_towerTexture1) << std::endl;
+                    std::cout << "Im here\n";
+                    if (draggedSprite != nullptr && draggedSprite->getTexture() == &m_towerTexture1) {
+                        std::cout << "start at tower 1\n";
                         draggedTower.SetType(TowerType::Rapid);
+                        std::cout << "tower 1 - 2\n";
                         if(m_iCurrentWealth < 200){
+                            std::cout << "tower 1 - 2a\n";
                             currentWarning = "Warning: Cannot afford this tower...\n";
                             m_warningText.setFillColor(Color::Red);
                             warningShown.restart();
                             draggedSprite = nullptr;
+                            std::cout << "tower 1 - 2b\n";
                             break;
                         } else{
+                            std::cout << "tower 1 - 3\n";
                             m_iCurrentWealth -= 200;
                             a_activeWoodTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
                             placementTimer.restart();
+                            std::cout << "tower 1 - 4\n";
                         }
+                        std::cout << "break at tower 1\n";
                     }
-                    if(draggedSprite->getTexture() == &m_towerTexture2){
+                    else if(draggedSprite != nullptr && draggedSprite->getTexture() == &m_towerTexture2)
+                    {
+                        std::cout << "start at tower 2\n";
                         draggedTower.SetType(TowerType::Sniper);
+                        std::cout << "tower 2 - 2\n";
                         if(m_iCurrentWealth < 300){
+                            std::cout << "tower 2 - 2a\n";
                             currentWarning = "Warning: Cannot afford this tower...\n";
                             m_warningText.setFillColor(Color::Red);
                             warningShown.restart();
                             draggedSprite = nullptr;
+                            std::cout << "tower 2 - 2b\n";
                             break;
                         } else{
+                            std::cout << "tower 2 - 3\n";
                             m_iCurrentWealth -= 300;
                             a_activeStoneTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
                             placementTimer.restart();
+                            std::cout << "tower 2 - 4\n";
                         }
+                        std::cout << "break at tower 2\n";
                     }
+                    else 
+                    {
+                        std::cerr << "Error: Unknown tower texture\n"; // Added error handling for unknown texture
+                    }
+                    std::cout << "break at end\n";
                     draggedSprite = nullptr;
                     currentWarning = "Successfully placed tile\n";
                     m_warningText.setFillColor(Color::Green);
@@ -819,7 +852,6 @@ void Game::UpdateInitialPrompt()
 
 void Game::UpdateTiles()
 {
-
     // Change the colors, set tile type of entry, exit.
     if (m_eCurrentEditState == ExitState)
     {
@@ -835,20 +867,33 @@ void Game::UpdateTiles()
         exitTile.m_Sprite.setTexture(m_ExitTileTexture);
         exitTile.setType(Tile::Type::Exit);
 
+<<<<<<< HEAD
         //If deleted path exist in the array, reset the tile type and texture of the deleted path for all elements in the array
         //Then remove all elements from the array
+=======
+        // If deleted path exist in the array, reset the tile type and texture of the deleted path for all elements in the array
+        // Then remove all elements from the array
+>>>>>>> 5171fe3 (Working on pathing issue)
         if (!m_aDeletedPath.empty())
         {
             for (Vector2f vector : m_aDeletedPath)
             {
                 sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
                 Tile& tile = m_aTiles[tileIndex.y][tileIndex.x];
+<<<<<<< HEAD
                 tile.setType(Tile::Type::Grass);
+=======
+                //tile.setType(Tile::Type::Grass);
+>>>>>>> 5171fe3 (Working on pathing issue)
                 tile.SetTexture(m_GrassTexture);
     
             }
             // Remove all elements from m_aDeletedPath
+<<<<<<< HEAD
             m_aDeletedPath.clear();
+=======
+            //m_aDeletedPath.clear();
+>>>>>>> 5171fe3 (Working on pathing issue)
         }
         
 
@@ -877,7 +922,7 @@ void Game::UpdatePlay()
     UpdateTowers();
     UpdateAxes();
 
-    if (m_aMonstersQueue.empty())
+    if (m_MonsterGenerator.getIsAllMonstersSpawned() && m_aMonstersQueue.empty())
     {
         m_bIsRoundEnded = true;
     }

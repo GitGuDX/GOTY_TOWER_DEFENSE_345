@@ -177,6 +177,12 @@ void MonsterGenerator::generateMonster(Game& game)
 
         game.m_aMonstersQueue.emplace_back(newMonster);                 // Add the newly created monster to the monster array
         m_iNumberOfMonsterSpawned++;                                    // Count how many monsters created
+
+        // Check if all monsters have spawned for this wave
+        if (m_iNumberOfMonsterSpawned == numMonsters)
+        {
+            isAllMonstersSpawned = true;
+        }
     }
 }
 
@@ -187,6 +193,8 @@ void MonsterGenerator::updateNextRoundMonsterGenerator()
     m_aCurrentMonsterRoaster.pop_back();
     // Reset number of monster spawned
     m_iNumberOfMonsterSpawned = 0;
+    // Reset all monsters spawned flag
+    isAllMonstersSpawned = false;
 
     // If all monster types in the roster have been played, refill roster
     if (m_aCurrentMonsterRoaster.empty())
