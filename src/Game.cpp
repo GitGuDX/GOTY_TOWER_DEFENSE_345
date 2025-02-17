@@ -781,7 +781,7 @@ void Game::HandleInput()
 
         //Removes built towers on click
         if(event.mouseButton.button == sf::Mouse::Left && !isDraggingTower){
-            if (justPlacedTower && placementTimer.getElapsedTime().asMilliseconds() < 200) {
+            if (justPlacedTower && placementOrUpgradeTimer.getElapsedTime().asMilliseconds() < 200) {
                 return;  // Ignore clicks right after placement
             }
             justPlacedTower = false;  // Reset flag after some time
@@ -918,7 +918,7 @@ void Game::HandleInput()
                             a_activeWoodTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
-                            placementTimer.restart();
+                            placementOrUpgradeTimer.restart();
                             std::cout << "tower 1 - 4\n";
                         }
                         std::cout << "break at tower 1\n";
@@ -942,7 +942,7 @@ void Game::HandleInput()
                             a_activeStoneTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
-                            placementTimer.restart();
+                            placementOrUpgradeTimer.restart();
                             std::cout << "tower 2 - 4\n";
                         }
                         std::cout << "break at tower 2\n";
@@ -1010,7 +1010,7 @@ void Game::HandleInput()
     
 
     if (hoveringOnTower) {
-        if(placementTimer.getElapsedTime().asMilliseconds() > 800 && m_eGameMode == PlayMode){
+        if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800 && m_eGameMode == PlayMode){
             currentWarning = "Hover and press Q for info";
             m_warningText.setFillColor(Color::Red);
         }
@@ -1038,10 +1038,12 @@ void Game::HandleInput()
                         m_iCurrentWealth -= upgradeCost;
                         currentWarning = "Tower upgraded successfully!";
                         m_warningText.setFillColor(Color::Green);
+                        placementOrUpgradeTimer.restart();
                     }
                 } else {
                     currentWarning = "Not enough money for upgrade!";
                     m_warningText.setFillColor(Color::Red);
+                    placementOrUpgradeTimer.restart();
                 }
                 warningShown.restart();
             }
