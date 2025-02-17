@@ -8,7 +8,7 @@
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
 #define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
-//#define DEBUG               // For debugging purposes
+#define DEBUG               // For debugging purposes
 
 #include "Game.h"
 #include <SFML/Graphics.hpp>
@@ -78,6 +78,7 @@ void Game::Run()
             if (m_ePrevGameMode != MapEditorMode) {
                 m_Window.create(VideoMode(m_vWindowSize.x + 300, m_vWindowSize.y), "New Game");
                 LoadMapEditorAssets(); 
+                LoadUIAssets();
                 m_ePrevGameMode = MapEditorMode;
             }
 
@@ -432,6 +433,116 @@ void Game::LoadPlayModeAssets()
     //m_MonsterTemplate.SetTexture(m_SkeletonTempTexture);
 }
 
+void Game::LoadUIAssets()
+{
+    scoreTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 10);
+    levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
+    instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
+    warningTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y - 30);
+    modeTextPosition = Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/10 + 65);
+    woodTowerPricePosition = Vector2f(m_vWindowSize.x + 135, m_vWindowSize.y/3 + 125);
+    stoneTowerPricePosition = Vector2f(m_vWindowSize.x + 235, m_vWindowSize.y/3 + 125);
+    gameOverTextPosition = Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/2);
+
+    // Score text 
+    m_scoreText.setFont(m_Font);               // Set font
+    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
+    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
+    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
+    m_scoreText.setCharacterSize(25);        // Set size
+    m_scoreText.setFillColor(Color::Red);     // Set color
+    m_scoreText.setPosition(scoreTextPosition);       // Set position
+
+    // Level text 
+    m_levelText.setFont(m_Font);               // Set font
+    m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
+    FloatRect levelTextBounds = m_levelText.getLocalBounds();
+    m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
+    m_levelText.setCharacterSize(25);        // Set size
+    m_levelText.setFillColor(Color::Red);     // Set color
+    m_levelText.setPosition(levelTextPosition);       // Set position
+
+    // Warning text 
+    m_warningText.setFont(m_Font);               // Set font
+    m_warningText.setString(currentWarning);   // Set text
+    FloatRect warningTextBounds = m_warningText.getLocalBounds();
+    m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
+    m_warningText.setCharacterSize(15);        // Set size
+    m_warningText.setPosition(warningTextPosition);       // Set position
+    if(warningShown.getElapsedTime().asSeconds() > 3){
+        currentWarning = "";
+    }
+
+    // Wood tower price
+    woodTowerPrice.setFont(m_Font);               // Set font
+    woodTowerPrice.setString("Cost: 200");   // Set text
+    FloatRect woodTowerPriceBounds = woodTowerPrice.getLocalBounds();
+    woodTowerPrice.setOrigin(woodTowerPriceBounds.width / 2, woodTowerPriceBounds.height / 2);
+    woodTowerPrice.setCharacterSize(12);        // Set size
+    woodTowerPrice.setPosition(woodTowerPricePosition);       // Set position
+
+    // Stone tower price
+    stoneTowerPrice.setFont(m_Font);               // Set font
+    stoneTowerPrice.setString("Cost: 300");   // Set text
+    FloatRect stoneTowerPriceBounds = stoneTowerPrice.getLocalBounds();
+    stoneTowerPrice.setOrigin(stoneTowerPriceBounds.width / 2, stoneTowerPriceBounds.height / 2);
+    stoneTowerPrice.setCharacterSize(12);        // Set size
+    stoneTowerPrice.setPosition(stoneTowerPricePosition);       // Set position
+
+    // Current mode text 
+    m_modeText.setFont(m_Font);               // Set font
+    m_modeText.setString(currentMode);   // Set text
+    FloatRect modeTextBounds = m_modeText.getLocalBounds();
+    m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
+    m_modeText.setCharacterSize(18);        // Set size
+    m_modeText.setFillColor(Color::Red);     // Set color
+    m_modeText.setPosition(modeTextPosition);       // Set position
+
+    // Game Over text 
+    m_gameOverText.setFont(m_Font);               // Set font
+    m_gameOverText.setString("Game Over!");   // Set text
+    FloatRect gameOverTextBounds = m_gameOverText.getLocalBounds();
+    m_gameOverText.setOrigin(gameOverTextBounds.width/2, gameOverTextBounds.height/2);
+    m_gameOverText.setCharacterSize(55);        // Set size
+    m_gameOverText.setFillColor(Color::Red);     // Set color
+    m_gameOverText.setPosition(gameOverTextPosition);       // Set position
+
+
+    m_instructionText.setFont(m_Font);               // Set font
+    m_instructionText.setCharacterSize(20);        // Set size
+    m_instructionText.setPosition(instructionTextPosition);       // Set position
+
+    //Loading tower selection
+    Tower tower1;
+    #ifdef LINUX
+    m_towerTexture1.loadFromFile("../src/Images/Tower1_Frame_1.png");
+    m_towerTexture2.loadFromFile("../src/Images/Tower2_Frame_1.png");
+    #endif
+    #ifdef MAC
+    m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
+    m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
+    #endif
+    #ifdef WINDOW
+    // Add for window
+    #endif
+    tower1.SetTexture(m_towerTexture1);
+    tower1.SetScale(Vector2f(0.7f, 0.7f));
+    FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+    tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
+    tower1.SetTextureRect(sf::IntRect(0,0,70,100));
+    tower1.SetPosition(Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 75));
+    a_towerMenu.push_back(tower1);
+
+    Tower tower2;
+    tower2.SetTexture(m_towerTexture2);
+    FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+    tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
+    tower2.SetScale(Vector2f(0.7f, 0.7f));
+    tower2.SetTextureRect(sf::IntRect(0,0,70,100));
+    tower2.SetPosition(Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/3 + 75));
+    a_towerMenu.push_back(tower2);
+}
+
 void Game::ShowGameOverScreen()
 {   
     m_Window.draw(m_gameOverText);
@@ -593,12 +704,10 @@ void Game::HandleInput()
                 
                 if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && m_eCurrentEditState == FinishedPathingState) {
                     sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
-                    std::cout << m_eCurrentEditState;
 
                     for (auto& tile : a_towerMenu) {
                         if (tile.GetSpriteNonConst().getGlobalBounds().contains(mousePos)) {
                             //sf::Sprite& clickedSprite = tile.GetSpriteNonConst(); // Get the sprite
-                            std::cout << "Clicked on a tile!\n";
                             break; // Stop after finding the first tile
                         }
                     }
@@ -607,7 +716,6 @@ void Game::HandleInput()
                 
 
                 //PATHING RELATED
-                //std::cout << "Number of path tiles created: " << m_aPath.size() <<'\n';
                 if (m_IsPathingMousePressed && m_eCurrentEditState == PathState)
                 {
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
@@ -646,8 +754,6 @@ void Game::HandleInput()
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                   // std::cout << "[DEBUG] " << std::endl;
-
                     m_IsPathingMousePressed = false;
                 }
             }
@@ -698,7 +804,6 @@ void Game::HandleInput()
 
                     // Remove the tower from all active towers
                     a_allActiveTowers.erase(it);
-                    std::cout << "Removed tower at: " << snapGrid.x << ", " << snapGrid.y << std::endl;
                     break;  // Stop looping after removing one tower
                 }
             }
@@ -708,27 +813,52 @@ void Game::HandleInput()
         // TOWER DRAGGING RELATED
         if (m_eGameMode == PlayMode || m_eGameMode == MapEditorMode){
             // Handle mouse click (start dragging)
+            sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
             if (Mouse::isButtonPressed(Mouse::Left) && m_eCurrentEditState == FinishedPathingState) {
-                for (auto& tower : a_towerMenu) {
-                    sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
-                    if (tower.GetSpriteNonConst().getGlobalBounds().contains(mousePos) && draggedSprite == nullptr) {
-                        draggedSprite = &tower.GetSpriteNonConst(); // Store reference to the sprite
-                        draggedTower.SetTexture(*draggedSprite->getTexture()); // Get texture from the clicked sprite
-                        draggedTower.SetScale(Vector2f(0.7f, 0.7f));
-                        draggedTower.SetPosition(tower.GetPosition());
-                        FloatRect draggedTowerBounds = draggedTower.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-                        draggedTower.SetOrigin(Vector2f(draggedTowerBounds.width/2, draggedTowerBounds.height/2 + 10));
-                        draggedTower.SetTextureRect(sf::IntRect(0,0,70,100));
-                        isDraggingTower = true;
+                //for (auto& tower : a_towerMenu) 
+                for (size_t i = 0; i < a_towerMenu.size(); ++i)
+                {
+                    Tower& tower = a_towerMenu[i];
+                    //sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
+                    // if (tower.GetSpriteNonConst().getGlobalBounds().contains(mousePos) && draggedSprite == nullptr) {
+                    //     //draggedSprite = &tower.GetSpriteNonConst(); // Store reference to the sprite
+                    //     draggedSprite = (tower.GetSpriteNonConst().getTexture() != nullptr) ? &tower.GetSpriteNonConst() : nullptr;     // Ensure draggedSprite is only assigned if it's valid.
+
+                    //     draggedTower.SetTexture(*draggedSprite->getTexture()); // Get texture from the clicked sprite
+                    //     draggedTower.SetScale(Vector2f(0.7f, 0.7f));
+                    //     draggedTower.SetPosition(tower.GetPosition());
+                    //     FloatRect draggedTowerBounds = draggedTower.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+                    //     draggedTower.SetOrigin(Vector2f(draggedTowerBounds.width/2, draggedTowerBounds.height/2 + 10));
+                    //     draggedTower.SetTextureRect(sf::IntRect(0,0,70,100));
+                    //     isDraggingTower = true;
+                    //     break;
+                    // }
+                    if (tower.GetSpriteNonConst().getGlobalBounds().contains(mousePos) && draggedSprite == nullptr) 
+                    {
+                        draggedSprite = (tower.GetSpriteNonConst().getTexture() != nullptr) ? &tower.GetSpriteNonConst() : nullptr;
+            
+                        if (draggedSprite) { // Only proceed if draggedSprite is valid
+                            draggedTower.SetTexture(*draggedSprite->getTexture());
+                            draggedTower.SetScale(Vector2f(0.7f, 0.7f));
+                            draggedTower.SetPosition(tower.GetPosition());
+            
+                            FloatRect draggedTowerBounds = draggedTower.GetSprite().getLocalBounds();
+                            draggedTower.SetOrigin(Vector2f(draggedTowerBounds.width / 2, draggedTowerBounds.height / 2 + 10));
+                            draggedTower.SetTextureRect(sf::IntRect(0, 0, 70, 100));
+                            isDraggingTower = true;
+                        }
                         break;
                     }
                 }
             }
 
             // Handle dragging when the mouse moves
-            if (event.type == sf::Event::MouseMoved && draggedSprite != nullptr) {
-                sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window)); //+ offset;
-                draggedTower.SetPosition(newPos);       // Updates the dragged towers position while dragging
+            //if (event.type == sf::Event::MouseMoved && draggedSprite != nullptr) 
+            if (std::abs(mousePos.x - draggedTower.GetPosition().x) > 0.01f ||            // Prevent unnecessary updates when movement is too small.
+                std::abs(mousePos.y - draggedTower.GetPosition().y) > 0.01f)
+            {
+                //sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window)); //+ offset;
+                draggedTower.SetPosition(mousePos);       // Updates the dragged towers position while dragging
             }
 
             // Handle mouse release (stop dragging)
@@ -737,18 +867,18 @@ void Game::HandleInput()
                 Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
                 Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
                 std::cout << "Mouse released\n";
+                // Check for existing towers at the snapGrid position
                 for (auto& tower : a_allActiveTowers) {
                     if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y && draggedSprite != nullptr) {
-                        currentWarning = "Warning: Theres already a tower here...\n";
+                        currentWarning = "Warning: There's already a tower here...\n";
                         m_warningText.setFillColor(Color::Red);
                         warningShown.restart();
                         draggedSprite = nullptr;
                         break;
                     }
                 }
-                int count = 0;
+
                 for (auto& tilePos : m_aPath) {
-                    std::cout << count++ << ": " << tilePos.x << ", " << tilePos.y << std::endl;
                     if (tilePos.x == snapGrid.x && tilePos.y == snapGrid.y && draggedSprite != nullptr) {
                         currentWarning = "Warning: Cannot place on path...\n";
                         m_warningText.setFillColor(Color::Red);
@@ -759,10 +889,16 @@ void Game::HandleInput()
                 }
                 std::cout << "For loop done\n";
                 if(mouseWorldPos.x <= m_vWindowSize.x && mouseWorldPos.y <= m_vWindowSize.y && draggedSprite != nullptr){
+                    std::cout << "Mouse released inside window\n";
                     draggedTower.SetPosition(snapGrid);
-                    std::cout << (draggedSprite->getTexture() == &m_towerTexture1) << std::endl;
+                    std::cout << "Dragged tower position set\n";
+                    std::cout << "Before checking texture\n";
+                    std::cout << "draggedSprite address: " << draggedSprite << std::endl;
+                    std::cout << "Texture address: " << draggedSprite->getTexture() << std::endl;
+                    std::cout << (draggedSprite->getTexture() == nullptr) << std::endl;
                     std::cout << "Im here\n";
-                    if (draggedSprite != nullptr && draggedSprite->getTexture() == &m_towerTexture1) {
+                    //if (draggedSprite != nullptr && draggedSprite->getTexture() == &m_towerTexture1)
+                    if (draggedSprite->getTexture() == &m_towerTexture1) {             // Avoid accessing a null pointer
                         std::cout << "start at tower 1\n";
                         draggedTower.SetType(TowerType::Rapid);
                         std::cout << "tower 1 - 2\n";
@@ -785,8 +921,9 @@ void Game::HandleInput()
                         }
                         std::cout << "break at tower 1\n";
                     }
-                    else if(draggedSprite != nullptr && draggedSprite->getTexture() == &m_towerTexture2)
+                    else if(draggedSprite->getTexture() == &m_towerTexture2)
                     {
+                        
                         std::cout << "start at tower 2\n";
                         draggedTower.SetType(TowerType::Sniper);
                         std::cout << "tower 2 - 2\n";
@@ -818,8 +955,10 @@ void Game::HandleInput()
                     m_warningText.setFillColor(Color::Green);
                     warningShown.restart();
                 } else {
+                    std::cout << "Mouse released outside window\n";
                     draggedSprite = nullptr;
                 }
+                std::cout << "Mouse released done\n";
                 isDraggingTower = false;
             }
             
@@ -846,7 +985,10 @@ void Game::HandleInput()
             sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
             Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(newPos, 50);
             hoveringOnTower = false;
-            for (auto& tower : a_allActiveTowers) {
+            //for (auto& tower : a_allActiveTowers) 
+            for (size_t i = 0; i < a_allActiveTowers.size(); ++i)       // Modifying a_allActiveTowers while iterating may cause iterators/pointers to become invalid. Use index based iteration
+            {
+                Tower& tower = a_allActiveTowers[i]; 
                 if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
                     xPosition = Vector2f(snapGrid.x, snapGrid.y);
                     hoveringOnTower = true;
@@ -1092,83 +1234,6 @@ void Game::UpdateMonsters()
 
 void Game::UpdateUI()
 {
-
-    scoreTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 10);
-    levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
-    instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
-    warningTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y - 30);
-    modeTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 65);
-    woodTowerPricePosition = Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 125);
-    stoneTowerPricePosition = Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/3 + 125);
-    gameOverTextPosition = Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/2);
-
-    // Score text 
-    m_scoreText.setFont(m_Font);               // Set font
-    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
-    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
-    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
-    m_scoreText.setCharacterSize(25);        // Set size
-    m_scoreText.setFillColor(Color::Red);     // Set color
-    m_scoreText.setPosition(scoreTextPosition);       // Set position
-
-    // Level text 
-    m_levelText.setFont(m_Font);               // Set font
-    m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
-    FloatRect levelTextBounds = m_levelText.getLocalBounds();
-    m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
-    m_levelText.setCharacterSize(25);        // Set size
-    m_levelText.setFillColor(Color::Red);     // Set color
-    m_levelText.setPosition(levelTextPosition);       // Set position
-
-    // Warning text 
-    m_warningText.setFont(m_Font);               // Set font
-    m_warningText.setString(currentWarning);   // Set text
-    FloatRect warningTextBounds = m_warningText.getLocalBounds();
-    m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
-    m_warningText.setCharacterSize(15);        // Set size
-    m_warningText.setPosition(warningTextPosition);       // Set position
-    if(warningShown.getElapsedTime().asSeconds() > 3){
-        currentWarning = "";
-    }
-
-    // Wood tower price
-    woodTowerPrice.setFont(m_Font);               // Set font
-    woodTowerPrice.setString("Cost: 200");   // Set text
-    FloatRect woodTowerPriceBounds = woodTowerPrice.getLocalBounds();
-    woodTowerPrice.setOrigin(woodTowerPriceBounds.width / 2, woodTowerPriceBounds.height / 2);
-    woodTowerPrice.setCharacterSize(12);        // Set size
-    woodTowerPrice.setPosition(woodTowerPricePosition);       // Set position
-
-    // Stone tower price
-    stoneTowerPrice.setFont(m_Font);               // Set font
-    stoneTowerPrice.setString("Cost: 300");   // Set text
-    FloatRect stoneTowerPriceBounds = stoneTowerPrice.getLocalBounds();
-    stoneTowerPrice.setOrigin(stoneTowerPriceBounds.width / 2, stoneTowerPriceBounds.height / 2);
-    stoneTowerPrice.setCharacterSize(12);        // Set size
-    stoneTowerPrice.setPosition(stoneTowerPricePosition);       // Set position
-
-    // Current mode text 
-    m_modeText.setFont(m_Font);               // Set font
-    m_modeText.setString(currentMode);   // Set text
-    FloatRect modeTextBounds = m_modeText.getLocalBounds();
-    m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
-    m_modeText.setCharacterSize(18);        // Set size
-    m_modeText.setFillColor(Color::Red);     // Set color
-    m_modeText.setPosition(modeTextPosition);       // Set position
-
-    // Game Over text 
-    m_gameOverText.setFont(m_Font);               // Set font
-    m_gameOverText.setString("Game Over!");   // Set text
-    FloatRect gameOverTextBounds = m_gameOverText.getLocalBounds();
-    m_gameOverText.setOrigin(gameOverTextBounds.width/2, gameOverTextBounds.height/2);
-    m_gameOverText.setCharacterSize(55);        // Set size
-    m_gameOverText.setFillColor(Color::Red);     // Set color
-    m_gameOverText.setPosition(gameOverTextPosition);       // Set position
-
-
-    m_instructionText.setFont(m_Font);               // Set font
-    m_instructionText.setCharacterSize(20);        // Set size
-    m_instructionText.setPosition(instructionTextPosition);       // Set position
     if (m_eCurrentEditState == ExitState){
         m_instructionText.setString("Choose an exit Tile...");   // Set text
         FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
@@ -1189,39 +1254,8 @@ void Game::UpdateUI()
         FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
         m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
         m_instructionText.setFillColor(Color::White);     // Set color
-
-        //Loading tower selection
-        Tower tower1;
-        #ifdef LINUX
-        m_towerTexture1.loadFromFile("../src/Images/Tower1_Frame_1.png");
-        m_towerTexture2.loadFromFile("../src/Images/Tower2_Frame_1.png");
-        #endif
-        #ifdef MAC
-        m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
-        m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
-        #endif
-        #ifdef WINDOW
-        // Add for window
-        #endif
-        tower1.SetTexture(m_towerTexture1);
-        tower1.SetScale(Vector2f(0.7f, 0.7f));
-        FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-        tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
-        tower1.SetTextureRect(sf::IntRect(0,0,70,100));
-        tower1.SetPosition(Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 75));
-        a_towerMenu.push_back(tower1);
-
-        Tower tower2;
-        tower2.SetTexture(m_towerTexture2);
-        FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-        tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
-        tower2.SetScale(Vector2f(0.7f, 0.7f));
-        tower2.SetTextureRect(sf::IntRect(0,0,70,100));
-        tower2.SetPosition(Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/3 + 75));
-        a_towerMenu.push_back(tower2);
-
     }
-    
+
     // Update upgrade UI if shown
     if (m_bShowUpgradeUI && m_pSelectedTower) {
         m_upgradeText.setFont(m_Font);
