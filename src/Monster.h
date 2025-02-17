@@ -1,3 +1,10 @@
+/**
+
+@file Monster.h
+
+@brief Defines the Monster class with movement, health, and attack mechanics.
+*/
+
 #ifndef MONSTER_H
 #define MONSTER_H
 

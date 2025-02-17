@@ -1,3 +1,10 @@
+/**
+
+@file Tower.h
+
+@brief Declares the Tower class with attack logic and range mechanics.
+*/
+
 #ifndef TOWER_H
 #define TOWER_H
 

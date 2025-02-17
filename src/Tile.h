@@ -1,3 +1,11 @@
+/**
+
+@file Tiles.h
+
+@brief Declares the Tile class for grid - based map structure.
+
+*/
+
 #ifndef TILES_H
 #define TILES_H
 

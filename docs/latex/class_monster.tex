@@ -1,0 +1,114 @@
+\doxysection{Monster Class Reference}
+\hypertarget{class_monster}{}\label{class_monster}\index{Monster@{Monster}}
+Inheritance diagram for Monster\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_monster}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_monster_a039ffa58fa4272147dc125b5ff278bfd}\label{class_monster_a039ffa58fa4272147dc125b5ff278bfd} 
+size\+\_\+t {\bfseries Get\+Current\+Path\+Index} ()
+\item 
+\Hypertarget{class_monster_a874646f8b92f9a79df75797bab90686e}\label{class_monster_a874646f8b92f9a79df75797bab90686e} 
+int {\bfseries Get\+Health} ()
+\item 
+\Hypertarget{class_monster_aaaf29e35b70a6fc1e53bb0176004dc15}\label{class_monster_aaaf29e35b70a6fc1e53bb0176004dc15} 
+float {\bfseries Get\+Speed} ()
+\item 
+\Hypertarget{class_monster_a5a1a48ea42624afa6a9faf864d857f6f}\label{class_monster_a5a1a48ea42624afa6a9faf864d857f6f} 
+int {\bfseries Get\+Level} ()
+\item 
+\Hypertarget{class_monster_a25d3da92cdcec9c6d3ac7fed3fad09a7}\label{class_monster_a25d3da92cdcec9c6d3ac7fed3fad09a7} 
+int {\bfseries Get\+Strength} ()
+\item 
+\Hypertarget{class_monster_a9d4c066e2f5aaea539071827bba32756}\label{class_monster_a9d4c066e2f5aaea539071827bba32756} 
+int {\bfseries Get\+Reward} ()
+\item 
+\Hypertarget{class_monster_a7ecfe9065584491e8bad21cc202a729d}\label{class_monster_a7ecfe9065584491e8bad21cc202a729d} 
+Monster\+Generator\+::\+Type {\bfseries Get\+Monster\+Type} ()
+\item 
+\Hypertarget{class_monster_a79b4f3611f4772a18178f99a360601c1}\label{class_monster_a79b4f3611f4772a18178f99a360601c1} 
+void {\bfseries Set\+Current\+Path\+Index} (size\+\_\+t new\+Index)
+\item 
+\Hypertarget{class_monster_aa012903c841dfbbd0cadc81b821c9075}\label{class_monster_aa012903c841dfbbd0cadc81b821c9075} 
+void {\bfseries Set\+Health} (int new\+Health)
+\item 
+\Hypertarget{class_monster_a213cc0a81212ec14569a5eb8d9281d41}\label{class_monster_a213cc0a81212ec14569a5eb8d9281d41} 
+void {\bfseries Set\+Speed} (float new\+Speed)
+\item 
+\Hypertarget{class_monster_a3fa9a1899e21e42993506fdc8bbc85ad}\label{class_monster_a3fa9a1899e21e42993506fdc8bbc85ad} 
+void {\bfseries Set\+Level} (int new\+Level)
+\item 
+\Hypertarget{class_monster_a47677975339fdb854c5022dfd60fc47c}\label{class_monster_a47677975339fdb854c5022dfd60fc47c} 
+void {\bfseries Set\+Strength} (int new\+Strength)
+\item 
+\Hypertarget{class_monster_a50f7bde89883f5a91ddc08a387c462b3}\label{class_monster_a50f7bde89883f5a91ddc08a387c462b3} 
+void {\bfseries Set\+Reward} (int new\+Reward)
+\item 
+\Hypertarget{class_monster_a1180920fc887e5bce54af8490839aa87}\label{class_monster_a1180920fc887e5bce54af8490839aa87} 
+void {\bfseries Set\+Monster\+Type} (Monster\+Generator\+::\+Type new\+Type)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries Set\+Texture} (const sf\+::\+Texture \&texture)
+\item 
+void {\bfseries Set\+Scale} (const sf\+::\+Vector2f \&scale)
+\item 
+void {\bfseries Set\+Origin} (const sf\+::\+Vector2f \&origin)
+\item 
+void {\bfseries Set\+Position} (const sf\+::\+Vector2f \&position)
+\item 
+void {\bfseries Set\+Color} (const sf\+::\+Color \&color)
+\item 
+void {\bfseries Set\+Sprite} (const sf\+::\+Sprite \&sprite)
+\item 
+void {\bfseries Set\+Texture\+Rect} (sf\+::\+Int\+Rect int\+Rect\+Value)
+\item 
+void {\bfseries Set\+Rotation} (float angle)
+\item 
+sf\+::\+Vector2f {\bfseries Get\+Position} () const
+\item 
+sf\+::\+Vector2i {\bfseries Get\+Closest\+Grid\+Coordinates} () const
+\item 
+const sf\+::\+Sprite \& {\bfseries Get\+Sprite} () const
+\item 
+sf\+::\+Sprite \& {\bfseries Get\+Sprite\+Non\+Const} ()
+\item 
+void {\bfseries Move} (const sf\+::\+Vector2f \&offset)
+\item 
+void {\bfseries draw} (sf\+::\+Render\+Target \&target, sf\+::\+Render\+States states) const override
+\item 
+Vector2f {\bfseries Get\+Origin} ()
+\item 
+void {\bfseries Set\+Direction} (sf\+::\+Vector2f direction)
+\item 
+sf\+::\+Vector2f {\bfseries Get\+Direction} () const
+\item 
+float {\bfseries Get\+Speed} () const
+\item 
+float {\bfseries Get\+Damage} () const
+\item 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_entity}{Entity}} \&other) const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+Sprite {\bfseries m\+\_\+\+Sprite}
+\item 
+sf\+::\+Vector2f {\bfseries m\+\_\+\+Direction}
+\item 
+float {\bfseries m\+\_\+speed}
+\item 
+float {\bfseries m\+\_\+f\+Damage}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{_monster_8h}{Monster.\+h}}\item 
+src/\mbox{\hyperlink{_monster_8cpp}{Monster.\+cpp}}\end{DoxyCompactItemize}
