@@ -1,0 +1,258 @@
+\doxysection{Game.\+h}
+\hypertarget{_game_8h_source}{}\label{_game_8h_source}\index{src/Game.h@{src/Game.h}}
+\mbox{\hyperlink{_game_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#ifndef\ GAME\_H}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#define\ GAME\_H}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ "{}Tile.h"{}}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_monster_8h}{Monster.h}}"{}}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_monster___generator_8h}{Monster\_Generator.h}}"{}}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_tower_8h}{Tower.h}}"{}}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{using\ namespace\ }sf;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_game_a3fdcea78422790fd85667e634d76c587}{Game}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \ \ \mbox{\hyperlink{class_game_a3fdcea78422790fd85667e634d76c587}{Game}}(\textcolor{keywordtype}{int}\ initialWindowWidth,\ \textcolor{keywordtype}{int}\ initialWindowHeight);}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00047\ \ \ \ \ \mbox{\hyperlink{class_game_ae3d112ca6e0e55150d2fdbc704474530}{\string~Game}}();\ }
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfef}{GameMode}}}
+\DoxyCodeLine{00053\ \ \ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa9eca143cd7f6c34a1d6690251d5d9ede}{InitialSetUp}},\ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa871e5f91f99bd8c8c49d80e4b951fc48}{PlayMode}},\ \ \ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa6057c797d374044b36f4ae9b8f2b3ea0}{MapEditorMode}},\ \ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefab2cf7098808338abae856bf46ac82b91}{Pause}},\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00058\ \ \ \ \ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{enum}\ ClickedInputBox}
+\DoxyCodeLine{00061\ \ \ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ Width,}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ Height,}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ None}
+\DoxyCodeLine{00065\ \ \ \ \ \};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{enum}\ PathEditingState}
+\DoxyCodeLine{00068\ \ \ \ \ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ EntryState,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ ExitState,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ PathState,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ FinishedPathingState}
+\DoxyCodeLine{00073\ \ \ \ \ \};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_game_a96341ca5b54d90adc3ecb3bf0bcd2312}{Run}}();\ }
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{void}\ LoadInitialSetUpAssets();}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordtype}{void}\ LoadMapEditorAssets();}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{void}\ LoadPlayModeAssets();}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleGameOver();}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleInput();}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{void}\ ChangeSizeInputText(Event\&\ event,\ String\&\ currentText);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordtype}{void}\ ShowGameOverScreen();}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordtype}{void}\ delayedTurnOffDragging();}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{comment}{//void\ PlayerPressedRestart();}}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{comment}{//void\ ResetGame();}}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{comment}{//void\ PlayerPressedMainMenu();}}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{comment}{//void\ SwitchToMainMenu();}}
+\DoxyCodeLine{00102\ \ \ \ \ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateInitialPrompt();}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateTiles();}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdatePlay();}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateMonsters();}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateTowers();}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateAxes();}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateText();}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateUI();}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordtype}{void}\ Animate();}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawInitialSetUp();}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawMapEditorMode();}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawPlayMode();}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordtype}{bool}\ isEdgeTile(sf::Vector2f\ tile);}
+\DoxyCodeLine{00135\ \ \ \ \ Vector2i\ tileCenterPosToIndex(Vector2f\ gridPos);}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00138\ \ \ \ \ RenderWindow\ m\_Window;}
+\DoxyCodeLine{00139\ \ \ \ \ \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfef}{GameMode}}\ m\_eGameMode;}
+\DoxyCodeLine{00140\ \ \ \ \ \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfef}{GameMode}}\ m\_ePrevGameMode;}
+\DoxyCodeLine{00141\ \ \ \ \ Time\ m\_DeltaTime;}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fTimeInPlayMode\ =\ 0.0f;}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ Vector2i\ m\_vWindowSize;}
+\DoxyCodeLine{00145\ \ \ \ \ Vector2i\ m\_vGridSize;}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ m\_iTileSize;}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fElapesdTimeInSeconds;}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{comment}{//\ Initial\ SetUp\ }}
+\DoxyCodeLine{00151\ \ \ \ \ Font\ m\_Font;}
+\DoxyCodeLine{00152\ \ \ \ \ Text\ m\_IntroText;}
+\DoxyCodeLine{00153\ \ \ \ \ Text\ m\_EnterSizeText;}
+\DoxyCodeLine{00154\ \ \ \ \ Text\ m\_SizeLimitText;}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_bIsSizeLimitTextShown\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iInputFontSize\ =\ 30;}
+\DoxyCodeLine{00157\ \ \ \ \ Text\ m\_WidthSizeInput;}
+\DoxyCodeLine{00158\ \ \ \ \ Text\ m\_HeightSizeInput;}
+\DoxyCodeLine{00159\ \ \ \ \ std::string\ m\_UserInputWindowHeight\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00160\ \ \ \ \ std::string\ m\_UserInputWindowWidth\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00161\ \ \ \ \ std::array<RectangleShape,\ 2>\ m\_aUserInputBoxWindowSize;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Array\ storing\ current\ input\ box\ assets}}
+\DoxyCodeLine{00162\ \ \ \ \ ClickedInputBox\ m\_eCurrentlyActiveInputBox;}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \ \ Texture\ m\_SubmitButtonTexture;}
+\DoxyCodeLine{00165\ \ \ \ \ Texture\ m\_SubmitButtonPressedTexture;}
+\DoxyCodeLine{00166\ \ \ \ \ std::vector<Sprite>\ m\_aButtonBoxes;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Array\ storing\ button\ box\ assets}}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_SubmitButtonClicked\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{comment}{//\ Map\ editor\ mode}}
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{comment}{//\ Comment\ this\ later}}
+\DoxyCodeLine{00171\ \ \ \ \ PathEditingState\ m\_eCurrentEditState\ =\ EntryState;}
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_IsPathingMousePressed\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \ \ Texture\ m\_EntryTileTexture;}
+\DoxyCodeLine{00175\ \ \ \ \ Texture\ m\_ExitTileTexture;}
+\DoxyCodeLine{00176\ \ \ \ \ Texture\ m\_GrassTexture;}
+\DoxyCodeLine{00177\ \ \ \ \ Texture\ m\_PathTexture;}
+\DoxyCodeLine{00178\ \ \ \ \ Texture\ m\_TowerTexture;}
+\DoxyCodeLine{00179\ \ \ \ \ Texture\ m\_BulletTexture;}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \ \ Entity\ m\_AxeTemplate;}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \ \ std::vector<std::vector<Tile>>\ m\_aTiles;}
+\DoxyCodeLine{00184\ \ \ \ \ std::vector<Entity>\ m\_aAxes;}
+\DoxyCodeLine{00185\ \ \ \ \ }
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \ \ \ \ Text\ m\_upgradeText;}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_bShowUpgradeUI\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00189\ \ \ \ \ Tower*\ m\_pSelectedTower\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00190\ \ \ \ \ }
+\DoxyCodeLine{00191\ \ \ \ \ }
+\DoxyCodeLine{00192\ \ \ \ \ std::array<RectangleShape,\ 8>\ m\_ahighlights;}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \ \ \ \ std::vector<sf::Vector2f>\ m\_aPath;}
+\DoxyCodeLine{00195\ \ \ \ \ std::vector<sf::Vector2f>\ m\_aDeletedPath;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Stores\ the\ path\ tiles}}
+\DoxyCodeLine{00196\ \ \ \ \ sf::Vector2f\ m\_vEntryTile,\ m\_vExitTile;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Entry\ and\ exit\ tile\ positions}}
+\DoxyCodeLine{00197\ \ \ \ \ sf::VertexArray\ m\_sfPathLines;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ SFML\ Vertex\ Array\ for\ drawing\ the\ path}}
+\DoxyCodeLine{00198\ \ \ \ \ }
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{comment}{//\ Play\ mode\ }}
+\DoxyCodeLine{00202\ \ \ \ \ MonsterGenerator\ m\_MonsterGenerator;}
+\DoxyCodeLine{00203\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_bIsRoundEnded\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00204\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_gameOver\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00205\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_bIsMonsterGeneratorUpdated\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iCurrentLevel;}
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iCurrentWealth;}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \ \ \ \ std::vector<Monster>\ m\_aMonstersQueue;}
+\DoxyCodeLine{00211\ \ \ \ \ std::vector<Monster*>\ m\_aEliminatedMonstersQueue;}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keywordtype}{bool}\ justPlacedTower\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00213\ \ \ \ \ sf::Clock\ placementTimer;\ \ \textcolor{comment}{//\ Timer\ to\ track\ recent\ tower\ placements}}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{keywordtype}{void}\ DebugPrintGameState()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Game\ State:\(\backslash\)n"{}}}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}Mode:\ "{}}\ <<\ m\_eGameMode\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}}}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}Grid\ Size:\ "{}}\ <<\ m\_vGridSize.x\ <<\ \textcolor{stringliteral}{"{}x"{}}\ <<\ m\_vGridSize.y\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}Tower\ Count:\ "{}}\ <<\ a\_allActiveTowers.size()\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00221\ \ \ \ \ \}}
+\DoxyCodeLine{00222\ \ \ \ \ }
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }MonsterGenerator;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ make\ MonsterGenerator\ friend\ of\ Game\ so\ that\ MonsterGenerator\ has\ access\ to\ Game\ class's\ private\ members}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{comment}{//\ UI\ Info}}
+\DoxyCodeLine{00229\ \ \ \ \ Text\ m\_scoreText;}
+\DoxyCodeLine{00230\ \ \ \ \ Text\ m\_levelText;}
+\DoxyCodeLine{00231\ \ \ \ \ Text\ m\_instructionText;}
+\DoxyCodeLine{00232\ \ \ \ \ Text\ m\_warningText;}
+\DoxyCodeLine{00233\ \ \ \ \ Text\ m\_modeText;}
+\DoxyCodeLine{00234\ \ \ \ \ Text\ woodTowerPrice;}
+\DoxyCodeLine{00235\ \ \ \ \ Text\ stoneTowerPrice;}
+\DoxyCodeLine{00236\ \ \ \ \ Text\ m\_gameOverText;}
+\DoxyCodeLine{00237\ \ \ \ \ String\ currentWarning\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00238\ \ \ \ \ String\ currentMode\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00239\ \ \ \ \ Clock\ warningShown;}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \ \ Vector2f\ scoreTextPosition;}
+\DoxyCodeLine{00243\ \ \ \ \ Vector2f\ levelTextPosition;}
+\DoxyCodeLine{00244\ \ \ \ \ Vector2f\ instructionTextPosition;}
+\DoxyCodeLine{00245\ \ \ \ \ Vector2f\ warningTextPosition;}
+\DoxyCodeLine{00246\ \ \ \ \ Vector2f\ modeTextPosition;}
+\DoxyCodeLine{00247\ \ \ \ \ Vector2f\ woodTowerPricePosition;}
+\DoxyCodeLine{00248\ \ \ \ \ Vector2f\ stoneTowerPricePosition;}
+\DoxyCodeLine{00249\ \ \ \ \ Vector2f\ gameOverTextPosition;}
+\DoxyCodeLine{00250\ \ \ \ \ vector<Tower>\ a\_towerMenu;}
+\DoxyCodeLine{00251\ \ \ \ \ vector<Tower>\ a\_allActiveTowers;}
+\DoxyCodeLine{00252\ \ \ \ \ vector<Tower>\ a\_activeWoodTowers;}
+\DoxyCodeLine{00253\ \ \ \ \ vector<Tower>\ a\_activeStoneTowers;}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{keywordtype}{bool}\ hoveringOnTower;}
+\DoxyCodeLine{00256\ \ \ \ \ sf::Vector2f\ xPosition;\ \textcolor{comment}{//\ Center\ the\ X\ at\ the\ hovered\ tower}}
+\DoxyCodeLine{00257\ \ \ \ \ Sprite*\ draggedSprite\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00258\ \ \ \ \ Texture\ m\_towerTexture1;}
+\DoxyCodeLine{00259\ \ \ \ \ Texture\ m\_towerTexture2;}
+\DoxyCodeLine{00260\ \ \ \ \ Tower\ tower1;}
+\DoxyCodeLine{00261\ \ \ \ \ Tower\ tower2;}
+\DoxyCodeLine{00262\ \ \ \ \ Tower\ draggedTower;}
+\DoxyCodeLine{00263\ \ \ \ \ \textcolor{keywordtype}{bool}\ isDraggingTower\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00264\ \ \ \ \ sf::Clock\ dragTimer;}
+\DoxyCodeLine{00265\ \ \ \ \ \textcolor{keywordtype}{bool}\ isTimerRunning\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ }
+\DoxyCodeLine{00269\ \ \ \ \ \textcolor{comment}{//\ Animation\ related}}
+\DoxyCodeLine{00270\ \ \ \ \ Clock\ animationDelay;}
+\DoxyCodeLine{00271\ \ \ \ \ \textcolor{keywordtype}{int}\ currentTowerFrame\ =\ 1;}
+\DoxyCodeLine{00272\ \ \ \ \ \textcolor{keywordtype}{int}\ currentEnemyFrame\ =\ 0;}
+\DoxyCodeLine{00273\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ frameTime\ =\ 0.05f;\ \textcolor{comment}{//\ Time\ per\ frame\ in\ seconds}}
+\DoxyCodeLine{00274\ \ \ \ \ Texture\ tower1TempTexture;}
+\DoxyCodeLine{00275\ \ \ \ \ Texture\ tower2TempTexture;}
+\DoxyCodeLine{00276\ \ \ \ \ }
+\DoxyCodeLine{00277\ \ \ \ \ Texture\ m\_SkeletonTempTexture;}
+\DoxyCodeLine{00278\ \ \ \ \ Texture\ m\_ReaperTempTexture;}
+\DoxyCodeLine{00279\ \ \ \ \ Texture\ m\_GolemTempTexture;}
+\DoxyCodeLine{00280\ \ \ \ \ Texture\ m\_MinotaurTempTexture;}
+\DoxyCodeLine{00281\ \ \ \ \ Texture\ m\_OgreTempTexture;}
+\DoxyCodeLine{00282\ \ \ \ \ Monster\ m\_MonsterTemplate;}
+\DoxyCodeLine{00283\ }
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00287\ }
+\DoxyCodeLine{00288\ \};}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

@@ -1,0 +1,132 @@
+\doxysection{Tower Class Reference}
+\hypertarget{class_tower}{}\label{class_tower}\index{Tower@{Tower}}
+Inheritance diagram for Tower\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_tower}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_tower_aa3d5cc379c086894a2fc8fbe0e0d1d97}\label{class_tower_aa3d5cc379c086894a2fc8fbe0e0d1d97} 
+{\bfseries Tower} (Tower\+Type type=Tower\+Type\+::\+Basic)
+\item 
+\Hypertarget{class_tower_a11a1480feece29972c7e4f58793e7d13}\label{class_tower_a11a1480feece29972c7e4f58793e7d13} 
+void {\bfseries Debug\+Print} () const
+\item 
+\Hypertarget{class_tower_a49f3f3d96c6b3ea5b5e7496d8254fc74}\label{class_tower_a49f3f3d96c6b3ea5b5e7496d8254fc74} 
+float {\bfseries Get\+Damage} ()
+\item 
+\Hypertarget{class_tower_a0dd221de08b7dc8e693a72093db9be35}\label{class_tower_a0dd221de08b7dc8e693a72093db9be35} 
+float {\bfseries Get\+Speed} ()
+\item 
+\Hypertarget{class_tower_aff6ebfdaa461b47dbe487c254c133ae2}\label{class_tower_aff6ebfdaa461b47dbe487c254c133ae2} 
+size\+\_\+t {\bfseries Get\+Current\+Path\+Index} ()
+\item 
+\Hypertarget{class_tower_a063ad36878f063f35316113022f844f8}\label{class_tower_a063ad36878f063f35316113022f844f8} 
+void {\bfseries Set\+Damage} (float new\+Damage)
+\item 
+\Hypertarget{class_tower_a00060d4b8b13f74cd47c02af1f436baa}\label{class_tower_a00060d4b8b13f74cd47c02af1f436baa} 
+void {\bfseries Set\+Current\+Path\+Index} (size\+\_\+t new\+Index)
+\item 
+\Hypertarget{class_tower_ad950cc64dc4e82ff801cbe869a4f9f80}\label{class_tower_ad950cc64dc4e82ff801cbe869a4f9f80} 
+void {\bfseries Set\+Type} (Tower\+Type type)
+\item 
+\Hypertarget{class_tower_ae0fbf85bce9401417a36ce807891c916}\label{class_tower_ae0fbf85bce9401417a36ce807891c916} 
+void {\bfseries Set\+Range} (float range)
+\item 
+\Hypertarget{class_tower_a8ed17ecc9c03d49ca49c65e741c4de97}\label{class_tower_a8ed17ecc9c03d49ca49c65e741c4de97} 
+float {\bfseries Get\+Range} () const
+\item 
+\Hypertarget{class_tower_abbeb907af6ed6a16a445eaac84ca2ffb}\label{class_tower_abbeb907af6ed6a16a445eaac84ca2ffb} 
+bool {\bfseries Can\+Shoot} () const
+\item 
+\Hypertarget{class_tower_a7e5b24da9b520950d288d9f416f3be6f}\label{class_tower_a7e5b24da9b520950d288d9f416f3be6f} 
+void {\bfseries Reset\+Cooldown} ()
+\item 
+\Hypertarget{class_tower_af425b6808422a403ed223e6b9c4061df}\label{class_tower_af425b6808422a403ed223e6b9c4061df} 
+void {\bfseries Update\+Cooldown} (float delta\+Time)
+\item 
+\Hypertarget{class_tower_a2cfe81890a970b0ef8879dd549aac67d}\label{class_tower_a2cfe81890a970b0ef8879dd549aac67d} 
+Tower\+Type {\bfseries Get\+Type} () const
+\item 
+\Hypertarget{class_tower_aef5e1940ca0857d5eea4fd6c486d2892}\label{class_tower_aef5e1940ca0857d5eea4fd6c486d2892} 
+int {\bfseries Get\+Cost} () const
+\item 
+\Hypertarget{class_tower_ab0328315ec15fc9ebe0daefffece1a5c}\label{class_tower_ab0328315ec15fc9ebe0daefffece1a5c} 
+void {\bfseries Set\+Cost} (int value)
+\item 
+\Hypertarget{class_tower_af68cd01633fb92649d378416365c19b9}\label{class_tower_af68cd01633fb92649d378416365c19b9} 
+int {\bfseries Get\+Level} () const
+\item 
+\Hypertarget{class_tower_ac713aec93fcd3857278a57d98879f256}\label{class_tower_ac713aec93fcd3857278a57d98879f256} 
+bool {\bfseries Can\+Upgrade} () const
+\item 
+\Hypertarget{class_tower_a2a40d3ab7ab8200ddcbd5c423d3940eb}\label{class_tower_a2a40d3ab7ab8200ddcbd5c423d3940eb} 
+bool {\bfseries Upgrade} ()
+\item 
+\Hypertarget{class_tower_a633f3d74b8a651b51384b7689ab33f70}\label{class_tower_a633f3d74b8a651b51384b7689ab33f70} 
+int {\bfseries Get\+Upgrade\+Cost} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries Set\+Texture} (const sf\+::\+Texture \&texture)
+\item 
+void {\bfseries Set\+Scale} (const sf\+::\+Vector2f \&scale)
+\item 
+void {\bfseries Set\+Origin} (const sf\+::\+Vector2f \&origin)
+\item 
+void {\bfseries Set\+Position} (const sf\+::\+Vector2f \&position)
+\item 
+void {\bfseries Set\+Color} (const sf\+::\+Color \&color)
+\item 
+void {\bfseries Set\+Sprite} (const sf\+::\+Sprite \&sprite)
+\item 
+void {\bfseries Set\+Texture\+Rect} (sf\+::\+Int\+Rect int\+Rect\+Value)
+\item 
+void {\bfseries Set\+Rotation} (float angle)
+\item 
+sf\+::\+Vector2f {\bfseries Get\+Position} () const
+\item 
+sf\+::\+Vector2i {\bfseries Get\+Closest\+Grid\+Coordinates} () const
+\item 
+const sf\+::\+Sprite \& {\bfseries Get\+Sprite} () const
+\item 
+sf\+::\+Sprite \& {\bfseries Get\+Sprite\+Non\+Const} ()
+\item 
+void {\bfseries Move} (const sf\+::\+Vector2f \&offset)
+\item 
+void {\bfseries draw} (sf\+::\+Render\+Target \&target, sf\+::\+Render\+States states) const override
+\item 
+Vector2f {\bfseries Get\+Origin} ()
+\item 
+void {\bfseries Set\+Direction} (sf\+::\+Vector2f direction)
+\item 
+sf\+::\+Vector2f {\bfseries Get\+Direction} () const
+\item 
+float {\bfseries Get\+Speed} () const
+\item 
+float {\bfseries Get\+Damage} () const
+\item 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_entity}{Entity}} \&other) const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+Sprite {\bfseries m\+\_\+\+Sprite}
+\item 
+sf\+::\+Vector2f {\bfseries m\+\_\+\+Direction}
+\item 
+float {\bfseries m\+\_\+speed}
+\item 
+float {\bfseries m\+\_\+f\+Damage}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{_tower_8h}{Tower.\+h}}\item 
+src/\mbox{\hyperlink{_tower_8cpp}{Tower.\+cpp}}\end{DoxyCompactItemize}
