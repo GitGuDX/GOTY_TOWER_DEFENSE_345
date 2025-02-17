@@ -7,7 +7,7 @@
 
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 
 #include "Game.h"
 #include <SFML/Graphics.hpp>
@@ -28,7 +28,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
-    , m_AxeTemplate()
+    , m_RapidBulletTemplate()
     // Monster generator initiliazed with base number of monsters and their increase rate per level
     , m_MonsterGenerator(3)
     , m_iCurrentLevel(1)
@@ -89,7 +89,8 @@ void Game::Run()
             if (m_ePrevGameMode != PlayMode)
             {
                 LoadPlayModeAssets();
-                //LoadMonsterTextures();
+                LoadMonsterTextures();
+                LoadTowerTextures();
                 m_ePrevGameMode = PlayMode;
             }
 
@@ -245,6 +246,7 @@ void Game::LoadMapEditorAssets()
     m_ExitTileTexture.loadFromFile("../src/Images/exit_Zone_Tile.png");
     #endif
     #ifdef MAC
+
     m_GrassTexture.loadFromFile("Images/grass_Tile.png");
     m_PathTexture.loadFromFile("Images/path_Tile.png");
     m_EntryTileTexture.loadFromFile("Images/entry_Zone_Tile.png");
@@ -253,6 +255,11 @@ void Game::LoadMapEditorAssets()
     #ifdef WINDOW
     // add for window
     #endif
+
+
+
+
+
 
     // Create grass tiles and store them in a 2D array. The position of the item in the array correspond to the position of the tile in the game
     // (e.g. tile at [0][0] is displayed at the top left corner) 
@@ -279,7 +286,7 @@ void Game::LoadMapEditorAssets()
     // Loop to create 8 highlight rectangles
     for (int i = 0; i < 8; ++i)
     {
-        RectangleShape highlight;                                                                   
+        RectangleShape highlight;
         // Determine the size of the highlight based on whether 'i' is even or odd
         // If 'i' is even, make the highlight a wide horizontal rectangle
         // If 'i' is odd, make the highlight a tall vertical rectangle
@@ -321,6 +328,23 @@ void Game::LoadMapEditorAssets()
     }
 
     m_sfPathLines.setPrimitiveType(sf::LineStrip); // Set the drawing type to a continuous line
+}
+
+void Game::LoadTowerTextures() {
+    for (int i = 0; i <= 6; ++i) {
+        sf::Texture texture;
+        #ifdef MAC
+        if (!texture.loadFromFile("Images/Tower1_Frame_" + std::to_string(i) + ".png")) {
+            std::cerr << "Failed to load Skeleton frame " << i << std::endl;
+        }
+        m_RapidTowerTextures.push_back(texture);
+
+        if (!texture.loadFromFile("Images/Tower2_Frame_" + std::to_string(i) + ".png")) {
+            std::cerr << "Failed to load Skeleton frame " << i << std::endl;
+        }
+        m_SniperTowerTextures.push_back(texture);
+       #endif
+    }
 }
 
 void Game::LoadMonsterTextures() {
@@ -386,32 +410,11 @@ void Game::LoadMonsterTextures() {
 
 void Game::LoadPlayModeAssets()
 {
-    // Load monster texture
-    #ifdef LINUX
-    m_SkeletonTempTexture.loadFromFile("../src/Images/Running_Skeleton/0_Skeleton_Crusader_Running_0.png");
-    m_ReaperTempTexture.loadFromFile("../src/Images/Running_Reaper/0_Reaper_Man_Running_0.png");
-    m_GolemTempTexture.loadFromFile("../src/Images/Running_Golem/0_Golem_Running_0.png");
-    m_MinotaurTempTexture.loadFromFile("../src/Images/Running_Minotaur/0_Minotaur_Running_0.png");
-    m_OgreTempTexture.loadFromFile("../src/Images/Running_Ogre/0_Ogre_Running_0.png");
+    // Load bullet texture
 
-    // m_TowerTexture.loadFromFile("../src/Images/tower.png");
-    m_BulletTexture.loadFromFile("../src/Images/Bullet.png");
-    #endif
-    #ifdef MAC
-    
-    m_SkeletonTempTexture.loadFromFile("Images/Running_Skeleton/0_Skeleton_Crusader_Running_0.png");
-    m_ReaperTempTexture.loadFromFile("Images/Running_Reaper/0_Reaper_Man_Running_0.png");
-    m_GolemTempTexture.loadFromFile("Images/Running_Golem/0_Golem_Running_0.png");
-    m_MinotaurTempTexture.loadFromFile("Images/Running_Minotaur/0_Minotaur_Running_0.png");
-    m_OgreTempTexture.loadFromFile("Images/Running_Ogre/0_Ogre_Running_0.png");
-    
-    
-    //m_TowerTexture.loadFromFile("Images/tower.png");
-    m_BulletTexture.loadFromFile("Images/Bullet.png");
-    #endif
-    #ifdef WINDOW
-    // add for window
-    #endif
+    m_RapidBulletTexture.loadFromFile("Images/Rapid_Bullet.png");
+    m_SniperBulletTexture.loadFromFile("../src/Images/Sniper_Bullet.png");
+
 
     // Reset entry and exit tile texture back to grass texture
     sf::Vector2i entryTileIndex = tileCenterPosToIndex(m_vEntryTile);
@@ -420,11 +423,16 @@ void Game::LoadPlayModeAssets()
     m_aTiles[exitTileIndex.y][exitTileIndex.x].m_Sprite.setTexture(m_PathTexture);
 
     m_TowerTexture.setSmooth(true);
-	m_AxeTemplate.SetTexture(m_BulletTexture);
-	m_AxeTemplate.SetScale(sf::Vector2f(0.05, 0.05));
-	m_AxeTemplate.SetOrigin(sf::Vector2f(8, 8));
 
-    //m_MonsterTemplate.SetTexture(m_SkeletonTempTexture);
+	m_RapidBulletTemplate.SetTexture(m_RapidBulletTexture);
+	m_RapidBulletTemplate.SetScale(sf::Vector2f(0.05, 0.05));
+	m_RapidBulletTemplate.SetOrigin(sf::Vector2f(8, 8));
+
+	m_SniperBulletTemplate.SetTexture(m_SniperBulletTexture);
+	m_SniperBulletTemplate.SetScale(sf::Vector2f(0.05, 0.05));
+	m_SniperBulletTemplate.SetOrigin(sf::Vector2f(8, 8));
+
+
 }
 
 void Game::ShowGameOverScreen()
@@ -668,7 +676,7 @@ void Game::HandleInput()
 
         //Removes built towers on click
         if(event.mouseButton.button == sf::Mouse::Left && !isDraggingTower){
-            if (justPlacedTower && placementTimer.getElapsedTime().asMilliseconds() < 200) {
+            if (justPlacedTower && placementOrUpgradeDelay.getElapsedTime().asMilliseconds() < 200) {
                 return;  // Ignore clicks right after placement
             }
             justPlacedTower = false;  // Reset flag after some time
@@ -775,7 +783,7 @@ void Game::HandleInput()
                             a_activeWoodTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
-                            placementTimer.restart();
+                            placementOrUpgradeDelay.restart();
                             std::cout << "tower 1 - 4\n";
                         }
                         std::cout << "break at tower 1\n";
@@ -798,7 +806,7 @@ void Game::HandleInput()
                             a_activeStoneTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
-                            placementTimer.restart();
+                            placementOrUpgradeDelay.restart();
                             std::cout << "tower 2 - 4\n";
                         }
                         std::cout << "break at tower 2\n";
@@ -809,7 +817,7 @@ void Game::HandleInput()
                     }
                     std::cout << "break at end\n";
                     draggedSprite = nullptr;
-                    currentWarning = "Successfully placed tile\n";
+                    currentWarning = "Successfully placed tower\n";
                     m_warningText.setFillColor(Color::Green);
                     warningShown.restart();
                 } else {
@@ -863,7 +871,7 @@ void Game::HandleInput()
     
 
     if (hoveringOnTower) {
-        if(placementTimer.getElapsedTime().asMilliseconds() > 800 && m_eGameMode == PlayMode){
+        if(placementOrUpgradeDelay.getElapsedTime().asMilliseconds() > 800){
             currentWarning = "Hover and press Q for info";
             m_warningText.setFillColor(Color::Red);
         }
@@ -891,10 +899,12 @@ void Game::HandleInput()
                         m_iCurrentWealth -= upgradeCost;
                         currentWarning = "Tower upgraded successfully!";
                         m_warningText.setFillColor(Color::Green);
+                        placementOrUpgradeDelay.restart();
                     }
                 } else {
                     currentWarning = "Not enough money for upgrade!";
                     m_warningText.setFillColor(Color::Red);
+                    placementOrUpgradeDelay.restart();
                 }
                 warningShown.restart();
             }
@@ -1020,36 +1030,51 @@ void Game::UpdateMonsters()
 
 
     // ALL ENEMY ANIMATION RELATED
-
-    // if (animationDelay.getElapsedTime().asSeconds() >= frameTime) {
-    //     std::cout <<"Current enemy frame: " << currentEnemyFrame << '\n';
-    //     if (m_eCurrentEditState == FinishedPathingState) {
-    //         std::cout << "Updating enemy textures\n";
-    //         for (auto& enemy : m_aMonstersQueue) {
-    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Skeleton){
-    //                 std::cout << "Setting skeleton texture\n";
-    //                 enemy.SetTexture(m_SkeletonTextures[currentEnemyFrame]);
-    //             }
-    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Reaper){
-    //                 enemy.SetTexture(m_ReaperTextures[currentEnemyFrame]);
-    //             }
-    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Golem){
-    //                 enemy.SetTexture(m_GolemTextures[currentEnemyFrame]);
-    //             }
-    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Minotaur){
-    //                 enemy.SetTexture(m_MinotaurTextures[currentEnemyFrame]);
-    //             }
-    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Ogre){
-    //                 enemy.SetTexture(m_OgreTextures[currentEnemyFrame]);
-    //             }
-    //         }
-
-    //         currentEnemyFrame++;
-    //         if (currentEnemyFrame > 11) {
-    //             currentEnemyFrame = 0;
-    //         }
-    //     }
-    // }
+    if (enemyAnimationDelay.getElapsedTime().asSeconds() >= frameTime) {
+        std::cout <<"Current enemy frame: " << currentEnemyFrame << '\n';
+        if (m_eCurrentEditState == FinishedPathingState) {
+            std::cout << "Updating enemy textures\n";
+            for (auto& enemy : m_aMonstersQueue) {
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Skeleton){
+                    std::cout << "Setting skeleton texture\n";
+                    enemy.SetTexture(m_SkeletonTextures[currentEnemyFrame]);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Reaper){
+                    enemy.SetTexture(m_ReaperTextures[currentEnemyFrame]);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Golem){
+                    enemy.SetTexture(m_GolemTextures[currentEnemyFrame]);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Minotaur){
+                    enemy.SetTexture(m_MinotaurTextures[currentEnemyFrame]);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));        
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Ogre){
+                    enemy.SetTexture(m_OgreTextures[currentEnemyFrame]);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));        
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                }
+            }
+            
+            currentEnemyFrame++;
+            if (currentEnemyFrame > 11) {
+                currentEnemyFrame = 0;
+            }
+            enemyAnimationDelay.restart();
+        }
+    }
 
 
     // Update monster positions
@@ -1258,8 +1283,16 @@ void Game::UpdateTowers()
             if (pNearestEnemy != nullptr)
             {
                 // Create and setup new axe
-                //Entity& newAxe = m_aAxes.emplace_back(m_AxeTemplate);
-                m_aAxes.push_back(m_AxeTemplate);
+                //Entity& newAxe = m_aAxes.emplace_back(m_RapidBulletlate);
+                
+                if (tower.GetType() == TowerType::Rapid) {
+                    m_aAxes.push_back(m_RapidBulletTemplate);
+                } else if (tower.GetType() == TowerType::Sniper) {
+                    m_aAxes.push_back(m_SniperBulletTemplate);
+                }
+                //ADD BULLET WHEN I ADD TOWERS
+
+
                 Entity& newAxe = m_aAxes.back();
                 FloatRect newAxeBounds = newAxe.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
                 newAxe.SetOrigin(Vector2f(newAxeBounds.width / 2, newAxeBounds.height / 2));
@@ -1283,6 +1316,42 @@ void Game::UpdateTowers()
             }
         }
     }
+
+    //INSERT HERE
+    // ALL TOWER ANIMATION RELATED
+    if (towerAnimationDelay.getElapsedTime().asSeconds() >= frameTime) {
+        if (m_eCurrentEditState == FinishedPathingState) {
+            // Set the texture for each tower
+            for (auto& tower : a_activeWoodTowers) {
+                tower.SetTexture(m_RapidTowerTextures[currentTowerFrame]);
+                /*
+                if (std::find(a_allActiveTowers.begin(), a_allActiveTowers.end(), tower) != a_allActiveTowers.end()) {
+                    tower.SetTexture(tower1TempTexture);
+                }
+                */
+            }
+            for (auto& tower : a_activeStoneTowers) {
+                tower.SetTexture(m_SniperTowerTextures[currentTowerFrame]);
+                /*
+                if (std::find(a_allActiveTowers.begin(), a_allActiveTowers.end(), tower) != a_allActiveTowers.end()) {
+                    tower.SetTexture(tower2TempTexture);
+                }
+                */
+            }
+
+            // Update currentFrame and reset if necessary
+            currentTowerFrame++;
+            if (currentTowerFrame > 6) {
+                currentTowerFrame = 1;
+            }
+            // Restart the clock after updating the frame
+            towerAnimationDelay.restart();
+        }
+    }
+
+
+    // INSERT HERE
+
 }
 
 void Game::UpdateAxes()
@@ -1304,7 +1373,19 @@ void Game::UpdateAxes()
             
             if (distance < COLLISION_DISTANCE)
             {
-                std::cout << "Debug: Axe hit monster at position ("
+                string hitMonsterName;
+                if(static_cast<int>(monster.GetMonsterType()) == 0){
+                    hitMonsterName = "Skeleton";
+                } else if (static_cast<int>(monster.GetMonsterType()) == 1){
+                    hitMonsterName = "Reaper";
+                }else if (static_cast<int>(monster.GetMonsterType()) == 2){
+                    hitMonsterName = "Golem";
+                }else if (static_cast<int>(monster.GetMonsterType()) == 3){
+                    hitMonsterName = "Ogre";
+                }else if (static_cast<int>(monster.GetMonsterType()) == 4){
+                    hitMonsterName = "Minotaur";
+                }
+                std::cout << "Debug: Axe hit " << hitMonster << " at position ("
                           << monster.GetPosition().x << ", "
                           << monster.GetPosition().y << ")" << std::endl;
                 hitMonster = true;
@@ -1467,6 +1548,10 @@ void Game::DrawMapEditorMode()
     if(m_gameOver){
         ShowGameOverScreen();
     }
+
+    if (m_bShowUpgradeUI && m_pSelectedTower) {
+        m_Window.draw(m_upgradeText);
+    }
     
     m_Window.display();
 }
@@ -1486,6 +1571,9 @@ void Game::DrawPlayMode()
     }
 
     ////// Draw test monster
+
+
+
     for (Monster& monster : m_aMonstersQueue)
     {
         if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
@@ -1503,57 +1591,11 @@ void Game::DrawPlayMode()
     m_Window.draw(woodTowerPrice);
     m_Window.draw(stoneTowerPrice);
     if(m_eCurrentEditState == FinishedPathingState){
-        for (auto& tower : a_towerMenu) {
+        for (auto& tower : a_towerMenu) {                                       //ADD TOWER INFO HERE
             m_Window.draw(tower);  // If Tile is derived from sf::Drawable
         }
     }
 
-    // ALL TOWER ANIMATION RELATED
-    if (animationDelay.getElapsedTime().asSeconds() >= frameTime) {
-        if (m_eCurrentEditState == FinishedPathingState) {
-            // Load the texture only when the current frame changes
-            #ifdef LINUX
-            if (!tower1TempTexture.loadFromFile("../src/Images/Tower1_Frame_" + std::to_string(currentTowerFrame) + ".png")) {
-                std::cerr << "Failed to load Tower2_Frame_" << currentTowerFrame << ".png\n";
-            }
-            if (!tower2TempTexture.loadFromFile("../src/Images/Tower2_Frame_" + std::to_string(currentTowerFrame) + ".png")) {
-                std::cerr << "Failed to load Tower2_Frame_" << currentTowerFrame << ".png\n";
-            }
-            #endif
-            #ifdef MAC
-            if (!tower1TempTexture.loadFromFile("Images/Tower1_Frame_" + std::to_string(currentTowerFrame) + ".png")) {
-                std::cerr << "Failed to load Tower2_Frame_" << currentTowerFrame << ".png\n";
-            }
-            if (!tower2TempTexture.loadFromFile("Images/Tower2_Frame_" + std::to_string(currentTowerFrame) + ".png")) {
-                std::cerr << "Failed to load Tower2_Frame_" << currentTowerFrame << ".png\n";
-            }
-            #endif
-            #ifdef WINDOW
-            // ADD for window
-            #endif
-
-            // Set the texture for each tower
-            for (auto& tower : a_activeWoodTowers) {
-                if (std::find(a_allActiveTowers.begin(), a_allActiveTowers.end(), tower) != a_allActiveTowers.end()) {
-                    tower.SetTexture(tower1TempTexture);
-                }
-            }
-            for (auto& tower : a_activeStoneTowers) {
-                if (std::find(a_allActiveTowers.begin(), a_allActiveTowers.end(), tower) != a_allActiveTowers.end()) {
-                    tower.SetTexture(tower2TempTexture);
-                }
-            }
-
-            // Update currentFrame and reset if necessary
-            currentTowerFrame++;
-            if (currentTowerFrame > 6) {
-                currentTowerFrame = 1;
-            }
-
-            // Restart the clock after updating the frame
-            animationDelay.restart();
-        }
-    }
 
     // Draw the towers and enemies (every frame, without waiting for the animation delay)
     if(m_eCurrentEditState == FinishedPathingState){

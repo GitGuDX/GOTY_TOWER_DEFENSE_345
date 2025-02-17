@@ -96,6 +96,7 @@ private:
     void ShowGameOverScreen();
     void delayedTurnOffDragging();
     void LoadMonsterTextures();
+    void LoadTowerTextures();
     //void PlayerPressedRestart();
     //void ResetGame();
     //void PlayerPressedMainMenu();
@@ -177,9 +178,11 @@ private:
     Texture m_GrassTexture;
     Texture m_PathTexture;
     Texture m_TowerTexture;
-    Texture m_BulletTexture;
+    Texture m_RapidBulletTexture;
+    Texture  m_SniperBulletTexture;
 
-    Entity m_AxeTemplate;
+    Entity m_RapidBulletTemplate;
+    Entity m_SniperBulletTemplate;
 
     std::vector<std::vector<Tile>> m_aTiles;
 	std::vector<Entity> m_aAxes;
@@ -211,7 +214,7 @@ private:
     std::vector<Monster> m_aMonstersQueue;
     std::vector<Monster*> m_aEliminatedMonstersQueue;
     bool justPlacedTower = false;
-    sf::Clock placementTimer;  // Timer to track recent tower placements
+    sf::Clock placementOrUpgradeDelay;  // Timer to track recent tower placements
 
 
     void DebugPrintGameState() const {
@@ -274,18 +277,17 @@ private:
     std::vector<sf::Texture> m_MinotaurTextures;
     std::vector<sf::Texture> m_OgreTextures;
 
-    Clock animationDelay;
+    std::vector<sf::Texture> m_RapidTowerTextures;
+    std::vector<sf::Texture> m_SniperTowerTextures;
+
+    Clock enemyAnimationDelay;
+    Clock towerAnimationDelay;
     int currentTowerFrame = 1;
     int currentEnemyFrame = 0;
-    const float frameTime = 0.05f; // Time per frame in seconds
+    const float frameTime = 0.07f; // Time per frame in seconds
     Texture tower1TempTexture;
     Texture tower2TempTexture;
     
-    Texture m_SkeletonTempTexture;
-    Texture m_ReaperTempTexture;
-    Texture m_GolemTempTexture;
-    Texture m_MinotaurTempTexture;
-    Texture m_OgreTempTexture;
     Monster m_MonsterTemplate;
 
 
