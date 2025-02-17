@@ -108,6 +108,7 @@ void Game::Run()
                     {
                         m_MonsterGenerator.updateNextRoundMonsterGenerator();
                         m_bIsMonsterGeneratorUpdated = true;
+                        m_iCurrentLevel += 1;
                     }
                 }
             }
@@ -766,7 +767,7 @@ void Game::HandleInput()
                             m_warningText.setFillColor(Color::Red);
                             warningShown.restart();
                             draggedSprite = nullptr;
-                            std::cout << "tower 1 - 2b\n";
+                            isDraggingTower = false;
                             break;
                         } else{
                             std::cout << "tower 1 - 3\n";
@@ -790,7 +791,6 @@ void Game::HandleInput()
                             m_warningText.setFillColor(Color::Red);
                             warningShown.restart();
                             draggedSprite = nullptr;
-                            std::cout << "tower 2 - 2b\n";
                             break;
                         } else{
                             std::cout << "tower 2 - 3\n";
@@ -818,7 +818,7 @@ void Game::HandleInput()
                 isDraggingTower = false;
             }
             
-            // TO start a new round
+            // To start a new round
             static bool bTWasPressedLastUpdate = false;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
             {
@@ -853,6 +853,7 @@ void Game::HandleInput()
         }
         
         // Makes X go away right after releasing on them
+        
         if(event.type == sf::Event::MouseButtonReleased){
             hoveringOnTower = false;
         }
@@ -862,6 +863,10 @@ void Game::HandleInput()
     
 
     if (hoveringOnTower) {
+        if(placementTimer.getElapsedTime().asMilliseconds() > 800 && m_eGameMode == PlayMode){
+            currentWarning = "Hover and press Q for info";
+            m_warningText.setFillColor(Color::Red);
+        }
         // Show upgrade info when Q is pressed
         if (Keyboard::isKeyPressed(Keyboard::Q)) {
             Vector2f mousePos = m_Window.mapPixelToCoords(Mouse::getPosition(m_Window));
@@ -896,6 +901,9 @@ void Game::HandleInput()
             m_bShowUpgradeUI = false;
             m_pSelectedTower = nullptr;
         }
+    } else{
+        m_pSelectedTower = nullptr;
+        m_bShowUpgradeUI = false;
     }
 }
 
