@@ -9,7 +9,6 @@
 
 Entity::Entity()
 {
-   
 }
 
 Entity::~Entity()
