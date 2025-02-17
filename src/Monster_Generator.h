@@ -1,3 +1,10 @@
+/**
+
+@file Monster_Generator.h
+
+@brief Declares the MonsterGenerator class for managing enemy waves.
+*/
+
 #ifndef MONSTER_GENERATOR_H
 #define MONSTER_GENERATOR_H
 

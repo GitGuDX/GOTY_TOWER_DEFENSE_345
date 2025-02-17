@@ -1,3 +1,10 @@
+/**
+
+@file Monster_Generator.cpp
+
+@brief Implements monster spawning and wave progression.
+*/
+
 // Include Game.h so that Monster_Generator.cpp has full definition of Game
 // The reason for including Game.h here and not in Monster_Generator.h is because
 // Game.h already includes Monster_Generator.h and if Monster_Generator.h includes Game.h, this presents circular dependency.
