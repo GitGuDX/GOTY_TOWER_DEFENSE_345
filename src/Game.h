@@ -85,6 +85,9 @@ private:
     /** * @brief Loads assets for the play mode. */
     void LoadPlayModeAssets();
 
+    /** * @brief Loads assets for the UI screen. */
+    void LoadUIAssets();
+
     /** * @brief Handles game over logic. */
     void HandleGameOver();
 
@@ -117,6 +120,7 @@ private:
     /** * @brief Updates tower mechanics. */
     void UpdateTowers();
 
+
     void UpdateAxes();
     void UpdateText();
 
@@ -132,6 +136,8 @@ private:
 
     /** * @brief Draws elements in play mode. */
     void DrawPlayMode();
+
+    bool ValidatePath();
 
     bool isEdgeTile(sf::Vector2f tile);
     Vector2i tileCenterPosToIndex(Vector2f gridPos);
