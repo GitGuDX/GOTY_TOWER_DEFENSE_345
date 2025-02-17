@@ -1,3 +1,10 @@
+/**
+
+@file Tower.cpp
+
+@brief Implements Tower functionalities, including shooting and upgrades.
+*/
+
 #include "Tower.h"
 
 Tower::Tower(TowerType type) 

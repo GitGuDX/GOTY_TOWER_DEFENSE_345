@@ -1,0 +1,167 @@
+\doxysection{Monster\+\_\+\+Generator.\+h}
+\hypertarget{_monster___generator_8h_source}{}\label{_monster___generator_8h_source}\index{src/Monster\_Generator.h@{src/Monster\_Generator.h}}
+\mbox{\hyperlink{_monster___generator_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#ifndef\ MONSTER\_GENERATOR\_H}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#define\ MONSTER\_GENERATOR\_H}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_game}{Game}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Forward\ declare\ Game\ class\ so\ MonsterGenerator\ as\ refernce\ to\ what\ Game\ type\ is}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00024\ \textcolor{comment}{Base\ monster\ stat\ -\/\ Level\ 1,\ Health\ 100,\ Speed\ 100.0f,\ Strength\ 10,\ Reward\ 20}}
+\DoxyCodeLine{00025\ \textcolor{comment}{}}
+\DoxyCodeLine{00026\ \textcolor{comment}{There\ are\ \_\_\_\ classes\ of\ monsters}}
+\DoxyCodeLine{00027\ \textcolor{comment}{\ \ \ \ Normal\ monster\ -\/\ Speed\ +0,\ Health\ +0,\ Strength\ +0,\ Wave\ strength\ +0,\ reward\ +0}}
+\DoxyCodeLine{00028\ \textcolor{comment}{\ \ \ \ Rogue\ monster\ -\/\ Speed\ +2,\ Health\ -\/2,\ Strength\ +2,\ Wave\ strength\ +0,\ reward\ +1}}
+\DoxyCodeLine{00029\ \textcolor{comment}{\ \ \ \ Tank\ monster\ -\/\ Speed\ -\/2,\ Health\ +5,\ Strength\ +2,\ Wave\ strength\ -\/1,\ reward\ +3}}
+\DoxyCodeLine{00030\ \textcolor{comment}{\ \ \ \ Swarm\ monster\ -\/\ Speed\ +3,\ Health\ -\/3,\ Strength\ -\/1,\ Wave\ strength\ +3,\ reward\ -\/3}}
+\DoxyCodeLine{00031\ \textcolor{comment}{\ \ \ \ Elite\ Monster\ -\/\ Speed\ +2,\ Health\ +4,\ Strength\ +3,\ Wave\ strength\ -\/\ 3,\ reward\ +5}}
+\DoxyCodeLine{00032\ \textcolor{comment}{\ \ \ \ ...\ anything\ else?}}
+\DoxyCodeLine{00033\ \textcolor{comment}{}}
+\DoxyCodeLine{00034\ \textcolor{comment}{For\ every\ level\ increase,\ all\ of\ its\ stats\ increase.\ At\ the\ rate\ of\ what?}}
+\DoxyCodeLine{00035\ \textcolor{comment}{\ \ \ \ Let's\ start\ with\ 5\%\ increase\ in\ health,\ 3\%\ increase\ in\ speed,\ 3\%\ increase\ in\ strength,\ and\ 2\%\ increase\ in\ reward.}}
+\DoxyCodeLine{00036\ \textcolor{comment}{Each\ wave\ will\ consist\ of\ only\ one\ class\ ...\ for\ now.}}
+\DoxyCodeLine{00037\ \textcolor{comment}{All\ classes\ of\ monster\ of\ the\ same\ level\ must\ have\ been\ spawned\ before\ the\ next\ level\ monsters\ are\ introduced}}
+\DoxyCodeLine{00038\ \textcolor{comment}{The\ order\ of\ waves\ based\ on\ class\ can\ be\ randomized.}}
+\DoxyCodeLine{00039\ \textcolor{comment}{E.g.)\ }}
+\DoxyCodeLine{00040\ \textcolor{comment}{\ \ \ \ wave\ 1\ (Average\ -\/\ lvl\ 1)\ -\/>\ wave\ 2\ (Tank\ -\/\ lvl\ 1)\ -\/>\ wave\ 3\ (Rogue\ -\/\ lvl\ 1)\ -\/>\ wave\ 4\ (Swarm\ -\/\ lvl\ 1)\ -\/>}}
+\DoxyCodeLine{00041\ \textcolor{comment}{\ \ \ \ wave\ 5\ (Tank\ -\/\ lvl\ 2)\ -\/>\ wave\ 6\ (Swarm\ -\/\ lvl\ 2)\ -\/>\ wave\ 7\ (Rogue\ -\/\ lvl\ 2)\ -\/>\ wave\ 8\ (Average\ -\/\ lvl\ 2)\ -\/>\ etc.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_monster}{Monster}};\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Forward\ declaration\ to\ know\ what\ Monster\ class\ is}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{class\ }MonsterGenerator}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ Constructor\ initializes\ base\ number\ of\ monsters\ and\ their\ increase\ rate\ per\ level}}
+\DoxyCodeLine{00050\ \ \ \ \ MonsterGenerator(\textcolor{keywordtype}{int}\ baseMonsters);}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{enum\ class}\ Type}
+\DoxyCodeLine{00053\ \ \ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ Skeleton,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ Reaper,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ Golem,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ Minotaur,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ Ogre,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ SIZE,}
+\DoxyCodeLine{00060\ \ \ \ \ \};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{//\ Generate\ a\ new\ monster\ if\ needed,\ pass\ Game\ instance\ as\ reference}}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{void}\ generateMonster(\mbox{\hyperlink{class_game}{Game}}\&\ game);}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{void}\ updateNextRoundMonsterGenerator();}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{float}\ getTimeSinceLastGeneration()}
+\DoxyCodeLine{00068\ \ \ \ \ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_fTimeSinceLastGeneration;}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{float}\ getGenerationCoolDown()}
+\DoxyCodeLine{00072\ \ \ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_fGenerationCooldown;}
+\DoxyCodeLine{00074\ \ \ \ \ \}}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasPassedGenerationCoolDown()}
+\DoxyCodeLine{00076\ \ \ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_fTimeSinceLastGeneration\ >=\ m\_fGenerationCooldown;}
+\DoxyCodeLine{00078\ \ \ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{void}\ resetTimeSinceLastGeneration()}
+\DoxyCodeLine{00081\ \ \ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ m\_fTimeSinceLastGeneration\ =\ 0.f;}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordtype}{void}\ incrementTimeSinceLastGeneration(\textcolor{keywordtype}{float}\ addedTime)}
+\DoxyCodeLine{00085\ \ \ \ \ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ m\_fTimeSinceLastGeneration\ +=\ addedTime;}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \ \ }
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{void}\ updateMonsterRoster();}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{template}\ <Type\ type>}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordtype}{void}\ updateMonsterStats(\mbox{\hyperlink{class_monster}{Monster}}\&\ monster);}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{int}\ getWaveStrength(MonsterGenerator::Type\ currentType);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keyword}{struct\ }MonsterTypeData}
+\DoxyCodeLine{00098\ \ \ \ \ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_monster_generator_1_1_monster_type_data_1_1_base_stats}{BaseStats}}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iHealth\ =\ 100;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ fSpeed\ =\ 100.f;}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iStrength\ =\ 10;}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iReward\ =\ 20;}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iWaveStrength\ =\ 0;}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \};\ }
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_monster_generator_1_1_monster_type_data_1_1_skeleton}{Skeleton}}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iHealthDifference\ =\ 0;}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ fSpeedDifference\ =\ 0;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iStrengthDifference\ =\ 0;}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iRewardDifference\ =\ 0;}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iWaveStrength\ =\ 3;}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_monster_generator_1_1_monster_type_data_1_1_reaper}{Reaper}}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iHealthDifference\ =\ -\/2;}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ fSpeedDifference\ =\ 2.f;}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iStrengthDifference\ =\ 2;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iRewardDifference\ =\ 1;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iWaveStrength\ =\ 4;}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_monster_generator_1_1_monster_type_data_1_1_golem}{Golem}}}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iHealthDifference\ =\ 5;}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ fSpeedDifference\ =\ -\/2.f;}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iStrengthDifference\ =\ 2;}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iRewardDifference\ =\ 3;}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iWaveStrength\ =\ 2;}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_monster_generator_1_1_monster_type_data_1_1_minotaur}{Minotaur}}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iHealthDifference\ =\ -\/3;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ fSpeedDifference\ =\ 3.f;}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iStrengthDifference\ =\ -\/1;}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iRewardDifference\ =\ -\/3;}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iWaveStrength\ =\ 5;}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_monster_generator_1_1_monster_type_data_1_1_ogre}{Ogre}}}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iHealthDifference\ =\ 4;}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ fSpeedDifference\ =\ 2;}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iStrengthDifference\ =\ 3;}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iRewardDifference\ =\ 5;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ iWaveStrength\ =\ 0;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00152\ \ \ \ \ \};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keyword}{struct\ }StatsLevelUpRate}
+\DoxyCodeLine{00155\ \ \ \ \ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ fHealthLevelUpRate\ =\ 1.05f;}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ fSpeedLevelUpRate\ =\ 1.03f;}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ fStrengthLevelUpRate\ =\ 1.03f;}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ fRewardLevelUpRate\ =\ 1.02f;}
+\DoxyCodeLine{00160\ \ \ \ \ \};}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iBaseMonsters;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Starting\ monster\ number}}
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iNumberOfMonsterSpawned;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ To\ track\ how\ many\ monsters\ have\ been\ generated\ for\ this\ wave}}
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iMonsterLevel;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Current\ monster\ level}}
+\DoxyCodeLine{00165\ \ \ \ \ std::vector<Type>\ m\_aCurrentMonsterRoaster;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Store\ Monster\ roaster\ size\ depend\ on\ the\ size\ of\ the\ Type\ enum}}
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fTimeSinceLastGeneration\ =\ 0.f;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Time\ elapsed\ since\ the\ last\ monster\ was\ generated}}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ m\_fGenerationCooldown\ =\ 0.5f;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ cooldown\ time\ (in\ seconds)\ between\ monster\ generations}}
+\DoxyCodeLine{00168\ \};}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

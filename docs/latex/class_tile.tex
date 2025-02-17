@@ -1,0 +1,88 @@
+\doxysection{Tile Class Reference}
+\hypertarget{class_tile}{}\label{class_tile}\index{Tile@{Tile}}
+Inheritance diagram for Tile\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_tile}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_tile_afa5ef05a7f2ea1f3e44398c001abc738}\label{class_tile_afa5ef05a7f2ea1f3e44398c001abc738} 
+enum {\bfseries Type} \{ {\bfseries Grass}
+, {\bfseries Path}
+, {\bfseries Entry}
+, {\bfseries Exit}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_tile_ae7d63b2303497f15817a0bd16eaa592e}\label{class_tile_ae7d63b2303497f15817a0bd16eaa592e} 
+virtual Type {\bfseries get\+Type} ()
+\item 
+\Hypertarget{class_tile_ac6ad6adb3453f6dd5da5caabbb5a0e66}\label{class_tile_ac6ad6adb3453f6dd5da5caabbb5a0e66} 
+virtual void {\bfseries set\+Type} (Type new\+Type)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries Set\+Texture} (const sf\+::\+Texture \&texture)
+\item 
+void {\bfseries Set\+Scale} (const sf\+::\+Vector2f \&scale)
+\item 
+void {\bfseries Set\+Origin} (const sf\+::\+Vector2f \&origin)
+\item 
+void {\bfseries Set\+Position} (const sf\+::\+Vector2f \&position)
+\item 
+void {\bfseries Set\+Color} (const sf\+::\+Color \&color)
+\item 
+void {\bfseries Set\+Sprite} (const sf\+::\+Sprite \&sprite)
+\item 
+void {\bfseries Set\+Texture\+Rect} (sf\+::\+Int\+Rect int\+Rect\+Value)
+\item 
+void {\bfseries Set\+Rotation} (float angle)
+\item 
+sf\+::\+Vector2f {\bfseries Get\+Position} () const
+\item 
+sf\+::\+Vector2i {\bfseries Get\+Closest\+Grid\+Coordinates} () const
+\item 
+const sf\+::\+Sprite \& {\bfseries Get\+Sprite} () const
+\item 
+sf\+::\+Sprite \& {\bfseries Get\+Sprite\+Non\+Const} ()
+\item 
+void {\bfseries Move} (const sf\+::\+Vector2f \&offset)
+\item 
+void {\bfseries draw} (sf\+::\+Render\+Target \&target, sf\+::\+Render\+States states) const override
+\item 
+Vector2f {\bfseries Get\+Origin} ()
+\item 
+void {\bfseries Set\+Direction} (sf\+::\+Vector2f direction)
+\item 
+sf\+::\+Vector2f {\bfseries Get\+Direction} () const
+\item 
+float {\bfseries Get\+Speed} () const
+\item 
+float {\bfseries Get\+Damage} () const
+\item 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_entity}{Entity}} \&other) const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+Sprite {\bfseries m\+\_\+\+Sprite}
+\item 
+sf\+::\+Vector2f {\bfseries m\+\_\+\+Direction}
+\item 
+float {\bfseries m\+\_\+speed}
+\item 
+float {\bfseries m\+\_\+f\+Damage}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Tile.\+h\item 
+src/Tile.\+cpp\end{DoxyCompactItemize}

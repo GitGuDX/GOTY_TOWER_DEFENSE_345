@@ -1,0 +1,112 @@
+\doxysection{Game Class Reference}
+\hypertarget{class_game}{}\label{class_game}\index{Game@{Game}}
+
+
+Main game management class.  
+
+
+
+
+{\ttfamily \#include $<$Game.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfef}{Game\+Mode}} \{ \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa9eca143cd7f6c34a1d6690251d5d9ede}{Initial\+Set\+Up}}
+, \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa871e5f91f99bd8c8c49d80e4b951fc48}{Play\+Mode}}
+, \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa6057c797d374044b36f4ae9b8f2b3ea0}{Map\+Editor\+Mode}}
+, \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefab2cf7098808338abae856bf46ac82b91}{Pause}}
+ \}
+\begin{DoxyCompactList}\small\item\em Enumeration for different game modes. \end{DoxyCompactList}\item 
+\Hypertarget{class_game_ad790ef11acf1a0a0fcec0377c7fd3c82}\label{class_game_ad790ef11acf1a0a0fcec0377c7fd3c82} 
+enum {\bfseries Clicked\+Input\+Box} \{ {\bfseries Width}
+, {\bfseries Height}
+, {\bfseries None}
+ \}
+\item 
+\Hypertarget{class_game_ac485057f97b549dcb399159dad1dc55b}\label{class_game_ac485057f97b549dcb399159dad1dc55b} 
+enum {\bfseries Path\+Editing\+State} \{ {\bfseries Entry\+State}
+, {\bfseries Exit\+State}
+, {\bfseries Path\+State}
+, {\bfseries Finished\+Pathing\+State}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_game_a3fdcea78422790fd85667e634d76c587}{Game}} (int initial\+Window\+Width, int initial\+Window\+Height)
+\begin{DoxyCompactList}\small\item\em Constructs the game window. \end{DoxyCompactList}\item 
+\Hypertarget{class_game_ae3d112ca6e0e55150d2fdbc704474530}\label{class_game_ae3d112ca6e0e55150d2fdbc704474530} 
+{\bfseries \texorpdfstring{$\sim$}{\string~}\+Game} ()
+\begin{DoxyCompactList}\small\item\em Destructor for \doxylink{class_game}{Game}. \end{DoxyCompactList}\item 
+\Hypertarget{class_game_a96341ca5b54d90adc3ecb3bf0bcd2312}\label{class_game_a96341ca5b54d90adc3ecb3bf0bcd2312} 
+void {\bfseries Run} ()
+\begin{DoxyCompactList}\small\item\em Runs the game loop. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_game_a8b9901e17ad1cfa96b43ef6978947b10}\label{class_game_a8b9901e17ad1cfa96b43ef6978947b10} 
+class {\bfseries Monster\+Generator}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Main game management class. 
+
+This class controls the flow of the game, updates the game state, and handles user input. 
+
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_game_ac2b04dd85ce59ea4aa71a5779c97bfef}\index{Game@{Game}!GameMode@{GameMode}}
+\index{GameMode@{GameMode}!Game@{Game}}
+\doxysubsubsection{\texorpdfstring{GameMode}{GameMode}}
+{\footnotesize\ttfamily \label{class_game_ac2b04dd85ce59ea4aa71a5779c97bfef} 
+enum \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfef}{Game\+::\+Game\+Mode}}}
+
+
+
+Enumeration for different game modes. 
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{InitialSetUp@{InitialSetUp}!Game@{Game}}\index{Game@{Game}!InitialSetUp@{InitialSetUp}}}\Hypertarget{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa9eca143cd7f6c34a1d6690251d5d9ede}\label{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa9eca143cd7f6c34a1d6690251d5d9ede} 
+Initial\+Set\+Up&Setup mode for entering grid size. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PlayMode@{PlayMode}!Game@{Game}}\index{Game@{Game}!PlayMode@{PlayMode}}}\Hypertarget{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa871e5f91f99bd8c8c49d80e4b951fc48}\label{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa871e5f91f99bd8c8c49d80e4b951fc48} 
+Play\+Mode&Main gameplay mode. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MapEditorMode@{MapEditorMode}!Game@{Game}}\index{Game@{Game}!MapEditorMode@{MapEditorMode}}}\Hypertarget{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa6057c797d374044b36f4ae9b8f2b3ea0}\label{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa6057c797d374044b36f4ae9b8f2b3ea0} 
+Map\+Editor\+Mode&Map creation mode. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Pause@{Pause}!Game@{Game}}\index{Game@{Game}!Pause@{Pause}}}\Hypertarget{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefab2cf7098808338abae856bf46ac82b91}\label{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefab2cf7098808338abae856bf46ac82b91} 
+Pause&Paused state. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_game_a3fdcea78422790fd85667e634d76c587}\index{Game@{Game}!Game@{Game}}
+\index{Game@{Game}!Game@{Game}}
+\doxysubsubsection{\texorpdfstring{Game()}{Game()}}
+{\footnotesize\ttfamily \label{class_game_a3fdcea78422790fd85667e634d76c587} 
+Game\+::\+Game (\begin{DoxyParamCaption}\item[{int}]{initial\+Window\+Width}{, }\item[{int}]{initial\+Window\+Height}{}\end{DoxyParamCaption})}
+
+
+
+Constructs the game window. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em initial\+Window\+Width} & Initial width of the game window. \\
+\hline
+{\em initial\+Window\+Height} & Initial height of the game window. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{_game_8h}{Game.\+h}}\item 
+src/\mbox{\hyperlink{_game_8cpp}{Game.\+cpp}}\end{DoxyCompactItemize}

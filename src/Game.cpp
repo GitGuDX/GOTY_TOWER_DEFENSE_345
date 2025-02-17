@@ -1,3 +1,10 @@
+/**
+
+@file Game.cpp
+
+@brief Implements game logic, handling updates and rendering.
+*/
+
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
 #define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users

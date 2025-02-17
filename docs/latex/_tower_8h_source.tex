@@ -1,0 +1,118 @@
+\doxysection{Tower.\+h}
+\hypertarget{_tower_8h_source}{}\label{_tower_8h_source}\index{src/Tower.h@{src/Tower.h}}
+\mbox{\hyperlink{_tower_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#ifndef\ TOWER\_H}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#define\ TOWER\_H}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_entity_8h}{Entity.h}}"{}}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{enum\ class}\ TowerType\ \{}
+\DoxyCodeLine{00015\ \ \ \ \ Basic,}
+\DoxyCodeLine{00016\ \ \ \ \ Sniper,}
+\DoxyCodeLine{00017\ \ \ \ \ Rapid}
+\DoxyCodeLine{00018\ \};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{keyword}{class\ }Tower\ :\ \textcolor{keyword}{public}\ Entity}
+\DoxyCodeLine{00021\ \{}
+\DoxyCodeLine{00022\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00023\ \ \ \ \ Tower(TowerType\ type\ =\ TowerType::Basic);\ \textcolor{comment}{//\ Default\ constructor\ takes\ a\ type}}
+\DoxyCodeLine{00024\ \ \ \ \ \string~Tower();}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ DebugPrint()\textcolor{keyword}{\ const\ }}
+\DoxyCodeLine{00027\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Tower\ Position:\ "{}}\ <<\ GetPosition().x\ <<\ \textcolor{stringliteral}{"{},"{}}\ <<\ GetPosition().y\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}}}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}Health:\ "{}}\ <<\ m\_iHealth\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}}}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}Speed:\ "{}}\ <<\ m\_fDamage\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00031\ \ \ \ \ \}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{float}\ GetDamage()}
+\DoxyCodeLine{00034\ \ \ \ \ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_fDamage;}
+\DoxyCodeLine{00036\ \ \ \ \ \}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{float}\ GetSpeed()}
+\DoxyCodeLine{00039\ \ \ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_speed;}
+\DoxyCodeLine{00041\ \ \ \ \ \}}
+\DoxyCodeLine{00042\ \ \ \ \ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ GetCurrentPathIndex()}
+\DoxyCodeLine{00044\ \ \ \ \ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_stCurrentPathIndex;}
+\DoxyCodeLine{00046\ \ \ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{void}\ SetDamage(\textcolor{keywordtype}{float}\ newDamage)}
+\DoxyCodeLine{00049\ \ \ \ \ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ m\_fDamage\ =\ newDamage;}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ SetCurrentPathIndex(\textcolor{keywordtype}{size\_t}\ newIndex)}
+\DoxyCodeLine{00054\ \ \ \ \ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ m\_stCurrentPathIndex\ =\ newIndex;}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{void}\ SetType(TowerType\ type)\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ m\_eType\ =\ type;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (type)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ TowerType::Basic:}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_fRange\ =\ 300.0f;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_fMaxCooldown\ =\ 1.0f;}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_fDamage\ =\ 10.0f;}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_speed\ =\ 300.f;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_iCost\ =\ 100;}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ TowerType::Sniper:}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_fRange\ =\ 600.0f;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_fMaxCooldown\ =\ 3.0f;}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_fDamage\ =\ 50.0f;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_speed\ =\ 800.f;}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_iCost\ =\ 300;}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ TowerType::Rapid:}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_fRange\ =\ 200.0f;}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_fMaxCooldown\ =\ 0.25f;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_fDamage\ =\ 5.0f;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_speed\ =\ 400.f;}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_iCost\ =\ 200;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{void}\ SetRange(\textcolor{keywordtype}{float}\ range)\ \{\ m\_fRange\ =\ range;\ \}}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordtype}{float}\ GetRange()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_fRange;\ \}}
+\DoxyCodeLine{00088\ \ \ \ \ }
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordtype}{bool}\ CanShoot()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_fShootCooldown\ <=\ 0.0f;\ \}}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordtype}{void}\ ResetCooldown()\ \{\ m\_fShootCooldown\ =\ m\_fMaxCooldown;\ \}}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateCooldown(\textcolor{keywordtype}{float}\ deltaTime)\ \{\ m\_fShootCooldown\ -\/=\ deltaTime;\ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ TowerType\ GetType()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_eType;\ \}}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{int}\ GetCost()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_iCost;\ \}}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordtype}{void}\ SetCost(\textcolor{keywordtype}{int}\ value)\ \{\ m\_iCost\ =\ value;\ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{comment}{//\ Add\ new\ level-\/related\ methods}}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordtype}{int}\ GetLevel()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_iLevel;\ \}}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordtype}{bool}\ CanUpgrade()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_iLevel\ <\ MAX\_LEVEL;\ \}}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{bool}\ Upgrade();}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordtype}{int}\ GetUpgradeCost()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ MAX\_LEVEL\ =\ 3;\ \textcolor{comment}{//\ Maximum\ level\ a\ tower\ can\ reach}}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iLevel;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Current\ tower\ level}}
+\DoxyCodeLine{00106\ \ \ \ \ TowerType\ m\_eType;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iHealth;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fDamage;}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_iCost;}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ m\_stCurrentPathIndex;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ index\ of\ the\ Tower's\ current\ path}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fShootCooldown;}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fMaxCooldown;}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fRange;}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_speed;\ \textcolor{comment}{//\ Adjust\ speed\ as\ needed}}
+\DoxyCodeLine{00115\ \};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}
