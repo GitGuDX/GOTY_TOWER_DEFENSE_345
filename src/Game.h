@@ -95,6 +95,7 @@ private:
 
     void ShowGameOverScreen();
     void delayedTurnOffDragging();
+    void LoadMonsterTextures();
     //void PlayerPressedRestart();
     //void ResetGame();
     //void PlayerPressedMainMenu();
@@ -267,6 +268,12 @@ private:
 
 
     // Animation related
+    std::vector<sf::Texture> m_SkeletonTextures;
+    std::vector<sf::Texture> m_ReaperTextures;
+    std::vector<sf::Texture> m_GolemTextures;
+    std::vector<sf::Texture> m_MinotaurTextures;
+    std::vector<sf::Texture> m_OgreTextures;
+
     Clock animationDelay;
     int currentTowerFrame = 1;
     int currentEnemyFrame = 0;
@@ -280,7 +287,6 @@ private:
     Texture m_MinotaurTempTexture;
     Texture m_OgreTempTexture;
     Monster m_MonsterTemplate;
-
 
 
 
