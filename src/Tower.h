@@ -86,9 +86,16 @@ public:
     TowerType GetType() const { return m_eType; }
     int GetCost() const { return m_iCost; }
     void SetCost(int value) { m_iCost = value; }
-    
+
+    // Add new level-related methods
+    int GetLevel() const { return m_iLevel; }
+    bool CanUpgrade() const { return m_iLevel < MAX_LEVEL; }
+    bool Upgrade();
+    int GetUpgradeCost() const;
 
 private:
+    static const int MAX_LEVEL = 3; // Maximum level a tower can reach
+    int m_iLevel;                   // Current tower level
     TowerType m_eType;
     int m_iHealth;
     float m_fDamage;
