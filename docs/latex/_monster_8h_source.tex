@@ -1,0 +1,115 @@
+\doxysection{Monster.\+h}
+\hypertarget{_monster_8h_source}{}\label{_monster_8h_source}\index{src/Monster.h@{src/Monster.h}}
+\mbox{\hyperlink{_monster_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#ifndef\ MONSTER\_H}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#define\ MONSTER\_H}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_entity_8h}{Entity.h}}"{}}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_monster___generator_8h}{Monster\_Generator.h}}"{}}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00015\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00016\ \textcolor{comment}{**Feel\ free\ to\ make\ any\ suggestions}}
+\DoxyCodeLine{00017\ \textcolor{comment}{}}
+\DoxyCodeLine{00018\ \textcolor{comment}{Monsters\ will\ have\ five\ stats.}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ \ \ \ Level}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ \ \ \ Health}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ \ \ \ Speed}}
+\DoxyCodeLine{00022\ \textcolor{comment}{\ \ \ \ Strength\ (Strength\ impacts\ the\ amount\ of\ coin\ it\ steals\ from\ the\ player\ once\ it\ reaches\ the\ exit\ tile)}}
+\DoxyCodeLine{00023\ \textcolor{comment}{\ \ \ \ Reward\ \ (Reward\ is\ amount\ of\ coin\ the\ player\ wins\ for\ eliminating\ the\ monster)}}
+\DoxyCodeLine{00024\ \textcolor{comment}{Monster\ also\ has\ a\ m\_stCurrentPathIndex\ member\ variable\ that\ keeps\ track\ of\ the\ index\ of\ its\ current\ tile\ it\ is\ on.}}
+\DoxyCodeLine{00025\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{class\ }Monster\ :\ \textcolor{keyword}{public}\ Entity}
+\DoxyCodeLine{00028\ \{}
+\DoxyCodeLine{00029\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00030\ \ \ \ \ Monster();}
+\DoxyCodeLine{00031\ \ \ \ \ \string~Monster();}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ GetCurrentPathIndex()}
+\DoxyCodeLine{00036\ \ \ \ \ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_stCurrentPathIndex;}
+\DoxyCodeLine{00038\ \ \ \ \ \}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{int}\ GetHealth()}
+\DoxyCodeLine{00041\ \ \ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_iHealth;}
+\DoxyCodeLine{00043\ \ \ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{float}\ GetSpeed()}
+\DoxyCodeLine{00046\ \ \ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_fSpeed;}
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{int}\ GetLevel()}
+\DoxyCodeLine{00051\ \ \ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_iLevel;}
+\DoxyCodeLine{00053\ \ \ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{int}\ GetStrength()}
+\DoxyCodeLine{00056\ \ \ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_iStrength;}
+\DoxyCodeLine{00058\ \ \ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{int}\ GetReward()}
+\DoxyCodeLine{00061\ \ \ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_iReward;}
+\DoxyCodeLine{00063\ \ \ \ \ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ MonsterGenerator::Type\ GetMonsterType()}
+\DoxyCodeLine{00066\ \ \ \ \ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_eMonsterType;}
+\DoxyCodeLine{00068\ \ \ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{void}\ SetCurrentPathIndex(\textcolor{keywordtype}{size\_t}\ newIndex)}
+\DoxyCodeLine{00071\ \ \ \ \ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ m\_stCurrentPathIndex\ =\ newIndex;}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{void}\ SetHealth(\textcolor{keywordtype}{int}\ newHealth)}
+\DoxyCodeLine{00076\ \ \ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ m\_iHealth\ =\ newHealth;}
+\DoxyCodeLine{00078\ \ \ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{void}\ SetSpeed(\textcolor{keywordtype}{float}\ newSpeed)}
+\DoxyCodeLine{00081\ \ \ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ m\_fSpeed\ =\ newSpeed;}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{void}\ SetLevel(\textcolor{keywordtype}{int}\ newLevel)}
+\DoxyCodeLine{00086\ \ \ \ \ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ m\_iLevel\ =\ newLevel;}
+\DoxyCodeLine{00088\ \ \ \ \ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordtype}{void}\ SetStrength(\textcolor{keywordtype}{int}\ newStrength)}
+\DoxyCodeLine{00091\ \ \ \ \ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ m\_iStrength\ =\ newStrength;}
+\DoxyCodeLine{00093\ \ \ \ \ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordtype}{void}\ SetReward(\textcolor{keywordtype}{int}\ newReward)}
+\DoxyCodeLine{00096\ \ \ \ \ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ m\_iReward\ =\ newReward;}
+\DoxyCodeLine{00098\ \ \ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{void}\ SetMonsterType(MonsterGenerator::Type\ newType)}
+\DoxyCodeLine{00101\ \ \ \ \ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ m\_eMonsterType\ =\ newType;}
+\DoxyCodeLine{00103\ \ \ \ \ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ m\_stCurrentPathIndex;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ index\ of\ the\ monster's\ current\ path}}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iHealth;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fSpeed;}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iLevel;}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iStrength;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Determines\ the\ rate\ that\ the\ monster\ steals\ coin\ from\ the\ player}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_iReward;}
+\DoxyCodeLine{00112\ \ \ \ \ MonsterGenerator::Type\ m\_eMonsterType;}
+\DoxyCodeLine{00113\ \};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

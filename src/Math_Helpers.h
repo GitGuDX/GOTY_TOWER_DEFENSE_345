@@ -1,3 +1,10 @@
+/**
+
+@file Math_Helpers.cpp
+
+@brief Implements some useful mathematical functions
+*/
+
 #include <cmath>
 #include <SFML/Graphics.hpp>
 

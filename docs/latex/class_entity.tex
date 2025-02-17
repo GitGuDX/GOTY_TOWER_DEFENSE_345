@@ -1,0 +1,92 @@
+\doxysection{Entity Class Reference}
+\hypertarget{class_entity}{}\label{class_entity}\index{Entity@{Entity}}
+Inheritance diagram for Entity\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_entity}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_entity_acb86b3225fb544e053890b3fa4da47e1}\label{class_entity_acb86b3225fb544e053890b3fa4da47e1} 
+void {\bfseries Set\+Texture} (const sf\+::\+Texture \&texture)
+\item 
+\Hypertarget{class_entity_a329c3ecbd2395a0246ef6870bb21567b}\label{class_entity_a329c3ecbd2395a0246ef6870bb21567b} 
+void {\bfseries Set\+Scale} (const sf\+::\+Vector2f \&scale)
+\item 
+\Hypertarget{class_entity_a2b5524d0c9e945bc7b625090d44b3201}\label{class_entity_a2b5524d0c9e945bc7b625090d44b3201} 
+void {\bfseries Set\+Origin} (const sf\+::\+Vector2f \&origin)
+\item 
+\Hypertarget{class_entity_a26476ee775225c3e5f7422a2b962b6ee}\label{class_entity_a26476ee775225c3e5f7422a2b962b6ee} 
+void {\bfseries Set\+Position} (const sf\+::\+Vector2f \&position)
+\item 
+\Hypertarget{class_entity_af9957b13bb043ccb831b9f979d400882}\label{class_entity_af9957b13bb043ccb831b9f979d400882} 
+void {\bfseries Set\+Color} (const sf\+::\+Color \&color)
+\item 
+\Hypertarget{class_entity_aa3bd67626c7f1d1170e14dc16311d20f}\label{class_entity_aa3bd67626c7f1d1170e14dc16311d20f} 
+void {\bfseries Set\+Sprite} (const sf\+::\+Sprite \&sprite)
+\item 
+\Hypertarget{class_entity_a34715f818b3b38fcc9629ed585e9995c}\label{class_entity_a34715f818b3b38fcc9629ed585e9995c} 
+void {\bfseries Set\+Texture\+Rect} (sf\+::\+Int\+Rect int\+Rect\+Value)
+\item 
+\Hypertarget{class_entity_a935fe118a778d7ccb45baca2763173ca}\label{class_entity_a935fe118a778d7ccb45baca2763173ca} 
+void {\bfseries Set\+Rotation} (float angle)
+\item 
+\Hypertarget{class_entity_adf3d8420796c76aec12cd3d8bd1e98e4}\label{class_entity_adf3d8420796c76aec12cd3d8bd1e98e4} 
+sf\+::\+Vector2f {\bfseries Get\+Position} () const
+\item 
+\Hypertarget{class_entity_aab8bbdc862d51a3795bd41132504e87a}\label{class_entity_aab8bbdc862d51a3795bd41132504e87a} 
+sf\+::\+Vector2i {\bfseries Get\+Closest\+Grid\+Coordinates} () const
+\item 
+\Hypertarget{class_entity_ac3b42d06a4fd2970637fa3ae9c97eb2a}\label{class_entity_ac3b42d06a4fd2970637fa3ae9c97eb2a} 
+const sf\+::\+Sprite \& {\bfseries Get\+Sprite} () const
+\item 
+\Hypertarget{class_entity_a2f5ea2ed9435b8507029f2199ca6e78e}\label{class_entity_a2f5ea2ed9435b8507029f2199ca6e78e} 
+sf\+::\+Sprite \& {\bfseries Get\+Sprite\+Non\+Const} ()
+\item 
+\Hypertarget{class_entity_adcc5b364f8ea1b8c7b45964d53292da5}\label{class_entity_adcc5b364f8ea1b8c7b45964d53292da5} 
+void {\bfseries Move} (const sf\+::\+Vector2f \&offset)
+\item 
+\Hypertarget{class_entity_a873f61ebe878480cd6892a272c12b6f2}\label{class_entity_a873f61ebe878480cd6892a272c12b6f2} 
+void {\bfseries draw} (sf\+::\+Render\+Target \&target, sf\+::\+Render\+States states) const override
+\item 
+\Hypertarget{class_entity_aacc5543775d0c0428198924b8eaac482}\label{class_entity_aacc5543775d0c0428198924b8eaac482} 
+Vector2f {\bfseries Get\+Origin} ()
+\item 
+\Hypertarget{class_entity_afcab13a42a02dccf8fba4a5076160a08}\label{class_entity_afcab13a42a02dccf8fba4a5076160a08} 
+void {\bfseries Set\+Direction} (sf\+::\+Vector2f direction)
+\item 
+\Hypertarget{class_entity_a55708d47a2d180eea30c2ed20c104e81}\label{class_entity_a55708d47a2d180eea30c2ed20c104e81} 
+sf\+::\+Vector2f {\bfseries Get\+Direction} () const
+\item 
+\Hypertarget{class_entity_abf8d27f8be2cfd088234b5218f58f2f2}\label{class_entity_abf8d27f8be2cfd088234b5218f58f2f2} 
+float {\bfseries Get\+Speed} () const
+\item 
+\Hypertarget{class_entity_a239248d13da4452c861b414cfc5ee6ae}\label{class_entity_a239248d13da4452c861b414cfc5ee6ae} 
+float {\bfseries Get\+Damage} () const
+\item 
+\Hypertarget{class_entity_abeedd2b9ad7b200acca5ac2522607fad}\label{class_entity_abeedd2b9ad7b200acca5ac2522607fad} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_entity}{Entity}} \&other) const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_entity_ac085763fbfa4de3333bcc558260844aa}\label{class_entity_ac085763fbfa4de3333bcc558260844aa} 
+Sprite {\bfseries m\+\_\+\+Sprite}
+\item 
+\Hypertarget{class_entity_a4f7f7da0fed72f0bf49d5e872bc7549d}\label{class_entity_a4f7f7da0fed72f0bf49d5e872bc7549d} 
+sf\+::\+Vector2f {\bfseries m\+\_\+\+Direction}
+\item 
+\Hypertarget{class_entity_a2a8a61a8c0bc0767ea2f2ec9aee66f6a}\label{class_entity_a2a8a61a8c0bc0767ea2f2ec9aee66f6a} 
+float {\bfseries m\+\_\+speed}
+\item 
+\Hypertarget{class_entity_adc4968f72d987794019ee372eba7f33b}\label{class_entity_adc4968f72d987794019ee372eba7f33b} 
+float {\bfseries m\+\_\+f\+Damage}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{_entity_8h}{Entity.\+h}}\item 
+src/\mbox{\hyperlink{_entity_8cpp}{Entity.\+cpp}}\end{DoxyCompactItemize}

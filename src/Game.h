@@ -1,3 +1,12 @@
+/**
+
+@file Game.h
+
+@brief Manages game states, rendering, and event handling.
+
+The Game class initializes the game, manages user input, and updates/draws the game.
+*/
+
 #ifndef GAME_H
 #define GAME_H
 
@@ -15,18 +24,37 @@
 using namespace sf;
 using namespace std;
 
+/**
+
+@class Game
+
+@brief Main game management class.
+
+* This class controls the flow of the game, updates the game state, and handles user input.
+*/
+
 class Game
 {
 public:
+    /**
+    @brief Constructs the game window.
+    @param initialWindowWidth Initial width of the game window.
+    @param initialWindowHeight Initial height of the game window.
+    */
     Game(int initialWindowWidth, int initialWindowHeight);
-    ~Game();
 
+    /** @brief Destructor for Game. */
+    ~Game(); 
+
+    /**
+    @brief Enumeration for different game modes.
+    */
     enum GameMode
     {
-        InitialSetUp,
-        PlayMode,
-        MapEditorMode,
-        Pause,
+        InitialSetUp,   ///< Setup mode for entering grid size.
+        PlayMode,       ///< Main gameplay mode.
+        MapEditorMode,  ///< Map creation mode.
+        Pause,          ///< Paused state.
     };
 
     enum ClickedInputBox
@@ -44,15 +72,25 @@ public:
         FinishedPathingState
     };
 
-    void Run();
+    /** @brief Runs the game loop. */
+    void Run(); 
 
 private:
+    /** * @brief Loads assets for the initial setup screen. */
     void LoadInitialSetUpAssets();
+
+    /** * @brief Loads assets for the map editor mode.*/
     void LoadMapEditorAssets();
+
+    /** * @brief Loads assets for the play mode. */
     void LoadPlayModeAssets();
 
+    /** * @brief Handles game over logic. */
     void HandleGameOver();
+
+    /** * @brief Handles user input. */
     void HandleInput();
+
     void ChangeSizeInputText(Event& event, String& currentText);
 
     void ShowGameOverScreen();
@@ -62,18 +100,35 @@ private:
     //void PlayerPressedMainMenu();
     //void SwitchToMainMenu();
     
+    /** * @brief Updates game objects during initial setup. */
     void UpdateInitialPrompt();
+
+    /** * @brief Updates tile states. */
     void UpdateTiles();
+
+    /** * @brief Updates game elements during play mode. */
     void UpdatePlay();
+
+    /** * @brief Updates all monsters. */
     void UpdateMonsters();
+
+    /** * @brief Updates tower mechanics. */
     void UpdateTowers();
+
     void UpdateAxes();
     void UpdateText();
+
+    /** * @brief Updates UI components. */
     void UpdateUI();
     void Animate();
 
+    /** * @brief Draws elements in initial setup mode. */
     void DrawInitialSetUp();
+
+    /** * @brief Draws elements in map editor mode. */
     void DrawMapEditorMode();
+
+    /** * @brief Draws elements in play mode. */
     void DrawPlayMode();
 
     bool isEdgeTile(sf::Vector2f tile);

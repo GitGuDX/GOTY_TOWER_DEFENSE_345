@@ -1,3 +1,10 @@
+/**
+
+@file Tower_Defense_1.cpp
+
+@brief Main entry point of the game, initializing and running the Game class.
+*/
+
 #include "Game.h"
 
 int main()

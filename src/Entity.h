@@ -1,3 +1,10 @@
+/**
+
+@file Entity.h
+
+@brief Base class for all game objects, providing position, movement, and rendering.
+*/
+
 #ifndef ENTITY_H
 #define ENTITY_H
 
