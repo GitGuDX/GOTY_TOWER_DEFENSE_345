@@ -15,7 +15,7 @@ MonsterGenerator::MonsterGenerator(int baseMonsters)
     , m_iNumberOfMonsterSpawned(0)
     , m_iMonsterLevel(0)                                                                            // Set initial monster level
     // Set initial monster roaster to teach players about the types of monster 
-    , m_aCurrentMonsterRoaster{Type::Elite, Type::Swarm, Type::Tank, Type::Rogue, Type::Normal}        
+    , m_aCurrentMonsterRoaster{Type::Ogre, Type::Minotaur, Type::Golem, Type::Reaper, Type::Skeleton}        
 {
 }
 
@@ -31,7 +31,7 @@ void MonsterGenerator::updateMonsterRoster()
     m_aCurrentMonsterRoaster.clear();
 
     // Refill m_aCurrentMonsterRoaster
-    m_aCurrentMonsterRoaster = {Type::Elite, Type::Swarm, Type::Tank, Type::Rogue, Type::Normal};
+    m_aCurrentMonsterRoaster = {Type::Ogre, Type::Minotaur, Type::Golem, Type::Reaper, Type::Skeleton};
 
     // To randomize monster roster, use Fisher-Yates shuffle on m_aCurrentMonsterRoaster
     // Set up random number generator
@@ -45,35 +45,35 @@ void MonsterGenerator::updateMonsterRoster()
 template <MonsterGenerator::Type type>
 void MonsterGenerator::updateMonsterStats(Monster& monster)
 {
-    if (type == MonsterGenerator::Type::Normal) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Normal::fSpeedDifference);
-        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Normal::iHealthDifference);
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Normal::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Normal::iRewardDifference);
+    if (type == MonsterGenerator::Type::Skeleton) {
+        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Skeleton::fSpeedDifference);
+        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Skeleton::iHealthDifference);
+        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Skeleton::iStrengthDifference);
+        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Skeleton::iRewardDifference);
     }
-    else if (type == MonsterGenerator::Type::Rogue) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Rogue::fSpeedDifference);
-        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Rogue::iHealthDifference);
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Rogue::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Rogue::iRewardDifference);
+    else if (type == MonsterGenerator::Type::Reaper) {
+        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Reaper::fSpeedDifference);
+        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Reaper::iHealthDifference);
+        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Reaper::iStrengthDifference);
+        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Reaper::iRewardDifference);
     }
-    else if (type == MonsterGenerator::Type::Tank) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Tank::fSpeedDifference);
-        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Tank::iHealthDifference);
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Tank::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Tank::iRewardDifference);
+    else if (type == MonsterGenerator::Type::Golem) {
+        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Golem::fSpeedDifference);
+        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Golem::iHealthDifference);
+        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Golem::iStrengthDifference);
+        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Golem::iRewardDifference);
     }
-    else if (type == MonsterGenerator::Type::Swarm) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Swarm::fSpeedDifference);
-        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Swarm::iHealthDifference);
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Swarm::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Swarm::iRewardDifference);
+    else if (type == MonsterGenerator::Type::Minotaur) {
+        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Minotaur::fSpeedDifference);
+        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Minotaur::iHealthDifference);
+        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Minotaur::iStrengthDifference);
+        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Minotaur::iRewardDifference);
     }
-    else if (type == MonsterGenerator::Type::Elite) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Elite::fSpeedDifference);
-        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Elite::iHealthDifference);
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Elite::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Elite::iRewardDifference);
+    else if (type == MonsterGenerator::Type::Ogre) {
+        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Ogre::fSpeedDifference);
+        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Ogre::iHealthDifference);
+        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Ogre::iStrengthDifference);
+        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Ogre::iRewardDifference);
     }
 }
 
@@ -82,20 +82,20 @@ int MonsterGenerator::getWaveStrength(MonsterGenerator::Type currentType)
     int waveStrength = 0;
     switch (currentType)
     {
-        case Type::Normal:
-            waveStrength = MonsterTypeData::Normal::iWaveStrength;
+        case Type::Skeleton:
+            waveStrength = MonsterTypeData::Skeleton::iWaveStrength;
             break;
-        case Type::Rogue:
-            waveStrength = MonsterTypeData::Rogue::iWaveStrength;
+        case Type::Reaper:
+            waveStrength = MonsterTypeData::Reaper::iWaveStrength;
             break;
-        case Type::Tank:
-            waveStrength = MonsterTypeData::Tank::iWaveStrength;
+        case Type::Golem:
+            waveStrength = MonsterTypeData::Golem::iWaveStrength;
             break;
-        case Type::Swarm:
-            waveStrength = MonsterTypeData::Swarm::iWaveStrength;
+        case Type::Minotaur:
+            waveStrength = MonsterTypeData::Minotaur::iWaveStrength;
             break;
-        case Type::Elite:
-            waveStrength = MonsterTypeData::Elite::iWaveStrength;
+        case Type::Ogre:
+            waveStrength = MonsterTypeData::Ogre::iWaveStrength;
             break;
         default:
             waveStrength = 0; // Default case, shouldn't happen, but just in case.
@@ -132,42 +132,42 @@ void MonsterGenerator::generateMonster(Game& game)
         // Initialize a new monster class
         Monster newMonster;
         // Set universal properties
-        newMonster.SetScale(sf::Vector2f(0.06f, 0.06f));
+        newMonster.SetScale(sf::Vector2f(0.08f, 0.08f));
 
         switch (currentType)
         {
-        case Type::Normal:
+        case Type::Skeleton:
         {
-            newMonster.SetTexture(game.m_MonsterTexture);
-            updateMonsterStats<Type::Normal>(newMonster);                     // Set monster stat accoring to its type
+            newMonster.SetTexture(game.m_SkeletonTempTexture);
+            updateMonsterStats<Type::Skeleton>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
-        case Type::Rogue:
+        case Type::Reaper:
         {
-            newMonster.SetTexture(game.m_MonsterTexture);
-            updateMonsterStats<Type::Rogue>(newMonster);                     // Set monster stat accoring to its type
+            newMonster.SetTexture(game.m_ReaperTempTexture);
+            updateMonsterStats<Type::Reaper>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
-        case Type::Tank:
+        case Type::Golem:
         {
-            newMonster.SetTexture(game.m_MonsterTexture);
-            updateMonsterStats<Type::Tank>(newMonster);                     // Set monster stat accoring to its type
+            newMonster.SetTexture(game.m_GolemTempTexture);
+            updateMonsterStats<Type::Golem>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
-        case Type::Swarm:
+        case Type::Minotaur:
         {
-            newMonster.SetTexture(game.m_MonsterTexture);
-            updateMonsterStats<Type::Swarm>(newMonster);                     // Set monster stat accoring to its type
+            newMonster.SetTexture(game.m_MinotaurTempTexture);
+            updateMonsterStats<Type::Minotaur>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
-        case Type::Elite:
+        case Type::Ogre:
         {
-            newMonster.SetTexture(game.m_MonsterTexture);
-            updateMonsterStats<Type::Elite>(newMonster);                     // Set monster stat accoring to its type
+            newMonster.SetTexture(game.m_OgreTempTexture);
+            updateMonsterStats<Type::Ogre>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
         default:
-            break;    
+            break;
         }
 
         FloatRect monsterSize = newMonster.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height

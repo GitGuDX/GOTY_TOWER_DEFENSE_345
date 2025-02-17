@@ -44,11 +44,11 @@ public:
 
     enum class Type
     {
-        Normal,
-        Rogue,
-        Tank,
-        Swarm,
-        Elite,
+        Skeleton,
+        Reaper,
+        Golem,
+        Minotaur,
+        Ogre,
         SIZE,
     };
 
@@ -98,7 +98,7 @@ private:
             static constexpr int iWaveStrength = 0;
         }; 
 
-        struct Normal
+        struct Skeleton
         {
             static constexpr int iHealthDifference = 0;
             static constexpr float fSpeedDifference = 0;
@@ -107,7 +107,7 @@ private:
             static constexpr int iWaveStrength = 3;
         };
 
-        struct Rogue
+        struct Reaper
         {
             static constexpr int iHealthDifference = -2;
             static constexpr float fSpeedDifference = 2.f;
@@ -116,7 +116,7 @@ private:
             static constexpr int iWaveStrength = 4;
         };
 
-        struct Tank
+        struct Golem
         {
             static constexpr int iHealthDifference = 5;
             static constexpr float fSpeedDifference = -2.f;
@@ -125,7 +125,7 @@ private:
             static constexpr int iWaveStrength = 2;
         };
 
-        struct Swarm
+        struct Minotaur
         {
             static constexpr int iHealthDifference = -3;
             static constexpr float fSpeedDifference = 3.f;
@@ -134,7 +134,7 @@ private:
             static constexpr int iWaveStrength = 5;
         };
 
-        struct Elite
+        struct Ogre
         {
             static constexpr int iHealthDifference = 4;
             static constexpr float fSpeedDifference = 2;

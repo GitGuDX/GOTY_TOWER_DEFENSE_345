@@ -6,6 +6,7 @@
 #include <array>
 #include <vector>
 
+
 #include "Tile.h"
 #include "Monster.h"
 #include "Monster_Generator.h"
@@ -146,9 +147,6 @@ private:
     int m_iCurrentLevel;
     int m_iCurrentWealth;
 
-    Texture m_MonsterTexture;
-    Monster m_MonsterTemplate;
-
     std::vector<Monster> m_aMonstersQueue;
     std::vector<Monster*> m_aEliminatedMonstersQueue;
     bool justPlacedTower = false;
@@ -211,12 +209,20 @@ private:
     // Animation related
     Clock animationDelay;
     int currentTowerFrame = 1;
-    int currentEnemyFrame = 1;
-    const float frameTime = 0.1f; // Time per frame in seconds
+    int currentEnemyFrame = 0;
+    const float frameTime = 0.05f; // Time per frame in seconds
     Texture tower1TempTexture;
     Texture tower2TempTexture;
-    Texture enemy1TempTexture;
     
+    Texture m_SkeletonTempTexture;
+    Texture m_ReaperTempTexture;
+    Texture m_GolemTempTexture;
+    Texture m_MinotaurTempTexture;
+    Texture m_OgreTempTexture;
+    Monster m_MonsterTemplate;
+
+
+
 
 
 };
