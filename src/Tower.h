@@ -95,7 +95,7 @@ public:
 
 private:
     static const int MAX_LEVEL = 3; // Maximum level a tower can reach
-    int m_iLevel;                   // Current tower level
+    
     TowerType m_eType;
     int m_iHealth;
     float m_fDamage;
@@ -105,6 +105,7 @@ private:
     float m_fMaxCooldown;
     float m_fRange;
     float m_speed; // Adjust speed as needed
+    int m_iLevel;                   // Current tower level
 };
 
 #endif
