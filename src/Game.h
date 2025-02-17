@@ -85,6 +85,9 @@ private:
     /** * @brief Loads assets for the play mode. */
     void LoadPlayModeAssets();
 
+    /** * @brief Loads assets for the UI screen. */
+    void LoadUIAssets();
+
     /** * @brief Handles game over logic. */
     void HandleGameOver();
 
