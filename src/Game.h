@@ -220,7 +220,7 @@ private:
     std::vector<Monster> m_aMonstersQueue;
     std::vector<Monster*> m_aEliminatedMonstersQueue;
     bool justPlacedTower = false;
-    sf::Clock placementOrUpgradeDelay;  // Timer to track recent tower placements
+    sf::Clock placementOrUpgradeTimer;  // Timer to track recent tower placements
 
 
     void DebugPrintGameState() const {
