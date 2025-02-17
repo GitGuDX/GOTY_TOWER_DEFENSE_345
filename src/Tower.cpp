@@ -4,7 +4,9 @@ Tower::Tower(TowerType type)
     : m_eType(type)
     , m_iHealth(100)
     , m_fShootCooldown(0.0f)
+    , m_iLevel(1)  // Start at level 1
 {
+    // Initialize base stats
     switch(type) {
         case TowerType::Basic:
             m_fRange = 300.0f;
@@ -32,5 +34,35 @@ Tower::Tower(TowerType type)
 
 Tower::~Tower()
 {
+}
+
+bool Tower::Upgrade()
+{
+    if (!CanUpgrade()) {
+        return false;
+    }
+
+    m_iLevel++;
+    
+    // Increase stats based on level (example multipliers)
+    const float damageMultiplier = 1.5f;
+    const float rangeMultiplier = 1.2f;
+    const float cooldownMultiplier = 0.8f;
+
+    m_fDamage *= damageMultiplier;
+    m_fRange *= rangeMultiplier;
+    m_fMaxCooldown *= cooldownMultiplier;
+
+    return true;
+}
+
+int Tower::GetUpgradeCost() const
+{
+    if (!CanUpgrade()) {
+        return 0;
+    }
+    
+    // Cost increases with each level
+    return m_iCost * m_iLevel;
 }
 

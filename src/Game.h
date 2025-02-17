@@ -128,6 +128,11 @@ private:
     std::vector<std::vector<Tile>> m_aTiles;
 	std::vector<Entity> m_aAxes;
     
+
+    Text m_upgradeText;
+    bool m_bShowUpgradeUI = false;
+    Tower* m_pSelectedTower = nullptr;
+    
     
     std::array<RectangleShape, 8> m_ahighlights;
 
