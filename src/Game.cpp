@@ -439,8 +439,8 @@ void Game::LoadUIAssets()
     levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
     instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
     warningTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y - 30);
-    modeTextPosition = Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/10 + 65);
-    woodTowerPricePosition = Vector2f(m_vWindowSize.x + 135, m_vWindowSize.y/3 + 125);
+    modeTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 65);
+    woodTowerPricePosition = Vector2f(m_vWindowSize.x + 130, m_vWindowSize.y/3 + 125);
     stoneTowerPricePosition = Vector2f(m_vWindowSize.x + 235, m_vWindowSize.y/3 + 125);
     gameOverTextPosition = Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/2);
 
@@ -469,9 +469,9 @@ void Game::LoadUIAssets()
     m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
     m_warningText.setCharacterSize(15);        // Set size
     m_warningText.setPosition(warningTextPosition);       // Set position
-    if(warningShown.getElapsedTime().asSeconds() > 3){
-        currentWarning = "";
-    }
+    // if(warningShown.getElapsedTime().asSeconds() > 3){
+    //     currentWarning = "";
+    // }
 
     // Wood tower price
     woodTowerPrice.setFont(m_Font);               // Set font
@@ -746,6 +746,8 @@ void Game::HandleInput()
                             m_aPath.push_back(gridPos);
                             m_sfPathLines.append(sf::Vertex(gridPos, sf::Color::White));
                         }
+                        std::cout << "m_aPath size: " << m_aPath.size() << std::endl;
+
                     }
                 }
                 
@@ -779,7 +781,7 @@ void Game::HandleInput()
 
         //Removes built towers on click
         if(event.mouseButton.button == sf::Mouse::Left && !isDraggingTower){
-            if (justPlacedTower && placementTimer.getElapsedTime().asMilliseconds() < 200) {
+            if (justPlacedTower && placementOrUpgradeTimer.getElapsedTime().asMilliseconds() < 200) {
                 return;  // Ignore clicks right after placement
             }
             justPlacedTower = false;  // Reset flag after some time
@@ -916,7 +918,7 @@ void Game::HandleInput()
                             a_activeWoodTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
-                            placementTimer.restart();
+                            placementOrUpgradeTimer.restart();
                             std::cout << "tower 1 - 4\n";
                         }
                         std::cout << "break at tower 1\n";
@@ -940,7 +942,7 @@ void Game::HandleInput()
                             a_activeStoneTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
-                            placementTimer.restart();
+                            placementOrUpgradeTimer.restart();
                             std::cout << "tower 2 - 4\n";
                         }
                         std::cout << "break at tower 2\n";
@@ -1008,7 +1010,7 @@ void Game::HandleInput()
     
 
     if (hoveringOnTower) {
-        if(placementTimer.getElapsedTime().asMilliseconds() > 800 && m_eGameMode == PlayMode){
+        if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800 && m_eGameMode == PlayMode){
             currentWarning = "Hover and press Q for info";
             m_warningText.setFillColor(Color::Red);
         }
@@ -1036,10 +1038,12 @@ void Game::HandleInput()
                         m_iCurrentWealth -= upgradeCost;
                         currentWarning = "Tower upgraded successfully!";
                         m_warningText.setFillColor(Color::Green);
+                        placementOrUpgradeTimer.restart();
                     }
                 } else {
                     currentWarning = "Not enough money for upgrade!";
                     m_warningText.setFillColor(Color::Red);
+                    placementOrUpgradeTimer.restart();
                 }
                 warningShown.restart();
             }
@@ -1099,16 +1103,17 @@ void Game::UpdateTiles()
             {
                 sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
                 Tile& tile = m_aTiles[tileIndex.y][tileIndex.x];
-                //tile.setType(Tile::Type::Grass);
+                tile.setType(Tile::Type::Grass);
                 tile.SetTexture(m_GrassTexture);
     
             }
             // Remove all elements from m_aDeletedPath
-            //m_aDeletedPath.clear();
+            m_aDeletedPath.clear();
         }
         
 
         // Set tile type and change the texture of all current path tiles
+        std::cout << "path size before applying texture: " << m_aPath.size() << std::endl;
         for (Vector2f vector : m_aPath)
         {
             sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
@@ -1121,9 +1126,6 @@ void Game::UpdateTiles()
 
         }
     }
-
-    ////////////// Need to re-skin paths
-    ////////////// Need tile path reset update
 
 }
 
@@ -1234,6 +1236,29 @@ void Game::UpdateMonsters()
 
 void Game::UpdateUI()
 {
+    
+
+
+    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
+    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
+    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
+
+    m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
+    FloatRect levelTextBounds = m_levelText.getLocalBounds();
+    m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
+
+    m_warningText.setString(currentWarning);   // Set text
+    FloatRect warningTextBounds = m_warningText.getLocalBounds();
+    m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
+
+    m_modeText.setString(currentMode);   // Set text
+    FloatRect modeTextBounds = m_modeText.getLocalBounds();
+    m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
+
+    if(warningShown.getElapsedTime().asSeconds() > 3){
+        currentWarning = "";
+    }
+    
     if (m_eCurrentEditState == ExitState){
         m_instructionText.setString("Choose an exit Tile...");   // Set text
         FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
