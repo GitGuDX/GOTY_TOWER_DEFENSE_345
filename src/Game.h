@@ -133,6 +133,8 @@ private:
     /** * @brief Draws elements in play mode. */
     void DrawPlayMode();
 
+    bool ValidatePath();
+
     bool isEdgeTile(sf::Vector2f tile);
     Vector2i tileCenterPosToIndex(Vector2f gridPos);
 

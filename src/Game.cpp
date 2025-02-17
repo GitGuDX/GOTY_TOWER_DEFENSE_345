@@ -89,7 +89,6 @@ void Game::Run()
             if (m_ePrevGameMode != PlayMode)
             {
                 LoadPlayModeAssets();
-                //LoadMonsterTextures();
                 m_ePrevGameMode = PlayMode;
             }
 
@@ -647,16 +646,16 @@ void Game::HandleInput()
                 }
             }
 
-            //// For test.
-            // In Skeleton game, user should be allowed to place towers then press play button to start game
             static bool bTWasPressedLastUpdate = false;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
             {
-             //   std::cout << "one of the keys was pressed! " << std::endl;
                 if (!bTWasPressedLastUpdate)
-                {
-                 //   std::cout << "play mode activated" << std::endl;
-                    m_eGameMode = PlayMode;
+                {   
+                    // Go to play mode only when there is a valid path
+                    if (ValidatePath())
+                    {
+                        m_eGameMode = PlayMode;
+                    }
                 }
                 bTWasPressedLastUpdate = true;
             }
@@ -822,10 +821,8 @@ void Game::HandleInput()
             static bool bTWasPressedLastUpdate = false;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
             {
-             //   std::cout << "one of the keys was pressed! " << std::endl;
-                if (!bTWasPressedLastUpdate)
+                if (!bTWasPressedLastUpdate && m_eGameMode == PlayMode)
                 {
-                 //   std::cout << "play mode activated" << std::endl;
                     m_eGameMode = PlayMode;
                     m_bIsRoundEnded = false;
                     m_bIsMonsterGeneratorUpdated = false;
@@ -1620,6 +1617,34 @@ void Game::DrawPlayMode()
     m_Window.display();
 }
 
+// Check if path is valid
+bool Game::ValidatePath()
+{
+    if (!m_aPath.empty())
+    {
+        // Check if the path is connected
+        for (size_t i = 0; i < m_aPath.size() - 1; ++i)
+        {
+            Vector2f currentTile = m_aPath[i];
+            Vector2f nextTile = m_aPath[i + 1];
+            Vector2f tileToTile = nextTile - currentTile;
+            float distance = MathHelpers::Length(tileToTile);
+            if (distance > m_iTileSize)
+            {
+                return false;
+            }
+        }
+
+        // Check if the path is connected to the entry and exit
+        if (m_aPath[0] != m_vEntryTile || m_aPath[m_aPath.size() - 1] != m_vExitTile)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    return false;
+}
 
 // Helper functions //
 
