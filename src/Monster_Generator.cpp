@@ -139,41 +139,36 @@ void MonsterGenerator::generateMonster(Game& game)
         // Initialize a new monster class
         Monster newMonster;
         // Set universal properties
-        newMonster.SetScale(sf::Vector2f(0.08f, 0.08f));
+
 
         switch (currentType)
         {
         case Type::Skeleton:
         {
-            newMonster.SetTexture(game.m_SkeletonTempTexture);
             newMonster.SetMonsterType(Type::Skeleton);                         // Set monster type
             updateMonsterStats<Type::Skeleton>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
         case Type::Reaper:
         {
-            newMonster.SetTexture(game.m_ReaperTempTexture);
             newMonster.SetMonsterType(Type::Reaper);
             updateMonsterStats<Type::Reaper>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
         case Type::Golem:
         {
-            newMonster.SetTexture(game.m_GolemTempTexture);
             newMonster.SetMonsterType(Type::Golem);
             updateMonsterStats<Type::Golem>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
         case Type::Minotaur:
         {
-            newMonster.SetTexture(game.m_MinotaurTempTexture);
             newMonster.SetMonsterType(Type::Minotaur);
             updateMonsterStats<Type::Minotaur>(newMonster);                     // Set monster stat accoring to its type
             break;
         }
         case Type::Ogre:
         {
-            newMonster.SetTexture(game.m_OgreTempTexture);
             newMonster.SetMonsterType(Type::Ogre);
             updateMonsterStats<Type::Ogre>(newMonster);                     // Set monster stat accoring to its type
             break;
@@ -181,9 +176,6 @@ void MonsterGenerator::generateMonster(Game& game)
         default:
             break;
         }
-
-        FloatRect monsterSize = newMonster.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-        newMonster.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
         newMonster.SetPosition(game.m_vEntryTile);                                              // Set test monster's starting position to the entry tile
         newMonster.SetCurrentPathIndex(0);                                                      // Initiliaze Monster's current path index
 

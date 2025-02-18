@@ -99,6 +99,7 @@ private:
     void ShowGameOverScreen();
     void delayedTurnOffDragging();
     void LoadMonsterTextures();
+    void LoadTowerTextures();
     //void PlayerPressedRestart();
     //void ResetGame();
     //void PlayerPressedMainMenu();
@@ -183,9 +184,11 @@ private:
     Texture m_GrassTexture;
     Texture m_PathTexture;
     Texture m_TowerTexture;
-    Texture m_BulletTexture;
+    Texture m_RapidBulletTexture;
+    Texture  m_SniperBulletTexture;
 
-    Entity m_AxeTemplate;
+    Entity m_RapidBulletTemplate;
+    Entity m_SniperBulletTemplate;
 
     std::vector<std::vector<Tile>> m_aTiles;
 	std::vector<Entity> m_aAxes;
@@ -236,11 +239,16 @@ private:
     Text m_scoreText;
     Text m_levelText;
     Text m_instructionText;
+    Text m_towerDamage;
+    Text m_towerCooldown;
+    Text m_towerRange;
+    Text m_towerSpeed;
     Text m_warningText;
     Text m_modeText;
     Text woodTowerPrice;
     Text stoneTowerPrice;
     Text m_gameOverText;
+    Text m_nextRoundText;
     String currentWarning = "";
     String currentMode = "";
     Clock warningShown;
@@ -249,17 +257,28 @@ private:
     Vector2f scoreTextPosition;
     Vector2f levelTextPosition;
     Vector2f instructionTextPosition;
+    Vector2f towerDamagePosition;
+    Vector2f towerCooldownPosition;
+    Vector2f towerRangePosition;
+    Vector2f towerSpeedPosition;
     Vector2f warningTextPosition;
     Vector2f modeTextPosition;
     Vector2f woodTowerPricePosition;
     Vector2f stoneTowerPricePosition;
     Vector2f gameOverTextPosition;
+    Vector2f nextRoundTextPosition;
     vector<Tower> a_towerMenu;
     vector<Tower> a_allActiveTowers;
     vector<Tower> a_activeWoodTowers;
     vector<Tower> a_activeStoneTowers;
 
     bool hoveringOnTower;
+    float hoverTowerDamage;
+    float hoverTowerCooldown;
+    float hoverTowerRange;
+    float hoverTowerSpeed;
+
+
     sf::Vector2f xPosition; // Center the X at the hovered tower
     Sprite* draggedSprite = nullptr;
     Texture m_towerTexture1;
@@ -280,18 +299,17 @@ private:
     std::vector<sf::Texture> m_MinotaurTextures;
     std::vector<sf::Texture> m_OgreTextures;
 
-    Clock animationDelay;
+    std::vector<sf::Texture> m_RapidTowerTextures;
+    std::vector<sf::Texture> m_SniperTowerTextures;
+
+    Clock enemyAnimationDelay;
+    Clock towerAnimationDelay;
     int currentTowerFrame = 1;
     int currentEnemyFrame = 0;
-    const float frameTime = 0.05f; // Time per frame in seconds
+    const float frameTime = 0.07f; // Time per frame in seconds
     Texture tower1TempTexture;
     Texture tower2TempTexture;
     
-    Texture m_SkeletonTempTexture;
-    Texture m_ReaperTempTexture;
-    Texture m_GolemTempTexture;
-    Texture m_MinotaurTempTexture;
-    Texture m_OgreTempTexture;
     Monster m_MonsterTemplate;
 
 
