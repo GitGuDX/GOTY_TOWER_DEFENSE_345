@@ -54,11 +54,13 @@ bool Tower::Upgrade()
     // Increase stats based on level (example multipliers)
     const float damageMultiplier = 1.25f;
     const float rangeMultiplier = 1.1f;
-    const float cooldownMultiplier = 0.9f;
+    const float cooldownMultiplier = 0.8f;
+    const float speedMultiplier = 1.15f;
 
     m_fDamage *= damageMultiplier;
     m_fRange *= rangeMultiplier;
     m_fMaxCooldown *= cooldownMultiplier;
+    m_speed += speedMultiplier;
 
     return true;
 }

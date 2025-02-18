@@ -438,7 +438,7 @@ void Game::LoadPlayModeAssets()
 	m_RapidBulletTemplate.SetOrigin(sf::Vector2f(8, 8));
 
 	m_SniperBulletTemplate.SetTexture(m_SniperBulletTexture);
-	m_SniperBulletTemplate.SetScale(sf::Vector2f(0.05, 0.05));
+	m_SniperBulletTemplate.SetScale(sf::Vector2f(0.065, 0.065));
 	m_SniperBulletTemplate.SetOrigin(sf::Vector2f(8, 8));
 
 

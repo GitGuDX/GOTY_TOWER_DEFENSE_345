@@ -121,7 +121,7 @@ private:
 
         struct Reaper
         {
-            static constexpr int iHealthDifference = 50;
+            static constexpr int iHealthDifference = 35;
             static constexpr float fSpeedDifference = 10.f;
             static constexpr int iStrengthDifference = 2;
             static constexpr int iRewardDifference = 4;
@@ -130,7 +130,7 @@ private:
 
         struct Golem
         {
-            static constexpr int iHealthDifference = 275;
+            static constexpr int iHealthDifference = 250;
             static constexpr float fSpeedDifference = -50.f;
             static constexpr int iStrengthDifference = 2;
             static constexpr int iRewardDifference = 4;
@@ -139,26 +139,26 @@ private:
 
         struct Ogre
         {
-            static constexpr int iHealthDifference = 20;
+            static constexpr int iHealthDifference = 15;
             static constexpr float fSpeedDifference = 5.f;
-            static constexpr int iStrengthDifference = -1;
-            static constexpr int iRewardDifference = 4;
+            static constexpr int iStrengthDifference = 1;
+            static constexpr int iRewardDifference = 3;
             static constexpr int iWaveStrength = 5;
         };
 
         struct Minotaur
         {
-            static constexpr int iHealthDifference = 120;
+            static constexpr int iHealthDifference = 90;
             static constexpr float fSpeedDifference = 25.f;
             static constexpr int iStrengthDifference = 3;
-            static constexpr int iRewardDifference = 5;
+            static constexpr int iRewardDifference = 6;
             static constexpr int iWaveStrength = 2;
         };
     };
 
     struct StatsLevelUpRate
     {
-        static constexpr float fHealthLevelUpRate = 1.15f;
+        static constexpr float fHealthLevelUpRate = 1.20f;
         static constexpr float fSpeedLevelUpRate = 1.05f;
         static constexpr float fStrengthLevelUpRate = 1.10f;
         static constexpr float fRewardLevelUpRate = 1.05f;
