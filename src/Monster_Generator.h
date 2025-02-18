@@ -96,6 +96,7 @@ private:
     template <Type type>
     void updateMonsterStats(Monster& monster);
     int getWaveStrength(MonsterGenerator::Type currentType);
+    float getLevelUpRateAtLevel(int level, float baseRate);
 
 private:
     struct MonsterTypeData
@@ -157,10 +158,10 @@ private:
 
     struct StatsLevelUpRate
     {
-        float fHealthLevelUpRate = 1.15f;
-        float fSpeedLevelUpRate = 1.05f;
-        float fStrengthLevelUpRate = 1.10f;
-        float fRewardLevelUpRate = 1.05f;
+        static constexpr float fHealthLevelUpRate = 1.15f;
+        static constexpr float fSpeedLevelUpRate = 1.05f;
+        static constexpr float fStrengthLevelUpRate = 1.10f;
+        static constexpr float fRewardLevelUpRate = 1.05f;
     };
 
     int m_iBaseMonsters;                                                // Starting monster number
