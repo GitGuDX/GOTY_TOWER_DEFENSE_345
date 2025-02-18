@@ -53,34 +53,34 @@ template <MonsterGenerator::Type type>
 void MonsterGenerator::updateMonsterStats(Monster& monster)
 {
     if (type == MonsterGenerator::Type::Skeleton) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Skeleton::fSpeedDifference);
-        monster.SetHealth((MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Skeleton::iHealthDifference));
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Skeleton::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Skeleton::iRewardDifference);
+        monster.SetSpeed((MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Skeleton::fSpeedDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fSpeedLevelUpRate));
+        monster.SetHealth((MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Skeleton::iHealthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fHealthLevelUpRate));
+        monster.SetStrength((MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Skeleton::iStrengthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fStrengthLevelUpRate));
+        monster.SetReward((MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Skeleton::iRewardDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fRewardLevelUpRate));
     }
     else if (type == MonsterGenerator::Type::Reaper) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Reaper::fSpeedDifference);
-        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Reaper::iHealthDifference);
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Reaper::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Reaper::iRewardDifference);
+        monster.SetSpeed((MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Reaper::fSpeedDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fSpeedLevelUpRate));
+        monster.SetHealth((MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Reaper::iHealthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fHealthLevelUpRate));
+        monster.SetStrength((MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Reaper::iStrengthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fStrengthLevelUpRate));
+        monster.SetReward((MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Reaper::iRewardDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fRewardLevelUpRate));
     }
     else if (type == MonsterGenerator::Type::Golem) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Golem::fSpeedDifference);
-        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Golem::iHealthDifference);
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Golem::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Golem::iRewardDifference);
+        monster.SetSpeed((MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Golem::fSpeedDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fSpeedLevelUpRate));
+        monster.SetHealth((MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Golem::iHealthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fHealthLevelUpRate));
+        monster.SetStrength((MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Golem::iStrengthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fStrengthLevelUpRate));
+        monster.SetReward((MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Golem::iRewardDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fRewardLevelUpRate));
     }
     else if (type == MonsterGenerator::Type::Minotaur) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Minotaur::fSpeedDifference);
-        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Minotaur::iHealthDifference);
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Minotaur::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Minotaur::iRewardDifference);
+        monster.SetSpeed((MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Minotaur::fSpeedDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fSpeedLevelUpRate));
+        monster.SetHealth((MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Minotaur::iHealthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fHealthLevelUpRate));
+        monster.SetStrength((MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Minotaur::iStrengthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fStrengthLevelUpRate));
+        monster.SetReward((MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Minotaur::iRewardDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fRewardLevelUpRate));
     }
     else if (type == MonsterGenerator::Type::Ogre) {
-        monster.SetSpeed(MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Ogre::fSpeedDifference);
-        monster.SetHealth(MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Ogre::iHealthDifference);
-        monster.SetStrength(MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Ogre::iStrengthDifference);
-        monster.SetReward(MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Ogre::iRewardDifference);
+        monster.SetSpeed((MonsterGenerator::MonsterTypeData::BaseStats::fSpeed + MonsterGenerator::MonsterTypeData::Ogre::fSpeedDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fSpeedLevelUpRate));
+        monster.SetHealth((MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Ogre::iHealthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fHealthLevelUpRate));
+        monster.SetStrength((MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Ogre::iStrengthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fStrengthLevelUpRate));
+        monster.SetReward((MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Ogre::iRewardDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fRewardLevelUpRate));
     }
 }
 
@@ -182,6 +182,11 @@ void MonsterGenerator::generateMonster(Game& game)
         game.m_aMonstersQueue.emplace_back(newMonster);                 // Add the newly created monster to the monster array
         m_iNumberOfMonsterSpawned++;                                    // Count how many monsters created
 
+        std::cout << "Current monster health is: " << newMonster.GetHealth() << '\n';
+        std::cout << "Current monster speed is: " << newMonster.GetSpeed() << '\n';
+        std::cout << "Current monster strength is: " << newMonster.GetStrength() << '\n';
+        std::cout << "Current monster reward is: " << newMonster.GetReward() << '\n';
+        std::cout << "Current monster level is: " << m_iMonsterLevel << '\n';
         // Check if all monsters have spawned for this wave
         if (m_iNumberOfMonsterSpawned == numMonsters)
         {
@@ -210,4 +215,9 @@ void MonsterGenerator::updateNextRoundMonsterGenerator()
     }
 
     // 
+}
+
+float MonsterGenerator::getLevelUpRateAtLevel(int level, float baseRate)
+{
+    return baseRate * std::pow(1.1f, level - 1); // Assuming a 10% increase per level.
 }
