@@ -7,7 +7,7 @@
 
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 //#define DEBUG               // For debugging purposes
 
 #include "Game.h"
@@ -353,6 +353,17 @@ void Game::LoadTowerTextures() {
         }
         m_SniperTowerTextures.push_back(texture);
        #endif
+       #ifdef LINUX
+        if (!texture.loadFromFile("../src/Images/Tower1_Frame_" + std::to_string(i) + ".png")) {
+            std::cerr << "Failed to load Skeleton frame " << i << std::endl;
+        }
+        m_RapidTowerTextures.push_back(texture);
+
+        if (!texture.loadFromFile("../src/Images/Tower2_Frame_" + std::to_string(i) + ".png")) {
+            std::cerr << "Failed to load Skeleton frame " << i << std::endl;
+        }
+        m_SniperTowerTextures.push_back(texture);
+        #endif
     }
 }
 
@@ -421,9 +432,14 @@ void Game::LoadPlayModeAssets()
 {
     // Load bullet texture
 
+    #ifdef LINUX
+    m_RapidBulletTexture.loadFromFile("../src/Images/Rapid_Bullet.png");
+    m_SniperBulletTexture.loadFromFile("../src/Images/Sniper_Bullet.png");
+    #endif
+    #ifdef MAC
     m_RapidBulletTexture.loadFromFile("Images/Rapid_Bullet.png");
     m_SniperBulletTexture.loadFromFile("Images/Sniper_Bullet.png");
-
+    #endif
 
     // Reset entry and exit tile texture back to grass texture
     sf::Vector2i entryTileIndex = tileCenterPosToIndex(m_vEntryTile);
@@ -1041,7 +1057,7 @@ void Game::HandleInput()
 
     if (hoveringOnTower) {
         if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
-            currentWarning = "Hover and press Q for info";
+            currentWarning = "Hover and press Q for info\n  Then press E to upgrade";
             m_warningText.setFillColor(Color::Red);
 
             Vector2i mousePos = sf::Mouse::getPosition(m_Window);
