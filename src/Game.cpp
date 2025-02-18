@@ -17,9 +17,11 @@
 #include <algorithm>
 #include <limits>
 
+
 #include "Math_Helpers.h"
 
 using namespace sf;
+using namespace std;
 
 Game::Game(int initialWindowWidth, int initialWindowHeight)
     : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense 1")           // Initiliaze window screen
@@ -338,7 +340,7 @@ void Game::LoadMapEditorAssets()
 }
 
 void Game::LoadTowerTextures() {
-    for (int i = 0; i <= 6; ++i) {
+    for (int i = 1; i <= 6; ++i) {
         sf::Texture texture;
         #ifdef MAC
         if (!texture.loadFromFile("Images/Tower1_Frame_" + std::to_string(i) + ".png")) {
@@ -420,7 +422,7 @@ void Game::LoadPlayModeAssets()
     // Load bullet texture
 
     m_RapidBulletTexture.loadFromFile("Images/Rapid_Bullet.png");
-    m_SniperBulletTexture.loadFromFile("../src/Images/Sniper_Bullet.png");
+    m_SniperBulletTexture.loadFromFile("Images/Sniper_Bullet.png");
 
 
     // Reset entry and exit tile texture back to grass texture
@@ -452,6 +454,11 @@ void Game::LoadUIAssets()
     woodTowerPricePosition = Vector2f(m_vWindowSize.x + 130, m_vWindowSize.y/3 + 125);
     stoneTowerPricePosition = Vector2f(m_vWindowSize.x + 235, m_vWindowSize.y/3 + 125);
     gameOverTextPosition = Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/2);
+    towerDamagePosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 170);
+    towerCooldownPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 200);
+    towerRangePosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 230);
+    towerSpeedPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 260);
+    nextRoundTextPosition = Vector2f(m_vWindowSize.x + 230, m_vWindowSize.y/10 + 110); //Fix this because it should be the same values as instruciton but its not
 
     // Score text 
     m_scoreText.setFont(m_Font);               // Set font
@@ -478,9 +485,6 @@ void Game::LoadUIAssets()
     m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
     m_warningText.setCharacterSize(15);        // Set size
     m_warningText.setPosition(warningTextPosition);       // Set position
-    // if(warningShown.getElapsedTime().asSeconds() > 3){
-    //     currentWarning = "";
-    // }
 
     // Wood tower price
     woodTowerPrice.setFont(m_Font);               // Set font
@@ -516,10 +520,39 @@ void Game::LoadUIAssets()
     m_gameOverText.setFillColor(Color::Red);     // Set color
     m_gameOverText.setPosition(gameOverTextPosition);       // Set position
 
+    // Next Round text 
+    m_nextRoundText.setFont(m_Font);               // Set font
+    m_nextRoundText.setString("Press Enter for next round");   // Set text
+    FloatRect nextRoundTextBounds = m_nextRoundText.getLocalBounds();
+    m_nextRoundText.setOrigin(nextRoundTextBounds.width/2, nextRoundTextBounds.height/2);
+    m_nextRoundText.setCharacterSize(15);        // Set size
+    m_nextRoundText.setFillColor(Color::Green);     // Set color
+    m_nextRoundText.setPosition(nextRoundTextPosition);       // Set position
 
+    // instruction text 
     m_instructionText.setFont(m_Font);               // Set font
     m_instructionText.setCharacterSize(20);        // Set size
     m_instructionText.setPosition(instructionTextPosition);       // Set position
+
+    // Damage text 
+    m_towerDamage.setFont(m_Font);               // Set font
+    m_towerDamage.setCharacterSize(15);        // Set size
+    m_towerDamage.setPosition(towerDamagePosition);       // Set position
+
+    // Cooldown text 
+    m_towerCooldown.setFont(m_Font);               // Set font
+    m_towerCooldown.setCharacterSize(15);        // Set size
+    m_towerCooldown.setPosition(towerCooldownPosition);       // Set position
+
+    // Range text 
+    m_towerRange.setFont(m_Font);               // Set font
+    m_towerRange.setCharacterSize(15);        // Set size
+    m_towerRange.setPosition(towerRangePosition);       // Set position
+
+    // Speed text 
+    m_towerSpeed.setFont(m_Font);               // Set font
+    m_towerSpeed.setCharacterSize(15);        // Set size
+    m_towerSpeed.setPosition(towerSpeedPosition);       // Set position
 
     //Loading tower selection
     Tower tower1;
@@ -534,6 +567,7 @@ void Game::LoadUIAssets()
     #ifdef WINDOW
     // Add for window
     #endif
+    //MENU ASSETS
     tower1.SetTexture(m_towerTexture1);
     tower1.SetScale(Vector2f(0.7f, 0.7f));
     FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
@@ -1006,9 +1040,21 @@ void Game::HandleInput()
     
 
     if (hoveringOnTower) {
-        if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800 && m_eGameMode == PlayMode){
+        if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
             currentWarning = "Hover and press Q for info";
             m_warningText.setFillColor(Color::Red);
+
+            Vector2i mousePos = sf::Mouse::getPosition(m_Window);
+            Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
+            Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
+            for (Tower& tower : a_allActiveTowers) {
+                if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+                    hoverTowerDamage = round(tower.GetDamage() * 100.0f) / 100.0f;
+                    hoverTowerCooldown = round(tower.GetCooldown() * 100.0f) / 100.0f;
+                    hoverTowerRange = round(tower.GetRange() * 100.0f) / 100.0f;
+                    hoverTowerSpeed = round(tower.GetSpeed() * 100.0f) / 100.0f;
+                }
+            }
         }
         // Show upgrade info when Q is pressed
         if (Keyboard::isKeyPressed(Keyboard::Q)) {
@@ -1137,7 +1183,7 @@ void Game::UpdatePlay()
     }
 
     if (m_iCurrentWealth < 0){
-        //m_gameOver = true;
+        m_gameOver = true;
     }
 }
 
@@ -1202,7 +1248,7 @@ void Game::UpdateMonsters()
             }
             
             currentEnemyFrame++;
-            if (currentEnemyFrame > 11) {
+            if (currentEnemyFrame > 10) {
                 currentEnemyFrame = 0;
             }
             enemyAnimationDelay.restart();
@@ -1248,8 +1294,6 @@ void Game::UpdateMonsters()
 void Game::UpdateUI()
 {
     
-
-
     m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
     FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
     m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
@@ -1291,6 +1335,33 @@ void Game::UpdateUI()
         m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
         m_instructionText.setFillColor(Color::White);     // Set color
     }
+
+    m_towerDamage.setString("Damage: " + to_string(hoverTowerDamage));   // Set text
+    FloatRect towerDamageBounds = m_towerDamage.getLocalBounds();
+    m_towerDamage.setOrigin(towerDamageBounds.width / 2, towerDamageBounds.height / 2);
+
+    m_towerCooldown.setString("Cooldown: " + to_string(hoverTowerCooldown));   // Set text
+    FloatRect towerCooldownBounds = m_towerCooldown.getLocalBounds();
+    m_towerCooldown.setOrigin(towerCooldownBounds.width / 2, towerCooldownBounds.height / 2);
+
+    m_towerRange.setString("Range: " + to_string(hoverTowerRange));   // Set text
+    FloatRect towerRangeBounds = m_towerRange.getLocalBounds();
+    m_towerRange.setOrigin(towerRangeBounds.width / 2, towerRangeBounds.height / 2);
+
+    m_towerSpeed.setString("Speed: " + to_string(hoverTowerSpeed));   // Set text
+    FloatRect towerSpeedBounds = m_towerSpeed.getLocalBounds();
+    m_towerSpeed.setOrigin(towerSpeedBounds.width / 2, towerSpeedBounds.height / 2);
+
+    if (hoveringOnTower){
+        m_instructionText.setString("Tower Information:");   // Set text
+        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
+        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
+        m_instructionText.setFillColor(Color::White);     // Set color
+    }
+
+
+
+
 
     // Update upgrade UI if shown
     if (m_bShowUpgradeUI && m_pSelectedTower) {
@@ -1396,8 +1467,8 @@ void Game::UpdateTowers()
 
             // Update currentFrame and reset if necessary
             currentTowerFrame++;
-            if (currentTowerFrame > 6) {
-                currentTowerFrame = 1;
+            if (currentTowerFrame > 5) {
+                currentTowerFrame = 0;
             }
             // Restart the clock after updating the frame
             towerAnimationDelay.restart();
@@ -1548,22 +1619,31 @@ void Game::DrawMapEditorMode()
         }
     }
     
+        // UI RELATED
     m_Window.draw(m_scoreText);
-    m_Window.draw(m_instructionText);
     m_Window.draw(m_levelText);
+    m_Window.draw(m_instructionText);
     m_Window.draw(m_warningText);
     m_Window.draw(m_modeText);
-    if(m_eCurrentEditState == FinishedPathingState){
+    
+    if(m_eCurrentEditState == FinishedPathingState && !hoveringOnTower){
         for (auto& tower : a_towerMenu) {
-            m_Window.draw(tower);  // If Tile is derived from sf::Drawable
+            m_Window.draw(tower);  // If Tile is derived from sf::Drawable               //ADD TOWER INFO HERE
         }
+        m_Window.draw(woodTowerPrice);
+        m_Window.draw(stoneTowerPrice);
+    } else if (hoveringOnTower){
+        m_Window.draw(m_towerDamage);
+        m_Window.draw(m_towerCooldown);
+        m_Window.draw(m_towerRange);
+        m_Window.draw(m_towerSpeed);
     }
+
+
     if(m_eCurrentEditState == FinishedPathingState){
         for (auto& tower : a_activeWoodTowers) {
             m_Window.draw(tower);  // If Tile is derived from sf::Drawable
         }
-        m_Window.draw(woodTowerPrice);
-        m_Window.draw(stoneTowerPrice);
     }
     if(m_eCurrentEditState == FinishedPathingState){
         for (auto& tower : a_activeStoneTowers) {
@@ -1641,12 +1721,22 @@ void Game::DrawPlayMode()
     m_Window.draw(m_instructionText);
     m_Window.draw(m_warningText);
     m_Window.draw(m_modeText);
-    m_Window.draw(woodTowerPrice);
-    m_Window.draw(stoneTowerPrice);
-    if(m_eCurrentEditState == FinishedPathingState){
-        for (auto& tower : a_towerMenu) {                                       //ADD TOWER INFO HERE
-            m_Window.draw(tower);  // If Tile is derived from sf::Drawable
+    
+    if(m_eCurrentEditState == FinishedPathingState && !hoveringOnTower){
+        for (auto& tower : a_towerMenu) {
+            m_Window.draw(tower);  // If Tile is derived from sf::Drawable               //ADD TOWER INFO HERE
         }
+        m_Window.draw(woodTowerPrice);
+        m_Window.draw(stoneTowerPrice);
+    } else if (hoveringOnTower){
+        m_Window.draw(m_towerDamage);
+        m_Window.draw(m_towerCooldown);
+        m_Window.draw(m_towerRange);
+        m_Window.draw(m_towerSpeed);
+    }
+
+    if(m_bIsRoundEnded){
+        m_Window.draw(m_nextRoundText);
     }
 
 

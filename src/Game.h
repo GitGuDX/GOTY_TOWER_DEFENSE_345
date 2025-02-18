@@ -239,11 +239,16 @@ private:
     Text m_scoreText;
     Text m_levelText;
     Text m_instructionText;
+    Text m_towerDamage;
+    Text m_towerCooldown;
+    Text m_towerRange;
+    Text m_towerSpeed;
     Text m_warningText;
     Text m_modeText;
     Text woodTowerPrice;
     Text stoneTowerPrice;
     Text m_gameOverText;
+    Text m_nextRoundText;
     String currentWarning = "";
     String currentMode = "";
     Clock warningShown;
@@ -252,17 +257,28 @@ private:
     Vector2f scoreTextPosition;
     Vector2f levelTextPosition;
     Vector2f instructionTextPosition;
+    Vector2f towerDamagePosition;
+    Vector2f towerCooldownPosition;
+    Vector2f towerRangePosition;
+    Vector2f towerSpeedPosition;
     Vector2f warningTextPosition;
     Vector2f modeTextPosition;
     Vector2f woodTowerPricePosition;
     Vector2f stoneTowerPricePosition;
     Vector2f gameOverTextPosition;
+    Vector2f nextRoundTextPosition;
     vector<Tower> a_towerMenu;
     vector<Tower> a_allActiveTowers;
     vector<Tower> a_activeWoodTowers;
     vector<Tower> a_activeStoneTowers;
 
     bool hoveringOnTower;
+    float hoverTowerDamage;
+    float hoverTowerCooldown;
+    float hoverTowerRange;
+    float hoverTowerSpeed;
+
+
     sf::Vector2f xPosition; // Center the X at the hovered tower
     Sprite* draggedSprite = nullptr;
     Texture m_towerTexture1;

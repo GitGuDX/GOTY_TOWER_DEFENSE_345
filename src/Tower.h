@@ -35,6 +35,10 @@ public:
         return m_fDamage;
     }
 
+    float GetCooldown(){
+        return m_fMaxCooldown;
+    }
+
     float GetSpeed()
     {
         return m_speed;
