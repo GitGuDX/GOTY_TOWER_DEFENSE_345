@@ -7,7 +7,7 @@
 
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 //#define DEBUG               // For debugging purposes
 
 #include "Game.h"
@@ -368,9 +368,11 @@ void Game::LoadTowerTextures() {
 }
 
 void Game::LoadMonsterTextures() {
+    //RUNNING TEXTURES
     for (int i = 0; i <= 11; ++i) {
         sf::Texture texture;
         #ifdef LINUX
+        //Running Textures Loaded
         if (!texture.loadFromFile("../src/Images/Running_Skeleton/0_Skeleton_Crusader_Running_" + std::to_string(i) + ".png")) {
             std::cerr << "Failed to load Skeleton frame " << i << std::endl;
         }
@@ -395,8 +397,13 @@ void Game::LoadMonsterTextures() {
             std::cerr << "Failed to load Ogre frame " << i << std::endl;
         }
         m_OgreTextures.push_back(texture);
+
+        //Dying Textures Loaded
+        // ...
+
         #endif
         #ifdef MAC
+        //Running Textures Loaded
         if (!texture.loadFromFile("Images/Running_Skeleton/0_Skeleton_Crusader_Running_" + std::to_string(i) + ".png")) {
             std::cerr << "Failed to load Skeleton frame " << i << std::endl;
         }
@@ -426,6 +433,38 @@ void Game::LoadMonsterTextures() {
         // add for window
         #endif
     }
+
+    //DYING TEXTURES
+    for(int j = 0; j <= 14; ++j){
+        sf::Texture texture;
+        //Dying Textures Loaded
+        if (!texture.loadFromFile("Images/Skeleton_Dying/_Skeleton_Crusader_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Skeleton death frame " << j << std::endl;
+        }
+        m_SkeletonDeathTextures.push_back(texture);
+
+        if (!texture.loadFromFile("Images/Reaper_Dying/_Reaper_Man_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Reaper death frame " << j << std::endl;
+        }
+        m_ReaperDeathTextures.push_back(texture);
+
+        if (!texture.loadFromFile("Images/Golem_Dying/_Golem_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Golem death frame " << j << std::endl;
+        }
+        m_GolemDeathTextures.push_back(texture);
+
+        if (!texture.loadFromFile("Images/Minotaur_Dying/_Minotaur_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Minotaur death frame " << j << std::endl;
+        }
+        m_MinotaurDeathTextures.push_back(texture);
+
+        if (!texture.loadFromFile("Images/Ogre_Dying/_Ogre_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Ogre death frame " << j << std::endl;
+        }
+        m_OgreDeathTextures.push_back(texture);
+    }
+
+
 }
 
 void Game::LoadPlayModeAssets()
@@ -450,12 +489,12 @@ void Game::LoadPlayModeAssets()
     m_TowerTexture.setSmooth(true);
 
 	m_RapidBulletTemplate.SetTexture(m_RapidBulletTexture);
-	m_RapidBulletTemplate.SetScale(sf::Vector2f(0.05, 0.05));
-	m_RapidBulletTemplate.SetOrigin(sf::Vector2f(8, 8));
+	m_RapidBulletTemplate.SetScale(Vector2f(0.3, 0.3));
+	m_RapidBulletTemplate.SetOrigin(Vector2f(8, 8));
 
 	m_SniperBulletTemplate.SetTexture(m_SniperBulletTexture);
-	m_SniperBulletTemplate.SetScale(sf::Vector2f(0.05, 0.05));
-	m_SniperBulletTemplate.SetOrigin(sf::Vector2f(8, 8));
+	m_SniperBulletTemplate.SetScale(Vector2f(0.5, 0.5));
+	m_SniperBulletTemplate.SetOrigin(Vector2f(8, 8));
 
 
 }
@@ -1057,7 +1096,7 @@ void Game::HandleInput()
 
     if (hoveringOnTower) {
         if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
-            currentWarning = "Hover and press Q for info\n  Then press E to upgrade";
+            currentWarning = "Hover and press Q for info";
             m_warningText.setFillColor(Color::Red);
 
             Vector2i mousePos = sf::Mouse::getPosition(m_Window);
@@ -1228,10 +1267,11 @@ void Game::UpdateMonsters()
     if (enemyAnimationDelay.getElapsedTime().asSeconds() >= frameTime) {
         std::cout <<"Current enemy frame: " << currentEnemyFrame << '\n';
         if (m_eCurrentEditState == FinishedPathingState) {
+            
+            //RUNNING ANIMATION
             std::cout << "Updating enemy textures\n";
             for (auto& enemy : m_aMonstersQueue) {
                 if(enemy.GetMonsterType() == MonsterGenerator::Type::Skeleton){
-                    std::cout << "Setting skeleton texture\n";
                     enemy.SetTexture(m_SkeletonTextures[currentEnemyFrame]);
                     enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
                     FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
@@ -1267,6 +1307,84 @@ void Game::UpdateMonsters()
             if (currentEnemyFrame > 10) {
                 currentEnemyFrame = 0;
             }
+
+
+            //DYING ANIMATION
+            for (auto& enemy : m_aDeadMonsters) {
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Skeleton){
+                    enemy.SetTexture(m_SkeletonDeathTextures[enemy.GetDeathFrame()]);
+                    int nextFrame = (enemy.GetDeathFrame() + 1);
+                    enemy.SetDeathFrame(nextFrame);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                    if(enemy.GetDeathFrame() > 14){
+                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+                        if (it != m_aDeadMonsters.end()) {
+                            m_aDeadMonsters.erase(it);
+                        }
+                    }
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Reaper){
+                    enemy.SetTexture(m_ReaperDeathTextures[enemy.GetDeathFrame()]);
+                    int nextFrame = (enemy.GetDeathFrame() + 1);
+                    enemy.SetDeathFrame(nextFrame);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                    if(enemy.GetDeathFrame() > 14){
+                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+                        if (it != m_aDeadMonsters.end()) {
+                            m_aDeadMonsters.erase(it);
+                        }
+                    }
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Golem){
+                    enemy.SetTexture(m_GolemDeathTextures[enemy.GetDeathFrame()]);
+                    int nextFrame = (enemy.GetDeathFrame() + 1);
+                    enemy.SetDeathFrame(nextFrame);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                    if(enemy.GetDeathFrame() > 14){
+                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+                        if (it != m_aDeadMonsters.end()) {
+                            m_aDeadMonsters.erase(it);
+                        }
+                    }
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Minotaur){
+                    enemy.SetTexture(m_MinotaurDeathTextures[enemy.GetDeathFrame()]);
+                    int nextFrame = (enemy.GetDeathFrame() + 1);
+                    enemy.SetDeathFrame(nextFrame);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                    if(enemy.GetDeathFrame() > 14){
+                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+                        if (it != m_aDeadMonsters.end()) {
+                            m_aDeadMonsters.erase(it);
+                        }
+                    }
+                }
+                if(enemy.GetMonsterType() == MonsterGenerator::Type::Ogre){
+                    enemy.SetTexture(m_OgreDeathTextures[enemy.GetDeathFrame()]);
+                    int nextFrame = (enemy.GetDeathFrame() + 1);
+                    enemy.SetDeathFrame(nextFrame);
+                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+                    if(enemy.GetDeathFrame() > 14){
+                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+                        if (it != m_aDeadMonsters.end()) {
+                            m_aDeadMonsters.erase(it);
+                        }
+                    }
+                }
+            }
+
+
+
             enemyAnimationDelay.restart();
         }
     }
@@ -1376,9 +1494,6 @@ void Game::UpdateUI()
     }
 
 
-
-
-
     // Update upgrade UI if shown
     if (m_bShowUpgradeUI && m_pSelectedTower) {
         m_upgradeText.setFont(m_Font);
@@ -1387,7 +1502,7 @@ void Game::UpdateUI()
         if (m_pSelectedTower->CanUpgrade()) {
             upgradeString = "Upgrade Cost: " + std::to_string(m_pSelectedTower->GetUpgradeCost()) + 
                           "\nLevel: " + std::to_string(m_pSelectedTower->GetLevel()) +
-                          "\nClick to upgrade";
+                          "\nClick E to upgrade";
         } else {
             upgradeString = "Max Level Reached";
         }
@@ -1398,6 +1513,26 @@ void Game::UpdateUI()
         m_upgradeText.setPosition(m_pSelectedTower->GetPosition() + Vector2f(30, -30));
     }
 }
+
+
+void UpdateHealthBar(Monster& enemy) 
+{
+    float healthPercentage = enemy.GetHealth() / enemy.GetMaxHealth();
+
+    sf::RectangleShape& newHealthBar = enemy.GetHealthBar(); 
+    newHealthBar.setSize(sf::Vector2f(40.0f * healthPercentage, 5.0f));
+    newHealthBar.setFillColor(healthPercentage > 0.5 ? sf::Color::Green : sf::Color::Red);
+    newHealthBar.setOrigin(newHealthBar.getSize().x / 2, newHealthBar.getSize().y / 2);
+
+    // Position the health bar above the monster
+    sf::Vector2f enemyPos = enemy.GetSprite().getPosition(); // Use getter if m_Sprite is private
+    newHealthBar.setPosition(enemyPos.x, enemyPos.y - 15);
+
+    // Apply the updated health bar to the monster
+    //enemy.SetHealthBar(newHealthBar);
+}
+
+
 
 void Game::UpdateTowers()
 {
@@ -1425,7 +1560,6 @@ void Game::UpdateTowers()
             if (pNearestEnemy != nullptr)
             {
                 // Create and setup new axe
-                //Entity& newAxe = m_aAxes.emplace_back(m_RapidBulletlate);
                 
                 if (tower.GetType() == TowerType::Rapid) {
                     m_aAxes.push_back(m_RapidBulletTemplate);
@@ -1439,7 +1573,6 @@ void Game::UpdateTowers()
                 FloatRect newAxeBounds = newAxe.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
                 newAxe.SetOrigin(Vector2f(newAxeBounds.width / 2, newAxeBounds.height / 2));
                 newAxe.SetPosition(Vector2f(tower.GetPosition().x, tower.GetPosition().y));
-                newAxe.SetScale(Vector2f(0.3f, 0.3f));
 
                 //Depending on tower the bullet will be faster or slower and do more or less damage
                 newAxe.m_speed = tower.GetSpeed();
@@ -1459,7 +1592,7 @@ void Game::UpdateTowers()
         }
     }
 
-    //INSERT HERE
+
     // ALL TOWER ANIMATION RELATED
     if (towerAnimationDelay.getElapsedTime().asSeconds() >= frameTime) {
         if (m_eCurrentEditState == FinishedPathingState) {
@@ -1490,9 +1623,6 @@ void Game::UpdateTowers()
             towerAnimationDelay.restart();
         }
     }
-
-
-    // INSERT HERE
 
 }
 
@@ -1539,7 +1669,8 @@ void Game::UpdateAxes()
                     // Remove the monster from the queue (if applicable)
                     auto monsterIt = std::find(m_aMonstersQueue.begin(), m_aMonstersQueue.end(), monster);
                     if (monsterIt != m_aMonstersQueue.end()) {
-                        m_aMonstersQueue.erase(monsterIt);
+                        m_aDeadMonsters.push_back(monster);
+                        m_aMonstersQueue.erase(monsterIt);    //STYLE
                         m_iCurrentWealth += monster.GetReward();
                     }
                 }
@@ -1707,7 +1838,6 @@ void Game::DrawMapEditorMode()
 
 void Game::DrawPlayMode()
 {
-
     m_Window.clear();
 
     ////// Draw Tiles
@@ -1719,10 +1849,7 @@ void Game::DrawPlayMode()
         }
     }
 
-    ////// Draw test monster
-
-
-
+    //Draw Monsters
     for (Monster& monster : m_aMonstersQueue)
     {
         if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
@@ -1730,6 +1857,30 @@ void Game::DrawPlayMode()
             m_Window.draw(monster);
         } 
     }
+
+    
+    //Draw Health Bars
+    for (Monster& monster : m_aMonstersQueue)
+    {
+        if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        {
+            UpdateHealthBar(monster);
+            m_Window.draw(monster.GetHealthBar());
+        }
+    }
+
+
+    //Draw dying monsters
+    for (Monster& monster : m_aDeadMonsters)
+    {
+        if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        {
+            m_Window.draw(monster);
+        } 
+    }
+
+
+
 
     // UI RELATED
     m_Window.draw(m_scoreText);
@@ -1769,7 +1920,7 @@ void Game::DrawPlayMode()
     }
     for (const Entity& bullet : m_aAxes)
     {
-        m_Window.draw(bullet);
+        m_Window.draw(bullet.m_Sprite);
     }
 
     if(draggedSprite != nullptr){

@@ -299,6 +299,13 @@ private:
     std::vector<sf::Texture> m_MinotaurTextures;
     std::vector<sf::Texture> m_OgreTextures;
 
+    std::vector<Monster> m_aDeadMonsters;
+    std::vector<sf::Texture> m_SkeletonDeathTextures;
+    std::vector<sf::Texture> m_ReaperDeathTextures;
+    std::vector<sf::Texture> m_GolemDeathTextures;
+    std::vector<sf::Texture> m_MinotaurDeathTextures;
+    std::vector<sf::Texture> m_OgreDeathTextures;
+
     std::vector<sf::Texture> m_RapidTowerTextures;
     std::vector<sf::Texture> m_SniperTowerTextures;
 

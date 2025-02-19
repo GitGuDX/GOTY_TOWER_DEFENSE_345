@@ -23,15 +23,15 @@ Tower::Tower(TowerType type)
             m_iCost = 100;
             break;
         case TowerType::Sniper:
-            m_fRange = 600.0f;
+            m_fRange = 300.0f;
             m_fMaxCooldown = 3.0f;
-            m_fDamage = 50.0f;
+            m_fDamage = 65.0f;
             m_speed = 800.f;
             m_iCost = 300;
             break;
         case TowerType::Rapid:
-            m_fRange = 200.0f;
-            m_fMaxCooldown = 0.20f;
+            m_fRange = 170.0f;
+            m_fMaxCooldown = 0.14f;
             m_fDamage = 5.0f;
             m_speed = 400.f;
             m_iCost = 200;
@@ -52,13 +52,15 @@ bool Tower::Upgrade()
     m_iLevel++;
     
     // Increase stats based on level (example multipliers)
-    const float damageMultiplier = 1.25f;
-    const float rangeMultiplier = 1.1f;
+    const float damageMultiplier = 1.20f;
+    const float rangeMultiplier = 1.05f;
     const float cooldownMultiplier = 0.9f;
+    const float speedMultiplier = 1.10f;
 
     m_fDamage *= damageMultiplier;
     m_fRange *= rangeMultiplier;
     m_fMaxCooldown *= cooldownMultiplier;
+    m_speed += speedMultiplier;
 
     return true;
 }

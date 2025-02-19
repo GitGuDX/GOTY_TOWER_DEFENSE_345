@@ -37,9 +37,19 @@ public:
         return m_stCurrentPathIndex;
     }
 
-    int GetHealth()
+    float GetHealth()
     {
         return m_iHealth;
+    }
+
+    float GetMaxHealth()
+    {
+        return m_iMaxHealth;
+    }
+
+    RectangleShape& GetHealthBar()
+    {
+        return m_HealthBar;
     }
 
     float GetSpeed()
@@ -50,6 +60,11 @@ public:
     int GetLevel()
     {
         return m_iLevel;
+    }
+
+    int GetDeathFrame()
+    {
+        return deathFrame;
     }
 
     int GetStrength()
@@ -72,14 +87,24 @@ public:
         m_stCurrentPathIndex = newIndex;
     }
 
-    void SetHealth(int newHealth)
+    void SetHealth(float newHealth)
     {
         m_iHealth = newHealth;
+    }
+
+    void SetMaxHealth(float newHealth)
+    {
+        m_iMaxHealth = newHealth;
     }
 
     void SetSpeed(float newSpeed)
     {
         m_fSpeed = newSpeed;
+    }
+
+    void SetDeathFrame(int frameNum)
+    {
+        deathFrame = frameNum;
     }
 
     void SetLevel(int newLevel)
@@ -90,6 +115,11 @@ public:
     void SetStrength(int newStrength)
     {
         m_iStrength = newStrength;
+    }
+
+    void SetHealthBar(sf::RectangleShape& HealthBar)
+    {
+        m_HealthBar = HealthBar;
     }
 
     void SetReward(int newReward)
@@ -103,12 +133,15 @@ public:
     }
 
 private:
+    sf::RectangleShape m_HealthBar;
     size_t m_stCurrentPathIndex;           // index of the monster's current path
-    int m_iHealth;
+    float m_iHealth;
+    float m_iMaxHealth;
     float m_fSpeed;
     int m_iLevel;
     int m_iStrength;                           // Determines the rate that the monster steals coin from the player
     int m_iReward;
+    int deathFrame = 0;
     MonsterGenerator::Type m_eMonsterType;
 };
 

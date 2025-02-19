@@ -116,7 +116,7 @@ public:
 	float m_speed; // Adjust speed as needed
 	float m_fDamage;
 	
-  
+
    	bool operator==(const Entity& other) const {
         return this->GetPosition() == other.GetPosition(); // Example, compare based on position or any other criteria
     }

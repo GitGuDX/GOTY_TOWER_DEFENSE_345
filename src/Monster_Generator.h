@@ -106,62 +106,62 @@ private:
             static constexpr int iHealth = 100;
             static constexpr float fSpeed = 100.f;
             static constexpr int iStrength = 10;
-            static constexpr int iReward = 10;
+            static constexpr int iReward = 5;
             static constexpr int iWaveStrength = 0;
         };
 
         struct Skeleton
         {
-            static constexpr int iHealthDifference = 5;
-            static constexpr float fSpeedDifference = 5;
-            static constexpr int iStrengthDifference = 0;
-            static constexpr int iRewardDifference = 2;
+            static constexpr int iHealthDifference = 0;
+            static constexpr float fSpeedDifference = 0;
+            static constexpr int iStrengthDifference = 5;
+            static constexpr int iRewardDifference = 7;
             static constexpr int iWaveStrength = 3;
         };
 
         struct Reaper
         {
-            static constexpr int iHealthDifference = 50;
+            static constexpr int iHealthDifference = 25;
             static constexpr float fSpeedDifference = 10.f;
-            static constexpr int iStrengthDifference = 2;
-            static constexpr int iRewardDifference = 4;
+            static constexpr int iStrengthDifference = 8;
+            static constexpr int iRewardDifference = 12;
             static constexpr int iWaveStrength = 3;
         };
 
         struct Golem
         {
-            static constexpr int iHealthDifference = 275;
-            static constexpr float fSpeedDifference = -50.f;
-            static constexpr int iStrengthDifference = 2;
-            static constexpr int iRewardDifference = 4;
+            static constexpr int iHealthDifference = 220;
+            static constexpr float fSpeedDifference = -40.f;
+            static constexpr int iStrengthDifference = 20;
+            static constexpr int iRewardDifference = 13;
             static constexpr int iWaveStrength = 2;
         };
 
         struct Ogre
         {
-            static constexpr int iHealthDifference = 20;
+            static constexpr int iHealthDifference = 5;
             static constexpr float fSpeedDifference = 5.f;
-            static constexpr int iStrengthDifference = -1;
-            static constexpr int iRewardDifference = 4;
-            static constexpr int iWaveStrength = 5;
+            static constexpr int iStrengthDifference = 4;
+            static constexpr int iRewardDifference = 9;
+            static constexpr int iWaveStrength = 4;
         };
 
         struct Minotaur
         {
-            static constexpr int iHealthDifference = 120;
+            static constexpr int iHealthDifference = 80;
             static constexpr float fSpeedDifference = 25.f;
-            static constexpr int iStrengthDifference = 3;
-            static constexpr int iRewardDifference = 5;
+            static constexpr int iStrengthDifference = 25;
+            static constexpr int iRewardDifference = 15;
             static constexpr int iWaveStrength = 2;
         };
     };
 
     struct StatsLevelUpRate
     {
-        static constexpr float fHealthLevelUpRate = 1.15f;
-        static constexpr float fSpeedLevelUpRate = 1.05f;
+        static constexpr float fHealthLevelUpRate = 1.35f;
+        static constexpr float fSpeedLevelUpRate = 1.06f;
         static constexpr float fStrengthLevelUpRate = 1.10f;
-        static constexpr float fRewardLevelUpRate = 1.05f;
+        static constexpr float fRewardLevelUpRate = 1.03f;
     };
 
     int m_iBaseMonsters;                                                // Starting monster number

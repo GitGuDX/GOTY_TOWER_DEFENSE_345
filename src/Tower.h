@@ -78,8 +78,8 @@ public:
                 m_iCost = 300;
                 break;
             case TowerType::Rapid:
-                m_fRange = 200.0f;
-                m_fMaxCooldown = 0.15f;
+                m_fRange = 170.0f;
+                m_fMaxCooldown = 0.14f;
                 m_fDamage = 5.0f;
                 m_speed = 400.f;
                 m_iCost = 200;
