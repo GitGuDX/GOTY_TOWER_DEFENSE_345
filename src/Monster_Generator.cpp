@@ -11,6 +11,8 @@
 // Circular dependency means neither files can be fully defined without the other.
 // Now, .cpp files are compiled individually, so having the Game.h included here and not in the .h file avoids circular dependencies.
 #include "Game.h"
+#include "HealthBar.h"
+#include "MonsterView.h"
 #include "Monster_Generator.h"
 #include <iostream>
 #include <vector>
@@ -86,6 +88,7 @@ void MonsterGenerator::updateMonsterStats(Monster& monster)
         monster.SetMaxHealth((MonsterGenerator::MonsterTypeData::BaseStats::iHealth + MonsterGenerator::MonsterTypeData::Ogre::iHealthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fHealthLevelUpRate));
         monster.SetStrength((MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Ogre::iStrengthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fStrengthLevelUpRate));
         monster.SetReward((MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Ogre::iRewardDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fRewardLevelUpRate));
+        
     }
 }
 
@@ -143,6 +146,11 @@ void MonsterGenerator::generateMonster(Game& game)
     if (m_iNumberOfMonsterSpawned < numMonsters) {
         // Initialize a new monster class
         Monster newMonster;
+
+
+        MonsterView view(newMonster);  // Create the MonsterView observer
+
+        newMonster.attach(&view);  // Attach MonsterView to the Monster
         // Set universal properties
 
 

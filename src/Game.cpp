@@ -891,7 +891,7 @@ void Game::HandleInput()
                     currentWarning = "Successfully removed a tower\n";
                     m_warningText.setFillColor(Color::Green);
                     warningShown.restart();
-                    m_iCurrentWealth += it->GetCost()/2;
+                    m_iCurrentWealth += ((it->GetCost() * it->GetLevel())/2);
 
                     //  Remove the clicked tower
                     if (std::find(a_activeWoodTowers.begin(), a_activeWoodTowers.end(), *it) != a_activeWoodTowers.end()) {

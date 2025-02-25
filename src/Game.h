@@ -20,6 +20,7 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include "Monster.h"
 #include "Monster_Generator.h"
 #include "Tower.h"
+#pragma once
 
 using namespace sf;
 using namespace std;

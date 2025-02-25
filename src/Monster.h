@@ -7,8 +7,9 @@
 
 #ifndef MONSTER_H
 #define MONSTER_H
-
+#include<iostream>
 #include "Entity.h"
+#include "Subject.h"
 #include "Monster_Generator.h"
 
 ////////// Monster Class ////////////
@@ -24,7 +25,7 @@ Monsters will have five stats.
 Monster also has a m_stCurrentPathIndex member variable that keeps track of the index of its current tile it is on.
 */
 
-class Monster : public Entity
+class Monster : public Entity, public Subject
 {
 public:
     Monster();
@@ -35,6 +36,12 @@ public:
     size_t GetCurrentPathIndex()
     {
         return m_stCurrentPathIndex;
+    }
+
+    void takeDamage(int dmg) {
+        std::cout << "CRASH";
+        //m_iHealth -= dmg;
+        notify();  // Notify observers when health changes
     }
 
     float GetHealth()
