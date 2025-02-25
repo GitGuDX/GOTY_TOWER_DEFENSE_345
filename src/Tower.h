@@ -10,6 +10,7 @@
 
 #include "Entity.h"
 #include <iostream>
+#include "GameEvents.h"
 
 enum class TowerType {
     Basic,
@@ -17,11 +18,35 @@ enum class TowerType {
     Rapid
 };
 
-class Tower : public Entity
+class Tower : public Entity, public IGameSubject
 {
 public:
     Tower(TowerType type = TowerType::Basic); // Default constructor takes a type
     ~Tower();
+
+
+    public:
+    void AddObserver(IGameObserver* observer) override {
+        m_observers.push_back(observer);
+    }
+
+    void RemoveObserver(IGameObserver* observer) override {
+        m_observers.erase(
+            std::remove(m_observers.begin(), m_observers.end(), observer),
+            m_observers.end()
+        );
+    }
+
+    void NotifyObservers(const GameEvent& event) override {
+        for (auto observer : m_observers) {
+            observer->OnGameEvent(event);
+        }
+    }
+    void NotifyStatsChanged() {
+        for (auto observer : m_observers) {
+            observer->OnTowerStatsChanged(*this);
+        }
+    }
 
     void DebugPrint() const 
     {
@@ -30,21 +55,21 @@ public:
                   << "Speed: " << m_fDamage << "\n";
     }
 
-    float GetDamage()
+    float GetDamage() const
     {
         return m_fDamage;
     }
 
-    float GetCooldown(){
+    float GetCooldown() const{
         return m_fMaxCooldown;
     }
 
-    float GetSpeed()
+    float GetSpeed() const 
     {
         return m_speed;
     }
     
-    size_t GetCurrentPathIndex()
+    size_t GetCurrentPathIndex () const
     {
         return m_stCurrentPathIndex;
     }
@@ -105,6 +130,7 @@ public:
     int GetUpgradeCost() const;
 
 private:
+    std::vector<IGameObserver*> m_observers;
     static const int MAX_LEVEL = 3; // Maximum level a tower can reach
     
     TowerType m_eType;

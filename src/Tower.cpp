@@ -61,7 +61,7 @@ bool Tower::Upgrade()
     m_fRange *= rangeMultiplier;
     m_fMaxCooldown *= cooldownMultiplier;
     m_speed += speedMultiplier;
-
+    NotifyStatsChanged();
     return true;
 }
 

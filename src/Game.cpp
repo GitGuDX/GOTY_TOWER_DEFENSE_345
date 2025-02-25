@@ -16,6 +16,7 @@
 #include <string>
 #include <algorithm>
 #include <limits>
+#include "TowerView.h"
 
 
 #include "Math_Helpers.h"
@@ -501,6 +502,11 @@ void Game::LoadPlayModeAssets()
 
 void Game::LoadUIAssets()
 {
+
+    for (auto& tower : a_allActiveTowers) {
+        tower.AddObserver(&m_TowerView);
+    }
+
     scoreTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 10);
     levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
     instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
@@ -1104,10 +1110,11 @@ void Game::HandleInput()
             Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
             for (Tower& tower : a_allActiveTowers) {
                 if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
-                    hoverTowerDamage = round(tower.GetDamage() * 100.0f) / 100.0f;
-                    hoverTowerCooldown = round(tower.GetCooldown() * 100.0f) / 100.0f;
-                    hoverTowerRange = round(tower.GetRange() * 100.0f) / 100.0f;
-                    hoverTowerSpeed = round(tower.GetSpeed() * 100.0f) / 100.0f;
+                    //need the pass the tower pointer to the stats
+                    hoverTowerDamage = round(m_TowerView.GetDamage() * 100.0f) / 100.0f;
+                    hoverTowerCooldown = round(m_TowerView.GetCooldown() * 100.0f) / 100.0f;
+                    hoverTowerRange = round(m_TowerView.GetRange() * 100.0f) / 100.0f;
+                    hoverTowerSpeed = round(m_TowerView.GetSpeed() * 100.0f) / 100.0f;
                 }
             }
         }
@@ -1626,74 +1633,8 @@ void Game::UpdateTowers()
 
 }
 
-void Game::UpdateAxes()
-{
-    const float COLLISION_DISTANCE = 25.0f; // Adjust collision radius as needed
-
-    for (auto it = m_aAxes.begin(); it != m_aAxes.end();)
-    {
-        bool hitMonster = false;
-        
-        // Move axe
-        it->Move(it->GetDirection() * it->GetSpeed() * m_DeltaTime.asSeconds());
-        
-        // Check collision with monsters
-        for (auto& monster : m_aMonstersQueue)
-        {
-            sf::Vector2f diff = monster.GetPosition() - it->GetPosition();
-            float distance = MathHelpers::Length(diff);
-            
-            if (distance < COLLISION_DISTANCE)
-            {
-                string hitMonsterName;
-                if(static_cast<int>(monster.GetMonsterType()) == 0){
-                    hitMonsterName = "Skeleton";
-                } else if (static_cast<int>(monster.GetMonsterType()) == 1){
-                    hitMonsterName = "Reaper";
-                }else if (static_cast<int>(monster.GetMonsterType()) == 2){
-                    hitMonsterName = "Golem";
-                }else if (static_cast<int>(monster.GetMonsterType()) == 3){
-                    hitMonsterName = "Ogre";
-                }else if (static_cast<int>(monster.GetMonsterType()) == 4){
-                    hitMonsterName = "Minotaur";
-                }
-                std::cout << "Debug: Axe hit " << hitMonster << " at position ("
-                          << monster.GetPosition().x << ", "
-                          << monster.GetPosition().y << ")" << std::endl;
-                hitMonster = true;
-                monster.SetHealth(monster.GetHealth()-it->GetDamage());
-                cout << "\n"<<monster.GetHealth()<<"\n";
-                if (monster.GetHealth() <= 0){
-                    // Handle the monster's death (e.g., remove it from the queue)
-                    std::cout << "Monster destroyed!" << std::endl;
-                    // Remove the monster from the queue (if applicable)
-                    auto monsterIt = std::find(m_aMonstersQueue.begin(), m_aMonstersQueue.end(), monster);
-                    if (monsterIt != m_aMonstersQueue.end()) {
-                        m_aDeadMonsters.push_back(monster);
-                        m_aMonstersQueue.erase(monsterIt);    //STYLE
-                        m_iCurrentWealth += monster.GetReward();
-                    }
-                }
-                break;
-            }
-        }
-        
-        // Remove axe if it hit something or went off screen
-        if (hitMonster || 
-            it->GetPosition().x < 0 || 
-            it->GetPosition().x > m_vWindowSize.x ||
-            it->GetPosition().y < 0 || 
-            it->GetPosition().y > m_vWindowSize.y)
-        {
-            it = m_aAxes.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
-}
-
+m_ProjectileManager.UpdateProjectiles();
+;
 void Game::DrawInitialSetUp()
 {
     // Erases everything that was drawn last frame
@@ -1788,14 +1729,13 @@ void Game::DrawMapEditorMode()
 
 
     if(m_eCurrentEditState == FinishedPathingState){
-        for (auto& tower : a_activeWoodTowers) {
-            m_Window.draw(tower);  // If Tile is derived from sf::Drawable
-        }
+
+        m_TowerView.Draw(m_Window, a_activeWoodTowers);
+        
     }
     if(m_eCurrentEditState == FinishedPathingState){
-        for (auto& tower : a_activeStoneTowers) {
-            m_Window.draw(tower);  // If Tile is derived from sf::Drawable
-        }
+        m_TowerView.Draw(m_Window, a_activeStoneTowers);
+
     }
     if(draggedSprite != nullptr){
         m_Window.draw(draggedTower);
@@ -1909,14 +1849,12 @@ void Game::DrawPlayMode()
 
     // Draw the towers and enemies (every frame, without waiting for the animation delay)
     if(m_eCurrentEditState == FinishedPathingState){
-        for (auto& tower : a_activeStoneTowers) {
-            m_Window.draw(tower);  // Draw each tower
-        }
+        m_TowerView.Draw(m_Window, a_activeStoneTowers);
+        
     }
     if(m_eCurrentEditState == FinishedPathingState){
-        for (auto& tower : a_activeWoodTowers) {
-            m_Window.draw(tower);  // If Tile is derived from sf::Drawable
-        }
+        m_TowerView.Draw(m_Window, a_activeWoodTowers);
+
     }
     for (const Entity& bullet : m_aAxes)
     {

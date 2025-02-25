@@ -20,6 +20,9 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include "Monster.h"
 #include "Monster_Generator.h"
 #include "Tower.h"
+#include "GameEventManager.h"
+#include "ProjectileManager.h"
+#include "TowerView.h"
 
 using namespace sf;
 using namespace std;
@@ -221,7 +224,9 @@ private:
     std::vector<Monster*> m_aEliminatedMonstersQueue;
     bool justPlacedTower = false;
     sf::Clock placementOrUpgradeTimer;  // Timer to track recent tower placements
-
+    GameEventManager m_GameEventManager;   
+    ProjectileManager m_ProjectileManager;
+    TowerView m_TowerView;
 
     void DebugPrintGameState() const {
         std::cout << "Game State:\n"

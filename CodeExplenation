@@ -1,0 +1,86 @@
+//Loading Asssets
+//UpdatingGame(Tower, monsters, bullets)
+//DrawingGame(Tower, monsters, bullets)
+
+if (hoveringOnTower) {
+    if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
+        currentWarning = "Hover and press Q for info";
+        m_warningText.setFillColor(Color::Red);
+
+        Vector2i mousePos = sf::Mouse::getPosition(m_Window);
+        Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
+        Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
+        for (Tower& tower : a_allActiveTowers) {
+            if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+                hoverTowerDamage = round(tower.GetDamage() * 100.0f) / 100.0f;
+                hoverTowerCooldown = round(tower.GetCooldown() * 100.0f) / 100.0f;
+                hoverTowerRange = round(tower.GetRange() * 100.0f) / 100.0f;
+                hoverTowerSpeed = round(tower.GetSpeed() * 100.0f) / 100.0f;
+            }
+        }
+    }
+    // Show upgrade info when Q is pressed
+    if (Keyboard::isKeyPressed(Keyboard::Q)) {
+        Vector2f mousePos = m_Window.mapPixelToCoords(Mouse::getPosition(m_Window));
+        Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mousePos, 50);
+        
+        // Check which tower we're hovering over
+        for (Tower& tower : a_allActiveTowers) {
+            if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+                m_pSelectedTower = &tower;
+                m_bShowUpgradeUI = true;
+                break;
+            }
+        }
+    }
+    
+    // Perform upgrade when E is pressed
+    if (Keyboard::isKeyPressed(Keyboard::E) && m_bShowUpgradeUI) {
+        if (m_pSelectedTower && m_pSelectedTower->CanUpgrade()) {
+            int upgradeCost = m_pSelectedTower->GetUpgradeCost();
+            if (m_iCurrentWealth >= upgradeCost) {
+                if (m_pSelectedTower->Upgrade()) {
+                    m_iCurrentWealth -= upgradeCost;
+                    currentWarning = "Tower upgraded successfully!";
+                    m_warningText.setFillColor(Color::Green);
+                    placementOrUpgradeTimer.restart();
+                }
+            } else {
+                currentWarning = "Not enough money for upgrade!";
+                m_warningText.setFillColor(Color::Red);
+                placementOrUpgradeTimer.restart();
+            }
+            warningShown.restart();
+        }
+        m_bShowUpgradeUI = false;
+        m_pSelectedTower = nullptr;
+    }
+} else{
+    m_pSelectedTower = nullptr;
+    m_bShowUpgradeUI = false;
+}
+
+
+    // Update upgrade UI if shown
+    if (m_bShowUpgradeUI && m_pSelectedTower) {
+        m_upgradeText.setFont(m_Font);
+        
+        std::string upgradeString;
+        if (m_pSelectedTower->CanUpgrade()) {
+            upgradeString = "Upgrade Cost: " + std::to_string(m_pSelectedTower->GetUpgradeCost()) + 
+                          "\nLevel: " + std::to_string(m_pSelectedTower->GetLevel()) +
+                          "\nClick E to upgrade";
+        } else {
+            upgradeString = "Max Level Reached";
+        }
+        
+        m_upgradeText.setString(upgradeString);
+        m_upgradeText.setCharacterSize(15);
+        m_upgradeText.setFillColor(Color::White);
+        m_upgradeText.setPosition(m_pSelectedTower->GetPosition() + Vector2f(30, -30));
+    }
+
+    // Draw upgrade UI if shown
+    if (m_bShowUpgradeUI && m_pSelectedTower) {
+        m_Window.draw(m_upgradeText);
+    }

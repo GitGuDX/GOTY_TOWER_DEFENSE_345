@@ -5,6 +5,9 @@
 @brief Implements some useful mathematical functions
 */
 
+#ifndef MATH_HELPERS_H
+#define MATH_HELPERS_H
+
 #include <cmath>
 #include <SFML/Graphics.hpp>
 
@@ -16,7 +19,7 @@ namespace MathHelpers
 
 
     // returns the center of nearest tile when given position
-    sf::Vector2f getNearestTileCenterPosition(sf::Vector2f& pos, int tileSize) {
+    inline sf::Vector2f getNearestTileCenterPosition(sf::Vector2f& pos, int tileSize) {
         return sf::Vector2f(
             std::floor(pos.x / tileSize) * tileSize + tileSize / 2,
             std::floor(pos.y / tileSize) * tileSize + tileSize / 2
@@ -24,18 +27,18 @@ namespace MathHelpers
     }
 
     //Checks if two tiles are adjacent (only horizontal or vertical movement allowed).
-    bool isAdjacent(sf::Vector2f& a, sf::Vector2f& b, int tileSize) {
+    inline bool isAdjacent(sf::Vector2f& a, sf::Vector2f& b, int tileSize) {
         return (std::abs(a.x - b.x) == tileSize && a.y == b.y) ||  (std::abs(a.y - b.y) == tileSize && a.x == b.x);
     }
 
     // Get Mangnitude of vector
-    float getMagnitude(const sf::Vector2f& v) {
+    inline float getMagnitude(const sf::Vector2f& v) {
         // r = sqrt(x^2 + y^2)
         return std::sqrt(v.x * v.x + v.y * v.y);
     }
 
     // Get unit vector
-    sf::Vector2f getNormalize(const sf::Vector2f& vector) {
+    inline sf::Vector2f getNormalize(const sf::Vector2f& vector) {
         // If vector is (0,0) return vector right away to avoid dividing by 0
         if (vector.x == 0 && vector.y == 0)
         {
@@ -55,7 +58,7 @@ namespace MathHelpers
         //return (magnitude != 0) ? sf::Vector2f(vector.x / magnitude, vector.y / magnitude) : sf::Vector2f(0, 0); 
     }
 
-    static float Length(const sf::Vector2f& rVector)
+    inline float Length(const sf::Vector2f& rVector)
     {
         float fLength = sqrt(rVector.x * rVector.x + rVector.y * rVector.y);
         return fLength;
@@ -64,3 +67,4 @@ namespace MathHelpers
    
 
 }
+#endif
