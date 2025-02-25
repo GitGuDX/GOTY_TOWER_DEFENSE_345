@@ -1111,13 +1111,15 @@ void Game::HandleInput()
             Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
             Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
             for (Tower& tower : a_allActiveTowers) {
-                if (const auto* stats = m_TowerView.GetTowerStats(&tower)) {
-                    hoverTowerDamage = round(stats->damage * 100.0f) / 100.0f;
-                    hoverTowerCooldown = round(stats->cooldown * 100.0f) / 100.0f;
-                    hoverTowerRange = round(stats->range * 100.0f) / 100.0f;
-                    hoverTowerSpeed = round(stats->speed * 100.0f) / 100.0f;
+                if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+                    if (const auto* stats = m_TowerView.GetTowerStats(&tower)) {
+                        hoverTowerDamage = round(stats->damage * 100.0f) / 100.0f;
+                        hoverTowerCooldown = round(stats->cooldown * 100.0f) / 100.0f;
+                        hoverTowerRange = round(stats->range * 100.0f) / 100.0f;
+                        hoverTowerSpeed = round(stats->speed * 100.0f) / 100.0f;
+                    }
+                    break;  // Only break after finding the correct tower
                 }
-                break;
             }
         }
         // Show upgrade info when Q is pressed

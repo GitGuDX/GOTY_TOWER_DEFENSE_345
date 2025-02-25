@@ -17,14 +17,6 @@ void TowerView::OnTowerStatsChanged(const Tower& tower)
         stats.speed = tower.GetSpeed();
         stats.level = tower.GetLevel();
 
-    /*
-    m_fDamage = tower.GetDamage();
-    m_fRange = tower.GetRange();
-    m_fCooldown = tower.GetCooldown();
-    m_fSpeed = tower.GetSpeed();
-    m_iLevel = tower.GetLevel();
-    m_bHasStats = true;
-    */
 }
 
 const TowerStats* TowerView::GetTowerStats(const Tower* tower) const
