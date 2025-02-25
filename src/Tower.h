@@ -37,11 +37,6 @@ public:
         );
     }
 
-    void NotifyObservers(const GameEvent& event) override {
-        for (auto observer : m_observers) {
-            observer->OnGameEvent(event);
-        }
-    }
     void NotifyStatsChanged() {
         for (auto observer : m_observers) {
             observer->OnTowerStatsChanged(*this);
@@ -82,6 +77,7 @@ public:
     void SetCurrentPathIndex(size_t newIndex)
     {
         m_stCurrentPathIndex = newIndex;
+
     }
 
     void SetType(TowerType type) {
@@ -110,6 +106,8 @@ public:
                 m_iCost = 200;
                 break;
         }
+        NotifyStatsChanged();
+
     }
 
     void SetRange(float range) { m_fRange = range; }

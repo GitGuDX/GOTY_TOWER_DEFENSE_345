@@ -18,9 +18,9 @@ public:
         );
     }
 
-    void NotifyObservers(const GameEvent& event) override {
+   /* void NotifyObservers(const GameEvent& event) override {
         for (auto observer : m_observers) {
             observer->OnGameEvent(event);
         }
-    }
+    }*/
 };
