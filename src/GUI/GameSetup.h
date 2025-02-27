@@ -3,7 +3,11 @@
 #define GAMESETUP_H
 
 #include "../GameEvents.h"
+
+#include <iostream>
+#include <string>
 #include <vector>
+#include <algorithm>
 
 class GameSetup : public IGameSubject
 {
@@ -30,11 +34,11 @@ public:
         return m_EnterSizeSign;
     }
 
-    std::string GetUserInputWindowHeight(std::string height) const {
+    std::string GetUserInputWindowHeight() const {
         return m_UserInputWindowHeight;
     }
 
-    std::string GetUserInputWindowWidth(std::string width) const {
+    std::string GetUserInputWindowWidth() const {
         return m_UserInputWindowWidth;
     }
 
@@ -71,6 +75,7 @@ public:
 private:
     void notifyObservers() {
         for (auto observer : m_observers) {
+
             observer->Update(*this);
         }
     }
@@ -78,11 +83,11 @@ private:
 private:
     std::vector<IGameObserver*> m_observers;
 
-    std::string m_IntroTitle = "Welcome to Tower Defense Game!";
-    std::string m_EnterSizeSign = "Enter map size (width x height) in tiles:";
-    std::string m_UserInputWindowHeight = "";
-    std::string m_UserInputWindowWidth = "";
-    std::string m_SizeLimitWarning = "Size must be between 10 and 20";
+    std::string m_IntroTitle;
+    std::string m_EnterSizeSign;
+    std::string m_UserInputWindowHeight;
+    std::string m_UserInputWindowWidth;
+    std::string m_SizeLimitWarning;
 
 
 };

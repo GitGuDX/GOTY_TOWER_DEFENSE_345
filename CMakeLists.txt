@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.10)
 project(Tower_Defense)
 
 # Set the C++ standard to C++11 (or higher)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Enable all warnings for better code quality (optional)
@@ -39,7 +39,7 @@ set(SFML_DIR "C:/msys64/mingw64/lib/cmake/sfml")
 find_package(SFML REQUIRED COMPONENTS system window graphics)
 
 # Collect all .cpp files in the src directory
-file(GLOB SOURCES src/*.cpp)
+file(GLOB SOURCES src/*.cpp src/GUI/*.cpp src/Views/*.cpp)  # Recursively grab all .cpp files
 
 # Add your source files (adjust based on your project structure)
 add_executable(${EXECUTABLE_NAME} ${SOURCES})

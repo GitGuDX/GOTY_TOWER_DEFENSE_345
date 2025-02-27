@@ -7,7 +7,7 @@
 
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+//#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 //#define DEBUG               // For debugging purposes
 
 #include "Game.h"
@@ -29,6 +29,8 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
     // Set previous game mode to initial set up. Later, this helps track when the game mode changes for the first time.
     , m_ePrevGameMode(GameMode::InitialSetUp)
+    // Initialize GUI driver class
+    , m_GUIManager(m_Window)
     // ** UIMANAGER
     , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
     // ** TILE
@@ -44,6 +46,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     #else
     , m_iCurrentWealth(10000)
     #endif
+   
 {
     // ** MAP
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
@@ -53,7 +56,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
 
     // ** GAME SETUP MODEL AND OBSERVABLE
     // Render Initial SetUp assets
-    LoadInitialSetUpAssets();
+    //LoadInitialSetUpAssets();
 
 }
 
@@ -84,7 +87,9 @@ void Game::Run()
             currentMode = "Mode: Map Editor Mode";
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode) {
-                m_Window.create(VideoMode(m_vWindowSize.x + 300, m_vWindowSize.y), "New Game");
+                Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
+                //m_Window.create(VideoMode(m_vWindowSize.x + 300, m_vWindowSize.y), "New Game");
+                m_Window.create(VideoMode(mapSize.x + 300, mapSize.y), "New Game");
                 LoadMapEditorAssets(); 
                 LoadUIAssets();
                 m_ePrevGameMode = MapEditorMode;
@@ -146,7 +151,7 @@ void Game::Run()
 // ** GAME SETUP AND GUIMANAGER
 void Game::LoadInitialSetUpAssets()
 {
-    // ** GUIMANAGER
+    // ** GUIMANAGER AND GAMESETUP
     #ifdef LINUX
     m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf");  
     m_SubmitButtonTexture.loadFromFile("../src/Images/placeholder_play_button.png");                    // placeholder image. Change button image
@@ -728,47 +733,64 @@ void Game::HandleInput()
         if (m_eGameMode == InitialSetUp)
         {
             Vector2i mousePosition = Mouse::getPosition(m_Window);                                  // Get mouse position by pixel
-            Vector2f translatedPosition = m_Window.mapPixelToCoords(mousePosition);                 // Translate mouse position to game coordinate
+            Vector2f translatedPosition = m_Window.mapPixelToCoords(mousePosition);   
+            std::array<sf::Sprite, 2>& buttonBoxArray = m_GUIManager.GetGameSetupView()->GetButtonBoxes();              // Translate mouse position to game coordinate
             if (event.type == Event::MouseButtonPressed) {
                 // Input box conditions
-                if (m_aUserInputBoxWindowSize[0].getGlobalBounds().contains(translatedPosition))        // Check if mouse position is within the width input box
+                std::array<sf::RectangleShape, 2>& userInputBoxArray = m_GUIManager.GetGameSetupView()->GetUserInputBoxWindowSize();
+                if (userInputBoxArray[0].getGlobalBounds().contains(translatedPosition))        // Check if mouse position is within the width input box
                 {
-                    m_eCurrentlyActiveInputBox = ClickedInputBox::Width;
+                    //m_eCurrentlyActiveInputBox = ClickedInputBox::Width;
+                    m_GUIManager.GetGameSetupView()->SetCurrentlyActiveInputBox(GameSetupView::Width);
                 } 
-                else if (m_aUserInputBoxWindowSize[1].getGlobalBounds().contains(translatedPosition))   // Check if mouse position is within the height input box
+                else if (userInputBoxArray[1].getGlobalBounds().contains(translatedPosition))   // Check if mouse position is within the height input box
                 {
-                    m_eCurrentlyActiveInputBox = ClickedInputBox::Height;
+                    //m_eCurrentlyActiveInputBox = ClickedInputBox::Height;
+                    m_GUIManager.GetGameSetupView()->SetCurrentlyActiveInputBox(GameSetupView::Height);
                 }
                 else                                                                                    // If clicked anywhere outside the input box
                 {
-                    m_eCurrentlyActiveInputBox = ClickedInputBox::None;                                 
+                    //m_eCurrentlyActiveInputBox = ClickedInputBox::None;          
+                    m_GUIManager.GetGameSetupView()->SetCurrentlyActiveInputBox(GameSetupView::None);                     
                 }
 
                 // When submit button is clicked
-                if (m_aButtonBoxes[0].getGlobalBounds().contains(translatedPosition))
+                //if (m_aButtonBoxes[0].getGlobalBounds().contains(translatedPosition))
+                if (buttonBoxArray[0].getGlobalBounds().contains(translatedPosition))
                 {
-                    m_SubmitButtonClicked = true;   
+                    m_GUIManager.GetGameSetupView()->SetSubmitButtonClicked(true);   
                 }
             }
             if (event.type == Event::MouseButtonReleased)
             {
                 // When submit button click is released, resize window with given inputs, switch game mode, and load map editor assets
-                if (m_aButtonBoxes[1].getGlobalBounds().contains(translatedPosition))
+                if (buttonBoxArray[1].getGlobalBounds().contains(translatedPosition))
                 {
-                    m_SubmitButtonClicked = false;
+                    m_GUIManager.GetGameSetupView()->SetSubmitButtonClicked(false);
                     // convert the user input string to unsigned int and reassign the new grid size
-                    m_vGridSize.x = std::stoi(m_WidthSizeInput.getString().toAnsiString());                // converting sf::String -> std::string -> unsigned int
-                    m_vGridSize.y = std::stoi(m_HeightSizeInput.getString().toAnsiString());
+                    
+                    // m_vGridSize.x = std::stoi(m_WidthSizeInput.getString().toAnsiString());                // converting sf::String -> std::string -> unsigned int
+                    // m_vGridSize.y = std::stoi(m_HeightSizeInput.getString().toAnsiString());
+                    //m_vGridSize.x = std::stoi(m_WidthSizeInput.getString().toAnsiString());                // converting sf::String -> std::string -> unsigned int
+                    //m_vGridSize.y = std::stoi(m_HeightSizeInput.getString().toAnsiString());
+                    Vector2i gridSize;
+                    gridSize.x = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowWidth());                // converting sf::String -> std::string -> unsigned int
+                    gridSize.y = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowHeight());
+   
                     // apply input limit from 10 to 25
-                    if (m_vGridSize.x >= 10 && m_vGridSize.x <= 20 && m_vGridSize.y >= 10 && m_vGridSize.y <= 20)
+                    // if (m_vGridSize.x >= 10 && m_vGridSize.x <= 20 && m_vGridSize.y >= 10 && m_vGridSize.y <= 20)
+                    if (gridSize.x >= 10 && gridSize.x <= 20 && gridSize.y >= 10 && gridSize.y <= 20)
                     {
                         // Reset window size
-                        m_vWindowSize = Vector2i(m_vGridSize.x*m_iTileSize, m_vGridSize.y*m_iTileSize);
+                        // m_vWindowSize = Vector2i(m_vGridSize.x*m_iTileSize, m_vGridSize.y*m_iTileSize);
+                        // ** initialize MapSetup
+                        //m_vWindowSize = Vector2i(gridSize.x*m_iTileSize, gridSize.y*m_iTileSize);                   // ** MAP
+                        m_GUIManager.InitializeMapSetup(gridSize);
                         m_eGameMode = GameMode::MapEditorMode;
                     }
                     else
                     {
-                        m_bIsSizeLimitTextShown = true;
+                        m_GUIManager.GetGameSetupView()->SetIsSizeLimitTextShown(true);
                     }
                 }
             }
@@ -776,22 +798,30 @@ void Game::HandleInput()
             if (event.type == Event::TextEntered)
             {
                 // Depending on which box is clicked, update the corresponding text
-                switch (m_eCurrentlyActiveInputBox)
+                const GameSetupView::ClickedInputBox& currentlyActiveInputBox = m_GUIManager.GetGameSetupView()->GetCurrentlyActiveInputBox();
+                //switch (m_eCurrentlyActiveInputBox)
+                switch (currentlyActiveInputBox)
                 {
-                case ClickedInputBox::Width:
+                //case ClickedInputBox::Width:
+                case GameSetupView::Width:
                 {
-                    String currentText = m_WidthSizeInput.getString();
+                    // String currentText = m_WidthSizeInput.getString();
+                    std::string currentText = m_GUIManager.GetGameSetup()->GetUserInputWindowWidth();
                     ChangeSizeInputText(event, currentText);
-                    m_WidthSizeInput.setString(currentText);
+                    //m_WidthSizeInput.setString(currentText);
+                    m_GUIManager.GetGameSetup()->SetUserInputWindowWidth(currentText);
                     break;
                 }
-                case ClickedInputBox::Height:
+                // case ClickedInputBox::Height:
+                case GameSetupView::Height:
                 {
-                    String currentText = m_HeightSizeInput.getString();
+                    //String currentText = m_HeightSizeInput.getString();
+                    std::string currentText = m_GUIManager.GetGameSetup()->GetUserInputWindowHeight();
                     ChangeSizeInputText(event, currentText);
-                    m_HeightSizeInput.setString(currentText);
+                    m_GUIManager.GetGameSetup()->SetUserInputWindowHeight(currentText);
                 }
-                case ClickedInputBox::None:
+                // case ClickedInputBox::None:
+                case GameSetupView::None:
                 {
                     break;
                 }
@@ -1204,8 +1234,7 @@ void Game::HandleInput()
     }
 }
 
-// ** GUIMANAGER
-void Game::ChangeSizeInputText(Event& event, String& currentText)                   // Add limit condition for input (input must be between 5 and 30??)
+void Game::ChangeSizeInputText(Event& event, std::string& currentText)                   // Add limit condition for input (input must be between 5 and 30??)
 {
     // when keyboard input is a digit, append the text
     if (event.text.unicode >= '0' && event.text.unicode <= '9')
@@ -1213,10 +1242,9 @@ void Game::ChangeSizeInputText(Event& event, String& currentText)               
         currentText += static_cast<char>(event.text.unicode);
     }
     // when key board input is backspace and if the text is not empty, delete the last character of the text
-    else if (event.text.unicode == 8 && !currentText.isEmpty())
+    else if (event.text.unicode == 8 && !currentText.empty())
     {
-        currentText.erase(currentText.getSize() - 1);
-        
+        currentText.pop_back();
     }
 }
 
@@ -1753,30 +1781,34 @@ void Game::DrawInitialSetUp()
     // Erases everything that was drawn last frame
 	m_Window.clear();
 
-    // Draw all text
-    m_Window.draw(m_IntroText);
-    m_Window.draw(m_EnterSizeText);
-    if (m_bIsSizeLimitTextShown)
-    {
-        m_Window.draw(m_SizeLimitText);
-    }
+    m_GUIManager.GetGameSetupView()->Draw();
 
-    for (RectangleShape box : m_aUserInputBoxWindowSize)
-    {
-        m_Window.draw(box);
-    }
-    m_Window.draw(m_WidthSizeInput);
-    m_Window.draw(m_HeightSizeInput);
+    // // Draw all text
+    // m_Window.draw(m_IntroText);
+    // m_Window.draw(m_EnterSizeText);
+    // if (m_bIsSizeLimitTextShown)
+    // {
+    //     m_Window.draw(m_SizeLimitText);
+    // }
 
-    // Apply submit button press effect
-    if (m_SubmitButtonClicked)
-    {
-        m_Window.draw(m_aButtonBoxes[1]);
-    }
-    else
-    {
-        m_Window.draw(m_aButtonBoxes[0]);
-    }
+    // for (RectangleShape box : m_aUserInputBoxWindowSize)
+    // {
+    //     m_Window.draw(box);
+    // }
+    // m_Window.draw(m_WidthSizeInput);
+    // m_Window.draw(m_HeightSizeInput);
+
+    // // Apply submit button press effect
+    // if (m_SubmitButtonClicked)
+    // {
+    //     m_Window.draw(m_aButtonBoxes[1]);
+    // }
+    // else
+    // {
+    //     m_Window.draw(m_aButtonBoxes[0]);
+    // }
+
+
     m_Window.display();
 }
 

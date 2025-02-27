@@ -15,7 +15,7 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include <array>
 #include <vector>
 
-
+#include "Platform.h"
 #include "Tile.h"
 #include "Monster.h"
 #include "Monster_Generator.h"
@@ -23,6 +23,7 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include "GameEventManager.h"
 #include "ProjectileManager.h"
 #include "TowerView.h"
+#include "GUI/GUIManager.h"
 
 using namespace sf;
 using namespace std;
@@ -60,6 +61,7 @@ public:
         Pause,          ///< Paused state.
     };
 
+    // ** GAMESETUP VIEW
     enum ClickedInputBox
     {
         Width,
@@ -97,7 +99,7 @@ private:
     /** * @brief Handles user input. */
     void HandleInput();
 
-    void ChangeSizeInputText(Event& event, String& currentText);
+    void ChangeSizeInputText(Event& event, std::string& currentText);
 
     void ShowGameOverScreen();
     void delayedTurnOffDragging();
@@ -151,6 +153,9 @@ private:
     GameMode m_ePrevGameMode;
     Time m_DeltaTime;
     float m_fTimeInPlayMode = 0.0f;
+
+    // GUI Driver class
+    GUIManager m_GUIManager;
 
     // ** GUIMANAGER
     Vector2i m_vWindowSize;
