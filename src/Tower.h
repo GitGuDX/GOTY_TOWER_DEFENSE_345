@@ -39,7 +39,7 @@ public:
 
     void NotifyStatsChanged() {
         for (auto observer : m_observers) {
-            observer->OnTowerStatsChanged(*this);
+            observer->Update(*this);
         }
     }
 

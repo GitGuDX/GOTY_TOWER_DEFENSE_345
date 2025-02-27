@@ -8,15 +8,17 @@ void TowerView::Draw(sf::RenderWindow& window, std::vector<Tower>& activeTowersT
         window.draw(tower);
     }
 };
-void TowerView::OnTowerStatsChanged(const Tower& tower)
+void TowerView::Update(const IGameSubject& subject)
 {
-    auto& stats = m_towerStats[&tower];
-        stats.damage = tower.GetDamage();
-        stats.range = tower.GetRange();
-        stats.cooldown = tower.GetCooldown();
-        stats.speed = tower.GetSpeed();
-        stats.level = tower.GetLevel();
-
+    const Tower* tower = dynamic_cast<const Tower*>(&subject);
+    if (tower) {
+        auto& stats = m_towerStats[tower];
+        stats.damage = tower->GetDamage();
+        stats.range = tower->GetRange();
+        stats.cooldown = tower->GetCooldown();
+        stats.speed = tower->GetSpeed();
+        stats.level = tower->GetLevel();
+    }
 }
 
 const TowerStats* TowerView::GetTowerStats(const Tower* tower) const

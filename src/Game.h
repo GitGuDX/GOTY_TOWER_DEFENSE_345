@@ -152,40 +152,45 @@ private:
     Time m_DeltaTime;
     float m_fTimeInPlayMode = 0.0f;
 
+    // ** GUIMANAGER
     Vector2i m_vWindowSize;
+    // ** MAP
     Vector2i m_vGridSize;
     const int m_iTileSize;
 
     float m_fElapesdTimeInSeconds;
 
+    // ** GAMESETUP AND GAMESETUP VIEW
     // Initial SetUp 
     Font m_Font;
     Text m_IntroText;
     Text m_EnterSizeText;
     Text m_SizeLimitText;
-    bool m_bIsSizeLimitTextShown = false;
-    int m_iInputFontSize = 30;
+    bool m_bIsSizeLimitTextShown = false;               // GAMESETUP VIEW
+    int m_iInputFontSize = 30;                          // GAMESETUP VIEW
     Text m_WidthSizeInput;
     Text m_HeightSizeInput;
-    std::string m_UserInputWindowHeight = "";
-    std::string m_UserInputWindowWidth = "";
-    std::array<RectangleShape, 2> m_aUserInputBoxWindowSize;            // Array storing current input box assets
-    ClickedInputBox m_eCurrentlyActiveInputBox;
-
-    Texture m_SubmitButtonTexture;
-    Texture m_SubmitButtonPressedTexture;
-    std::vector<Sprite> m_aButtonBoxes;                                              // Array storing button box assets
-    bool m_SubmitButtonClicked = false;
+    std::string m_UserInputWindowHeight = "";           // COPIED TO GAMESETUP
+    std::string m_UserInputWindowWidth = "";            // COPIED TO GAMESETUP
+    std::array<RectangleShape, 2> m_aUserInputBoxWindowSize;            // GAMESETUP VIEW, Array storing current input box assets
+    ClickedInputBox m_eCurrentlyActiveInputBox;                         // GAMESETUP VIEW
+    Texture m_SubmitButtonTexture;                                      // GAMESETUP VIEW
+    Texture m_SubmitButtonPressedTexture;                               // GAMESETUP VIEW
+    std::vector<Sprite> m_aButtonBoxes;                                 // GAMESETUP VIEW, Array storing button box assets
+    bool m_SubmitButtonClicked = false;                                 // GAMESETUP VIEW
 
     // Map editor mode
     // Comment this later
     PathEditingState m_eCurrentEditState = EntryState;
     bool m_IsPathingMousePressed = false;
 
+    // ** MAP VIEW
     Texture m_EntryTileTexture;
     Texture m_ExitTileTexture;
     Texture m_GrassTexture;
     Texture m_PathTexture;
+
+
     Texture m_TowerTexture;
     Texture m_RapidBulletTexture;
     Texture  m_SniperBulletTexture;
@@ -193,7 +198,10 @@ private:
     Entity m_RapidBulletTemplate;
     Entity m_SniperBulletTemplate;
 
+    // ** MAP
     std::vector<std::vector<Tile>> m_aTiles;
+
+
 	std::vector<Entity> m_aAxes;
     
 
@@ -202,7 +210,9 @@ private:
     Tower* m_pSelectedTower = nullptr;
     
     
+    // * MAP
     std::array<RectangleShape, 8> m_ahighlights;
+
 
     std::vector<sf::Vector2f> m_aPath;
     std::vector<sf::Vector2f> m_aDeletedPath;                                                    // Stores the path tiles
@@ -240,7 +250,7 @@ private:
 
 
 
-    // UI Info
+    // ** UI Info
     Text m_scoreText;
     Text m_levelText;
     Text m_instructionText;

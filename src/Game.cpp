@@ -7,7 +7,7 @@
 
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 //#define DEBUG               // For debugging purposes
 
 #include "Game.h"
@@ -29,8 +29,11 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
     // Set previous game mode to initial set up. Later, this helps track when the game mode changes for the first time.
     , m_ePrevGameMode(GameMode::InitialSetUp)
+    // ** UIMANAGER
     , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
+    // ** TILE
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
+    // ** GAME SETUP
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
     , m_RapidBulletTemplate()
     // Monster generator initiliazed with base number of monsters and their increase rate per level
@@ -42,11 +45,13 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_iCurrentWealth(10000)
     #endif
 {
+    // ** MAP
     m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
+
     m_Window.setFramerateLimit(60);
     m_Window.setVerticalSyncEnabled(true);
 
-    
+    // ** GAME SETUP MODEL AND OBSERVABLE
     // Render Initial SetUp assets
     LoadInitialSetUpAssets();
 
@@ -138,8 +143,10 @@ void Game::Run()
     }
 }
 
+// ** GAME SETUP AND GUIMANAGER
 void Game::LoadInitialSetUpAssets()
 {
+    // ** GUIMANAGER
     #ifdef LINUX
     m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf");  
     m_SubmitButtonTexture.loadFromFile("../src/Images/placeholder_play_button.png");                    // placeholder image. Change button image
@@ -154,6 +161,7 @@ void Game::LoadInitialSetUpAssets()
     // add for window
     #endif
     
+    // ** GAME SETUP AND SOME GUIMANAGER
     m_IntroText.setFont(m_Font);
     m_IntroText.setString("Welcome to Tower Defense Game!");
     m_IntroText.setCharacterSize(40);
@@ -245,7 +253,7 @@ void Game::LoadInitialSetUpAssets()
     m_aButtonBoxes.emplace_back(submitButtonPressed);
 }
 
-
+// ** MAP SETUP AND GUIMANAGER
 void Game::LoadMapEditorAssets()
 {
     // Map editor mode assets
@@ -292,6 +300,7 @@ void Game::LoadMapEditorAssets()
     }
 
 
+    // CHANGE LOGIC
     // Load entry and exit zone tiles assets
     // Loop to create 8 highlight rectangles
     for (int i = 0; i < 8; ++i)
@@ -439,6 +448,34 @@ void Game::LoadMonsterTextures() {
     for(int j = 0; j <= 14; ++j){
         sf::Texture texture;
         //Dying Textures Loaded
+        #ifdef LINUX
+        if (!texture.loadFromFile("../src/Images/Skeleton_Dying/_Skeleton_Crusader_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Skeleton death frame " << j << std::endl;
+        }
+        m_SkeletonDeathTextures.push_back(texture);
+
+        if (!texture.loadFromFile("../src/Images/Reaper_Dying/_Reaper_Man_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Reaper death frame " << j << std::endl;
+        }
+        m_ReaperDeathTextures.push_back(texture);
+
+        if (!texture.loadFromFile("../src/Images/Golem_Dying/_Golem_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Golem death frame " << j << std::endl;
+        }
+        m_GolemDeathTextures.push_back(texture);
+
+        if (!texture.loadFromFile("../src/Images/Minotaur_Dying/_Minotaur_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Minotaur death frame " << j << std::endl;
+        }
+        m_MinotaurDeathTextures.push_back(texture);
+
+        if (!texture.loadFromFile("../src/Images/Ogre_Dying/_Ogre_Dying_" + std::to_string(j) + ".png")) {
+            std::cerr << "Failed to load Ogre death frame " << j << std::endl;
+        }
+        m_OgreDeathTextures.push_back(texture);
+        #endif
+
+        #ifdef MAC
         if (!texture.loadFromFile("Images/Skeleton_Dying/_Skeleton_Crusader_Dying_" + std::to_string(j) + ".png")) {
             std::cerr << "Failed to load Skeleton death frame " << j << std::endl;
         }
@@ -463,6 +500,7 @@ void Game::LoadMonsterTextures() {
             std::cerr << "Failed to load Ogre death frame " << j << std::endl;
         }
         m_OgreDeathTextures.push_back(texture);
+        #endif
     }
 
 
@@ -500,6 +538,7 @@ void Game::LoadPlayModeAssets()
 
 }
 
+// ** UI AND GUIMANAGER
 void Game::LoadUIAssets()
 {
 
@@ -647,6 +686,7 @@ void Game::LoadUIAssets()
     a_towerMenu.push_back(tower2);
 }
 
+// ** GAMEOVER
 void Game::ShowGameOverScreen()
 {   
     m_Window.draw(m_gameOverText);
@@ -1164,7 +1204,7 @@ void Game::HandleInput()
     }
 }
 
-
+// ** GUIMANAGER
 void Game::ChangeSizeInputText(Event& event, String& currentText)                   // Add limit condition for input (input must be between 5 and 30??)
 {
     // when keyboard input is a digit, append the text
@@ -1180,12 +1220,14 @@ void Game::ChangeSizeInputText(Event& event, String& currentText)               
     }
 }
 
+// ** GUIMANAGER
 void Game::UpdateInitialPrompt()
 {
     // Add chanage cursor when over text input box
     // Add blinking text cursor when one of the text input box is selected
 }
 
+// ** MAP
 void Game::UpdateTiles()
 {
     // Change the colors, set tile type of entry, exit.
@@ -1435,7 +1477,7 @@ void Game::UpdateMonsters()
 }
 
 
-
+// ** UI
 void Game::UpdateUI()
 {
     
@@ -1704,6 +1746,8 @@ void Game::UpdateAxes()
         }
     }
 }
+
+// ** EDIT TO IMPLEMENT GAMESETUP VIEW CLASS
 void Game::DrawInitialSetUp()
 {
     // Erases everything that was drawn last frame
@@ -1736,6 +1780,7 @@ void Game::DrawInitialSetUp()
     m_Window.display();
 }
 
+// ** EDIT TO IMPLEMENT MAPSETUP VIEW CLASS AND UI VIEW CLASS
 void Game::DrawMapEditorMode()
 {
     // Erases everything that was drawn last frame
@@ -1845,6 +1890,7 @@ void Game::DrawMapEditorMode()
     m_Window.display();
 }
 
+// ** EDIT TO IMPLEMENT GAMEPLAY VIEW CLASS AND UI VIEW CLASS
 void Game::DrawPlayMode()
 {
     m_Window.clear();
@@ -1975,6 +2021,7 @@ void Game::DrawPlayMode()
     m_Window.display();
 }
 
+// ** EDIT TO IMPLEMENT MAP CLASS
 // Check if path is valid
 bool Game::ValidatePath()
 {
@@ -2006,6 +2053,7 @@ bool Game::ValidatePath()
 
 // Helper functions //
 
+// ** MAP
 // Check if the given tile is on the edge of the grid
 bool Game::isEdgeTile(sf::Vector2f tile)
 {
