@@ -22,19 +22,24 @@ public:
 
     void InitializeMapSetup(Vector2i gridSize);
 
-    GameSetupView* GetGameSetupView() const
-    {
-        return m_gameSetupView.get(); // Return raw pointer to GameSetupView
-    }
-
     GameSetup* GetGameSetup()
     {
         return &m_gameSetup;
     }
 
+    GameSetupView* GetGameSetupView() const
+    {
+        return m_gameSetupView.get(); // Return raw pointer to GameSetupView
+    }
+
     MapSetup* GetMapSetup()
     {
         return m_mapSetup.get();
+    }
+
+    MapSetupView* GetMapSetupView() const
+    {
+        return m_mapSetupView.get();
     }
 
 private:

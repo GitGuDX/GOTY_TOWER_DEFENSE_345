@@ -16,7 +16,7 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include <vector>
 
 #include "Platform.h"
-#include "Tile.h"
+#include "GUI/Tile.h"
 #include "Monster.h"
 #include "Monster_Generator.h"
 #include "Tower.h"
@@ -141,6 +141,8 @@ private:
 
     /** * @brief Draws elements in play mode. */
     void DrawPlayMode();
+
+    void BlinkTiles(Tile::Type type);
 
     bool ValidatePath();
 

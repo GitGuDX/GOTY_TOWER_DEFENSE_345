@@ -90,6 +90,8 @@ void Game::Run()
                 Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
                 //m_Window.create(VideoMode(m_vWindowSize.x + 300, m_vWindowSize.y), "New Game");
                 m_Window.create(VideoMode(mapSize.x + 300, mapSize.y), "New Game");
+                m_eCurrentEditState = PathEditingState::EntryState;
+
                 LoadMapEditorAssets(); 
                 LoadUIAssets();
                 m_ePrevGameMode = MapEditorMode;
@@ -261,48 +263,48 @@ void Game::LoadInitialSetUpAssets()
 // ** MAP SETUP AND GUIMANAGER
 void Game::LoadMapEditorAssets()
 {
-    // Map editor mode assets
-    #ifdef LINUX
-    m_GrassTexture.loadFromFile("../src/Images/grass_Tile.png");
-    m_PathTexture.loadFromFile("../src/Images/path_Tile.png");
-    m_EntryTileTexture.loadFromFile("../src/Images/entry_Zone_Tile.png");
-    m_ExitTileTexture.loadFromFile("../src/Images/exit_Zone_Tile.png");
-    #endif
-    #ifdef MAC
+    // // Map editor mode assets
+    // #ifdef LINUX
+    // m_GrassTexture.loadFromFile("../src/Images/grass_Tile.png");
+    // m_PathTexture.loadFromFile("../src/Images/path_Tile.png");
+    // m_EntryTileTexture.loadFromFile("../src/Images/entry_Zone_Tile.png");
+    // m_ExitTileTexture.loadFromFile("../src/Images/exit_Zone_Tile.png");
+    // #endif
+    // #ifdef MAC
 
-    m_GrassTexture.loadFromFile("Images/grass_Tile.png");
-    m_PathTexture.loadFromFile("Images/path_Tile.png");
-    m_EntryTileTexture.loadFromFile("Images/entry_Zone_Tile.png");
-    m_ExitTileTexture.loadFromFile("Images/exit_Zone_Tile.png");
-    #endif
-    #ifdef WINDOW
-    // add for window
-    #endif
-
-
+    // m_GrassTexture.loadFromFile("Images/grass_Tile.png");
+    // m_PathTexture.loadFromFile("Images/path_Tile.png");
+    // m_EntryTileTexture.loadFromFile("Images/entry_Zone_Tile.png");
+    // m_ExitTileTexture.loadFromFile("Images/exit_Zone_Tile.png");
+    // #endif
+    // #ifdef WINDOW
+    // // add for window
+    // #endif
 
 
 
 
-    // Create grass tiles and store them in a 2D array. The position of the item in the array correspond to the position of the tile in the game
-    // (e.g. tile at [0][0] is displayed at the top left corner) 
-    m_aTiles.clear();
-    for (int i = 0; i < m_vGridSize.y; ++i)
-    {
-        std::vector<Tile> row;
-        for (int j = 0; j < m_vGridSize.x; ++j)
-        {
-            Tile tempGrassTile;
-            tempGrassTile.SetTexture(m_GrassTexture);
-            tempGrassTile.SetScale(Vector2f(1.f, 1.f));
-            tempGrassTile.SetTextureRect(sf::IntRect(0,0,50,50));
-            tempGrassTile.SetOrigin(Vector2f(25, 25));
-            tempGrassTile.SetPosition(Vector2f(j * m_iTileSize + m_iTileSize / 2, i * m_iTileSize + m_iTileSize / 2));
-            tempGrassTile.setType(Tile::Type::Grass);                               // Define its tile type
-            row.emplace_back(tempGrassTile);
-        }
-        m_aTiles.emplace_back(row);
-    }
+
+
+    // // Create grass tiles and store them in a 2D array. The position of the item in the array correspond to the position of the tile in the game
+    // // (e.g. tile at [0][0] is displayed at the top left corner) 
+    // m_aTiles.clear();
+    // for (int i = 0; i < m_vGridSize.y; ++i)
+    // {
+    //     std::vector<Tile> row;
+    //     for (int j = 0; j < m_vGridSize.x; ++j)
+    //     {
+    //         Tile tempGrassTile;
+    //         tempGrassTile.SetTexture(m_GrassTexture);
+    //         tempGrassTile.SetScale(Vector2f(1.f, 1.f));
+    //         tempGrassTile.SetTextureRect(sf::IntRect(0,0,50,50));
+    //         tempGrassTile.SetOrigin(Vector2f(25, 25));
+    //         tempGrassTile.SetPosition(Vector2f(j * m_iTileSize + m_iTileSize / 2, i * m_iTileSize + m_iTileSize / 2));
+    //         tempGrassTile.setType(Tile::Type::Grass);                               // Define its tile type
+    //         row.emplace_back(tempGrassTile);
+    //     }
+    //     m_aTiles.emplace_back(row);
+    // }
 
 
     // CHANGE LOGIC
@@ -783,8 +785,8 @@ void Game::HandleInput()
                     {
                         // Reset window size
                         // m_vWindowSize = Vector2i(m_vGridSize.x*m_iTileSize, m_vGridSize.y*m_iTileSize);
-                        // ** initialize MapSetup
                         //m_vWindowSize = Vector2i(gridSize.x*m_iTileSize, gridSize.y*m_iTileSize);                   // ** MAP
+                        // ** initialize MapSetup which creates MapSetup and MapsetupView objects
                         m_GUIManager.InitializeMapSetup(gridSize);
                         m_eGameMode = GameMode::MapEditorMode;
                     }
@@ -827,8 +829,6 @@ void Game::HandleInput()
                 }
                 }
             }
-
-
         }
         // Handle inputs for Map Editor Mode //
         if (m_eGameMode == MapEditorMode)
@@ -838,35 +838,43 @@ void Game::HandleInput()
             if (event.type == sf::Event::MouseButtonPressed) 
             {
                 sf::Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
-                sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
-                if (event.mouseButton.button == sf::Mouse::Left && clickedPos.x <= m_vWindowSize.x && clickedPos.y <= m_vWindowSize.y)
+                sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_GUIManager.GetMapSetup()->GetTileSize());
+
+                sf::Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
+                if (event.mouseButton.button == sf::Mouse::Left && clickedPos.x <= mapSize.x && clickedPos.y <= mapSize.y)
                 {
                     // If EntryState, check if the tile clicked is from the edge tiles then save the clicked tile as the entry tile then append is to the arrays
                     if (m_eCurrentEditState == EntryState)
                     {
-                        if (isEdgeTile(gridPos))
+                        if (m_GUIManager.GetMapSetup()->isEdgeTile(gridPos))
                         {
-                            m_vEntryTile = gridPos;
+                            //m_vEntryTile = gridPos;
+                            //m_aPath.clear();
+                            //m_aPath.push_back(m_vEntryTile);
+                            //m_sfPathLines.clear();
+                            //m_sfPathLines.append(sf::Vertex(m_vEntryTile, sf::Color::Green));
+
+                            m_GUIManager.GetMapSetup()->PushPathTile(gridPos);
+                            m_GUIManager.GetMapSetup()->SetEntryTile(gridPos);
                             m_eCurrentEditState = ExitState;
-                            m_aPath.clear();
-                            m_aPath.push_back(m_vEntryTile);
-                            m_sfPathLines.clear();
-                            m_sfPathLines.append(sf::Vertex(m_vEntryTile, sf::Color::Green));
                         }
                     }
                     // if ExitState, check if the tile clicked is from the edge tiles then sanve the clicked tile as the exit tile
                     // the exit tile will be appended to the arrays later when the entry tile and the exit tiles are linked together with path tile
                     else if (m_eCurrentEditState == ExitState) 
                     {
-                        if (isEdgeTile(gridPos))
+                        // if (isEdgeTile(gridPos))
+                        if (m_GUIManager.GetMapSetup()->isEdgeTile(gridPos))
                         {
-                            m_vExitTile = gridPos;
+                            m_GUIManager.GetMapSetup()->SetExitTile(gridPos);
+                            m_GUIManager.GetMapSetup()->HighlightEdgeTiles(Tile::Type::Grass);
                             m_eCurrentEditState = PathState;
                         }
 
                     }
                     else if (m_eCurrentEditState == PathState)
                     {
+                        m_GUIManager.GetMapSetup()->debugPrint();
                         m_IsPathingMousePressed = true;
                     }
                 }
@@ -875,7 +883,7 @@ void Game::HandleInput()
             // Enable dragging mouse for linking path
             if (event.type == sf::Event::MouseMoved)
             {
-                
+                //// ** UI
                 if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && m_eCurrentEditState == FinishedPathingState) {
                     sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
 
@@ -886,41 +894,48 @@ void Game::HandleInput()
                         }
                     }
                 }
-
+                ////
                 
 
                 //PATHING RELATED
                 if (m_IsPathingMousePressed && m_eCurrentEditState == PathState)
                 {
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
-                    sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(mousePos, m_iTileSize);      // Snap the mouse position to the grid
-                    if (!m_aPath.empty() && MathHelpers::isAdjacent(m_aPath.back(), gridPos, m_iTileSize))
+                    sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(mousePos, m_GUIManager.GetMapSetup()->GetTileSize());      // Snap the mouse position to the grid
+                    // if (!m_aPath.empty() && MathHelpers::isAdjacent(m_aPath.back(), gridPos, m_GUIManager.GetMapSetup()->GetTileSize()))
+                    std::vector<sf::Vector2f> path = m_GUIManager.GetMapSetup()->GetPath();
+                    if (!path.empty() && MathHelpers::isAdjacent(path.back(), gridPos, m_GUIManager.GetMapSetup()->GetTileSize()))
                     {
                         // When the path tile overlaps with the exit tile, we reached the end of pathing. Append exit tile. Ensure we don't move beyond the exit tile
-                        if (gridPos == m_vExitTile)
+                        //if (gridPos == m_vExitTile)
+                        sf::Vector2f exitTile = m_GUIManager.GetMapSetup()->GetExitTile();
+                        if (gridPos == exitTile)
                         {
-                            m_aPath.push_back(m_vExitTile);
-                            m_sfPathLines.append(sf::Vertex(m_vExitTile, sf::Color::Red));
+                            //m_aPath.push_back(exitTile);
+                            //m_sfPathLines.append(sf::Vertex(exitTile, sf::Color::Red));
+                            m_GUIManager.GetMapSetup()->PushPathTile(exitTile);
                             m_eCurrentEditState = FinishedPathingState;
                         }
                         // Prevent backtracking
-                        else if (m_aPath.size() > 1 && m_aPath[m_aPath.size() - 2] == gridPos)
+                        else if (path.size() > 1 && path[path.size() - 2] == gridPos)
                         {
                             // Append the path tile to the deleted path array
-                            m_aDeletedPath.push_back(m_aPath.back());
+                            //m_aDeletedPath.push_back(m_aPath.back());
+                            m_GUIManager.GetMapSetup()->PushDeletedPathTile(path.back());
                             
                             // Remove the path tile from the path array
-                            m_aPath.pop_back();
+                            //m_aPath.pop_back();
+                            m_GUIManager.GetMapSetup()->PopPathTile();
                             // Remove the path tile from the path lines array
-                            m_sfPathLines.resize(m_aPath.size());
+                            //m_sfPathLines.resize(m_aPath.size());
                         }
                         // Skeleton pathing. first check if the current tile is not the previous tile then append path tile
-                        else if (m_aPath.back().x != gridPos.x || m_aPath.back().y != gridPos.y)
+                        else if (path.back().x != gridPos.x || path.back().y != gridPos.y)
                         {
-                            m_aPath.push_back(gridPos);
-                            m_sfPathLines.append(sf::Vertex(gridPos, sf::Color::White));
+                            //m_aPath.push_back(gridPos);
+                            m_GUIManager.GetMapSetup()->PushPathTile(gridPos);
+                            //m_sfPathLines.append(sf::Vertex(gridPos, sf::Color::White));
                         }
-                        std::cout << "m_aPath size: " << m_aPath.size() << std::endl;
 
                     }
                 }
@@ -940,7 +955,7 @@ void Game::HandleInput()
                 if (!bTWasPressedLastUpdate)
                 {   
                     // Go to play mode only when there is a valid path
-                    if (ValidatePath())
+                    if (m_GUIManager.GetMapSetup()->ValidatePath())
                     {
                         m_eGameMode = PlayMode;
                     }
@@ -1029,7 +1044,6 @@ void Game::HandleInput()
                 Vector2i mousePos = sf::Mouse::getPosition(m_Window);
                 Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
                 Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
-                std::cout << "Mouse released\n";
                 // Check for existing towers at the snapGrid position
                 for (auto& tower : a_allActiveTowers) {
                     if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y && draggedSprite != nullptr) {
@@ -1255,54 +1269,98 @@ void Game::UpdateInitialPrompt()
     // Add blinking text cursor when one of the text input box is selected
 }
 
+void Game::BlinkTiles(Tile::Type type)
+{
+    // Highlight tiles that are available to choose for the entry (green) and the exit (red) tiles
+    m_fElapesdTimeInSeconds += m_DeltaTime.asSeconds();                                     // Measure elapsed time
+    
+    // Allow the highlight to blink every 0.5 seconds
+    if (m_fElapesdTimeInSeconds >= 0.5)
+    {
+        m_GUIManager.GetMapSetup()->HighlightEdgeTiles(type);
+        // reset time after 0.5 seconds
+        if (m_fElapesdTimeInSeconds >= 1)
+        {
+            m_GUIManager.GetMapSetup()->HighlightEdgeTiles(Tile::Type::Grass);
+            m_fElapesdTimeInSeconds = 0;
+        }
+    }
+}
+
 // ** MAP
 void Game::UpdateTiles()
 {
-    // Change the colors, set tile type of entry, exit.
-    if (m_eCurrentEditState == ExitState)
+    if (m_eCurrentEditState == EntryState)
     {
-        sf::Vector2i entryTileIndex = tileCenterPosToIndex(m_vEntryTile);
-        Tile& entryTile = m_aTiles[entryTileIndex.y][entryTileIndex.x];
-        entryTile.m_Sprite.setTexture(m_EntryTileTexture);
-        entryTile.setType(Tile::Type::Entry);
+        BlinkTiles(Tile::Type::EntryHighlight);
+    }
+    // Change the colors, set tile type of entry, exit.
+    else if (m_eCurrentEditState == ExitState)
+    {
+        
+        BlinkTiles(Tile::Type::ExitHighlight);
+
+        // sf::Vector2i entryTileIndex = tileCenterPosToIndex(m_vEntryTile);
+        // Tile& entryTile = m_aTiles[entryTileIndex.y][entryTileIndex.x];
+        // entryTile.m_Sprite.setTexture(m_EntryTileTexture);
+        // entryTile.setType(Tile::Type::Entry);
     }
     else if (m_eCurrentEditState == PathState)
     {
-        sf::Vector2i exitTileIndex = tileCenterPosToIndex(m_vExitTile);
-        Tile& exitTile = m_aTiles[exitTileIndex.y][exitTileIndex.x];
-        exitTile.m_Sprite.setTexture(m_ExitTileTexture);
-        exitTile.setType(Tile::Type::Exit);
+        // sf::Vector2i exitTileIndex = tileCenterPosToIndex(m_vExitTile);
+        // Tile& exitTile = m_aTiles[exitTileIndex.y][exitTileIndex.x];
+        // exitTile.m_Sprite.setTexture(m_ExitTileTexture);
+        // exitTile.setType(Tile::Type::Exit);
 
         // If deleted path exist in the array, reset the tile type and texture of the deleted path for all elements in the array
         // Then remove all elements from the array
-        if (!m_aDeletedPath.empty())
+        //if (!m_aDeletedPath.empty())
+        if (!m_GUIManager.GetMapSetup()->GetDeletedPath().empty())
         {
-            for (Vector2f vector : m_aDeletedPath)
+            //for (Vector2f vector : m_aDeletedPath)
+            for (Vector2f vector : m_GUIManager.GetMapSetup()->GetDeletedPath())
             {
-                sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
-                Tile& tile = m_aTiles[tileIndex.y][tileIndex.x];
-                tile.setType(Tile::Type::Grass);
-                tile.SetTexture(m_GrassTexture);
+                m_GUIManager.GetMapSetup()->SetTileType(vector, Tile::Type::Grass);
     
             }
             // Remove all elements from m_aDeletedPath
-            m_aDeletedPath.clear();
+            //m_aDeletedPath.clear();
+            m_GUIManager.GetMapSetup()->ClearDeletedPath();
         }
+        // {
+        //     for (Vector2f vector : m_aDeletedPath)
+        //     {
+        //         sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
+        //         Tile& tile = m_aTiles[tileIndex.y][tileIndex.x];
+        //         tile.setType(Tile::Type::Grass);
+        //         tile.SetTexture(m_GrassTexture);
+    
+        //     }
+        //     // Remove all elements from m_aDeletedPath
+        //     m_aDeletedPath.clear();
+        // }
         
 
         // Set tile type and change the texture of all current path tiles
-        std::cout << "path size before applying texture: " << m_aPath.size() << std::endl;
-        for (Vector2f vector : m_aPath)
+        //std::cout << "path size before applying texture: " << m_aPath.size() << std::endl;
+        //for (Vector2f vector : m_aPath)
+        for (Vector2f vector : m_GUIManager.GetMapSetup()->GetPath())
         {
-            sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
-            Tile& tile = m_aTiles[tileIndex.y][tileIndex.x];
-            if (tile.getType() == Tile::Type::Grass)
+            if (vector != m_GUIManager.GetMapSetup()->GetEntryTile() && vector != m_GUIManager.GetMapSetup()->GetExitTile())
             {
-                tile.setType(Tile::Type::Path);
-                tile.SetTexture(m_PathTexture);
+                m_GUIManager.GetMapSetup()->SetTileType(vector, Tile::Type::Path);
             }
-
         }
+        // {
+        //     sf::Vector2i tileIndex = tileCenterPosToIndex(vector);
+        //     Tile& tile = m_aTiles[tileIndex.y][tileIndex.x];
+        //     if (tile.getType() == Tile::Type::Grass)
+        //     {
+        //         tile.setType(Tile::Type::Path);
+        //         tile.SetTexture(m_PathTexture);
+        //     }
+
+        // }
     }
 
 }
@@ -1818,40 +1876,42 @@ void Game::DrawMapEditorMode()
     // Erases everything that was drawn last frame
 	m_Window.clear();
 
-    // Draw all tiles
-    for (std::vector<Tile> row : m_aTiles)
-    {
-        for (Entity tile : row)
-        {
-            m_Window.draw(tile.m_Sprite);
-        }
-    }
+    m_GUIManager.GetMapSetupView()->Draw();
+
+    // // Draw all tiles
+    // for (std::vector<Tile> row : m_aTiles)
+    // {
+    //     for (Entity tile : row)
+    //     {
+    //         m_Window.draw(tile.m_Sprite);
+    //     }
+    // }
 
     ////////// Redo highlight logic??
-    // Highlight tiles that are available to choose for the entry (green) and the exit (red) tiles
-    m_fElapesdTimeInSeconds += m_DeltaTime.asSeconds();                                     // Measure elapsed time
-    // highligt assests are store in an array, the first four is the entry highlights and the second four is the exit highlights
-    if (m_eCurrentEditState == EntryState || m_eCurrentEditState == ExitState)
-    {
-        size_t start = 0;
-        if (m_eCurrentEditState == ExitState)
-        {
-            start = 4;
-        }
-        // Allow the highlight to blink every 0.5 seconds
-        if (m_fElapesdTimeInSeconds >= 0.5)
-        {
-            for (size_t i = start; i < start + 4; ++i)
-            {
-                m_Window.draw(m_ahighlights[i]);
-            }
-            // reset time after 0.5 seconds
-            if (m_fElapesdTimeInSeconds >= 1)
-            {
-                m_fElapesdTimeInSeconds = 0;
-            }
-        }
-    }
+    // // Highlight tiles that are available to choose for the entry (green) and the exit (red) tiles
+    // m_fElapesdTimeInSeconds += m_DeltaTime.asSeconds();                                     // Measure elapsed time
+    // // highligt assests are store in an array, the first four is the entry highlights and the second four is the exit highlights
+    // if (m_eCurrentEditState == EntryState || m_eCurrentEditState == ExitState)
+    // {
+    //     size_t start = 0;
+    //     if (m_eCurrentEditState == ExitState)
+    //     {
+    //         start = 4;
+    //     }
+    //     // Allow the highlight to blink every 0.5 seconds
+    //     if (m_fElapesdTimeInSeconds >= 0.5)
+    //     {
+    //         for (size_t i = start; i < start + 4; ++i)
+    //         {
+    //             m_Window.draw(m_ahighlights[i]);
+    //         }
+    //         // reset time after 0.5 seconds
+    //         if (m_fElapesdTimeInSeconds >= 1)
+    //         {
+    //             m_fElapesdTimeInSeconds = 0;
+    //         }
+    //     }
+    // }
     
         // UI RELATED
     m_Window.draw(m_scoreText);
@@ -2055,33 +2115,33 @@ void Game::DrawPlayMode()
 
 // ** EDIT TO IMPLEMENT MAP CLASS
 // Check if path is valid
-bool Game::ValidatePath()
-{
-    if (!m_aPath.empty())
-    {
-        // Check if the path is connected
-        for (size_t i = 0; i < m_aPath.size() - 1; ++i)
-        {
-            Vector2f currentTile = m_aPath[i];
-            Vector2f nextTile = m_aPath[i + 1];
-            Vector2f tileToTile = nextTile - currentTile;
-            float distance = MathHelpers::Length(tileToTile);
-            if (distance > m_iTileSize)
-            {
-                return false;
-            }
-        }
+// bool Game::ValidatePath()
+// {
+//     if (!m_aPath.empty())
+//     {
+//         // Check if the path is connected
+//         for (size_t i = 0; i < m_aPath.size() - 1; ++i)
+//         {
+//             Vector2f currentTile = m_aPath[i];
+//             Vector2f nextTile = m_aPath[i + 1];
+//             Vector2f tileToTile = nextTile - currentTile;
+//             float distance = MathHelpers::Length(tileToTile);
+//             if (distance > m_iTileSize)
+//             {
+//                 return false;
+//             }
+//         }
 
-        // Check if the path is connected to the entry and exit
-        if (m_aPath[0] != m_vEntryTile || m_aPath[m_aPath.size() - 1] != m_vExitTile)
-        {
-            return false;
-        }
+//         // Check if the path is connected to the entry and exit
+//         if (m_aPath[0] != m_vEntryTile || m_aPath[m_aPath.size() - 1] != m_vExitTile)
+//         {
+//             return false;
+//         }
 
-        return true;
-    }
-    return false;
-}
+//         return true;
+//     }
+//     return false;
+// }
 
 // Helper functions //
 

@@ -41,4 +41,6 @@ void GUIManager::InitializeMapSetup(Vector2i gridSize)
 {
     m_mapSetup = std::make_unique<MapSetup>(gridSize);
     m_mapSetupView = std::make_unique<MapSetupView>(m_Window);
+    m_mapSetup->AddObserver(m_mapSetupView.get());
+    m_mapSetup->SetupTiles();
 }

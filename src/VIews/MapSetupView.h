@@ -17,10 +17,11 @@ class MapSetupView : public IGameObserver
 private:
     struct MapSetupData
     {
-        std::vector<std::vector<Tile>> m_aTiles;
-        std::vector<sf::Vector2f> m_aPath;
-        std::vector<sf::Vector2f> m_aDeletedPath;                                                    // Stores the path tiles
-        sf::Vector2f m_vEntryTile, m_vExitTile;
+        std::vector<std::vector<Tile>> tiles;
+        std::vector<sf::Vector2f> pathPositions;
+        std::vector<sf::Vector2f> deletedPathPositions;                                                    // Stores the path tiles
+        sf::Vector2f entryTile = sf::Vector2f(-1, -1); // Default value indicating uninitialized state
+        sf::Vector2f exitTile = sf::Vector2f(-1, -1);  // Default value indicating uninitialized state
     };
 
 public:
@@ -32,7 +33,7 @@ public:
     void Draw();
 
 private:
-    void InitializeTiles(std::vector<std::vector<MapSetup::TileData>>& tiles);
+    void InitializeTiles(std::vector<std::vector<Tile>>& tilePositions, const std::vector<std::vector<MapSetup::TileData>>& tiles);
     void UpdateTilesType(Tile& tile, Tile::Type type);
 
 

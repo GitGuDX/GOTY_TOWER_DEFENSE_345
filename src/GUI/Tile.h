@@ -22,7 +22,9 @@ public:
         Grass,
         Path,
         Entry,
-        Exit
+        Exit,
+        EntryHighlight,
+        ExitHighlight,
     };
 
     virtual Type getType() 

@@ -37,18 +37,73 @@ public:
 
     std::vector<std::vector<TileData>>& GetTiles() { return m_aTiles; }
     const std::vector<std::vector<TileData>>& GetTiles() const { return m_aTiles; }
-    std::vector<sf::Vector2f>& GetPath() { return m_aPath; }
-    std::vector<sf::Vector2f>& GetDeletedPath() { return m_aDeletedPath; }
-    sf::Vector2f GetEntryTile() { return m_vEntryTile; }
-    sf::Vector2f GetExitTile() { return m_vExitTile; }
+    const std::vector<sf::Vector2f>& GetPath() const { return m_aPath; }
+    const std::vector<sf::Vector2f>& GetDeletedPath() const { return m_aDeletedPath; }
+    const sf::Vector2f GetEntryTile() const { return m_vEntryTile; }
+    const sf::Vector2f GetExitTile() const{ return m_vExitTile; }
+    int GetTileSize() const { return m_iTileSize; } // Add this getter method
+
     sf::Vector2i GetMapSize()
     {
         return Vector2i(m_vGridSize.x*m_iTileSize, m_vGridSize.y*m_iTileSize);
     }
 
-private:
+    void SetEntryTile(sf::Vector2f entryTile) 
+    { 
+        m_vEntryTile = entryTile;
+        std::cout << "Type " << Tile::Type::Entry << std::endl;
+        SetTileType(entryTile, Tile::Type::Entry); // Set the tile type to Entry
+    }
+    
+    void SetExitTile(sf::Vector2f exitTile) 
+    { 
+        m_vExitTile = exitTile;
+        std::cout << "Type " << Tile::Type::Exit << std::endl;
+        SetTileType(exitTile, Tile::Type::Exit); // Set the tile type to Exit
+    }
+
+    void PushPathTile(sf::Vector2f pathTile) 
+    { 
+        m_aPath.push_back(pathTile); 
+        notifyObservers();
+    }
+
+    void PopPathTile() 
+    { 
+        m_aPath.pop_back(); 
+        notifyObservers();
+    }
+
+    void PushDeletedPathTile(sf::Vector2f deletedPathTile) 
+    { 
+        m_aDeletedPath.push_back(deletedPathTile); 
+        notifyObservers();
+    }
+
+    void PopDeletedPathTile() 
+    { 
+        m_aDeletedPath.pop_back(); 
+        notifyObservers();
+    }
+
+    void ClearDeletedPath() 
+    { 
+        m_aDeletedPath.clear(); 
+        notifyObservers();
+    }
+
     bool isEdgeTile(sf::Vector2f tile);
 
+    void SetupTiles();
+
+    void HighlightEdgeTiles(Tile::Type type);
+
+    bool ValidatePath();
+
+    void SetTileType(sf::Vector2f position, Tile::Type type);
+
+    void debugPrint();
+private:
     void notifyObservers() {
         for (auto observer : m_observers) {
 
@@ -56,29 +111,6 @@ private:
         }
     }
 
-    void SetupTiles()
-    {
-        m_aTiles.clear();
-        for (int i = 0; i < m_vGridSize.y; ++i)
-        {
-            std::vector<TileData> row;
-            for (int j = 0; j < m_vGridSize.x; ++j)
-            {
-                TileData tempGrassTile;
-                tempGrassTile.position = Vector2f(j * m_iTileSize + m_iTileSize / 2, i * m_iTileSize + m_iTileSize / 2);
-                tempGrassTile.type = Tile::Type::Grass;
-                // tempGrassTile.SetTexture(m_GrassTexture);
-                // tempGrassTile.SetScale(Vector2f(1.f, 1.f));
-                // tempGrassTile.SetTextureRect(sf::IntRect(0,0,50,50));
-                // tempGrassTile.SetOrigin(Vector2f(25, 25));
-                // tempGrassTile.SetPosition(Vector2f(j * m_iTileSize + m_iTileSize / 2, i * m_iTileSize + m_iTileSize / 2));
-                // tempGrassTile.setType(Tile::Type::Grass);                               // Define its tile type
-                row.emplace_back(tempGrassTile);
-            }
-            m_aTiles.emplace_back(row);
-        }
-        notifyObservers();
-    }
 
 private:
     std::vector<IGameObserver*> m_observers;
