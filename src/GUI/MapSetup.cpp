@@ -71,18 +71,25 @@ void MapSetup::debugPrint()
 
 void MapSetup::SetTileType(sf::Vector2f position, Tile::Type type)
 {
-    for (auto& row : m_aTiles)
-    {
-        for (auto& tile : row)
-        {
-            if (tile.position == position)
-            {
-                tile.type = type;
-                return;
-            }
-        }
-    }
+    sf::Vector2i TileIndex = tileCenterPosToIndex(position);
+    m_aTiles[TileIndex.y][TileIndex.x].type = type;
+    // for (auto& row : m_aTiles)
+    // {
+    //     for (auto& tile : row)
+    //     {
+    //         if (tile.position == position)
+    //         {
+    //             tile.type = type;
+    //             return;
+    //         }
+    //     }
+    // }
     notifyObservers();
+}
+
+Vector2i MapSetup::tileCenterPosToIndex(Vector2f gridPos)
+{
+    return Vector2i(static_cast<int>(gridPos.x/m_iTileSize), static_cast<int>(gridPos.y/m_iTileSize));
 }
 
 bool MapSetup::isEdgeTile(sf::Vector2f tile)

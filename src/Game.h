@@ -99,10 +99,10 @@ private:
     /** * @brief Handles user input. */
     void HandleInput();
 
-    void ChangeSizeInputText(Event& event, std::string& currentText);
+    void EditMapSizeInputText(Event& event, std::string& currentText);
 
     void ShowGameOverScreen();
-    void delayedTurnOffDragging();
+    //void delayedTurnOffDragging();
     void LoadMonsterTextures();
     void LoadTowerTextures();
     //void PlayerPressedRestart();
@@ -131,7 +131,7 @@ private:
 
     /** * @brief Updates UI components. */
     void UpdateUI();
-    void Animate();
+    //void Animate();
 
     /** * @brief Draws elements in initial setup mode. */
     void DrawInitialSetUp();
@@ -144,10 +144,10 @@ private:
 
     void BlinkTiles(Tile::Type type);
 
-    bool ValidatePath();
+    // bool ValidatePath();
 
-    bool isEdgeTile(sf::Vector2f tile);
-    Vector2i tileCenterPosToIndex(Vector2f gridPos);
+    // bool isEdgeTile(sf::Vector2f tile);
+    //Vector2i tileCenterPosToIndex(Vector2f gridPos);
 
 private:
     RenderWindow m_Window;
@@ -257,7 +257,7 @@ private:
 
 
 
-    // ** UI Info
+    // ** INFOUIVIEW
     Text m_scoreText;
     Text m_levelText;
     Text m_instructionText;
@@ -271,11 +271,6 @@ private:
     Text stoneTowerPrice;
     Text m_gameOverText;
     Text m_nextRoundText;
-    String currentWarning = "";
-    String currentMode = "";
-    Clock warningShown;
-
-
     Vector2f scoreTextPosition;
     Vector2f levelTextPosition;
     Vector2f instructionTextPosition;
@@ -290,23 +285,27 @@ private:
     Vector2f gameOverTextPosition;
     Vector2f nextRoundTextPosition;
     vector<Tower> a_towerMenu;
-    vector<Tower> a_allActiveTowers;
-    vector<Tower> a_activeWoodTowers;
-    vector<Tower> a_activeStoneTowers;
-
+    sf::Vector2f xPosition; // Center the X at the hovered tower
+    Sprite* draggedSprite = nullptr;
+    Texture m_towerTexture1;        // Done
+    Texture m_towerTexture2;        // Done
+    // Tower tower1;
+    // Tower tower2;
+    
+    // ** INFOUI
+    String currentWarning = "";
+    String currentMode = "";
+    Clock warningShown;
     bool hoveringOnTower;
     float hoverTowerDamage;
     float hoverTowerCooldown;
     float hoverTowerRange;
     float hoverTowerSpeed;
 
-
-    sf::Vector2f xPosition; // Center the X at the hovered tower
-    Sprite* draggedSprite = nullptr;
-    Texture m_towerTexture1;
-    Texture m_towerTexture2;
-    Tower tower1;
-    Tower tower2;
+    // Tower interaction. Leave it in the Game class for now
+    vector<Tower> a_allActiveTowers;
+    vector<Tower> a_activeWoodTowers;
+    vector<Tower> a_activeStoneTowers;
     Tower draggedTower;
     bool isDraggingTower = false;
     sf::Clock dragTimer;
@@ -336,8 +335,8 @@ private:
     int currentTowerFrame = 1;
     int currentEnemyFrame = 0;
     const float frameTime = 0.07f; // Time per frame in seconds
-    Texture tower1TempTexture;
-    Texture tower2TempTexture;
+    //Texture tower1TempTexture;
+    //Texture tower2TempTexture;
     
     Monster m_MonsterTemplate;
 

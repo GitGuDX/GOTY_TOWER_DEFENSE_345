@@ -81,6 +81,7 @@ public:
     }
 
     void SetType(TowerType type) {
+        
         m_eType = type;
         
         switch (type) {

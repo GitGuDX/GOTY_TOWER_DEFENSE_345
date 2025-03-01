@@ -49,7 +49,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
    
 {
     // ** MAP
-    m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
+    //m_vGridSize = Vector2i(initialWindowWidth/m_iTileSize, initialWindowWidth/m_iTileSize);      // Set Grid Size
 
     m_Window.setFramerateLimit(60);
     m_Window.setVerticalSyncEnabled(true);
@@ -57,6 +57,17 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     // ** GAME SETUP MODEL AND OBSERVABLE
     // Render Initial SetUp assets
     //LoadInitialSetUpAssets();
+    // ** GUIMANAGER AND GAMESETUP
+    #ifdef LINUX
+    m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf");  
+    m_SubmitButtonTexture.loadFromFile("../src/Images/placeholder_play_button.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("../src/Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+    #endif
+    #ifdef MAC
+    m_Font.loadFromFile("Fonts/Kreon-Medium.ttf");    
+    m_SubmitButtonTexture.loadFromFile("Images/placeholder_play_button.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+    #endif
 
 }
 
@@ -87,19 +98,33 @@ void Game::Run()
             currentMode = "Mode: Map Editor Mode";
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode) {
+
+                // Initialize GameSetup and GameSetupVIew objects and load thier assets
+                Vector2i gridSize;
+                gridSize.x = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowWidth());                // converting sf::String -> std::string -> unsigned int
+                gridSize.y = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowHeight());
+                m_GUIManager.InitializeMapSetup(gridSize);
+
+                // Initialize InfoUI and InfoUIView objects and load their assets
+                m_GUIManager.InitializeInfoUI();
+
+                // Set window size to map size
                 Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
                 //m_Window.create(VideoMode(m_vWindowSize.x + 300, m_vWindowSize.y), "New Game");
                 m_Window.create(VideoMode(mapSize.x + 300, mapSize.y), "New Game");
-                m_eCurrentEditState = PathEditingState::EntryState;
 
+                
+                // *** Legacy Code ***
                 LoadMapEditorAssets(); 
                 LoadUIAssets();
+
+                m_eCurrentEditState = PathEditingState::EntryState;
                 m_ePrevGameMode = MapEditorMode;
             }
-
+            
             UpdateTiles();
             UpdateUI();
-            
+
             DrawMapEditorMode();
             break;
         }
@@ -310,50 +335,50 @@ void Game::LoadMapEditorAssets()
     // CHANGE LOGIC
     // Load entry and exit zone tiles assets
     // Loop to create 8 highlight rectangles
-    for (int i = 0; i < 8; ++i)
-    {
-        RectangleShape highlight;
-        // Determine the size of the highlight based on whether 'i' is even or odd
-        // If 'i' is even, make the highlight a wide horizontal rectangle
-        // If 'i' is odd, make the highlight a tall vertical rectangle
-        if (i % 2 == 0)
-        {             
-            highlight.setSize(Vector2f(m_vGridSize.x * m_iTileSize, m_iTileSize));
-        }
-        else
-        {
-            highlight.setSize(Vector2f(m_iTileSize, m_vGridSize.y * m_iTileSize));
-        }
-        // Assign color based on index
-        // First 4 highlights are green and Last 4 highlights are red
-        if (i < 4)
-        {
-            highlight.setFillColor(Color::Green);
-        }
-        else
-        {
-            highlight.setFillColor(Color::Red);
-        }
-        // If 'i' is 2 or 6, place it at the bottom-left corner
-        if (i == 2 || i == 6)
-        {
-            highlight.setPosition(Vector2f(0.f, m_vGridSize.y * m_iTileSize - m_iTileSize));
-        }
-        // If 'i' is 3 or 7, place it at the top-right corner
-        else if (i == 3 || i == 7)
-        {
-            highlight.setPosition(Vector2f(m_vGridSize.x * m_iTileSize - m_iTileSize, 0.f));
-        }
-        // Default position is the top-left corner (0,0)
-        else 
-        {
-            highlight.setPosition(Vector2f(0.f, 0.f));
-        }
-        // Store the highlight in the array at index 'i'
-        m_ahighlights[i] = highlight;
-    }
+    // for (int i = 0; i < 8; ++i)
+    // {
+    //     RectangleShape highlight;
+    //     // Determine the size of the highlight based on whether 'i' is even or odd
+    //     // If 'i' is even, make the highlight a wide horizontal rectangle
+    //     // If 'i' is odd, make the highlight a tall vertical rectangle
+    //     if (i % 2 == 0)
+    //     {             
+    //         highlight.setSize(Vector2f(m_vGridSize.x * m_iTileSize, m_iTileSize));
+    //     }
+    //     else
+    //     {
+    //         highlight.setSize(Vector2f(m_iTileSize, m_vGridSize.y * m_iTileSize));
+    //     }
+    //     // Assign color based on index
+    //     // First 4 highlights are green and Last 4 highlights are red
+    //     if (i < 4)
+    //     {
+    //         highlight.setFillColor(Color::Green);
+    //     }
+    //     else
+    //     {
+    //         highlight.setFillColor(Color::Red);
+    //     }
+    //     // If 'i' is 2 or 6, place it at the bottom-left corner
+    //     if (i == 2 || i == 6)
+    //     {
+    //         highlight.setPosition(Vector2f(0.f, m_vGridSize.y * m_iTileSize - m_iTileSize));
+    //     }
+    //     // If 'i' is 3 or 7, place it at the top-right corner
+    //     else if (i == 3 || i == 7)
+    //     {
+    //         highlight.setPosition(Vector2f(m_vGridSize.x * m_iTileSize - m_iTileSize, 0.f));
+    //     }
+    //     // Default position is the top-left corner (0,0)
+    //     else 
+    //     {
+    //         highlight.setPosition(Vector2f(0.f, 0.f));
+    //     }
+    //     // Store the highlight in the array at index 'i'
+    //     m_ahighlights[i] = highlight;
+    // }
 
-    m_sfPathLines.setPrimitiveType(sf::LineStrip); // Set the drawing type to a continuous line
+    //m_sfPathLines.setPrimitiveType(sf::LineStrip); // Set the drawing type to a continuous line
 }
 
 void Game::LoadTowerTextures() {
@@ -527,10 +552,10 @@ void Game::LoadPlayModeAssets()
     #endif
 
     // Reset entry and exit tile texture back to grass texture
-    sf::Vector2i entryTileIndex = tileCenterPosToIndex(m_vEntryTile);
-    m_aTiles[entryTileIndex.y][entryTileIndex.x].m_Sprite.setTexture(m_PathTexture);
-    sf::Vector2i exitTileIndex = tileCenterPosToIndex(m_vExitTile);
-    m_aTiles[exitTileIndex.y][exitTileIndex.x].m_Sprite.setTexture(m_PathTexture);
+    // sf::Vector2i entryTileIndex = tileCenterPosToIndex(m_vEntryTile);
+    // m_aTiles[entryTileIndex.y][entryTileIndex.x].m_Sprite.setTexture(m_PathTexture);
+    // sf::Vector2i exitTileIndex = tileCenterPosToIndex(m_vExitTile);
+    // m_aTiles[exitTileIndex.y][exitTileIndex.x].m_Sprite.setTexture(m_PathTexture);
 
     m_TowerTexture.setSmooth(true);
 
@@ -553,116 +578,116 @@ void Game::LoadUIAssets()
         tower.AddObserver(&m_TowerView);
     }
 
-    scoreTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 10);
-    levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
-    instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
-    warningTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y - 30);
-    modeTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 65);
-    woodTowerPricePosition = Vector2f(m_vWindowSize.x + 130, m_vWindowSize.y/3 + 125);
-    stoneTowerPricePosition = Vector2f(m_vWindowSize.x + 235, m_vWindowSize.y/3 + 125);
-    gameOverTextPosition = Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/2);
-    towerDamagePosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 170);
-    towerCooldownPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 200);
-    towerRangePosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 230);
-    towerSpeedPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 260);
-    nextRoundTextPosition = Vector2f(m_vWindowSize.x + 230, m_vWindowSize.y/10 + 110); //Fix this because it should be the same values as instruciton but its not
+    // scoreTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 10);
+    // levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
+    // instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
+    // warningTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y - 30);
+    // modeTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 65);
+    // woodTowerPricePosition = Vector2f(m_vWindowSize.x + 130, m_vWindowSize.y/3 + 125);
+    // stoneTowerPricePosition = Vector2f(m_vWindowSize.x + 235, m_vWindowSize.y/3 + 125);
+    // gameOverTextPosition = Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/2);
+    // towerDamagePosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 170);
+    // towerCooldownPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 200);
+    // towerRangePosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 230);
+    // towerSpeedPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 260);
+    // nextRoundTextPosition = Vector2f(m_vWindowSize.x + 230, m_vWindowSize.y/10 + 110); //Fix this because it should be the same values as instruciton but its not
 
-    // Score text 
-    m_scoreText.setFont(m_Font);               // Set font
-    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
-    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
-    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
-    m_scoreText.setCharacterSize(25);        // Set size
-    m_scoreText.setFillColor(Color::Red);     // Set color
-    m_scoreText.setPosition(scoreTextPosition);       // Set position
+    // // Score text 
+    // m_scoreText.setFont(m_Font);               // Set font
+    // m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
+    // FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
+    // m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
+    // m_scoreText.setCharacterSize(25);        // Set size
+    // m_scoreText.setFillColor(Color::Red);     // Set color
+    // m_scoreText.setPosition(scoreTextPosition);       // Set position
 
-    // Level text 
-    m_levelText.setFont(m_Font);               // Set font
-    m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
-    FloatRect levelTextBounds = m_levelText.getLocalBounds();
-    m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
-    m_levelText.setCharacterSize(25);        // Set size
-    m_levelText.setFillColor(Color::Red);     // Set color
-    m_levelText.setPosition(levelTextPosition);       // Set position
+    // // Level text 
+    // m_levelText.setFont(m_Font);               // Set font
+    // m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
+    // FloatRect levelTextBounds = m_levelText.getLocalBounds();
+    // m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
+    // m_levelText.setCharacterSize(25);        // Set size
+    // m_levelText.setFillColor(Color::Red);     // Set color
+    // m_levelText.setPosition(levelTextPosition);       // Set position
 
-    // Warning text 
-    m_warningText.setFont(m_Font);               // Set font
-    m_warningText.setString(currentWarning);   // Set text
-    FloatRect warningTextBounds = m_warningText.getLocalBounds();
-    m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
-    m_warningText.setCharacterSize(15);        // Set size
-    m_warningText.setPosition(warningTextPosition);       // Set position
+    // // Warning text 
+    // m_warningText.setFont(m_Font);               // Set font
+    // m_warningText.setString(currentWarning);   // Set text
+    // FloatRect warningTextBounds = m_warningText.getLocalBounds();
+    // m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
+    // m_warningText.setCharacterSize(15);        // Set size
+    // m_warningText.setPosition(warningTextPosition);       // Set position
 
-    // Wood tower price
-    woodTowerPrice.setFont(m_Font);               // Set font
-    woodTowerPrice.setString("Cost: 200");   // Set text
-    FloatRect woodTowerPriceBounds = woodTowerPrice.getLocalBounds();
-    woodTowerPrice.setOrigin(woodTowerPriceBounds.width / 2, woodTowerPriceBounds.height / 2);
-    woodTowerPrice.setCharacterSize(12);        // Set size
-    woodTowerPrice.setPosition(woodTowerPricePosition);       // Set position
+    // // Wood tower price
+    // woodTowerPrice.setFont(m_Font);               // Set font
+    // woodTowerPrice.setString("Cost: 200");   // Set text
+    // FloatRect woodTowerPriceBounds = woodTowerPrice.getLocalBounds();
+    // woodTowerPrice.setOrigin(woodTowerPriceBounds.width / 2, woodTowerPriceBounds.height / 2);
+    // woodTowerPrice.setCharacterSize(12);        // Set size
+    // woodTowerPrice.setPosition(woodTowerPricePosition);       // Set position
 
-    // Stone tower price
-    stoneTowerPrice.setFont(m_Font);               // Set font
-    stoneTowerPrice.setString("Cost: 300");   // Set text
-    FloatRect stoneTowerPriceBounds = stoneTowerPrice.getLocalBounds();
-    stoneTowerPrice.setOrigin(stoneTowerPriceBounds.width / 2, stoneTowerPriceBounds.height / 2);
-    stoneTowerPrice.setCharacterSize(12);        // Set size
-    stoneTowerPrice.setPosition(stoneTowerPricePosition);       // Set position
+    // // Stone tower price
+    // stoneTowerPrice.setFont(m_Font);               // Set font
+    // stoneTowerPrice.setString("Cost: 300");   // Set text
+    // FloatRect stoneTowerPriceBounds = stoneTowerPrice.getLocalBounds();
+    // stoneTowerPrice.setOrigin(stoneTowerPriceBounds.width / 2, stoneTowerPriceBounds.height / 2);
+    // stoneTowerPrice.setCharacterSize(12);        // Set size
+    // stoneTowerPrice.setPosition(stoneTowerPricePosition);       // Set position
 
-    // Current mode text 
-    m_modeText.setFont(m_Font);               // Set font
-    m_modeText.setString(currentMode);   // Set text
-    FloatRect modeTextBounds = m_modeText.getLocalBounds();
-    m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
-    m_modeText.setCharacterSize(18);        // Set size
-    m_modeText.setFillColor(Color::Red);     // Set color
-    m_modeText.setPosition(modeTextPosition);       // Set position
+    // // Current mode text 
+    // m_modeText.setFont(m_Font);               // Set font
+    // m_modeText.setString(currentMode);   // Set text
+    // FloatRect modeTextBounds = m_modeText.getLocalBounds();
+    // m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
+    // m_modeText.setCharacterSize(18);        // Set size
+    // m_modeText.setFillColor(Color::Red);     // Set color
+    // m_modeText.setPosition(modeTextPosition);       // Set position
 
-    // Game Over text 
-    m_gameOverText.setFont(m_Font);               // Set font
-    m_gameOverText.setString("Game Over!");   // Set text
-    FloatRect gameOverTextBounds = m_gameOverText.getLocalBounds();
-    m_gameOverText.setOrigin(gameOverTextBounds.width/2, gameOverTextBounds.height/2);
-    m_gameOverText.setCharacterSize(55);        // Set size
-    m_gameOverText.setFillColor(Color::Red);     // Set color
-    m_gameOverText.setPosition(gameOverTextPosition);       // Set position
+    // // Game Over text 
+    // m_gameOverText.setFont(m_Font);               // Set font
+    // m_gameOverText.setString("Game Over!");   // Set text
+    // FloatRect gameOverTextBounds = m_gameOverText.getLocalBounds();
+    // m_gameOverText.setOrigin(gameOverTextBounds.width/2, gameOverTextBounds.height/2);
+    // m_gameOverText.setCharacterSize(55);        // Set size
+    // m_gameOverText.setFillColor(Color::Red);     // Set color
+    // m_gameOverText.setPosition(gameOverTextPosition);       // Set position
 
-    // Next Round text 
-    m_nextRoundText.setFont(m_Font);               // Set font
-    m_nextRoundText.setString("Press Enter for next round");   // Set text
-    FloatRect nextRoundTextBounds = m_nextRoundText.getLocalBounds();
-    m_nextRoundText.setOrigin(nextRoundTextBounds.width/2, nextRoundTextBounds.height/2);
-    m_nextRoundText.setCharacterSize(15);        // Set size
-    m_nextRoundText.setFillColor(Color::Green);     // Set color
-    m_nextRoundText.setPosition(nextRoundTextPosition);       // Set position
+    // // Next Round text 
+    // m_nextRoundText.setFont(m_Font);               // Set font
+    // m_nextRoundText.setString("Press Enter for next round");   // Set text
+    // FloatRect nextRoundTextBounds = m_nextRoundText.getLocalBounds();
+    // m_nextRoundText.setOrigin(nextRoundTextBounds.width/2, nextRoundTextBounds.height/2);
+    // m_nextRoundText.setCharacterSize(15);        // Set size
+    // m_nextRoundText.setFillColor(Color::Green);     // Set color
+    // m_nextRoundText.setPosition(nextRoundTextPosition);       // Set position
 
-    // instruction text 
-    m_instructionText.setFont(m_Font);               // Set font
-    m_instructionText.setCharacterSize(20);        // Set size
-    m_instructionText.setPosition(instructionTextPosition);       // Set position
+    // // instruction text 
+    // m_instructionText.setFont(m_Font);               // Set font
+    // m_instructionText.setCharacterSize(20);        // Set size
+    // m_instructionText.setPosition(instructionTextPosition);       // Set position
 
-    // Damage text 
-    m_towerDamage.setFont(m_Font);               // Set font
-    m_towerDamage.setCharacterSize(15);        // Set size
-    m_towerDamage.setPosition(towerDamagePosition);       // Set position
+    // // Damage text 
+    // m_towerDamage.setFont(m_Font);               // Set font
+    // m_towerDamage.setCharacterSize(15);        // Set size
+    // m_towerDamage.setPosition(towerDamagePosition);       // Set position
 
-    // Cooldown text 
-    m_towerCooldown.setFont(m_Font);               // Set font
-    m_towerCooldown.setCharacterSize(15);        // Set size
-    m_towerCooldown.setPosition(towerCooldownPosition);       // Set position
+    // // Cooldown text 
+    // m_towerCooldown.setFont(m_Font);               // Set font
+    // m_towerCooldown.setCharacterSize(15);        // Set size
+    // m_towerCooldown.setPosition(towerCooldownPosition);       // Set position
 
-    // Range text 
-    m_towerRange.setFont(m_Font);               // Set font
-    m_towerRange.setCharacterSize(15);        // Set size
-    m_towerRange.setPosition(towerRangePosition);       // Set position
+    // // Range text 
+    // m_towerRange.setFont(m_Font);               // Set font
+    // m_towerRange.setCharacterSize(15);        // Set size
+    // m_towerRange.setPosition(towerRangePosition);       // Set position
 
-    // Speed text 
-    m_towerSpeed.setFont(m_Font);               // Set font
-    m_towerSpeed.setCharacterSize(15);        // Set size
-    m_towerSpeed.setPosition(towerSpeedPosition);       // Set position
+    // // Speed text 
+    // m_towerSpeed.setFont(m_Font);               // Set font
+    // m_towerSpeed.setCharacterSize(15);        // Set size
+    // m_towerSpeed.setPosition(towerSpeedPosition);       // Set position
 
-    //Loading tower selection
-    Tower tower1;
+    // //Loading tower selection
+    
     #ifdef LINUX
     m_towerTexture1.loadFromFile("../src/Images/Tower1_Frame_1.png");
     m_towerTexture2.loadFromFile("../src/Images/Tower2_Frame_1.png");
@@ -671,16 +696,18 @@ void Game::LoadUIAssets()
     m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
     m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
     #endif
-    #ifdef WINDOW
-    // Add for window
-    #endif
-    //MENU ASSETS
+    // #ifdef WINDOW
+    // // Add for window
+    // #endif
+    // //MENU ASSETS
+    Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
+    Tower tower1;
     tower1.SetTexture(m_towerTexture1);
     tower1.SetScale(Vector2f(0.7f, 0.7f));
     FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
     tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
     tower1.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower1.SetPosition(Vector2f(m_vWindowSize.x + 100, m_vWindowSize.y/3 + 75));
+    tower1.SetPosition(Vector2f(mapSize.x + 100, mapSize.y/3 + 75));
     a_towerMenu.push_back(tower1);
 
     Tower tower2;
@@ -689,8 +716,10 @@ void Game::LoadUIAssets()
     tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
     tower2.SetScale(Vector2f(0.7f, 0.7f));
     tower2.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower2.SetPosition(Vector2f(m_vWindowSize.x + 200, m_vWindowSize.y/3 + 75));
+    tower2.SetPosition(Vector2f(mapSize.x + 200, mapSize.y/3 + 75));
     a_towerMenu.push_back(tower2);
+
+
 }
 
 // ** GAMEOVER
@@ -778,7 +807,7 @@ void Game::HandleInput()
                     Vector2i gridSize;
                     gridSize.x = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowWidth());                // converting sf::String -> std::string -> unsigned int
                     gridSize.y = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowHeight());
-   
+
                     // apply input limit from 10 to 25
                     // if (m_vGridSize.x >= 10 && m_vGridSize.x <= 20 && m_vGridSize.y >= 10 && m_vGridSize.y <= 20)
                     if (gridSize.x >= 10 && gridSize.x <= 20 && gridSize.y >= 10 && gridSize.y <= 20)
@@ -787,7 +816,7 @@ void Game::HandleInput()
                         // m_vWindowSize = Vector2i(m_vGridSize.x*m_iTileSize, m_vGridSize.y*m_iTileSize);
                         //m_vWindowSize = Vector2i(gridSize.x*m_iTileSize, gridSize.y*m_iTileSize);                   // ** MAP
                         // ** initialize MapSetup which creates MapSetup and MapsetupView objects
-                        m_GUIManager.InitializeMapSetup(gridSize);
+                        
                         m_eGameMode = GameMode::MapEditorMode;
                     }
                     else
@@ -809,7 +838,7 @@ void Game::HandleInput()
                 {
                     // String currentText = m_WidthSizeInput.getString();
                     std::string currentText = m_GUIManager.GetGameSetup()->GetUserInputWindowWidth();
-                    ChangeSizeInputText(event, currentText);
+                    EditMapSizeInputText(event, currentText);
                     //m_WidthSizeInput.setString(currentText);
                     m_GUIManager.GetGameSetup()->SetUserInputWindowWidth(currentText);
                     break;
@@ -819,7 +848,7 @@ void Game::HandleInput()
                 {
                     //String currentText = m_HeightSizeInput.getString();
                     std::string currentText = m_GUIManager.GetGameSetup()->GetUserInputWindowHeight();
-                    ChangeSizeInputText(event, currentText);
+                    EditMapSizeInputText(event, currentText);
                     m_GUIManager.GetGameSetup()->SetUserInputWindowHeight(currentText);
                 }
                 // case ClickedInputBox::None:
@@ -883,17 +912,17 @@ void Game::HandleInput()
             // Enable dragging mouse for linking path
             if (event.type == sf::Event::MouseMoved)
             {
-                //// ** UI
-                if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && m_eCurrentEditState == FinishedPathingState) {
-                    sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
+                //// Redundant code
+                // if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && m_eCurrentEditState == FinishedPathingState) {
+                //     sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
 
-                    for (auto& tile : a_towerMenu) {
-                        if (tile.GetSpriteNonConst().getGlobalBounds().contains(mousePos)) {
-                            //sf::Sprite& clickedSprite = tile.GetSpriteNonConst(); // Get the sprite
-                            break; // Stop after finding the first tile
-                        }
-                    }
-                }
+                //     for (auto& tile : a_towerMenu) {
+                //         if (tile.GetSpriteNonConst().getGlobalBounds().contains(mousePos)) {
+                //             //sf::Sprite& clickedSprite = tile.GetSpriteNonConst(); // Get the sprite
+                //             break; // Stop after finding the first tile
+                //         }
+                //     }
+                // }
                 ////
                 
 
@@ -979,10 +1008,15 @@ void Game::HandleInput()
 
             for (auto it = a_allActiveTowers.begin(); it != a_allActiveTowers.end(); ++it) {
                 if (it->GetPosition().x == snapGrid.x && it->GetPosition().y == snapGrid.y) {
-                    currentWarning = "Successfully removed a tower\n";
-                    m_warningText.setFillColor(Color::Green);
-                    warningShown.restart();
+                    //currentWarning = "Successfully removed a tower\n";
+                    //m_warningText.setFillColor(Color::Green);
+                    //warningShown.restart();
+                    m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Green);
+                    m_GUIManager.GetInfoUI()->SetWarningString("Successfully removed a tower\n");
+                    m_GUIManager.GetInfoUI()->GetWarningShown().restart();
+                    
                     m_iCurrentWealth += it->GetCost()/2;
+                    m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
 
                     //  Remove the clicked tower
                     if (std::find(a_activeWoodTowers.begin(), a_activeWoodTowers.end(), *it) != a_activeWoodTowers.end()) {
@@ -1005,17 +1039,22 @@ void Game::HandleInput()
         if (m_eGameMode == PlayMode || m_eGameMode == MapEditorMode){
             // Handle mouse click (start dragging)
             sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
+
             if (Mouse::isButtonPressed(Mouse::Left) && m_eCurrentEditState == FinishedPathingState) {
                 //for (auto& tower : a_towerMenu) 
+                // ** UIView
+                //std::vector<Tower>& towerMenu = m_GUIManager.GetInfoUIView()->GetTowerMenu();
                 for (size_t i = 0; i < a_towerMenu.size(); ++i)
                 {
                     Tower& tower = a_towerMenu[i];
                     sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
                     if (tower.GetSpriteNonConst().getGlobalBounds().contains(mousePos) && draggedSprite == nullptr) 
                     {
+
                         draggedSprite = (tower.GetSpriteNonConst().getTexture() != nullptr) ? &tower.GetSpriteNonConst() : nullptr;
-            
+                        
                         if (draggedSprite) { // Only proceed if draggedSprite is valid
+                            // ** UIView UpdateDraggedTowerAsset() 
                             draggedTower.SetTexture(*draggedSprite->getTexture());
                             draggedTower.SetScale(Vector2f(0.7f, 0.7f));
                             draggedTower.SetPosition(tower.GetPosition());
@@ -1023,6 +1062,8 @@ void Game::HandleInput()
                             FloatRect draggedTowerBounds = draggedTower.GetSprite().getLocalBounds();
                             draggedTower.SetOrigin(Vector2f(draggedTowerBounds.width / 2, draggedTowerBounds.height / 2 + 10));
                             draggedTower.SetTextureRect(sf::IntRect(0, 0, 70, 100));
+                            /////
+                            
                             isDraggingTower = true;
                         }
                         break;
@@ -1031,6 +1072,7 @@ void Game::HandleInput()
             }
 
             // Handle dragging when the mouse moves
+            // UIView Update dragged tower position
             //if (event.type == sf::Event::MouseMoved && draggedSprite != nullptr) 
             if (std::abs(mousePos.x - draggedTower.GetPosition().x) > 0.01f ||            // Prevent unnecessary updates when movement is too small.
                 std::abs(mousePos.y - draggedTower.GetPosition().y) > 0.01f)
@@ -1039,6 +1081,7 @@ void Game::HandleInput()
                 draggedTower.SetPosition(mousePos);       // Updates the dragged towers position while dragging
             }
 
+            // ** Some UI
             // Handle mouse release (stop dragging)
             if (event.type == sf::Event::MouseButtonReleased && m_eCurrentEditState == FinishedPathingState) {
                 Vector2i mousePos = sf::Mouse::getPosition(m_Window);
@@ -1047,91 +1090,117 @@ void Game::HandleInput()
                 // Check for existing towers at the snapGrid position
                 for (auto& tower : a_allActiveTowers) {
                     if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y && draggedSprite != nullptr) {
-                        currentWarning = "Warning: There's already a tower here...\n";
-                        m_warningText.setFillColor(Color::Red);
+                        // currentWarning = "Warning: There's already a tower here...\n";
+                        // m_warningText.setFillColor(Color::Red);
+                        m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                        m_GUIManager.GetInfoUI()->SetWarningString("Warning: There's already a tower here...\n");
+
+                        warningShown.restart();
+                        draggedSprite = nullptr;
+                        break;
+                    }
+                }
+                
+                // for (auto& tilePos : m_aPath)
+                const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
+                for (auto& tilePos : path) 
+                {
+                    if (tilePos.x == snapGrid.x && tilePos.y == snapGrid.y && draggedSprite != nullptr) {
+                        // currentWarning = "Warning: Cannot place on path...\n";
+                        // m_warningText.setFillColor(Color::Red);
+                        m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                        m_GUIManager.GetInfoUI()->SetWarningString("Warning: Cannot place on path...\n");
+                       
                         warningShown.restart();
                         draggedSprite = nullptr;
                         break;
                     }
                 }
 
-                for (auto& tilePos : m_aPath) {
-                    if (tilePos.x == snapGrid.x && tilePos.y == snapGrid.y && draggedSprite != nullptr) {
-                        currentWarning = "Warning: Cannot place on path...\n";
-                        m_warningText.setFillColor(Color::Red);
-                        warningShown.restart();
-                        draggedSprite = nullptr;
-                        break;
-                    }
-                }
-                std::cout << "For loop done\n";
+                // ** UI
+                //std::cout << "For loop done\n";
                 if(mouseWorldPos.x <= m_vWindowSize.x && mouseWorldPos.y <= m_vWindowSize.y && draggedSprite != nullptr){
-                    std::cout << "Mouse released inside window\n";
+                    //std::cout << "Mouse released inside window\n";
                     draggedTower.SetPosition(snapGrid);
-                    std::cout << "Dragged tower position set\n";
-                    std::cout << "Before checking texture\n";
-                    std::cout << "draggedSprite address: " << draggedSprite << std::endl;
-                    std::cout << "Texture address: " << draggedSprite->getTexture() << std::endl;
-                    std::cout << (draggedSprite->getTexture() == nullptr) << std::endl;
-                    std::cout << "Im here\n";
+                    //std::cout << "Dragged tower position set\n";
+                    //std::cout << "Before checking texture\n";
+                    //std::cout << "draggedSprite address: " << draggedSprite << std::endl;
+                    //std::cout << "Texture address: " << draggedSprite->getTexture() << std::endl;
+                    //std::cout << (draggedSprite->getTexture() == nullptr) << std::endl;
+                    //std::cout << "Im here\n";
                     //if (draggedSprite != nullptr && draggedSprite->getTexture() == &m_towerTexture1)
                     if (draggedSprite->getTexture() == &m_towerTexture1) {             // Avoid accessing a null pointer
-                        std::cout << "start at tower 1\n";
-                        draggedTower.SetType(TowerType::Rapid);
-                        std::cout << "tower 1 - 2\n";
+                        //std::cout << "start at tower 1\n";
+                        
+                        //std::cout << "tower 1 - 2\n";
                         if(m_iCurrentWealth < 200){
-                            std::cout << "tower 1 - 2a\n";
-                            currentWarning = "Warning: Cannot afford this tower...\n";
-                            m_warningText.setFillColor(Color::Red);
+                            //std::cout << "tower 1 - 2a\n";
+                            // currentWarning = "Warning: Cannot afford this tower...\n";
+                            // m_warningText.setFillColor(Color::Red);
+                            m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                            m_GUIManager.GetInfoUI()->SetWarningString("Warning: Cannot afford this tower...\n");
+                            
                             warningShown.restart();
                             draggedSprite = nullptr;
                             isDraggingTower = false;
                             break;
                         } else{
-                            std::cout << "tower 1 - 3\n";
+                            //std::cout << "tower 1 - 3\n";
                             m_iCurrentWealth -= 200;
+                            m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
+
                             draggedTower.AddObserver(&m_TowerView);  // Add this line
+                            draggedTower.SetType(TowerType::Rapid);
                             a_activeWoodTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
                             placementOrUpgradeTimer.restart();
-                            std::cout << "tower 1 - 4\n";
+                            //std::cout << "tower 1 - 4\n";
                         }
-                        std::cout << "break at tower 1\n";
+                        //std::cout << "break at tower 1\n";
                     }
                     else if(draggedSprite->getTexture() == &m_towerTexture2)
                     {
                         
-                        std::cout << "start at tower 2\n";
-                        draggedTower.SetType(TowerType::Sniper);
-                        std::cout << "tower 2 - 2\n";
+                        //std::cout << "start at tower 2\n";
+                        
+                        //std::cout << "tower 2 - 2\n";
                         if(m_iCurrentWealth < 300){
-                            std::cout << "tower 2 - 2a\n";
-                            currentWarning = "Warning: Cannot afford this tower...\n";
-                            m_warningText.setFillColor(Color::Red);
+                            //std::cout << "tower 2 - 2a\n";
+                            // currentWarning = "Warning: Cannot afford this tower...\n";
+                            // m_warningText.setFillColor(Color::Red);
+                            m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                            m_GUIManager.GetInfoUI()->SetWarningString("Warning: Cannot afford this tower...\n");
+
                             warningShown.restart();
                             draggedSprite = nullptr;
                             break;
                         } else{
-                            std::cout << "tower 2 - 3\n";
+                            //std::cout << "tower 2 - 3\n";
                             m_iCurrentWealth -= 300;
+                            m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
+
                             draggedTower.AddObserver(&m_TowerView);  // Add this line
+                            draggedTower.SetType(TowerType::Sniper);    // stat must hcange after adding observer
                             a_activeStoneTowers.push_back(draggedTower);
                             a_allActiveTowers.push_back(draggedTower);
                             justPlacedTower = true;
                             placementOrUpgradeTimer.restart();
-                            std::cout << "tower 2 - 4\n";
+                            //std::cout << "tower 2 - 4\n";
                         }
-                        std::cout << "break at tower 2\n";
+                        //std::cout << "break at tower 2\n";
                     }
                     else 
                     {
                         std::cerr << "Error: Unknown tower texture\n"; // Added error handling for unknown texture
                     }
-                    std::cout << "break at end\n";
+                    //std::cout << "break at end\n";
                     draggedSprite = nullptr;
-                    currentWarning = "Successfully placed tower\n";
-                    m_warningText.setFillColor(Color::Green);
+                    // currentWarning = "Successfully placed tower\n";
+                    // m_warningText.setFillColor(Color::Green);
+                    m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Green);
+                    m_GUIManager.GetInfoUI()->SetWarningString("Successfully placed tower\n");
+
                     warningShown.restart();
                 } else {
                     std::cout << "Mouse released outside window\n";
@@ -1169,7 +1238,10 @@ void Game::HandleInput()
             {
                 Tower& tower = a_allActiveTowers[i]; 
                 if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
-                    xPosition = Vector2f(snapGrid.x, snapGrid.y);
+                    
+                    // ** Update UIView
+                    //xPosition = Vector2f(snapGrid.x, snapGrid.y);
+                    m_GUIManager.GetInfoUIView()->UpdateCrossShapePosition(snapGrid);
                     hoveringOnTower = true;
                     break;
                 }
@@ -1177,7 +1249,6 @@ void Game::HandleInput()
         }
         
         // Makes X go away right after releasing on them
-        
         if(event.type == sf::Event::MouseButtonReleased){
             hoveringOnTower = false;
         }
@@ -1185,27 +1256,39 @@ void Game::HandleInput()
     }
     
     
-
+    // ** UI
     if (hoveringOnTower) {
         if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
-            currentWarning = "Hover and press Q for info";
-            m_warningText.setFillColor(Color::Red);
+            // currentWarning = "Hover and press Q for info";
+            // m_warningText.setFillColor(Color::Red);
+            m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+            m_GUIManager.GetInfoUI()->SetWarningString("Hover and press Q for info");
 
             Vector2i mousePos = sf::Mouse::getPosition(m_Window);
             Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
             Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
             for (Tower& tower : a_allActiveTowers) {
+                
                 if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+                    std::cout << m_TowerView.GetTowerStats(&tower);     // returns null pointer
+                    
                     if (const auto* stats = m_TowerView.GetTowerStats(&tower)) {
+                        std::cout << "Im here\n";
+                        std::cout << "Fdf" << stats->damage << std::endl;
                         hoverTowerDamage = round(stats->damage * 100.0f) / 100.0f;
                         hoverTowerCooldown = round(stats->cooldown * 100.0f) / 100.0f;
                         hoverTowerRange = round(stats->range * 100.0f) / 100.0f;
                         hoverTowerSpeed = round(stats->speed * 100.0f) / 100.0f;
+                        //m_GUIManager.GetInfoUI()->SetHoverTowerDamage(round(stats->damage * 100.0f) / 100.0f);
+                        //m_GUIManager.GetInfoUI()->SetHoverTowerCooldown(round(stats->cooldown * 100.0f) / 100.0f);
+                        //m_GUIManager.GetInfoUI()->SetHoverTowerRange(round(stats->range * 100.0f) / 100.0f);
+                        //m_GUIManager.GetInfoUI()->SetHoverTowerSpeed(round(stats->speed * 100.0f) / 100.0f);
                     }
                     break;  // Only break after finding the correct tower
                 }
             }
         }
+
         // Show upgrade info when Q is pressed
         if (Keyboard::isKeyPressed(Keyboard::Q)) {
             Vector2f mousePos = m_Window.mapPixelToCoords(Mouse::getPosition(m_Window));
@@ -1221,6 +1304,7 @@ void Game::HandleInput()
             }
         }
         
+        // ** UI related
         // Perform upgrade when E is pressed
         if (Keyboard::isKeyPressed(Keyboard::E) && m_bShowUpgradeUI) {
             if (m_pSelectedTower && m_pSelectedTower->CanUpgrade()) {
@@ -1228,13 +1312,21 @@ void Game::HandleInput()
                 if (m_iCurrentWealth >= upgradeCost) {
                     if (m_pSelectedTower->Upgrade()) {
                         m_iCurrentWealth -= upgradeCost;
-                        currentWarning = "Tower upgraded successfully!";
-                        m_warningText.setFillColor(Color::Green);
+                        m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
+
+                        // currentWarning = "Tower upgraded successfully!";
+                        // m_warningText.setFillColor(Color::Green);
+                        m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Green);
+                        m_GUIManager.GetInfoUI()->SetWarningString("Tower upgraded successfully!");
+
                         placementOrUpgradeTimer.restart();
                     }
                 } else {
-                    currentWarning = "Not enough money for upgrade!";
-                    m_warningText.setFillColor(Color::Red);
+                    // currentWarning = "Not enough money for upgrade!";
+                    // m_warningText.setFillColor(Color::Red);
+                    m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                    m_GUIManager.GetInfoUI()->SetWarningString("Not enough money for upgrade!");
+
                     placementOrUpgradeTimer.restart();
                 }
                 warningShown.restart();
@@ -1248,7 +1340,7 @@ void Game::HandleInput()
     }
 }
 
-void Game::ChangeSizeInputText(Event& event, std::string& currentText)                   // Add limit condition for input (input must be between 5 and 30??)
+void Game::EditMapSizeInputText(Event& event, std::string& currentText)                   // Add limit condition for input (input must be between 5 and 30??)
 {
     // when keyboard input is a digit, append the text
     if (event.text.unicode >= '0' && event.text.unicode <= '9')
@@ -1383,9 +1475,20 @@ void Game::UpdatePlay()
 
 void Game::UpdateMonsters()
 {
-    // Generate monsters FIRST, before movement updates
+    
+    // if (m_aMonstersQueue.empty() || m_MonsterGenerator.hasPassedGenerationCoolDown())
+    // {
+    //     // *** FIX monster double spawning bug. Might something to do with generation cooldown
+    //     if (m_aMonstersQueue.empty() || m_MonsterGenerator.getTimeSinceLastGeneration() >= m_MonsterGenerator.getGenerationCoolDown())
+    //     {
+    //         m_MonsterGenerator.generateMonster(*this);
+    //         m_MonsterGenerator.resetTimeSinceLastGeneration();
+    //     }
+    // }
+
     m_MonsterGenerator.incrementTimeSinceLastGeneration(m_DeltaTime.asSeconds());
-    if (m_aMonstersQueue.empty() || m_MonsterGenerator.hasPassedGenerationCoolDown())
+    // Fixed first two monster generating on top of each other. Now only generates one monster at a time
+    if (m_MonsterGenerator.getTimeSinceLastGeneration() >= m_MonsterGenerator.getGenerationCoolDown())
     {
         m_MonsterGenerator.generateMonster(*this);
         m_MonsterGenerator.resetTimeSinceLastGeneration();
@@ -1394,13 +1497,15 @@ void Game::UpdateMonsters()
     // Remove finished monsters
     m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
         [this](Monster& monster) {
-            if (monster.GetCurrentPathIndex() >= m_aPath.size() - 1) {
+            //if (monster.GetCurrentPathIndex() >= m_aPath.size() - 1)
+            const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
+            if (monster.GetCurrentPathIndex() >= path.size() - 1) 
+            {
                 m_iCurrentWealth -= monster.GetStrength();
                 return true;
             }
             return false;
         }), m_aMonstersQueue.end());
-
 
     // ALL ENEMY ANIMATION RELATED
     if (enemyAnimationDelay.getElapsedTime().asSeconds() >= frameTime) {
@@ -1530,12 +1635,15 @@ void Game::UpdateMonsters()
 
 
     // Update monster positions
+    const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
     for (Monster& monster : m_aMonstersQueue)
     {
         size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
-        if (monsterCurrentTileIndex < m_aPath.size() - 1)
+        // if (monsterCurrentTileIndex < m_aPath.size() - 1)
+        if (monsterCurrentTileIndex < path.size() - 1)
         {
-            Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
+            // Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
+            Vector2f nextTilePos = path[monsterCurrentTileIndex + 1];
             Vector2f tileToMonster = nextTilePos - monster.GetPosition();
             float distanceToNext = MathHelpers::Length(tileToMonster);
 
@@ -1567,46 +1675,61 @@ void Game::UpdateMonsters()
 void Game::UpdateUI()
 {
     
-    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
-    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
-    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
+    // m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
+    // FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
+    // m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
 
-    m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
-    FloatRect levelTextBounds = m_levelText.getLocalBounds();
-    m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
+    // m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
+    // FloatRect levelTextBounds = m_levelText.getLocalBounds();
+    // m_levelText.setOrigin(levelTextBounds.width / 2, levelTextBounds.height / 2);
 
-    m_warningText.setString(currentWarning);   // Set text
-    FloatRect warningTextBounds = m_warningText.getLocalBounds();
-    m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
+    // m_warningText.setString(currentWarning);   // Set text
+    // FloatRect warningTextBounds = m_warningText.getLocalBounds();
+    // m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
 
-    m_modeText.setString(currentMode);   // Set text
-    FloatRect modeTextBounds = m_modeText.getLocalBounds();
-    m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
-
+    // m_modeText.setString(currentMode);   // Set text
+    // FloatRect modeTextBounds = m_modeText.getLocalBounds();
+    // m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
+    
     if(warningShown.getElapsedTime().asSeconds() > 3){
-        currentWarning = "";
+        //currentWarning = "";
+        m_GUIManager.GetInfoUI()->SetWarningString("");
     }
     
     if (m_eCurrentEditState == ExitState){
-        m_instructionText.setString("Choose an exit Tile...");   // Set text
-        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
-        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
-        m_instructionText.setFillColor(Color::Red);     // Set color
+        
+        // m_instructionText.setString("Choose an exit Tile...");   // Set text
+        // FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
+        // m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
+        // m_instructionText.setFillColor(Color::Red);     // Set color
+        m_GUIManager.GetInfoUI()->SetInstructionString("Choose an exit Tile...");
+        m_GUIManager.GetInfoUIView()->SetInstructionTextColor(Color::Red);
+        
     } else if (m_eCurrentEditState == EntryState){
-        m_instructionText.setString("Choose an entry Tile...");   // Set text
-        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
-        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
-        m_instructionText.setFillColor(Color::Green);     // Set color
+        // m_instructionText.setString("Choose an entry Tile...");   // Set text
+        // FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
+        // m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
+        // m_instructionText.setFillColor(Color::Green);     // Set color
+        
+        m_GUIManager.GetInfoUI()->SetInstructionString("Choose an entry Tile...");
+        m_GUIManager.GetInfoUIView()->SetInstructionTextColor(Color::Green);
+
     } else if (m_eCurrentEditState == PathState){
-        m_instructionText.setString("Draw a path\nstarting from entrance\nand click enter\nto start...");   // Set text
-        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
-        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
-        m_instructionText.setFillColor(Color::Blue);     // Set color
+        // m_instructionText.setString("Draw a path\nstarting from entrance\nand click enter\nto start...");   // Set text
+        // FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
+        // m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
+        // m_instructionText.setFillColor(Color::Blue);     // Set color
+        m_GUIManager.GetInfoUI()->SetInstructionString("Draw a path\nstarting from entrance\nand click enter\nto start...");
+        m_GUIManager.GetInfoUIView()->SetInstructionTextColor(Color::Blue);
+
     } else {
-        m_instructionText.setString("Tower Selection");   // Set text
-        FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
-        m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
-        m_instructionText.setFillColor(Color::White);     // Set color
+        // m_instructionText.setString("Tower Selection");   // Set text
+        // FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
+        // m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
+        // m_instructionText.setFillColor(Color::White);     // Set color
+        m_GUIManager.GetInfoUI()->SetInstructionString("Tower Selection");
+        m_GUIManager.GetInfoUIView()->SetInstructionTextColor(Color::White);
+
     }
 
     m_towerDamage.setString("Damage: " + to_string(hoverTowerDamage));   // Set text
@@ -1913,12 +2036,13 @@ void Game::DrawMapEditorMode()
     //     }
     // }
     
-        // UI RELATED
-    m_Window.draw(m_scoreText);
-    m_Window.draw(m_levelText);
-    m_Window.draw(m_instructionText);
-    m_Window.draw(m_warningText);
-    m_Window.draw(m_modeText);
+    // UI RELATED
+    // m_Window.draw(m_scoreText);
+    // m_Window.draw(m_levelText);
+    // m_Window.draw(m_instructionText);
+    // m_Window.draw(m_warningText);
+    // m_Window.draw(m_modeText);
+    m_GUIManager.GetInfoUIView()->DrawHUD();
     
     if(m_eCurrentEditState == FinishedPathingState && !hoveringOnTower){
         for (auto& tower : a_towerMenu) {
@@ -1932,51 +2056,64 @@ void Game::DrawMapEditorMode()
         m_Window.draw(m_towerRange);
         m_Window.draw(m_towerSpeed);
     }
+    // if (m_eCurrentEditState == FinishedPathingState)  
+    // {  
+    //     m_GUIManager.GetInfoUIView()->DrawTowers(); 
+    // }  
 
+    if (hoveringOnTower || m_eCurrentEditState == FinishedPathingState)  
+    {  
+        m_GUIManager.GetInfoUIView()->DrawTowerInfo(hoveringOnTower);  
+    } 
 
+    // TowerView Draw
     if(m_eCurrentEditState == FinishedPathingState){
 
         m_TowerView.Draw(m_Window, a_activeWoodTowers);
         
     }
-    if(m_eCurrentEditState == FinishedPathingState){
-        m_TowerView.Draw(m_Window, a_activeStoneTowers);
 
-    }
+    // ** UIView
     if(draggedSprite != nullptr){
         m_Window.draw(draggedTower);
     }
-    m_Window.draw(m_sfPathLines);
+
+    // ** MapSetupView 
+    //m_Window.draw(m_sfPathLines);
     //m_Window.draw(m_MonsterTemplate.m_Sprite);
 
+    // ** UIView 
     if(hoveringOnTower){
-        sf::Vector2f position(xPosition.x-15, xPosition.y-15); // Top-left position of X
-        float lineThickness = 6.0f;     // Thickness of X
-        float lineLength = 30.0f;       // Length of each line in X
+        // sf::Vector2f position(xPosition.x-15, xPosition.y-15); // Top-left position of X
+        // float lineThickness = 6.0f;     // Thickness of X
+        // float lineLength = 30.0f;       // Length of each line in X
 
-        // Create two diagonal lines using RectangleShape
-        sf::RectangleShape line1(sf::Vector2f(lineLength, lineThickness));
-        line1.setFillColor(sf::Color::Red);
-        line1.setOrigin(lineLength / 2, lineThickness / 2);
-        line1.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
-        line1.setRotation(45);  // Diagonal top-left to bottom-right
+        // // Create two diagonal lines using RectangleShape
+        // sf::RectangleShape line1(sf::Vector2f(lineLength, lineThickness));
+        // line1.setFillColor(sf::Color::Red);
+        // line1.setOrigin(lineLength / 2, lineThickness / 2);
+        // line1.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+        // line1.setRotation(45);  // Diagonal top-left to bottom-right
 
-        sf::RectangleShape line2(sf::Vector2f(lineLength, lineThickness));
-        line2.setFillColor(sf::Color::Red);
-        line2.setOrigin(lineLength / 2, lineThickness / 2);
-        line2.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
-        line2.setRotation(-45); // Diagonal top-right to bottom-left
+        // sf::RectangleShape line2(sf::Vector2f(lineLength, lineThickness));
+        // line2.setFillColor(sf::Color::Red);
+        // line2.setOrigin(lineLength / 2, lineThickness / 2);
+        // line2.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+        // line2.setRotation(-45); // Diagonal top-right to bottom-left
 
-        m_Window.draw(line1);
-        m_Window.draw(line2);
+        // m_Window.draw(line1);
+        // m_Window.draw(line2);
+        m_GUIManager.GetInfoUIView()->DrawCrossShape();
     }
 
+    // ** UIView
     if(m_gameOver){
         ShowGameOverScreen();
     }
 
     if (m_bShowUpgradeUI && m_pSelectedTower) {
         m_Window.draw(m_upgradeText);
+        //m_GUIManager.GetInfoUIView()->DrawUpgradeText();
     }
     
     m_Window.display();
@@ -1987,40 +2124,48 @@ void Game::DrawPlayMode()
 {
     m_Window.clear();
 
-    ////// Draw Tiles
-    for (std::vector<Tile>& row : m_aTiles)
-    {
-        for (Entity& tile : row)
-        {
-            m_Window.draw(tile.m_Sprite);
-        }
-    }
+    // Get Path for the current map
+    const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
 
-    //Draw Monsters
+    ////// Draw Tiles
+    // for (std::vector<Tile>& row : m_aTiles)
+    // {
+    //     for (Entity& tile : row)
+    //     {
+    //         m_Window.draw(tile.m_Sprite);
+    //     }
+    // }
+
+    // Draw Map
+    m_GUIManager.GetMapSetupView()->Draw();
+
+    // Draw Monsters
     for (Monster& monster : m_aMonstersQueue)
     {
-        if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        //if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        if (monster.GetCurrentPathIndex() < path.size() - 1)
         {
             m_Window.draw(monster);
         } 
     }
-
     
     //Draw Health Bars
     for (Monster& monster : m_aMonstersQueue)
     {
-        if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        // if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        if (monster.GetCurrentPathIndex() < path.size() - 1)
         {
             UpdateHealthBar(monster);
             m_Window.draw(monster.GetHealthBar());
         }
     }
-
+    
 
     //Draw dying monsters
     for (Monster& monster : m_aDeadMonsters)
     {
-        if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        //if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+        if (monster.GetCurrentPathIndex() < path.size() - 1)
         {
             m_Window.draw(monster);
         } 
@@ -2028,13 +2173,13 @@ void Game::DrawPlayMode()
 
 
 
-
     // UI RELATED
-    m_Window.draw(m_scoreText);
-    m_Window.draw(m_levelText);
-    m_Window.draw(m_instructionText);
-    m_Window.draw(m_warningText);
-    m_Window.draw(m_modeText);
+    // m_Window.draw(m_scoreText);
+    // m_Window.draw(m_levelText);
+    // m_Window.draw(m_instructionText);
+    // m_Window.draw(m_warningText);
+    // m_Window.draw(m_modeText);
+    m_GUIManager.GetInfoUIView()->DrawHUD();
     
     if(m_eCurrentEditState == FinishedPathingState && !hoveringOnTower){
         for (auto& tower : a_towerMenu) {
@@ -2048,9 +2193,19 @@ void Game::DrawPlayMode()
         m_Window.draw(m_towerRange);
         m_Window.draw(m_towerSpeed);
     }
+    // if (m_eCurrentEditState == FinishedPathingState)  
+    // {  
+    //     m_GUIManager.GetInfoUIView()->DrawTowers(); 
+    // }  
+
+    if (hoveringOnTower || m_eCurrentEditState == FinishedPathingState)  
+    {  
+        m_GUIManager.GetInfoUIView()->DrawTowerInfo(hoveringOnTower);  
+    } 
 
     if(m_bIsRoundEnded){
-        m_Window.draw(m_nextRoundText);
+        //m_Window.draw(m_nextRoundText);
+        m_GUIManager.GetInfoUIView()->DrawNextRoundText();
     }
 
 
@@ -2071,34 +2226,40 @@ void Game::DrawPlayMode()
     if(draggedSprite != nullptr){
         m_Window.draw(draggedTower);
     }
+    // if(draggedSprite != nullptr){
+    //     m_GUIManager.GetInfoUIView()->DrawDraggedTower();
+    // }
+    
 
     #ifdef DEBUG
     // Draw path lines
-    m_Window.draw(m_sfPathLines);
+    //m_Window.draw(m_sfPathLines);
     #endif
 
     if(hoveringOnTower){
-        sf::Vector2f position(xPosition.x-15, xPosition.y-15); // Top-left position of X
-        float lineThickness = 6.0f;     // Thickness of X
-        float lineLength = 30.0f;       // Length of each line in X
+        // sf::Vector2f position(xPosition.x-15, xPosition.y-15); // Top-left position of X
+        // float lineThickness = 6.0f;     // Thickness of X
+        // float lineLength = 30.0f;       // Length of each line in X
 
-        // Create two diagonal lines using RectangleShape
-        sf::RectangleShape line1(sf::Vector2f(lineLength, lineThickness));
-        line1.setFillColor(sf::Color::Red);
-        line1.setOrigin(lineLength / 2, lineThickness / 2);
-        line1.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
-        line1.setRotation(45);  // Diagonal top-left to bottom-right
+        // // Create two diagonal lines using RectangleShape
+        // sf::RectangleShape line1(sf::Vector2f(lineLength, lineThickness));
+        // line1.setFillColor(sf::Color::Red);
+        // line1.setOrigin(lineLength / 2, lineThickness / 2);
+        // line1.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+        // line1.setRotation(45);  // Diagonal top-left to bottom-right
 
-        sf::RectangleShape line2(sf::Vector2f(lineLength, lineThickness));
-        line2.setFillColor(sf::Color::Red);
-        line2.setOrigin(lineLength / 2, lineThickness / 2);
-        line2.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
-        line2.setRotation(-45); // Diagonal top-right to bottom-left
+        // sf::RectangleShape line2(sf::Vector2f(lineLength, lineThickness));
+        // line2.setFillColor(sf::Color::Red);
+        // line2.setOrigin(lineLength / 2, lineThickness / 2);
+        // line2.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+        // line2.setRotation(-45); // Diagonal top-right to bottom-left
 
-        m_Window.draw(line1);
-        m_Window.draw(line2);
+        // m_Window.draw(line1);
+        // m_Window.draw(line2);
+        m_GUIManager.GetInfoUIView()->DrawCrossShape();
     }
 
+    // ** UIView
     if(m_gameOver){
         ShowGameOverScreen();
     }
@@ -2106,6 +2267,7 @@ void Game::DrawPlayMode()
     // Draw upgrade UI if shown
     if (m_bShowUpgradeUI && m_pSelectedTower) {
         m_Window.draw(m_upgradeText);
+        //m_GUIManager.GetInfoUIView()->DrawUpgradeText();
     }
 
     //m_Window.draw(m_MonsterTemplate);
@@ -2147,17 +2309,17 @@ void Game::DrawPlayMode()
 
 // ** MAP
 // Check if the given tile is on the edge of the grid
-bool Game::isEdgeTile(sf::Vector2f tile)
-{
-    // Check if the tile is on the left or right edge
-    bool isOnHorizontalEdge = (tile.x <= m_iTileSize / 2) || (tile.x >= (m_vGridSize.x - 1) * m_iTileSize + m_iTileSize / 2);
-    // Check if the tile is on the top or bottom edge
-    bool isOnVerticalEdge = (tile.y <= m_iTileSize / 2) || (tile.y >= (m_vGridSize.y - 1) * m_iTileSize + m_iTileSize / 2);
+// bool Game::isEdgeTile(sf::Vector2f tile)
+// {
+//     // Check if the tile is on the left or right edge
+//     bool isOnHorizontalEdge = (tile.x <= m_iTileSize / 2) || (tile.x >= (m_vGridSize.x - 1) * m_iTileSize + m_iTileSize / 2);
+//     // Check if the tile is on the top or bottom edge
+//     bool isOnVerticalEdge = (tile.y <= m_iTileSize / 2) || (tile.y >= (m_vGridSize.y - 1) * m_iTileSize + m_iTileSize / 2);
 
-    return isOnHorizontalEdge || isOnVerticalEdge;
-}
+//     return isOnHorizontalEdge || isOnVerticalEdge;
+// }
 
-Vector2i Game::tileCenterPosToIndex(Vector2f gridPos)
-{
-    return Vector2i(static_cast<int>(gridPos.x/m_iTileSize), static_cast<int>(gridPos.y/m_iTileSize));
-}
+// Vector2i Game::tileCenterPosToIndex(Vector2f gridPos)
+// {
+//     return Vector2i(static_cast<int>(gridPos.x/m_iTileSize), static_cast<int>(gridPos.y/m_iTileSize));
+// }

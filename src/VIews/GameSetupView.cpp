@@ -1,7 +1,6 @@
 #include "GameSetupView.h"
 
 #include <iostream>
-#include "MapSetupView.h"
 
 using namespace sf;
 

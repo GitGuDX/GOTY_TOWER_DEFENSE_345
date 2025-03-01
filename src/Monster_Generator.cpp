@@ -181,7 +181,8 @@ void MonsterGenerator::generateMonster(Game& game)
         default:
             break;
         }
-        newMonster.SetPosition(game.m_vEntryTile);                                              // Set test monster's starting position to the entry tile
+        //newMonster.SetPosition(game.m_vEntryTile);                                              // Set test monster's starting position to the entry tile
+        newMonster.SetPosition(game.m_GUIManager.GetMapSetup()->GetEntryTile()); 
         newMonster.SetCurrentPathIndex(0);                                                      // Initiliaze Monster's current path index
 
         game.m_aMonstersQueue.emplace_back(newMonster);                 // Add the newly created monster to the monster array

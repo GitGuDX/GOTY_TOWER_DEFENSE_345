@@ -7,6 +7,8 @@
 #include "MapSetup.h"
 #include "../Views/MapSetupView.h"
 #include "Tile.h"
+#include "InfoUI.h"
+#include "../Views/InfoUIView.h"
 #include <SFML/Graphics.hpp>
 
 #include <memory>
@@ -21,6 +23,8 @@ public:
     void InitializeGameSetup();
 
     void InitializeMapSetup(Vector2i gridSize);
+
+    void InitializeInfoUI();
 
     GameSetup* GetGameSetup()
     {
@@ -42,6 +46,16 @@ public:
         return m_mapSetupView.get();
     }
 
+    InfoUI* GetInfoUI()
+    {
+        return m_infoUI.get();
+    }
+
+    InfoUIView* GetInfoUIView() const
+    {
+        return m_infoUIView.get();
+    }
+
 private:
     sf::RenderWindow& m_Window;
 
@@ -52,6 +66,9 @@ private:
     
     std::unique_ptr<MapSetup> m_mapSetup;
     std::unique_ptr<MapSetupView> m_mapSetupView;
+
+    std::unique_ptr<InfoUI> m_infoUI;
+    std::unique_ptr<InfoUIView> m_infoUIView;
     
 };
 

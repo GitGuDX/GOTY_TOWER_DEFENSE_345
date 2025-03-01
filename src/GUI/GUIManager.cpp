@@ -44,3 +44,13 @@ void GUIManager::InitializeMapSetup(Vector2i gridSize)
     m_mapSetup->AddObserver(m_mapSetupView.get());
     m_mapSetup->SetupTiles();
 }
+
+void GUIManager::InitializeInfoUI()
+{
+    Vector2i mapSize = GetMapSetup()->GetMapSize();
+
+    m_infoUI = std::make_unique<InfoUI>();
+    m_infoUIView = std::make_unique<InfoUIView>(m_Window, mapSize, m_Font);
+    m_infoUI->AddObserver(m_infoUIView.get());
+    m_infoUI->InitializeInfoUI();
+}

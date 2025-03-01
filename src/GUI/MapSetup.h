@@ -39,6 +39,7 @@ public:
     const std::vector<std::vector<TileData>>& GetTiles() const { return m_aTiles; }
     const std::vector<sf::Vector2f>& GetPath() const { return m_aPath; }
     const std::vector<sf::Vector2f>& GetDeletedPath() const { return m_aDeletedPath; }
+    const sf::Vector2i& GetGridSize() const { return m_vGridSize; }
     const sf::Vector2f GetEntryTile() const { return m_vEntryTile; }
     const sf::Vector2f GetExitTile() const{ return m_vExitTile; }
     int GetTileSize() const { return m_iTileSize; } // Add this getter method
@@ -111,6 +112,7 @@ private:
         }
     }
 
+    Vector2i tileCenterPosToIndex(Vector2f gridPos);
 
 private:
     std::vector<IGameObserver*> m_observers;
@@ -121,7 +123,6 @@ private:
     
     std::vector<std::vector<TileData>> m_aTiles;
 
-    std::array<RectangleShape, 8> m_ahighlights;
     std::vector<sf::Vector2f> m_aPath;
     std::vector<sf::Vector2f> m_aDeletedPath;                                                    // Stores the path tiles
     sf::Vector2f m_vEntryTile, m_vExitTile;  

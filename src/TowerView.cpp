@@ -19,6 +19,7 @@ void TowerView::Update(const IGameSubject& subject)
         stats.speed = tower->GetSpeed();
         stats.level = tower->GetLevel();
     }
+    std::cout << "Notified TowerView\n";
 }
 
 const TowerStats* TowerView::GetTowerStats(const Tower* tower) const
