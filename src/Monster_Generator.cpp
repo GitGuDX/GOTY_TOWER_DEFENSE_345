@@ -17,12 +17,13 @@
 #include <random>
 #include <algorithm>
 
-MonsterGenerator::MonsterGenerator(int baseMonsters)
+MonsterGenerator::MonsterGenerator(int baseMonsters, MonsterView& monsterView)
     : m_iBaseMonsters(baseMonsters)
     , m_iNumberOfMonsterSpawned(0)
     , m_iMonsterLevel(0)                                                                            // Set initial monster level
     // Set initial monster roaster to teach players about the types of monster 
-    , m_aCurrentMonsterRoaster{Type::Minotaur, Type::Golem, Type::Reaper, Type::Ogre, Type::Skeleton}        
+    , m_aCurrentMonsterRoaster{Type::Minotaur, Type::Golem, Type::Reaper, Type::Ogre, Type::Skeleton}
+    , m_MonsterView(monsterView)        
 {
 }
 
@@ -87,6 +88,7 @@ void MonsterGenerator::updateMonsterStats(Monster& monster)
         monster.SetStrength((MonsterGenerator::MonsterTypeData::BaseStats::iStrength + MonsterGenerator::MonsterTypeData::Ogre::iStrengthDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fStrengthLevelUpRate));
         monster.SetReward((MonsterGenerator::MonsterTypeData::BaseStats::iReward + MonsterGenerator::MonsterTypeData::Ogre::iRewardDifference)*getLevelUpRateAtLevel(m_iMonsterLevel, MonsterGenerator::StatsLevelUpRate::fRewardLevelUpRate));
     }
+    m_MonsterView.Update(monster);
 }
 
 int MonsterGenerator::getWaveStrength(MonsterGenerator::Type currentType)

@@ -23,6 +23,7 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include "GameEventManager.h"
 #include "ProjectileManager.h"
 #include "TowerView.h"
+#include "MonsterView.h"
 #include "GUI/GUIManager.h"
 
 using namespace sf;
@@ -244,6 +245,7 @@ private:
     GameEventManager m_GameEventManager;   
     ProjectileManager m_ProjectileManager;
     TowerView m_TowerView;
+    MonsterView m_MonsterView;
 
     void DebugPrintGameState() const {
         std::cout << "Game State:\n"

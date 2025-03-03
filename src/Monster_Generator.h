@@ -8,9 +8,10 @@
 #ifndef MONSTER_GENERATOR_H
 #define MONSTER_GENERATOR_H
 
+#include "MonsterView.h"
 #include <vector>
 #include <SFML/Graphics.hpp>
-#include <vector>
+
 
 class Game;                             // Forward declare Game class so MonsterGenerator as refernce to what Game type is
 
@@ -42,12 +43,13 @@ E.g.)
 */
 
 class Monster;          // Forward declaration to know what Monster class is
+class MonsterView;      // Forward declaration to know what MonsterView class is
 
 class MonsterGenerator
 {
 public:
     // Constructor initializes base number of monsters and their increase rate per level
-    MonsterGenerator(int baseMonsters);
+    MonsterGenerator(int baseMonsters, MonsterView& monsterView);
 
     enum class Type
     {
@@ -171,6 +173,7 @@ private:
     float m_fTimeSinceLastGeneration = 0.f;                 // Time elapsed since the last monster was generated
     const float m_fGenerationCooldown = 0.5f;               // The cooldown time (in seconds) between monster generations
     bool isAllMonstersSpawned = false;
+    MonsterView& m_MonsterView;
 };
 
 

@@ -39,7 +39,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
     , m_RapidBulletTemplate()
     // Monster generator initiliazed with base number of monsters and their increase rate per level
-    , m_MonsterGenerator(3)
+    , m_MonsterGenerator(3, m_MonsterView)
     , m_iCurrentLevel(1)
     #ifndef DEBUG
     , m_iCurrentWealth(500)
@@ -1534,7 +1534,7 @@ void Game::UpdateMonsters()
     //         m_MonsterGenerator.resetTimeSinceLastGeneration();
     //     }
     // }
-
+    const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
     m_MonsterGenerator.incrementTimeSinceLastGeneration(m_DeltaTime.asSeconds());
     // Fixed first two monster generating on top of each other. Now only generates one monster at a time
     if (m_MonsterGenerator.getTimeSinceLastGeneration() >= m_MonsterGenerator.getGenerationCoolDown())
@@ -1544,17 +1544,189 @@ void Game::UpdateMonsters()
     }
 
     // Remove finished monsters
+    // m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
+    //     [this](Monster& monster) {
+    //         //if (monster.GetCurrentPathIndex() >= m_aPath.size() - 1)
+    //         const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
+    //         if (monster.GetCurrentPathIndex() >= path.size() - 1) 
+    //         {
+    //             m_iCurrentWealth -= monster.GetStrength();
+    //             return true;
+    //         }
+    //         return false;
+    //     }), m_aMonstersQueue.end());
+
+    // // ALL ENEMY ANIMATION RELATED
+    // if (enemyAnimationDelay.getElapsedTime().asSeconds() >= frameTime) {
+    //     std::cout <<"Current enemy frame: " << currentEnemyFrame << '\n';
+    //     if (m_eCurrentEditState == FinishedPathingState) {
+            
+    //         //RUNNING ANIMATION
+    //         std::cout << "Updating enemy textures\n";
+    //         for (auto& enemy : m_aMonstersQueue) {
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Skeleton){
+    //                 enemy.SetTexture(m_SkeletonTextures[currentEnemyFrame]);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //             }
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Reaper){
+    //                 enemy.SetTexture(m_ReaperTextures[currentEnemyFrame]);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //             }
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Golem){
+    //                 enemy.SetTexture(m_GolemTextures[currentEnemyFrame]);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //             }
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Minotaur){
+    //                 enemy.SetTexture(m_MinotaurTextures[currentEnemyFrame]);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));        
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //             }
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Ogre){
+    //                 enemy.SetTexture(m_OgreTextures[currentEnemyFrame]);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));        
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //             }
+    //         }
+            
+    //         currentEnemyFrame++;
+    //         if (currentEnemyFrame > 10) {
+    //             currentEnemyFrame = 0;
+    //         }
+
+
+    //         //DYING ANIMATION
+    //         for (auto& enemy : m_aDeadMonsters) {
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Skeleton){
+    //                 enemy.SetTexture(m_SkeletonDeathTextures[enemy.GetDeathFrame()]);
+    //                 int nextFrame = (enemy.GetDeathFrame() + 1);
+    //                 enemy.SetDeathFrame(nextFrame);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //                 if(enemy.GetDeathFrame() > 14){
+    //                     auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+    //                     if (it != m_aDeadMonsters.end()) {
+    //                         m_aDeadMonsters.erase(it);
+    //                     }
+    //                 }
+    //             }
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Reaper){
+    //                 enemy.SetTexture(m_ReaperDeathTextures[enemy.GetDeathFrame()]);
+    //                 int nextFrame = (enemy.GetDeathFrame() + 1);
+    //                 enemy.SetDeathFrame(nextFrame);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //                 if(enemy.GetDeathFrame() > 14){
+    //                     auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+    //                     if (it != m_aDeadMonsters.end()) {
+    //                         m_aDeadMonsters.erase(it);
+    //                     }
+    //                 }
+    //             }
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Golem){
+    //                 enemy.SetTexture(m_GolemDeathTextures[enemy.GetDeathFrame()]);
+    //                 int nextFrame = (enemy.GetDeathFrame() + 1);
+    //                 enemy.SetDeathFrame(nextFrame);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //                 if(enemy.GetDeathFrame() > 14){
+    //                     auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+    //                     if (it != m_aDeadMonsters.end()) {
+    //                         m_aDeadMonsters.erase(it);
+    //                     }
+    //                 }
+    //             }
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Minotaur){
+    //                 enemy.SetTexture(m_MinotaurDeathTextures[enemy.GetDeathFrame()]);
+    //                 int nextFrame = (enemy.GetDeathFrame() + 1);
+    //                 enemy.SetDeathFrame(nextFrame);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //                 if(enemy.GetDeathFrame() > 14){
+    //                     auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+    //                     if (it != m_aDeadMonsters.end()) {
+    //                         m_aDeadMonsters.erase(it);
+    //                     }
+    //                 }
+    //             }
+    //             if(enemy.GetMonsterType() == MonsterGenerator::Type::Ogre){
+    //                 enemy.SetTexture(m_OgreDeathTextures[enemy.GetDeathFrame()]);
+    //                 int nextFrame = (enemy.GetDeathFrame() + 1);
+    //                 enemy.SetDeathFrame(nextFrame);
+    //                 enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+    //                 FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
+    //                 enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+    //                 if(enemy.GetDeathFrame() > 14){
+    //                     auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
+    //                     if (it != m_aDeadMonsters.end()) {
+    //                         m_aDeadMonsters.erase(it);
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+
+
+    //         enemyAnimationDelay.restart();
+    //     }
+    // }
+
+
+    // // Update monster positions
+    // const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
+    // for (Monster& monster : m_aMonstersQueue)
+    // {
+    //     size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
+    //     // if (monsterCurrentTileIndex < m_aPath.size() - 1)
+    //     if (monsterCurrentTileIndex < path.size() - 1)
+    //     {
+    //         // Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
+    //         Vector2f nextTilePos = path[monsterCurrentTileIndex + 1];
+    //         Vector2f tileToMonster = nextTilePos - monster.GetPosition();
+    //         float distanceToNext = MathHelpers::Length(tileToMonster);
+
+    //         // Calculate movement step based on speed and time
+    //         float dt = std::min(m_DeltaTime.asSeconds(), 0.1f);                 // Fix delta time fluctuations
+    //         float moveStep = dt * monster.GetSpeed();
+
+    //         // Ensure we don't overshoot
+    //         moveStep = std::min(moveStep, distanceToNext);
+
+    //         // Normalize safely
+    //         Vector2f direction = (distanceToNext > 1e-6f) ? MathHelpers::getNormalize(tileToMonster) : Vector2f(0, 0);
+
+    //         // Move the monster with the adjusted moveStep
+    //         monster.Move(direction * moveStep);
+
+    //         // If the monster has reached the tile, update its path index
+    //         if (distanceToNext <= moveStep + 1e-6f)  // Small epsilon to handle float precision issues
+    //         {
+    //             monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
+    //             monster.SetPosition(nextTilePos); // Snap position exactly
+    //         }
+    //     }
+    // }
+    // Remove finished monsters
     m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
-        [this](Monster& monster) {
-            //if (monster.GetCurrentPathIndex() >= m_aPath.size() - 1)
-            const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
-            if (monster.GetCurrentPathIndex() >= path.size() - 1) 
-            {
+        [this, &path](Monster& monster) {
+            if (monster.GetCurrentPathIndex() >= path.size() - 1) {
                 m_iCurrentWealth -= monster.GetStrength();
                 return true;
             }
             return false;
         }), m_aMonstersQueue.end());
+
 
     // ALL ENEMY ANIMATION RELATED
     if (enemyAnimationDelay.getElapsedTime().asSeconds() >= frameTime) {
@@ -1563,38 +1735,36 @@ void Game::UpdateMonsters()
             
             //RUNNING ANIMATION
             std::cout << "Updating enemy textures\n";
-            for (auto& enemy : m_aMonstersQueue) {
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Skeleton){
-                    enemy.SetTexture(m_SkeletonTextures[currentEnemyFrame]);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
+            for (int i = m_aMonstersQueue.size() - 1; i >= 0; --i) {
+                auto& enemy = m_aMonstersQueue[i]; // Access enemy by index
+
+                // Choose the correct texture based on monster type
+                switch (enemy.GetMonsterType()) {
+                    case MonsterGenerator::Type::Skeleton:
+                        enemy.SetTexture(m_SkeletonTextures[currentEnemyFrame]);
+                        break;
+                    case MonsterGenerator::Type::Reaper:
+                        enemy.SetTexture(m_ReaperTextures[currentEnemyFrame]);
+                        break;
+                    case MonsterGenerator::Type::Golem:
+                        enemy.SetTexture(m_GolemTextures[currentEnemyFrame]);
+                        break;
+                    case MonsterGenerator::Type::Minotaur:
+                        enemy.SetTexture(m_MinotaurTextures[currentEnemyFrame]);
+                        break;
+                    case MonsterGenerator::Type::Ogre:
+                        enemy.SetTexture(m_OgreTextures[currentEnemyFrame]);
+                        break;
+                    case MonsterGenerator::Type::SIZE:
+                        break;
                 }
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Reaper){
-                    enemy.SetTexture(m_ReaperTextures[currentEnemyFrame]);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
-                }
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Golem){
-                    enemy.SetTexture(m_GolemTextures[currentEnemyFrame]);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
-                }
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Minotaur){
-                    enemy.SetTexture(m_MinotaurTextures[currentEnemyFrame]);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));        
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
-                }
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Ogre){
-                    enemy.SetTexture(m_OgreTextures[currentEnemyFrame]);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));        
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
-                }
+
+                // Set common properties
+                enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+                FloatRect monsterSize = enemy.m_Sprite.getLocalBounds(); // Get Monster sprite width and height
+                enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2)); // Center the sprite
             }
+
             
             currentEnemyFrame++;
             if (currentEnemyFrame > 10) {
@@ -1602,81 +1772,63 @@ void Game::UpdateMonsters()
             }
 
 
-            //DYING ANIMATION
-            for (auto& enemy : m_aDeadMonsters) {
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Skeleton){
-                    enemy.SetTexture(m_SkeletonDeathTextures[enemy.GetDeathFrame()]);
-                    int nextFrame = (enemy.GetDeathFrame() + 1);
-                    enemy.SetDeathFrame(nextFrame);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
-                    if(enemy.GetDeathFrame() > 14){
-                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
-                        if (it != m_aDeadMonsters.end()) {
-                            m_aDeadMonsters.erase(it);
+            // Ensure we're only dealing with monsters that need to be updated
+            if (!m_aDeadMonsters.empty()) {
+                // First pass: Update death animation
+                std::vector<Monster*> monstersToRemove; // Vector to hold monsters to remove
+
+                for (int i = m_aDeadMonsters.size() - 1; i >= 0; --i) {
+                    auto& enemy = m_aDeadMonsters[i];
+
+                    // Check if the death animation has completed
+                    if (enemy.GetDeathFrame() > 14) {
+                        // Add the monster to the list for removal
+                        monstersToRemove.push_back(&enemy);
+                    } else {
+                        // Update death animation if still in progress
+                        switch (enemy.GetMonsterType()) {
+                            case MonsterGenerator::Type::Skeleton:
+                                enemy.SetTexture(m_SkeletonDeathTextures[enemy.GetDeathFrame()]);
+                                break;
+                            case MonsterGenerator::Type::Reaper:
+                                enemy.SetTexture(m_ReaperDeathTextures[enemy.GetDeathFrame()]);
+                                break;
+                            case MonsterGenerator::Type::Golem:
+                                enemy.SetTexture(m_GolemDeathTextures[enemy.GetDeathFrame()]);
+                                break;
+                            case MonsterGenerator::Type::Minotaur:
+                                enemy.SetTexture(m_MinotaurDeathTextures[enemy.GetDeathFrame()]);
+                                break;
+                            case MonsterGenerator::Type::Ogre:
+                                enemy.SetTexture(m_OgreDeathTextures[enemy.GetDeathFrame()]);
+                                break;
+                            case MonsterGenerator::Type::SIZE:
+                                break;
                         }
+
+                        // Increment death frame
+                        enemy.SetDeathFrame(enemy.GetDeathFrame() + 1);
+                        enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+
+                        // Center the sprite
+                        FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();
+                        enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));
                     }
                 }
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Reaper){
-                    enemy.SetTexture(m_ReaperDeathTextures[enemy.GetDeathFrame()]);
-                    int nextFrame = (enemy.GetDeathFrame() + 1);
-                    enemy.SetDeathFrame(nextFrame);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
-                    if(enemy.GetDeathFrame() > 14){
-                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
-                        if (it != m_aDeadMonsters.end()) {
-                            m_aDeadMonsters.erase(it);
-                        }
-                    }
-                }
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Golem){
-                    enemy.SetTexture(m_GolemDeathTextures[enemy.GetDeathFrame()]);
-                    int nextFrame = (enemy.GetDeathFrame() + 1);
-                    enemy.SetDeathFrame(nextFrame);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
-                    if(enemy.GetDeathFrame() > 14){
-                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
-                        if (it != m_aDeadMonsters.end()) {
-                            m_aDeadMonsters.erase(it);
-                        }
-                    }
-                }
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Minotaur){
-                    enemy.SetTexture(m_MinotaurDeathTextures[enemy.GetDeathFrame()]);
-                    int nextFrame = (enemy.GetDeathFrame() + 1);
-                    enemy.SetDeathFrame(nextFrame);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
-                    if(enemy.GetDeathFrame() > 14){
-                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
-                        if (it != m_aDeadMonsters.end()) {
-                            m_aDeadMonsters.erase(it);
-                        }
-                    }
-                }
-                if(enemy.GetMonsterType() == MonsterGenerator::Type::Ogre){
-                    enemy.SetTexture(m_OgreDeathTextures[enemy.GetDeathFrame()]);
-                    int nextFrame = (enemy.GetDeathFrame() + 1);
-                    enemy.SetDeathFrame(nextFrame);
-                    enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
-                    FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();                           // Get Monster sprite width and height
-                    enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));      // Set Monster anchor to the center of the sprite
-                    if(enemy.GetDeathFrame() > 14){
-                        auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), enemy);
-                        if (it != m_aDeadMonsters.end()) {
-                            m_aDeadMonsters.erase(it);
-                        }
+
+                // Second pass: Safely remove monsters
+                for (auto* monster : monstersToRemove) {
+                    // Remove from observer view
+                    //m_MonsterView.RemoveMonster(*monster);
+                    //monster->RemoveObserver(&m_MonsterView);
+
+                    // Now remove from the dead list
+                    auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), *monster);
+                    if (it != m_aDeadMonsters.end()) {
+                        m_aDeadMonsters.erase(it);
                     }
                 }
             }
-
-
 
             enemyAnimationDelay.restart();
         }
@@ -1684,14 +1836,11 @@ void Game::UpdateMonsters()
 
 
     // Update monster positions
-    const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
     for (Monster& monster : m_aMonstersQueue)
     {
         size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
-        // if (monsterCurrentTileIndex < m_aPath.size() - 1)
         if (monsterCurrentTileIndex < path.size() - 1)
         {
-            // Vector2f nextTilePos = m_aPath[monsterCurrentTileIndex + 1];
             Vector2f nextTilePos = path[monsterCurrentTileIndex + 1];
             Vector2f tileToMonster = nextTilePos - monster.GetPosition();
             float distanceToNext = MathHelpers::Length(tileToMonster);
@@ -1961,6 +2110,74 @@ void Game::UpdateTowers()
 
 }
 
+// void Game::UpdateAxes()
+// {
+//     const float COLLISION_DISTANCE = 25.0f; // Adjust collision radius as needed
+
+//     for (auto it = m_aAxes.begin(); it != m_aAxes.end();)
+//     {
+//         bool hitMonster = false;
+        
+//         // Move axe
+//         it->Move(it->GetDirection() * it->GetSpeed() * m_DeltaTime.asSeconds());
+        
+//         // Check collision with monsters
+//         for (auto& monster : m_aMonstersQueue)
+//         {
+//             sf::Vector2f diff = monster.GetPosition() - it->GetPosition();
+//             float distance = MathHelpers::Length(diff);
+            
+//             if (distance < COLLISION_DISTANCE)
+//             {
+//                 string hitMonsterName;
+//                 if(static_cast<int>(monster.GetMonsterType()) == 0){
+//                     hitMonsterName = "Skeleton";
+//                 } else if (static_cast<int>(monster.GetMonsterType()) == 1){
+//                     hitMonsterName = "Reaper";
+//                 }else if (static_cast<int>(monster.GetMonsterType()) == 2){
+//                     hitMonsterName = "Golem";
+//                 }else if (static_cast<int>(monster.GetMonsterType()) == 3){
+//                     hitMonsterName = "Ogre";
+//                 }else if (static_cast<int>(monster.GetMonsterType()) == 4){
+//                     hitMonsterName = "Minotaur";
+//                 }
+//                 std::cout << "Debug: Axe hit " << hitMonster << " at position ("
+//                           << monster.GetPosition().x << ", "
+//                           << monster.GetPosition().y << ")" << std::endl;
+//                 hitMonster = true;
+//                 monster.SetHealth(monster.GetHealth()-it->GetDamage());
+//                 cout << "\n"<<monster.GetHealth()<<"\n";
+//                 if (monster.GetHealth() <= 0){
+//                     // Handle the monster's death (e.g., remove it from the queue)
+//                     std::cout << "Monster destroyed!" << std::endl;
+//                     // Remove the monster from the queue (if applicable)
+//                     auto monsterIt = std::find(m_aMonstersQueue.begin(), m_aMonstersQueue.end(), monster);
+//                     if (monsterIt != m_aMonstersQueue.end()) {
+//                         m_aDeadMonsters.push_back(monster);
+//                         m_aMonstersQueue.erase(monsterIt);    //STYLE
+//                         m_iCurrentWealth += monster.GetReward();
+//                     }
+//                 }
+//                 break;
+//             }
+//         }
+        
+//         // Remove axe if it hit something or went off screen
+//         if (hitMonster || 
+//             it->GetPosition().x < 0 || 
+//             it->GetPosition().x > m_vWindowSize.x ||
+//             it->GetPosition().y < 0 || 
+//             it->GetPosition().y > m_vWindowSize.y)
+//         {
+//             it = m_aAxes.erase(it);
+//         }
+//         else
+//         {
+//             ++it;
+//         }
+//     }
+// }
+
 void Game::UpdateAxes()
 {
     const float COLLISION_DISTANCE = 25.0f; // Adjust collision radius as needed
@@ -1968,55 +2185,55 @@ void Game::UpdateAxes()
     for (auto it = m_aAxes.begin(); it != m_aAxes.end();)
     {
         bool hitMonster = false;
-        
+
         // Move axe
         it->Move(it->GetDirection() * it->GetSpeed() * m_DeltaTime.asSeconds());
-        
+
         // Check collision with monsters
-        for (auto& monster : m_aMonstersQueue)
+        for (int i = static_cast<int>(m_aMonstersQueue.size()) - 1; i >= 0; --i)
         {
+            auto& monster = m_aMonstersQueue[i];
             sf::Vector2f diff = monster.GetPosition() - it->GetPosition();
             float distance = MathHelpers::Length(diff);
-            
+
+
             if (distance < COLLISION_DISTANCE)
             {
-                string hitMonsterName;
-                if(static_cast<int>(monster.GetMonsterType()) == 0){
-                    hitMonsterName = "Skeleton";
-                } else if (static_cast<int>(monster.GetMonsterType()) == 1){
-                    hitMonsterName = "Reaper";
-                }else if (static_cast<int>(monster.GetMonsterType()) == 2){
-                    hitMonsterName = "Golem";
-                }else if (static_cast<int>(monster.GetMonsterType()) == 3){
-                    hitMonsterName = "Ogre";
-                }else if (static_cast<int>(monster.GetMonsterType()) == 4){
-                    hitMonsterName = "Minotaur";
+                std::string hitMonsterName;
+                switch (static_cast<int>(monster.GetMonsterType()))
+                {
+                    case 0: hitMonsterName = "Skeleton"; break;
+                    case 1: hitMonsterName = "Reaper"; break;
+                    case 2: hitMonsterName = "Golem"; break;
+                    case 3: hitMonsterName = "Ogre"; break;
+                    case 4: hitMonsterName = "Minotaur"; break;
+                    default: hitMonsterName = "Unknown"; break;
                 }
-                std::cout << "Debug: Axe hit " << hitMonster << " at position ("
-                          << monster.GetPosition().x << ", "
-                          << monster.GetPosition().y << ")" << std::endl;
+                std::cout << "Debug: Axe hit " << hitMonsterName << " at position ("
+                        << monster.GetPosition().x << ", "
+                        << monster.GetPosition().y << ")" << std::endl;
                 hitMonster = true;
-                monster.SetHealth(monster.GetHealth()-it->GetDamage());
-                cout << "\n"<<monster.GetHealth()<<"\n";
-                if (monster.GetHealth() <= 0){
-                    // Handle the monster's death (e.g., remove it from the queue)
+                monster.SetHealth(monster.GetHealth() - it->GetDamage());
+                std::cout << "\n" << monster.GetHealth() << "\n";
+                if (monster.GetHealth() <= 0)
+                {
                     std::cout << "Monster destroyed!" << std::endl;
-                    // Remove the monster from the queue (if applicable)
-                    auto monsterIt = std::find(m_aMonstersQueue.begin(), m_aMonstersQueue.end(), monster);
-                    if (monsterIt != m_aMonstersQueue.end()) {
-                        m_aDeadMonsters.push_back(monster);
-                        m_aMonstersQueue.erase(monsterIt);    //STYLE
-                        m_iCurrentWealth += monster.GetReward();
-                    }
+                    m_MonsterView.RemoveMonster(monster);  // First, remove from observer list
+                    monster.RemoveObserver(&m_MonsterView);  // Then, make sure the monster doesn't reference the observer
+                    m_aDeadMonsters.push_back(monster);
+                    m_iCurrentWealth += monster.GetReward();
+                    m_aMonstersQueue.erase(m_aMonstersQueue.begin() + i);
+                    std::cout << "Monsters in observer after removal: " << std::endl;
+
                 }
                 break;
             }
         }
-        
+
         // Remove axe if it hit something or went off screen
         if (hitMonster || 
             it->GetPosition().x < 0 || 
-            it->GetPosition().x > m_vWindowSize.x ||
+            it->GetPosition().x > m_vWindowSize.x || 
             it->GetPosition().y < 0 || 
             it->GetPosition().y > m_vWindowSize.y)
         {

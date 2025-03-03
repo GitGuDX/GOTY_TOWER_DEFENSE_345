@@ -8,8 +8,10 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
+#include<iostream>
 #include "Entity.h"
 #include "Monster_Generator.h"
+#include "GameEvents.h"
 #include "Tower.h"
 
 ////////// Monster Class ////////////
@@ -25,7 +27,7 @@ Monsters will have five stats.
 Monster also has a m_stCurrentPathIndex member variable that keeps track of the index of its current tile it is on.
 */
 
-class Monster : public Entity
+class Monster : public Entity, public IGameSubject
 {
 public:
     Monster();
@@ -36,17 +38,34 @@ public:
     void UpdateAttackCooldown(float deltaTime);  // Updates attack timer
 
 public:
-    size_t GetCurrentPathIndex()
+    void AddObserver(IGameObserver* observer) override {
+        m_observers.push_back(observer);
+    }
+
+    void RemoveObserver(IGameObserver* observer) override {
+        m_observers.erase(
+            std::remove(m_observers.begin(), m_observers.end(), observer),
+            m_observers.end()
+        );
+    }
+
+    void NotifyStatsChanged() {
+        for (auto observer : m_observers) {
+            observer->Update(*this);
+        }
+    }
+
+    size_t GetCurrentPathIndex() const
     {
         return m_stCurrentPathIndex;
     }
 
-    float GetHealth()
+    float GetHealth() const
     {
         return m_iHealth;
     }
 
-    float GetMaxHealth()
+    float GetMaxHealth() const
     {
         return m_iMaxHealth;
     }
@@ -56,27 +75,27 @@ public:
         return m_HealthBar;
     }
 
-    float GetSpeed()
+    float GetSpeed() const
     {
         return m_fSpeed;
     }
 
-    int GetLevel()
+    int GetLevel() const
     {
         return m_iLevel;
     }
 
-    int GetDeathFrame()
+    int GetDeathFrame() const
     {
         return deathFrame;
     }
 
-    int GetStrength()
+    int GetStrength() const
     {
         return m_iStrength;
     }
 
-    int GetReward()
+    int GetReward() const
     {
         return m_iReward;
     }
@@ -89,54 +108,65 @@ public:
     void SetCurrentPathIndex(size_t newIndex)
     {
         m_stCurrentPathIndex = newIndex;
+        NotifyStatsChanged();
     }
 
     void SetHealth(float newHealth)
     {
         m_iHealth = newHealth;
+        NotifyStatsChanged();
     }
 
     void SetMaxHealth(float newHealth)
     {
         m_iMaxHealth = newHealth;
+        NotifyStatsChanged();
     }
 
     void SetSpeed(float newSpeed)
     {
         m_fSpeed = newSpeed;
+        NotifyStatsChanged();
     }
 
     void SetDeathFrame(int frameNum)
     {
         deathFrame = frameNum;
+        NotifyStatsChanged();
     }
 
     void SetLevel(int newLevel)
     {
         m_iLevel = newLevel;
+        NotifyStatsChanged();
     }
 
     void SetStrength(int newStrength)
     {
         m_iStrength = newStrength;
+        NotifyStatsChanged();
     }
 
     void SetHealthBar(sf::RectangleShape& HealthBar)
     {
         m_HealthBar = HealthBar;
+        NotifyStatsChanged();
     }
 
     void SetReward(int newReward)
     {
         m_iReward = newReward;
+        NotifyStatsChanged();
     }
 
     void SetMonsterType(MonsterGenerator::Type newType)
     {
         m_eMonsterType = newType;
+        NotifyStatsChanged();
     }
 
 private:
+    std::vector<IGameObserver*> m_observers;    
     sf::RectangleShape m_HealthBar;
     size_t m_stCurrentPathIndex;           // index of the monster's current path
     float m_iHealth;
