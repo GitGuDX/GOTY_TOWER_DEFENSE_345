@@ -767,7 +767,7 @@ void Game::HandleGameOver()
 
     // Display Game Over message (implement this in your UI system)
     ShowGameOverScreen();
-    /*
+    
     // Wait for user input to restart or return to main menu
     if (PlayerPressedRestart()) // Implement input check
     {
@@ -1714,6 +1714,30 @@ void Game::UpdateMonsters()
             {
                 monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
                 monster.SetPosition(nextTilePos); // Snap position exactly
+            }
+        }
+    }
+
+    for (Monster& monster : m_aMonstersQueue)
+    {
+        monster.UpdateAttackCooldown(m_DeltaTime.asSeconds());
+
+        for (auto it = a_allActiveTowers.begin(); it != a_allActiveTowers.end(); )
+        {
+            float distance = MathHelpers::Length(monster.GetPosition() - it->GetPosition());
+
+            if (distance < 100.0f)  // Monster attacks if close enough
+            {
+                monster.Attack(*it);
+            }
+
+            if (it->IsDestroyed())  // Remove destroyed towers
+            {
+                it = a_allActiveTowers.erase(it);
+            }
+            else
+            {
+                ++it;
             }
         }
     }

@@ -128,6 +128,10 @@ public:
     bool Upgrade();
     int GetUpgradeCost() const;
 
+    float GetHealth();               // Returns current health
+    bool IsDestroyed();              // Checks if tower is destroyed
+    void TakeDamage(float damage);   // Reduces health when attacked
+
 private:
     std::vector<IGameObserver*> m_observers;
     static const int MAX_LEVEL = 3; // Maximum level a tower can reach
@@ -142,6 +146,8 @@ private:
     float m_fRange;
     float m_speed; // Adjust speed as needed
     int m_iLevel;                   // Current tower level
+
+    float m_fHealth = 100.0f;  // Tower health
 };
 
 #endif

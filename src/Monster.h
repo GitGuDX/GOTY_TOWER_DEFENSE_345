@@ -10,6 +10,7 @@
 
 #include "Entity.h"
 #include "Monster_Generator.h"
+#include "Tower.h"
 
 ////////// Monster Class ////////////
 /*
@@ -30,6 +31,9 @@ public:
     Monster();
     ~Monster();
 
+    bool CanAttack();  // Checks if the monster is ready to attack
+    void Attack(Tower& tower);  // Attacks a nearby tower
+    void UpdateAttackCooldown(float deltaTime);  // Updates attack timer
 
 public:
     size_t GetCurrentPathIndex()
@@ -143,6 +147,10 @@ private:
     int m_iReward;
     int deathFrame = 0;
     MonsterGenerator::Type m_eMonsterType;
+
+    float m_fAttackCooldown = 2.0f;  // Time between attacks (seconds)
+    float m_fTimeSinceLastAttack = 0.0f;  // Time tracker
+    float m_fAttackDamage = 10.0f;   // Damage dealt to towers
 };
 
 #endif

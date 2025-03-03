@@ -75,3 +75,23 @@ int Tower::GetUpgradeCost() const
     return m_iCost * m_iLevel;
 }
 
+float Tower::GetHealth()
+{
+    return m_fHealth;
+}
+
+bool Tower::IsDestroyed()
+{
+    return m_fHealth <= 0;
+}
+
+void Tower::TakeDamage(float damage)
+{
+    m_fHealth -= damage;
+    if (m_fHealth <= 0)
+    {
+        m_fHealth = 0;
+        // Handle destruction (e.g., remove tower from game)
+    }
+}
+
