@@ -50,7 +50,7 @@ void InfoUIView::Update(const IGameSubject &subject)
 
 void InfoUIView::DrawHUD()
 {
-    m_Window.draw(m_scoreText);
+    //m_Window.draw(m_scoreText);
     m_Window.draw(m_levelText);
     m_Window.draw(m_instructionText);
     m_Window.draw(m_warningText);

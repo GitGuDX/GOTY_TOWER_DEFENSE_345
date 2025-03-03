@@ -7,7 +7,7 @@
 
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+//#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 //#define DEBUG               // For debugging purposes
 
 #include "Game.h"
@@ -44,7 +44,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     #ifndef DEBUG
     , m_iCurrentWealth(500)
     #else
-    , m_iCurrentWealth(10000)
+    , m_iCurrentWealth(500)
     #endif
    
 {
@@ -578,14 +578,15 @@ void Game::LoadUIAssets()
         tower.AddObserver(&m_TowerView);
     }
 
-    // scoreTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 10);
+    Vector2i mapsize = m_GUIManager.GetMapSetup()->GetMapSize();
+    scoreTextPosition = Vector2f(mapsize.x + 150, mapsize.y/10 + 10);
     // levelTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 35);
     // instructionTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 135);
     // warningTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y - 30);
     // modeTextPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 65);
     // woodTowerPricePosition = Vector2f(m_vWindowSize.x + 130, m_vWindowSize.y/3 + 125);
     // stoneTowerPricePosition = Vector2f(m_vWindowSize.x + 235, m_vWindowSize.y/3 + 125);
-    // gameOverTextPosition = Vector2f(m_vWindowSize.x/2, m_vWindowSize.y/2);
+    gameOverTextPosition = Vector2f(mapsize.x/2, mapsize.y/2);
     // towerDamagePosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 170);
     // towerCooldownPosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 200);
     // towerRangePosition = Vector2f(m_vWindowSize.x + 150, m_vWindowSize.y/10 + 230);
@@ -593,13 +594,13 @@ void Game::LoadUIAssets()
     // nextRoundTextPosition = Vector2f(m_vWindowSize.x + 230, m_vWindowSize.y/10 + 110); //Fix this because it should be the same values as instruciton but its not
 
     // // Score text 
-    // m_scoreText.setFont(m_Font);               // Set font
-    // m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
-    // FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
-    // m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
-    // m_scoreText.setCharacterSize(25);        // Set size
-    // m_scoreText.setFillColor(Color::Red);     // Set color
-    // m_scoreText.setPosition(scoreTextPosition);       // Set position
+    m_scoreText.setFont(m_Font);               // Set font
+    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
+    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
+    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
+    m_scoreText.setCharacterSize(25);        // Set size
+    m_scoreText.setFillColor(Color::Red);     // Set color
+    m_scoreText.setPosition(scoreTextPosition);       // Set position
 
     // // Level text 
     // m_levelText.setFont(m_Font);               // Set font
@@ -643,14 +644,14 @@ void Game::LoadUIAssets()
     // m_modeText.setFillColor(Color::Red);     // Set color
     // m_modeText.setPosition(modeTextPosition);       // Set position
 
-    // // Game Over text 
-    // m_gameOverText.setFont(m_Font);               // Set font
-    // m_gameOverText.setString("Game Over!");   // Set text
-    // FloatRect gameOverTextBounds = m_gameOverText.getLocalBounds();
-    // m_gameOverText.setOrigin(gameOverTextBounds.width/2, gameOverTextBounds.height/2);
-    // m_gameOverText.setCharacterSize(55);        // Set size
-    // m_gameOverText.setFillColor(Color::Red);     // Set color
-    // m_gameOverText.setPosition(gameOverTextPosition);       // Set position
+    // Game Over text 
+    m_gameOverText.setFont(m_Font);               // Set font
+    m_gameOverText.setString("Game Over! Press R to restart");   // Set text
+    FloatRect gameOverTextBounds = m_gameOverText.getLocalBounds();
+    m_gameOverText.setOrigin(gameOverTextBounds.width/2, gameOverTextBounds.height/2);
+    m_gameOverText.setCharacterSize(30);        // Set size
+    m_gameOverText.setFillColor(Color::Red);     // Set color
+    m_gameOverText.setPosition(gameOverTextPosition);       // Set position
 
     // // Next Round text 
     // m_nextRoundText.setFont(m_Font);               // Set font
@@ -1897,9 +1898,9 @@ void Game::UpdateMonsters()
 void Game::UpdateUI()
 {
     
-    // m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
-    // FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
-    // m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
+    m_scoreText.setString("Score: " + std::to_string(m_iCurrentWealth));   // Set text
+    FloatRect scoreTextBounds = m_scoreText.getLocalBounds();
+    m_scoreText.setOrigin(scoreTextBounds.width / 2, scoreTextBounds.height / 2);
 
     // m_levelText.setString("Level: " + std::to_string(m_iCurrentLevel));   // Set text
     // FloatRect levelTextBounds = m_levelText.getLocalBounds();
@@ -2327,7 +2328,7 @@ void Game::DrawMapEditorMode()
     // }
     
     // UI RELATED
-    // m_Window.draw(m_scoreText);
+    m_Window.draw(m_scoreText);
     // m_Window.draw(m_levelText);
     // m_Window.draw(m_instructionText);
     // m_Window.draw(m_warningText);
@@ -2464,7 +2465,7 @@ void Game::DrawPlayMode()
 
 
     // UI RELATED
-    // m_Window.draw(m_scoreText);
+    m_Window.draw(m_scoreText);
     // m_Window.draw(m_levelText);
     // m_Window.draw(m_instructionText);
     // m_Window.draw(m_warningText);
