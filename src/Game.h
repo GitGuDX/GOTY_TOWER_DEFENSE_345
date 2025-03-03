@@ -106,7 +106,7 @@ private:
     void LoadMonsterTextures();
     void LoadTowerTextures();
     //void PlayerPressedRestart();
-    //void ResetGame();
+    void ResetGame(bool);
     //void PlayerPressedMainMenu();
     //void SwitchToMainMenu();
     

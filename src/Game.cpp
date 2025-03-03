@@ -7,7 +7,7 @@
 
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
-//#define LINUX               // FOR file path finding. use MAC for mac users and use WINDOW for window users
+#define MAC               // FOR file path finding. use MAC for mac users and use WINDOW for window users
 //#define DEBUG               // For debugging purposes
 
 #include "Game.h"
@@ -730,6 +730,36 @@ void Game::ShowGameOverScreen()
 
 void Game::HandleGameOver()
 {
+    m_aMonstersQueue.clear();
+    m_bIsRoundEnded = true;
+    m_bIsMonsterGeneratorUpdated = false;
+    
+    // Show Game Over message
+    ShowGameOverScreen();
+
+    bool restartChosen = false;
+    
+    while (m_Window.isOpen() && !restartChosen) {
+        sf::Event event;
+        while (m_Window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                m_Window.close();
+            }
+            // Restart game with same map
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
+                ResetGame(false);
+                restartChosen = true;
+            }
+            // Restart game with new map
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::N) {
+                ResetGame(true);
+                restartChosen = true;
+            }
+        }
+    }
+}
+/*void Game::HandleGameOver()
+{
     // Stop game logic
     m_aMonstersQueue.clear(); // Remove all monsters
     m_bIsRoundEnded = true; // Ensure no new rounds start
@@ -748,8 +778,27 @@ void Game::HandleGameOver()
         SwitchToMainMenu();
     }
     */
-}
+//}
 
+void Game::ResetGame(bool newMap)
+{
+    m_gameOver = false;
+    m_bIsRoundEnded = false;
+    m_bIsMonsterGeneratorUpdated = false;
+    m_iCurrentWealth = 500;
+    m_iCurrentLevel = 1;
+    m_aMonstersQueue.clear();
+    a_allActiveTowers.clear();
+    a_activeWoodTowers.clear();
+    a_activeStoneTowers.clear();
+
+    if (newMap) {
+        m_aTiles.clear(); // Clear the current map
+        LoadMapEditorAssets(); // Reload assets for a new map
+    }
+
+    m_eGameMode = InitialSetUp;
+}
 
 void Game::HandleInput()
 {

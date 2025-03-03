@@ -39,7 +39,7 @@ virtual ~TowerView() override {
     m_towerStats.clear();
 }
     void Draw(sf::RenderWindow& window, std::vector<Tower>& activeTowersType);
-    void Update(const IGameSubject& subject);
+    void Update(const IGameSubject& subject) override;
     const TowerStats* GetTowerStats(const Tower* tower) const;
     float GetDamage() const
     {
