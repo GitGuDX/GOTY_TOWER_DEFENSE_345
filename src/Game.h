@@ -239,7 +239,10 @@ private:
     sf::Vector2f m_vEntryTile, m_vExitTile;                                             // Entry and exit tile positions
     sf::VertexArray m_sfPathLines;                                                      // SFML Vertex Array for drawing the path
     
-
+    // Input flags and support
+    bool m_isHovering = false;
+    TowerEntity* m_lastHoveredTower = nullptr;
+    
 
     // Play mode 
     MonsterGenerator m_MonsterGenerator;
@@ -345,7 +348,7 @@ private:
     std::vector<sf::Texture> m_SniperTowerTextures;
 
     Clock enemyAnimationDelay;
-    Clock towerAnimationDelay;
+    //Clock towerAnimationDelay;
     int currentTowerFrame = 1;
     int currentEnemyFrame = 0;
     const float frameTime = 0.07f; // Time per frame in seconds

@@ -21,10 +21,16 @@ private:
         std::string m_scoreString;
         std::string m_levelString;
         std::string m_instructionString;
+
+        std::string m_towerLevelString;
         std::string m_towerDamagStringe;
         std::string m_towerCooldownString;
         std::string m_towerRangeString;
         std::string m_towerSpeedString;
+        std::string m_towerUpgradeCostString;
+        std::string m_towerInstructionString_1;
+        std::string m_towerInstructionString_2;
+
         std::string m_warningString;
         std::string m_modeString;
         std::string m_woodTowerPriceString;
@@ -33,15 +39,16 @@ private:
         std::string m_nextRoundString;
         std::string m_upgradeString;
 
-        int m_iCurrentLevel;
-        int m_iCurrentWealth;
+        // int m_iCurrentLevel;
+        // int m_iCurrentWealth;
 
-        float m_hoverTowerDamage;
-        float m_hoverTowerCooldown;
-        float m_hoverTowerRange;
-        float m_hoverTowerSpeed;
+        // float m_hoverTowerDamage;
+        // float m_hoverTowerCooldown;
+        // float m_hoverTowerRange;
+        // float m_hoverTowerSpeed;
 
-        Vector2f m_DraggedTowerPosition;
+
+        //Vector2f m_DraggedTowerPosition;
         Vector2f m_CrossPosition;
 
     };
@@ -96,25 +103,25 @@ public:
         m_isHoveringOnTower = isHovering;
     }
 
-    Sprite* GetDraggedSprite() const {
-        return m_DraggedSprite;
-    }
+    // Sprite* GetDraggedSprite() const {
+    //     return m_DraggedSprite;
+    // }
 
-    std::vector<Tower>& GetTowerMenu() {
-        return a_TowerMenu;
-    }
+    // std::vector<Tower>& GetTowerMenu() {
+    //     return a_TowerMenu;
+    // }
 
-    Tower& GetDraggedTower() {
-        return m_DraggedTower;
-    }
+    // Tower& GetDraggedTower() {
+    //     return m_DraggedTower;
+    // }
 
-    Texture& GetTowerTexture1() {
-        return m_towerTexture1;
-    }
+    // Texture& GetTowerTexture1() {
+    //     return m_towerTexture1;
+    // }
 
-    Texture& GetTowerTexture2() {
-        return m_towerTexture2;
-    }
+    // Texture& GetTowerTexture2() {
+    //     return m_towerTexture2;
+    // }
 
 
 private:
@@ -126,21 +133,27 @@ private:
 
     sf::Font& m_Font;
 
-    std::vector<Tower> a_TowerMenu;
-    Tower m_DraggedTower;
+    // std::vector<Tower> a_TowerMenu;
+    // Tower m_DraggedTower;
 
-    Sprite* m_DraggedSprite = nullptr;
+    // Sprite* m_DraggedSprite = nullptr;
 
-    Texture m_towerTexture1;
-    Texture m_towerTexture2;
+    // Texture m_towerTexture1;
+    // Texture m_towerTexture2;
 
     Text m_scoreText;
     Text m_levelText;
     Text m_instructionText;
+
+    Text m_towerLevelText;
     Text m_towerDamageText;
     Text m_towerCooldownText;
     Text m_towerRangeText;
     Text m_towerSpeedText;
+    Text m_towerUpgradeCostText;
+    Text m_towerInstructionText_1;
+    Text m_towerInstructionText_2;
+
     Text m_warningText;
     Text m_modeText;
     Text m_woodTowerPriceText;

@@ -7,8 +7,8 @@ InfoUIView::InfoUIView(sf::RenderWindow& m_Window, Vector2i mapSize, sf::Font& f
     , m_MapSize(mapSize)
     , m_Font(font)
 {
-    LoadFromFile();
-    InitializeTowerAssets();
+    //LoadFromFile();
+    //InitializeTowerAssets();
     InitializeTextAssets(); 
     LoadCrossShapeAssets();
 }
@@ -22,10 +22,16 @@ void InfoUIView::Update(const IGameSubject &subject)
         data.m_scoreString = infoUI->GetScoreString();
         data.m_levelString = infoUI->GetLevelString();
         data.m_instructionString = infoUI->GetInstructionString();
+
+        data.m_towerLevelString = infoUI->GetTowerLevelString();
         data.m_towerDamagStringe = infoUI->GetTowerDamageString();
         data.m_towerCooldownString = infoUI->GetTowerCooldownString();
         data.m_towerRangeString = infoUI->GetTowerRangeString();
         data.m_towerSpeedString = infoUI->GetTowerSpeedString();
+        data.m_towerUpgradeCostString = infoUI->GetTowerUpgradeCostString();
+        data.m_towerInstructionString_1 = infoUI->GetTowerInstructionString_1();
+        data.m_towerInstructionString_2 = infoUI->GetTowerInstructionString_2();
+        
         data.m_warningString = infoUI->GetWarningString();
         data.m_modeString = infoUI->GetModeString();
         data.m_woodTowerPriceString = infoUI->GetWoodTowerPriceString();
@@ -33,15 +39,15 @@ void InfoUIView::Update(const IGameSubject &subject)
         data.m_gameOverString = infoUI->GetGameOverString();
         data.m_nextRoundString = infoUI->GetNextRoundString();
 
-        data.m_iCurrentLevel = infoUI->GetCurrentLevel();
-        data.m_iCurrentWealth = infoUI->GetCurrentWealth();
+        // data.m_iCurrentLevel = infoUI->GetCurrentLevel();
+        // data.m_iCurrentWealth = infoUI->GetCurrentWealth();
 
-        data.m_hoverTowerDamage = infoUI->GetHoverTowerDamage();
-        data.m_hoverTowerCooldown = infoUI->GetHoverTowerCooldown();
-        data.m_hoverTowerRange = infoUI->GetHoverTowerRange();
-        data.m_hoverTowerSpeed = infoUI->GetHoverTowerSpeed();
+        // data.m_hoverTowerDamage = infoUI->GetHoverTowerDamage();
+        // data.m_hoverTowerCooldown = infoUI->GetHoverTowerCooldown();
+        // data.m_hoverTowerRange = infoUI->GetHoverTowerRange();
+        // data.m_hoverTowerSpeed = infoUI->GetHoverTowerSpeed();
 
-        data.m_DraggedTowerPosition = infoUI->GetDraggedTowerPosition();
+        //data.m_DraggedTowerPosition = infoUI->GetDraggedTowerPosition();
         data.m_CrossPosition = infoUI->GetCrossPosition();
 
         UpdateTextString(data);
@@ -66,17 +72,21 @@ void InfoUIView::DrawTowerInfo()
     } 
     else
     {
+        m_Window.draw(m_towerLevelText);
         m_Window.draw(m_towerDamageText);
         m_Window.draw(m_towerCooldownText);
         m_Window.draw(m_towerRangeText);
         m_Window.draw(m_towerSpeedText);
+        m_Window.draw(m_towerUpgradeCostText);
+        m_Window.draw(m_towerInstructionText_1);
+        m_Window.draw(m_towerInstructionText_2);
     }
 }
 
-void InfoUIView::DrawDraggedTower()
-{
-    m_Window.draw(m_DraggedTower);
-}
+// void InfoUIView::DrawDraggedTower()
+// {
+//     m_Window.draw(m_DraggedTower);
+// }
 
 void InfoUIView::DrawCrossShape()
 {
@@ -97,24 +107,24 @@ void InfoUIView::DrawUpgradeText()
     m_Window.draw(m_upgradeText);
 }
 
-void InfoUIView::LoadDraggedSprite(Sprite* sprite)
-{
-    m_DraggedSprite = sprite;
-}
+// void InfoUIView::LoadDraggedSprite(Sprite* sprite)
+// {
+//     m_DraggedSprite = sprite;
+// }
 
-void InfoUIView::UpdateDraggedTowerAsset()
-{
-    m_DraggedTower.SetTexture(*m_DraggedSprite->getTexture());
-    m_DraggedTower.SetScale(Vector2f(0.7f, 0.7f));
-    FloatRect draggedTowerBounds = m_DraggedTower.GetSprite().getLocalBounds();
-    m_DraggedTower.SetOrigin(Vector2f(draggedTowerBounds.width / 2, draggedTowerBounds.height / 2 + 10));
-    m_DraggedTower.SetTextureRect(sf::IntRect(0, 0, 70, 100));
-}
+// void InfoUIView::UpdateDraggedTowerAsset()
+// {
+//     m_DraggedTower.SetTexture(*m_DraggedSprite->getTexture());
+//     m_DraggedTower.SetScale(Vector2f(0.7f, 0.7f));
+//     FloatRect draggedTowerBounds = m_DraggedTower.GetSprite().getLocalBounds();
+//     m_DraggedTower.SetOrigin(Vector2f(draggedTowerBounds.width / 2, draggedTowerBounds.height / 2 + 10));
+//     m_DraggedTower.SetTextureRect(sf::IntRect(0, 0, 70, 100));
+// }
 
-void InfoUIView::UpdateDraggedTowerPosition(Vector2f position)
-{
-    m_DraggedTower.SetPosition(position);
-}
+// void InfoUIView::UpdateDraggedTowerPosition(Vector2f position)
+// {
+//     m_DraggedTower.SetPosition(position);
+// }
 
 void InfoUIView::UpdateCrossShapePosition(Vector2f position)
 {
@@ -162,6 +172,10 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
     m_instructionText.setFillColor(m_instructionTextColor);     // Set color
 
+    m_towerLevelText.setString(data.m_towerLevelString);   // Set text
+    FloatRect towerLevelBounds = m_towerLevelText.getLocalBounds();
+    m_towerLevelText.setOrigin(towerLevelBounds.width / 2, towerLevelBounds.height / 2);
+
     m_towerDamageText.setString(data.m_towerDamagStringe);   // Set text
     FloatRect towerDamageBounds = m_towerDamageText.getLocalBounds();
     m_towerDamageText.setOrigin(towerDamageBounds.width / 2, towerDamageBounds.height / 2);
@@ -178,7 +192,19 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     FloatRect towerSpeedBounds = m_towerSpeedText.getLocalBounds();
     m_towerSpeedText.setOrigin(towerSpeedBounds.width / 2, towerSpeedBounds.height / 2);
 
-    m_upgradeText.setString(data.m_upgradeString);   // Set text
+    m_towerUpgradeCostText.setString(data.m_towerUpgradeCostString);   // Set text
+    FloatRect towerUpgradeCostBounds = m_towerUpgradeCostText.getLocalBounds();
+    m_towerUpgradeCostText.setOrigin(towerUpgradeCostBounds.width / 2, towerUpgradeCostBounds.height / 2);
+
+    m_towerInstructionText_1.setString(data.m_towerInstructionString_1);   // Set text
+    FloatRect towerInstructionBounds_1 = m_towerInstructionText_1.getLocalBounds();
+    m_towerInstructionText_1.setOrigin(towerInstructionBounds_1.width / 2, towerInstructionBounds_1.height / 2);
+
+    m_towerInstructionText_2.setString(data.m_towerInstructionString_2);   // Set text
+    FloatRect towerInstructionBounds_2 = m_towerInstructionText_2.getLocalBounds();
+    m_towerInstructionText_2.setOrigin(towerInstructionBounds_2.width / 2, towerInstructionBounds_2.height / 2);
+
+    //m_upgradeText.setString(data.m_upgradeString);   // Set text
 }
 
 void InfoUIView::UpdateUpgradeTextPosition(Vector2f position)
@@ -186,55 +212,61 @@ void InfoUIView::UpdateUpgradeTextPosition(Vector2f position)
     m_upgradeText.setPosition(position);
 }
 
-void InfoUIView::LoadFromFile()
-{
-    #ifdef LINUX
-    m_towerTexture1.loadFromFile("../src/Images/Tower1_Frame_1.png");
-    m_towerTexture2.loadFromFile("../src/Images/Tower2_Frame_1.png");
-    #endif
-    #ifdef MAC
-    m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
-    m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
-    #endif
-}
+// void InfoUIView::LoadFromFile()
+// {
+//     #ifdef LINUX
+//     m_towerTexture1.loadFromFile("../src/Images/Tower1_Frame_1.png");
+//     m_towerTexture2.loadFromFile("../src/Images/Tower2_Frame_1.png");
+//     #endif
+//     #ifdef MAC
+//     m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
+//     m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
+//     #endif
+// }
 
-void InfoUIView::InitializeTowerAssets()
-{
-    Tower tower1;
-    tower1.SetTexture(m_towerTexture1);
-    tower1.SetScale(Vector2f(0.7f, 0.7f));
-    FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-    tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
-    tower1.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower1.SetPosition(Vector2f(m_MapSize.x + 100, m_MapSize.y/3 + 75));
-    a_TowerMenu.push_back(tower1);
+// void InfoUIView::InitializeTowerAssets()
+// {
+//     Tower tower1;
+//     tower1.SetTexture(m_towerTexture1);
+//     tower1.SetScale(Vector2f(0.7f, 0.7f));
+//     FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+//     tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
+//     tower1.SetTextureRect(sf::IntRect(0,0,70,100));
+//     tower1.SetPosition(Vector2f(m_MapSize.x + 100, m_MapSize.y/3 + 75));
+//     a_TowerMenu.push_back(tower1);
 
-    Tower tower2;
-    tower2.SetTexture(m_towerTexture2);
-    FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-    tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
-    tower2.SetScale(Vector2f(0.7f, 0.7f));
-    tower2.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower2.SetPosition(Vector2f(m_MapSize.x + 200, m_MapSize.y/3 + 75));
-    a_TowerMenu.push_back(tower2);
+//     Tower tower2;
+//     tower2.SetTexture(m_towerTexture2);
+//     FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+//     tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
+//     tower2.SetScale(Vector2f(0.7f, 0.7f));
+//     tower2.SetTextureRect(sf::IntRect(0,0,70,100));
+//     tower2.SetPosition(Vector2f(m_MapSize.x + 200, m_MapSize.y/3 + 75));
+//     a_TowerMenu.push_back(tower2);
 
-}
+// }
 
 void InfoUIView::InitializeTextAssets()
 {
 
     Vector2f scoreTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 10);
     Vector2f levelTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 35);
-    Vector2f instructionTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 135);
+    Vector2f instructionTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 105);
     Vector2f warningTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y - 30);
     Vector2f modeTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 65);
     Vector2f woodTowerPricePosition = Vector2f(m_MapSize.x + 100, m_MapSize.y/3 + 125);
     Vector2f stoneTowerPricePosition = Vector2f(m_MapSize.x + 200, m_MapSize.y/3 + 125);
     Vector2f gameOverTextPosition = Vector2f(m_MapSize.x/2, m_MapSize.y/2);
+
+    Vector2f towerLevelPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 140);
     Vector2f towerDamagePosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 170);
     Vector2f towerCooldownPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 200);
     Vector2f towerRangePosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 230);
     Vector2f towerSpeedPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 260);
+    Vector2f towerUpgradeCostPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 290);
+    Vector2f towerInstructionPosition_1 = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 340);
+    Vector2f towerInstructionPosition_2 = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 370);
+
     Vector2f nextRoundTextPosition = Vector2f(m_MapSize.x + 230, m_MapSize.y/10 + 110); //Fix this because it should be the same values as instruciton but its not
 
     // Score text 
@@ -287,6 +319,11 @@ void InfoUIView::InitializeTextAssets()
     m_instructionText.setCharacterSize(20);        // Set size
     m_instructionText.setPosition(instructionTextPosition);       // Set position
 
+    // Tower level text
+    m_towerLevelText.setFont(m_Font);               // Set font
+    m_towerLevelText.setCharacterSize(15);        // Set size
+    m_towerLevelText.setPosition(towerLevelPosition);       // Set position
+
     // Damage text 
     m_towerDamageText.setFont(m_Font);               // Set font
     m_towerDamageText.setCharacterSize(15);        // Set size
@@ -307,10 +344,27 @@ void InfoUIView::InitializeTextAssets()
     m_towerSpeedText.setCharacterSize(15);        // Set size
     m_towerSpeedText.setPosition(towerSpeedPosition);       // Set position
 
-    // Upgrade text
-    m_upgradeText.setFont(m_Font);
-    m_upgradeText.setCharacterSize(15);
-    m_upgradeText.setFillColor(Color::White);
+    // Upgrade cost text
+    m_towerUpgradeCostText.setFont(m_Font);               // Set font
+    m_towerUpgradeCostText.setCharacterSize(15);        // Set size
+    m_towerUpgradeCostText.setPosition(towerUpgradeCostPosition);       // Set position
+
+    // Tower instruction text 1
+    m_towerInstructionText_1.setFont(m_Font);               // Set font
+    m_towerInstructionText_1.setCharacterSize(15);        // Set size
+    m_towerInstructionText_1.setFillColor(Color::Yellow);
+    m_towerInstructionText_1.setPosition(towerInstructionPosition_1);       // Set position
+
+    // Tower instruction text 2
+    m_towerInstructionText_2.setFont(m_Font);               // Set font
+    m_towerInstructionText_2.setCharacterSize(15);        // Set size
+    m_towerInstructionText_2.setFillColor(Color::Yellow);
+    m_towerInstructionText_2.setPosition(towerInstructionPosition_2);       // Set position
+
+    // // Upgrade text
+    // m_upgradeText.setFont(m_Font);
+    // m_upgradeText.setCharacterSize(15);
+    // m_upgradeText.setFillColor(Color::White);
 }
 
 void InfoUIView::LoadCrossShapeAssets()

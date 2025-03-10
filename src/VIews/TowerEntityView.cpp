@@ -151,7 +151,7 @@ void TowerEntityView::SyncTowers(const std::vector<TowerEntity>& templateTowers,
     }
 }
 
-const TowerEntityView::TowerEntityData *TowerEntityView::GetTowerEntityData(const TowerEntity *tower) const
+TowerEntityView::TowerEntityData *TowerEntityView::GetTowerEntityData(const TowerEntity *tower)
 {
     // Debugging
     // for (const auto &pair : m_TowerEntitySubjects)
@@ -242,6 +242,33 @@ void TowerEntityView::Draw()
     if (m_isDraggingTower && m_draggedTowerData)
     {
         m_Window.draw(m_draggedTowerData->sprite);
+    }
+}
+
+void TowerEntityView::SetActiveTowerTexture(TowerEntityData* data)
+{
+    switch (data->type)
+    {
+        case TowerGenerator::TowerType::Basic:
+            //data->sprite.setTexture(m_BasicTowerTextures[m_curentTowerFrameIndex]);
+            break;
+        case TowerGenerator::TowerType::Sniper:
+            data->sprite.setTexture(m_SniperTowerTextures[m_curentTowerFrameIndex]);
+            break;
+        case TowerGenerator::TowerType::Rapid:
+            data->sprite.setTexture(m_RapidTowerTextures[m_curentTowerFrameIndex]);
+            break;
+        default:
+            break;
+    }
+}
+
+void TowerEntityView::IncrementCurentTowerFrameIndex()
+{
+    m_curentTowerFrameIndex++;
+    if (m_curentTowerFrameIndex >= 5)
+    {
+        m_curentTowerFrameIndex = 0;
     }
 }
 

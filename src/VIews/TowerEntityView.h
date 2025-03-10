@@ -45,7 +45,7 @@ public:
         return m_draggedTowerData;
     }
 
-    const TowerEntityData* GetTowerEntityData(const TowerEntity* tower) const;
+    TowerEntityData* GetTowerEntityData(const TowerEntity* tower);
 
     void StartDraggingTower(const TowerEntityData* towerData);
 
@@ -60,8 +60,14 @@ public:
 
     void Draw();
 
+    Clock& GetTowerAnimationDelay() { return m_towerAnimationDelay; }
+
+    void SetActiveTowerTexture(TowerEntityData* data);
+
+    void IncrementCurentTowerFrameIndex();
+
 private:
-    void SetTemplateTowerSprite(TowerEntityData& data, TowerGenerator::TowerType type);
+    void SetTemplateTowerSprite(TowerEntityData &data, TowerGenerator::TowerType type);
 
 private:
     std::unordered_map<const TowerEntity*, TowerEntityData> m_TowerEntitySubjects;
@@ -73,10 +79,14 @@ private:
 
     std::vector<sf::Texture> m_RapidTowerTextures;
     std::vector<sf::Texture> m_SniperTowerTextures;
+    //std::vector<sf::Texture> m_BasicTowerTextures;
 
     TowerEntityData* m_draggedTowerData = nullptr; // Pointer to the dragged tower data
     bool m_isDraggingTower = false; // Flag to track if a tower is being dragged
     bool m_isHoveringOnTower = false; // Flag to track if the mouse is hovering over a tower
+
+    int m_curentTowerFrameIndex = 0;
+    Clock m_towerAnimationDelay;
 };  
 
 #endif  // Tower_Entity_View_H

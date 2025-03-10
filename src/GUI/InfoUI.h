@@ -6,6 +6,9 @@
 
 #include <iostream>
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
+
 
 using namespace sf;
 
@@ -44,10 +47,16 @@ private:
     std::string m_scoreString;
     std::string m_levelString;
     std::string m_instructionString;
+
+    std::string m_towerLevelString;
     std::string m_towerDamagStringe;
     std::string m_towerCooldownString;
     std::string m_towerRangeString;
     std::string m_towerSpeedString;
+    std::string m_towerUpgradeCostString;
+    std::string m_towerInstructionString_1;
+    std::string m_towerInstructionString_2;
+
     std::string m_warningString;
     std::string m_modeString;
     std::string m_woodTowerPriceString;
@@ -59,10 +68,12 @@ private:
     int m_iCurrentLevel;
     int m_iCurrentWealth;
 
+    int m_hoverTowerLevel;
     float m_hoverTowerDamage;
     float m_hoverTowerCooldown;
     float m_hoverTowerRange;
     float m_hoverTowerSpeed;
+    int m_hoverTowerUpgradeCost;
 
     Vector2f m_DraggedTowerPosition;
     Vector2f m_CrossPosition; // Center the X at the hovered tower
@@ -86,6 +97,11 @@ public:
         notifyObservers();
     }
 
+    void SetTowerLevelString(const String& level) {
+        m_towerLevelString = level;
+        notifyObservers();
+    }
+
     void SetTowerDamageString(const String& damage) {
         m_towerDamagStringe = damage;
         notifyObservers();
@@ -105,6 +121,21 @@ public:
         m_towerSpeedString = speed;
         notifyObservers();
     }   
+
+    void SetTowerUpgradeCostString(const String& cost) {
+        m_towerUpgradeCostString = cost;
+        notifyObservers();
+    }
+
+    void SetTowerInstructionString_1(const String& instruction) {
+        m_towerInstructionString_1 = instruction;
+        notifyObservers();
+    }
+
+    void SetTowerInstructionString_2(const String& instruction) {
+        m_towerInstructionString_2 = instruction;
+        notifyObservers();
+    }
 
     void SetWarningString(const String& warning) {
         m_warningString = warning;
@@ -144,37 +175,65 @@ public:
     void SetCurrentLevel(int level) {
         m_iCurrentLevel = level;
         SetLevelString("Score: " + std::to_string(level));
-        notifyObservers();
     }
 
     void SetCurrentWealth(int wealth) {
         m_iCurrentWealth = wealth;
         SetScoreString("Score: " + std::to_string(wealth));
-        notifyObservers();
+    }
+
+    void SetHoverTowerLevel(int level) {
+        m_hoverTowerLevel = level;
+        SetTowerLevelString("Tower Level: " + std::to_string(level));
     }
 
     void SetHoverTowerDamage(float damage) {
         m_hoverTowerDamage = damage;
-        SetTowerDamageString("Damage: " + std::to_string(damage));
-        notifyObservers();
+
+        // format to 2 decimal places
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2) << damage;
+        std::string s = ss.str();
+
+        SetTowerDamageString("Damage: " + s);
     }
 
     void SetHoverTowerCooldown(float cooldown) {
         m_hoverTowerCooldown = cooldown;
-        SetTowerCooldownString("Cooldown: " + std::to_string(cooldown));
-        notifyObservers();
+
+        // format to 2 decimal places
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2) << cooldown;
+        std::string s = ss.str();
+
+        SetTowerCooldownString("Cooldown: " + s);
     }  
 
     void SetHoverTowerRange(float range) {
         m_hoverTowerRange = range;
-        SetTowerRangeString("Range: " + std::to_string(range));
-        notifyObservers();
+
+        // format to 2 decimal places
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2) << range;
+        std::string s = ss.str();
+
+        SetTowerRangeString("Range: " + s);
     }
 
     void SetHoverTowerSpeed(float speed) {
         m_hoverTowerSpeed = speed;
-        SetTowerSpeedString("Speed: " + std::to_string(speed));
-        notifyObservers();
+
+        // format to 2 decimal places
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2) << speed;
+        std::string s = ss.str();
+
+        SetTowerSpeedString("Fire Rate: " + s);
+    }
+
+    void SetHoverTowerUpgradeCost(int cost) {
+        m_hoverTowerUpgradeCost = cost;
+        SetTowerUpgradeCostString("Upgrade Cost: " + std::to_string(cost));
     }
 
     void SetDraggedTowerPosition(Vector2f position) {
@@ -199,6 +258,10 @@ public:
         return m_instructionString;
     }
 
+    const std::string& GetTowerLevelString() const {
+        return m_towerLevelString;
+    }
+
     const std::string& GetTowerDamageString() const {
         return m_towerDamagStringe;
     }
@@ -213,6 +276,18 @@ public:
 
     const std::string& GetTowerSpeedString() const {
         return m_towerSpeedString;
+    }
+
+    const std::string& GetTowerUpgradeCostString() const {
+        return m_towerUpgradeCostString;
+    }
+
+    const std::string& GetTowerInstructionString_1() const {
+        return m_towerInstructionString_1;
+    }
+
+    const std::string& GetTowerInstructionString_2() const {
+        return m_towerInstructionString_2;
     }
 
     const std::string& GetWarningString() const {

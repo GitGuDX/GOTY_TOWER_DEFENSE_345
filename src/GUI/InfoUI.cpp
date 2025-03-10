@@ -19,6 +19,9 @@ void InfoUI::InitializeInfoUI()
     m_towerCooldownString = "Cooldown: " + std::to_string(m_hoverTowerCooldown);
     m_towerRangeString = "Range: " + std::to_string(m_hoverTowerRange);
     m_towerSpeedString = "Speed: " + std::to_string(m_hoverTowerSpeed);
+    m_towerUpgradeCostString = "Upgrade Cost: 100";
+    m_towerInstructionString_1 = "Press E to upgrade tower";
+    m_towerInstructionString_2 = "Right click to destroy tower";
     m_warningString = "";
     m_modeString = "";
     m_woodTowerPriceString = "Cost: 200";
