@@ -54,9 +54,7 @@ public:
 
     void DrawHUD();
 
-    void DrawTowers();
-
-    void DrawTowerInfo(bool hoveringOnTower);
+    void DrawTowerInfo();
 
     void DrawDraggedTower();
 
@@ -92,6 +90,10 @@ public:
 
     void SetWarningTextColor(Color color) {
         m_warningTextColor = color;
+    }
+
+    void SetHoveringOnTower(bool isHovering) {
+        m_isHoveringOnTower = isHovering;
     }
 
     Sprite* GetDraggedSprite() const {
@@ -155,6 +157,8 @@ private:
     
     float m_LineThickness;     // Thickness of X
     float m_LineLength;       // Length of each line in X
+
+    bool m_isHoveringOnTower = false;
 };
 
 #endif // INFOUIVIEW_H

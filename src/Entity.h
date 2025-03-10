@@ -34,7 +34,7 @@ public:
 		m_Sprite.setOrigin(origin);
 	}
 
-	void SetPosition(const sf::Vector2f& position)
+	virtual void SetPosition(const sf::Vector2f& position)
 	{
 		m_Sprite.setPosition(position);
 	}

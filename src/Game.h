@@ -16,15 +16,24 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include <vector>
 
 #include "Platform.h"
+
 #include "GUI/Tile.h"
+#include "GUI/GUIManager.h"
+
 #include "Monster.h"
 #include "Monster_Generator.h"
+#include "MonsterView.h"
+
 #include "Tower.h"
+#include "TowerView.h"
+#include "EntityManagers/TowerManager.h"
+
+
 #include "GameEventManager.h"
 #include "ProjectileManager.h"
-#include "TowerView.h"
-#include "MonsterView.h"
-#include "GUI/GUIManager.h"
+
+
+
 
 using namespace sf;
 using namespace std;
@@ -165,6 +174,9 @@ private:
     // ** MAP
     Vector2i m_vGridSize;
     const int m_iTileSize;
+
+    // Tower
+    TowerManager m_TowerManager;
 
     float m_fElapesdTimeInSeconds;
 

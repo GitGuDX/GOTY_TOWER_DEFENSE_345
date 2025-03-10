@@ -57,21 +57,14 @@ void InfoUIView::DrawHUD()
     m_Window.draw(m_modeText);
 }
 
-void InfoUIView::DrawTowers()
+void InfoUIView::DrawTowerInfo()
 {
-    for (auto& tower : a_TowerMenu) 
-    {
-        m_Window.draw(tower);  // If Tile is derived from sf::Drawable               //ADD TOWER INFO HERE
-    }
-}
-
-void InfoUIView::DrawTowerInfo(bool hoveringOnTower)
-{
-    if(!hoveringOnTower)
+    if (!m_isHoveringOnTower)
     {
         m_Window.draw(m_woodTowerPriceText);
         m_Window.draw(m_stoneTowerPriceText);
-    } else if (hoveringOnTower)
+    } 
+    else
     {
         m_Window.draw(m_towerDamageText);
         m_Window.draw(m_towerCooldownText);
@@ -87,8 +80,11 @@ void InfoUIView::DrawDraggedTower()
 
 void InfoUIView::DrawCrossShape()
 {
-    m_Window.draw(m_CrossLine1);
-    m_Window.draw(m_CrossLine2);
+    if (m_isHoveringOnTower)
+    {
+        m_Window.draw(m_CrossLine1);
+        m_Window.draw(m_CrossLine2);
+    }
 }
 
 void InfoUIView::DrawNextRoundText()
@@ -122,8 +118,8 @@ void InfoUIView::UpdateDraggedTowerPosition(Vector2f position)
 
 void InfoUIView::UpdateCrossShapePosition(Vector2f position)
 {
-    m_CrossLine1.setPosition(position + sf::Vector2f(m_LineLength / 2, m_LineLength / 2));
-    m_CrossLine2.setPosition(position + sf::Vector2f(m_LineLength / 2, m_LineLength / 2));
+    m_CrossLine1.setPosition(position);
+    m_CrossLine2.setPosition(position);
 }
 
 void InfoUIView::UpdateTextString(InfoUIData& data)
@@ -141,11 +137,11 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     m_warningText.setOrigin(warningTextBounds.width / 2, warningTextBounds.height / 2);
     m_warningText.setFillColor(m_warningTextColor);
 
-    m_woodTowerPriceText.setString(data.m_woodTowerPriceString);   // Set text
+    m_woodTowerPriceText.setString(sf::String("Cost: ") + data.m_woodTowerPriceString);   // Set text
     FloatRect woodTowerPriceBounds = m_woodTowerPriceText.getLocalBounds();
     m_woodTowerPriceText.setOrigin(woodTowerPriceBounds.width / 2, woodTowerPriceBounds.height / 2);
 
-    m_stoneTowerPriceText.setString(data.m_stoneTowerPriceString);   // Set text
+    m_stoneTowerPriceText.setString(sf::String("Cost: ") + data.m_stoneTowerPriceString);   // Set text
     FloatRect stoneTowerPriceBounds = m_stoneTowerPriceText.getLocalBounds();
     m_stoneTowerPriceText.setOrigin(stoneTowerPriceBounds.width / 2, stoneTowerPriceBounds.height / 2);
 
@@ -322,11 +318,19 @@ void InfoUIView::LoadCrossShapeAssets()
     m_LineThickness = 6.0f;     // Thickness of X
     m_LineLength = 30.0f;       // Length of each line in X
 
-    m_CrossLine1.setFillColor(sf::Color::Red);
-    m_CrossLine1.setOrigin(m_LineLength / 2, m_LineThickness / 2);
-    m_CrossLine1.setRotation(45);  // Diagonal top-left to bottom-right
+    // Set the size of the cross lines
+    m_CrossLine1.setSize(sf::Vector2f(m_LineLength, m_LineThickness)); // Horizontal line
+    m_CrossLine2.setSize(sf::Vector2f(m_LineLength, m_LineThickness)); // Vertical line
 
+    // Set colors
+    m_CrossLine1.setFillColor(sf::Color::Red);
     m_CrossLine2.setFillColor(sf::Color::Red);
+
+    // Set origins to center of each line (half of its length and thickness)
+    m_CrossLine1.setOrigin(m_LineLength / 2, m_LineThickness / 2);
     m_CrossLine2.setOrigin(m_LineLength / 2, m_LineThickness / 2);
+
+    // Set rotations (diagonal lines)
+    m_CrossLine1.setRotation(45);  // Diagonal top-left to bottom-right
     m_CrossLine2.setRotation(-45); // Diagonal top-right to bottom-left
 }

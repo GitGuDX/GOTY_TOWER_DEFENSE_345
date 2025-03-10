@@ -39,7 +39,7 @@ set(SFML_DIR "C:/msys64/mingw64/lib/cmake/sfml")
 find_package(SFML REQUIRED COMPONENTS system window graphics)
 
 # Collect all .cpp files in the src directory
-file(GLOB SOURCES src/*.cpp src/GUI/*.cpp src/Views/*.cpp)  # Recursively grab all .cpp files
+file(GLOB SOURCES src/*.cpp src/GUI/*.cpp src/Views/*.cpp src/Entities/*.cpp src/EntityManagers/*.cpp src/Generators/*.cpp)  # Recursively grab all .cpp files
 
 # Add your source files (adjust based on your project structure)
 add_executable(${EXECUTABLE_NAME} ${SOURCES})

@@ -52,12 +52,12 @@ void MapSetupView::Update(const IGameSubject &subject)
                     }
                     else if (tiles[i][j].type == Tile::Entry)
                     {
-                        std::cout << "Entry tile at: " << tiles[i][j].position.x << ", " << tiles[i][j].position.y << std::endl;
+                        //std::cout << "Entry tile at: " << tiles[i][j].position.x << ", " << tiles[i][j].position.y << std::endl;
                         data.entryTile = mapSetup->GetEntryTile();
                     }
                     else if (tiles[i][j].type == Tile::Exit)
                     {
-                        std::cout << "Exit tile at: " << tiles[i][j].position.x << ", " << tiles[i][j].position.y << std::endl;
+                        //std::cout << "Exit tile at: " << tiles[i][j].position.x << ", " << tiles[i][j].position.y << std::endl;
                         data.exitTile = mapSetup->GetExitTile();
                     }
                 }

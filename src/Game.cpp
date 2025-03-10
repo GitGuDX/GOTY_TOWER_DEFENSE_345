@@ -35,6 +35,8 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_vWindowSize(initialWindowWidth, initialWindowHeight)                                   // Set Window size
     // ** TILE
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
+    // ** TOWER
+    , m_TowerManager(m_Window)
     // ** GAME SETUP
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
     , m_RapidBulletTemplate()
@@ -99,7 +101,7 @@ void Game::Run()
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode) {
 
-                // Initialize GameSetup and GameSetupVIew objects and load thier assets
+                // Initialize GameSetup with user given grid size and GameSetupView objects and load thier assets
                 Vector2i gridSize;
                 gridSize.x = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowWidth());                // converting sf::String -> std::string -> unsigned int
                 gridSize.y = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowHeight());
@@ -108,11 +110,27 @@ void Game::Run()
                 // Initialize InfoUI and InfoUIView objects and load their assets
                 m_GUIManager.InitializeInfoUI();
 
-                // Set window size to map size
+                // Resize window to fit the map size
                 Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
-                //m_Window.create(VideoMode(m_vWindowSize.x + 300, m_vWindowSize.y), "New Game");
                 m_Window.create(VideoMode(mapSize.x + 300, mapSize.y), "New Game");
 
+                // Initialize Tower template for the UI with mapSize to set position to template towers for the UI
+                m_TowerManager.SetMapSize(mapSize);
+                m_TowerManager.InitializeGameSetup();
+
+                // Get tower price and set it to the InfoUI
+                std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
+                for (const TowerEntity& tower : templateTowers)
+                {
+                    if (tower.GetType() == TowerGenerator::TowerType::Rapid)
+                    {
+                        m_GUIManager.GetInfoUI()->SetWoodTowerPriceString(sf::String(std::to_string(tower.GetCost())));
+                    }
+                    else if (tower.GetType() == TowerGenerator::TowerType::Sniper)
+                    {
+                        m_GUIManager.GetInfoUI()->SetStoneTowerPriceString(sf::String(std::to_string(tower.GetCost())));
+                    }
+                }
                 
                 // *** Legacy Code ***
                 LoadMapEditorAssets(); 
@@ -701,24 +719,24 @@ void Game::LoadUIAssets()
     // // Add for window
     // #endif
     // //MENU ASSETS
-    Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
-    Tower tower1;
-    tower1.SetTexture(m_towerTexture1);
-    tower1.SetScale(Vector2f(0.7f, 0.7f));
-    FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-    tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
-    tower1.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower1.SetPosition(Vector2f(mapSize.x + 100, mapSize.y/3 + 75));
-    a_towerMenu.push_back(tower1);
+    // Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
+    // Tower tower1;
+    // tower1.SetTexture(m_towerTexture1);
+    // tower1.SetScale(Vector2f(0.7f, 0.7f));
+    // FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+    // tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
+    // tower1.SetTextureRect(sf::IntRect(0,0,70,100));
+    // tower1.SetPosition(Vector2f(mapSize.x + 100, mapSize.y/3 + 75));
+    // a_towerMenu.push_back(tower1);
 
-    Tower tower2;
-    tower2.SetTexture(m_towerTexture2);
-    FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-    tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
-    tower2.SetScale(Vector2f(0.7f, 0.7f));
-    tower2.SetTextureRect(sf::IntRect(0,0,70,100));
-    tower2.SetPosition(Vector2f(mapSize.x + 200, mapSize.y/3 + 75));
-    a_towerMenu.push_back(tower2);
+    // Tower tower2;
+    // tower2.SetTexture(m_towerTexture2);
+    // FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
+    // tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
+    // tower2.SetScale(Vector2f(0.7f, 0.7f));
+    // tower2.SetTextureRect(sf::IntRect(0,0,70,100));
+    // tower2.SetPosition(Vector2f(mapSize.x + 200, mapSize.y/3 + 75));
+    // a_towerMenu.push_back(tower2);
 
 
 }
@@ -1047,217 +1065,474 @@ void Game::HandleInput()
             }
         }
 
-        //Removes built towers on click
-        if(event.mouseButton.button == sf::Mouse::Left && !isDraggingTower){
-            if (justPlacedTower && placementOrUpgradeTimer.getElapsedTime().asMilliseconds() < 200) {
-                return;  // Ignore clicks right after placement
-            }
-            justPlacedTower = false;  // Reset flag after some time
-            sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-            Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(newPos, 50);
-
-            for (auto it = a_allActiveTowers.begin(); it != a_allActiveTowers.end(); ++it) {
-                if (it->GetPosition().x == snapGrid.x && it->GetPosition().y == snapGrid.y) {
-                    //currentWarning = "Successfully removed a tower\n";
-                    //m_warningText.setFillColor(Color::Green);
-                    //warningShown.restart();
-                    m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Green);
-                    m_GUIManager.GetInfoUI()->SetWarningString("Successfully removed a tower\n");
-                    m_GUIManager.GetInfoUI()->GetWarningShown().restart();
-                    
-                    m_iCurrentWealth += it->GetCost()/2;
-                    m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
-
-                    //  Remove the clicked tower
-                    if (std::find(a_activeWoodTowers.begin(), a_activeWoodTowers.end(), *it) != a_activeWoodTowers.end()) {
-                        // Tower is in wood towers list, remove it
-                        a_activeWoodTowers.erase(std::remove(a_activeWoodTowers.begin(), a_activeWoodTowers.end(), *it), a_activeWoodTowers.end());
-                    } else if (std::find(a_activeStoneTowers.begin(), a_activeStoneTowers.end(), *it) != a_activeStoneTowers.end()) {
-                        // Tower is in stone towers list, remove it
-                        a_activeStoneTowers.erase(std::remove(a_activeStoneTowers.begin(), a_activeStoneTowers.end(), *it), a_activeStoneTowers.end());
-                    }
-
-                    // Remove the tower from all active towers
-                    a_allActiveTowers.erase(it);
-                    break;  // Stop looping after removing one tower
-                }
-            }
-        }
-
-
-        // TOWER DRAGGING RELATED
+        // Handle inputs for Play Mode and Map Editor Mode
         if (m_eGameMode == PlayMode || m_eGameMode == MapEditorMode){
-            // Handle mouse click (start dragging)
+            
             sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
+            Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mousePos, 50);
+            
+            std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
+            std::vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
 
+            InfoUI* infoUI = m_GUIManager.GetInfoUI();
+            InfoUIView* infoUIView = m_GUIManager.GetInfoUIView();
+            TowerEntityView& towerView = m_TowerManager.GetTowerEntityView();
+            const TowerEntityView::TowerEntityData* draggedTowerData = towerView.GetDraggedTowerEntityData();
+
+            // Handle mouse click (start dragging)
             if (Mouse::isButtonPressed(Mouse::Left) && m_eCurrentEditState == FinishedPathingState) {
                 //for (auto& tower : a_towerMenu) 
                 // ** UIView
-                //std::vector<Tower>& towerMenu = m_GUIManager.GetInfoUIView()->GetTowerMenu();
-                for (size_t i = 0; i < a_towerMenu.size(); ++i)
+                
+                for (size_t i = 0; i < templateTowers.size(); ++i)
                 {
-                    Tower& tower = a_towerMenu[i];
-                    sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
-                    if (tower.GetSpriteNonConst().getGlobalBounds().contains(mousePos) && draggedSprite == nullptr) 
-                    {
+                    TowerEntity& tower = templateTowers[i];
+                    
+                    const TowerEntityView::TowerEntityData* towerData = towerView.GetTowerEntityData(&tower);
+                    
+                    // Debugging
+                    // if (towerData != nullptr) {
+                    //     //std::cout << towerData->sprite.getGlobalBounds().width << std::endl;
+                    //     //std::cout << "Tower position: " << towerData->sprite.getGlobalBounds().width << ", " << towerData->sprite.getGlobalBounds().height << std::endl;
+                    // }
+                    //std::cout << "Mouse position: " << mousePos.x << ", " << mousePos.y << std::endl;
 
-                        draggedSprite = (tower.GetSpriteNonConst().getTexture() != nullptr) ? &tower.GetSpriteNonConst() : nullptr;
+                    // Check if tower exists in the view, the mouse is within the bounds of the tower sprite, and no tower is currently being dragged...
+                    
+                    if (towerData != nullptr && towerData->sprite.getGlobalBounds().contains(mousePos) && draggedTowerData == nullptr) 
+                    {
+                        // draggedSprite = (tower.GetSpriteNonConst().getTexture() != nullptr) ? &tower.GetSpriteNonConst() : nullptr;
                         
-                        if (draggedSprite) { // Only proceed if draggedSprite is valid
-                            // ** UIView UpdateDraggedTowerAsset() 
-                            draggedTower.SetTexture(*draggedSprite->getTexture());
-                            draggedTower.SetScale(Vector2f(0.7f, 0.7f));
-                            draggedTower.SetPosition(tower.GetPosition());
+                        // if (draggedSprite) { // Only proceed if draggedSprite is valid
+                        //     // ** UIView UpdateDraggedTowerAsset() 
+                        //     draggedTower.SetTexture(*draggedSprite->getTexture());
+                        //     draggedTower.SetScale(Vector2f(0.7f, 0.7f));
+                        //     draggedTower.SetPosition(tower.GetPosition());
             
-                            FloatRect draggedTowerBounds = draggedTower.GetSprite().getLocalBounds();
-                            draggedTower.SetOrigin(Vector2f(draggedTowerBounds.width / 2, draggedTowerBounds.height / 2 + 10));
-                            draggedTower.SetTextureRect(sf::IntRect(0, 0, 70, 100));
-                            /////
+                        //     FloatRect draggedTowerBounds = draggedTower.GetSprite().getLocalBounds();
+                        //     draggedTower.SetOrigin(Vector2f(draggedTowerBounds.width / 2, draggedTowerBounds.height / 2 + 10));
+                        //     draggedTower.SetTextureRect(sf::IntRect(0, 0, 70, 100));
+                        //     /////
                             
-                            isDraggingTower = true;
-                        }
-                        break;
+                        //     isDraggingTower = true;
+                        // }
+                        //break;
+                        
+                        towerView.StartDraggingTower(towerData);
                     }
                 }
             }
 
-            // Handle dragging when the mouse moves
-            // UIView Update dragged tower position
-            //if (event.type == sf::Event::MouseMoved && draggedSprite != nullptr) 
+            // Update dragged tower position while dragging
             if (std::abs(mousePos.x - draggedTower.GetPosition().x) > 0.01f ||            // Prevent unnecessary updates when movement is too small.
                 std::abs(mousePos.y - draggedTower.GetPosition().y) > 0.01f)
             {
                 //sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window)); //+ offset;
-                draggedTower.SetPosition(mousePos);       // Updates the dragged towers position while dragging
+                //draggedTower.SetPosition(mousePos);       // Updates the dragged towers position while dragging
+                towerView.UpdateDraggedTower(mousePos);
             }
 
             // ** Some UI
             // Handle mouse release (stop dragging)
             if (event.type == sf::Event::MouseButtonReleased && m_eCurrentEditState == FinishedPathingState) {
-                Vector2i mousePos = sf::Mouse::getPosition(m_Window);
-                Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
-                Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
-                // Check for existing towers at the snapGrid position
-                for (auto& tower : a_allActiveTowers) {
-                    if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y && draggedSprite != nullptr) {
-                        // currentWarning = "Warning: There's already a tower here...\n";
-                        // m_warningText.setFillColor(Color::Red);
-                        m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
-                        m_GUIManager.GetInfoUI()->SetWarningString("Warning: There's already a tower here...\n");
+                // Vector2i mousePos = sf::Mouse::getPosition(m_Window);
+                // Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
+                // Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
 
-                        warningShown.restart();
-                        draggedSprite = nullptr;
-                        break;
+                
+
+                // Check for existing towers at the snapGrid position
+                // for (const TowerEntity& tower : activeTowers) {
+                //     if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y && draggedSprite != nullptr) {
+                //         // currentWarning = "Warning: There's already a tower here...\n";
+                //         // m_warningText.setFillColor(Color::Red);
+                //         // m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                //         // m_GUIManager.GetInfoUI()->SetWarningString("Warning: There's already a tower here...\n");
+
+                //         // warningShown.restart();
+                //         // draggedSprite = nullptr;
+                //         // break;
+                //     }
+                // }
+                
+                
+
+                // **RIGHT CLICK TO REMOVE A TOWER**
+                if (event.mouseButton.button == sf::Mouse::Right) 
+                {
+                    for (TowerEntity& tower : activeTowers) 
+                    {
+                        if (std::abs(tower.GetPosition().x - snapGrid.x) < 0.5f &&
+                            std::abs(tower.GetPosition().y - snapGrid.y) < 0.5f)
+                        {
+                            int cost = tower.GetCost();
+                            float sellRate = m_TowerManager.GetSellRate();
+                            m_iCurrentWealth += cost * sellRate;
+                            infoUI->SetCurrentWealth(m_iCurrentWealth);
+
+                            m_TowerManager.RemoveTower(snapGrid);
+
+                            infoUIView->SetWarningTextColor(sf::Color::Green);
+                            infoUI->SetWarningString("Tower removed\n");
+                            warningShown.restart();
+
+                            return; // Exit after removing one tower
+                        }
                     }
+                }
+                else if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    // Check for existing towers at the snapGrid position
+                    bool towerExists = false;
+                    for (const TowerEntity& tower : activeTowers) 
+                    {
+                        const float tolerance = 0.5f;
+                        if (std::abs(tower.GetPosition().x - snapGrid.x) < tolerance &&
+                            std::abs(tower.GetPosition().y - snapGrid.y) < tolerance)
+                        {
+                            towerExists = true; // No need to check further once we find an existing tower
+                            break;
+                        }
+                    }
+
+                    if (towerExists) 
+                    {
+                        // Provide feedback (e.g., show a warning message)
+                        infoUIView->SetWarningTextColor(Color::Red);
+                        infoUI->SetWarningString("Warning: There's already a tower here...\n");
+                        warningShown.restart();   // Start the timer to show the warning for a short time
+
+                        towerView.StopDraggingTower();
+                    }
+                    else
+                    {
+                        // Check if the position is on the path
+                        const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
+                        bool onPath = false;
+                        for (const auto& tilePos : path) 
+                        {
+                            if (tilePos.x == snapGrid.x && tilePos.y == snapGrid.y) 
+                            {
+                                onPath = true;
+                                break;
+                            }
+                        }
+
+                        Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
+                        if (draggedTowerData != nullptr && snapGrid.x >= 0 && snapGrid.y >= 0 && snapGrid.x < mapSize.x && snapGrid.y < mapSize.y && !onPath) 
+                        {
+                            int cost = draggedTowerData->cost;
+                            if (m_iCurrentWealth < cost)
+                            {
+                                infoUIView->SetWarningTextColor(Color::Red);
+                                infoUI->SetWarningString("Warning: Cannot afford this tower...\n");
+                                warningShown.restart();
+                            }
+                            else
+                            {
+                                m_iCurrentWealth -= cost;
+                                infoUI->SetCurrentWealth(m_iCurrentWealth);
+
+                                m_TowerManager.CreateTower(draggedTowerData->type, snapGrid);
+
+                                infoUIView->SetWarningTextColor(Color::Green);
+                                infoUI->SetWarningString("Successfully placed tower\n");
+                                warningShown.restart();
+                            }
+
+                            towerView.StopDraggingTower();
+                        }
+                        // Invalid placement
+                        else
+                        {
+                            //std::cerr << "Error: Invalid tower placement at position " << snapGrid.x << ", " << snapGrid.y << std::endl;
+                            if (draggedTowerData != nullptr)
+                            {
+                                m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                                infoUI->SetWarningString("Warning: Invalid tower placement\n");
+                                warningShown.restart();   // Start the timer to show the warning for a short time
+                            }
+                            
+                            towerView.StopDraggingTower();
+                        }
+                    }
+
+                    // legacy code to check if the position is on the path
+                    // // for (auto& tilePos : m_aPath)
+                    // const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
+                    // for (auto& tilePos : path) 
+                    // {
+                    //     if (tilePos.x == snapGrid.x && tilePos.y == snapGrid.y && draggedSprite != nullptr) {
+                    //         // currentWarning = "Warning: Cannot place on path...\n";
+                    //         // m_warningText.setFillColor(Color::Red);
+                    //         m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                    //         m_GUIManager.GetInfoUI()->SetWarningString("Warning: Cannot place on path...\n");
+                        
+                    //         warningShown.restart();
+                    //         draggedSprite = nullptr;
+                    //         break;
+                    //     }
+                    // }
                 }
                 
-                // for (auto& tilePos : m_aPath)
-                const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
-                for (auto& tilePos : path) 
-                {
-                    if (tilePos.x == snapGrid.x && tilePos.y == snapGrid.y && draggedSprite != nullptr) {
-                        // currentWarning = "Warning: Cannot place on path...\n";
-                        // m_warningText.setFillColor(Color::Red);
-                        m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
-                        m_GUIManager.GetInfoUI()->SetWarningString("Warning: Cannot place on path...\n");
-                       
-                        warningShown.restart();
-                        draggedSprite = nullptr;
-                        break;
-                    }
-                }
 
                 // ** UI
                 //std::cout << "For loop done\n";
-                if(mouseWorldPos.x <= m_vWindowSize.x && mouseWorldPos.y <= m_vWindowSize.y && draggedSprite != nullptr){
-                    //std::cout << "Mouse released inside window\n";
-                    draggedTower.SetPosition(snapGrid);
-                    //std::cout << "Dragged tower position set\n";
-                    //std::cout << "Before checking texture\n";
-                    //std::cout << "draggedSprite address: " << draggedSprite << std::endl;
-                    //std::cout << "Texture address: " << draggedSprite->getTexture() << std::endl;
-                    //std::cout << (draggedSprite->getTexture() == nullptr) << std::endl;
-                    //std::cout << "Im here\n";
-                    //if (draggedSprite != nullptr && draggedSprite->getTexture() == &m_towerTexture1)
-                    if (draggedSprite->getTexture() == &m_towerTexture1) {             // Avoid accessing a null pointer
-                        //std::cout << "start at tower 1\n";
+                // if(mouseWorldPos.x <= m_vWindowSize.x && mouseWorldPos.y <= m_vWindowSize.y && draggedSprite != nullptr){
+                //     //std::cout << "Mouse released inside window\n";
+                //     draggedTower.SetPosition(snapGrid);
+                //     //std::cout << "Dragged tower position set\n";
+                //     //std::cout << "Before checking texture\n";
+                //     //std::cout << "draggedSprite address: " << draggedSprite << std::endl;
+                //     //std::cout << "Texture address: " << draggedSprite->getTexture() << std::endl;
+                //     //std::cout << (draggedSprite->getTexture() == nullptr) << std::endl;
+                //     //std::cout << "Im here\n";
+                //     //if (draggedSprite != nullptr && draggedSprite->getTexture() == &m_towerTexture1)
+                //     if (draggedSprite->getTexture() == &m_towerTexture1) {             // Avoid accessing a null pointer
+                //         //std::cout << "start at tower 1\n";
                         
-                        //std::cout << "tower 1 - 2\n";
-                        if(m_iCurrentWealth < 200){
-                            //std::cout << "tower 1 - 2a\n";
-                            // currentWarning = "Warning: Cannot afford this tower...\n";
-                            // m_warningText.setFillColor(Color::Red);
-                            m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
-                            m_GUIManager.GetInfoUI()->SetWarningString("Warning: Cannot afford this tower...\n");
+                //         //std::cout << "tower 1 - 2\n";
+                //         if(m_iCurrentWealth < 200){
+                //             //std::cout << "tower 1 - 2a\n";
+                //             // currentWarning = "Warning: Cannot afford this tower...\n";
+                //             // m_warningText.setFillColor(Color::Red);
+                //             m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                //             m_GUIManager.GetInfoUI()->SetWarningString("Warning: Cannot afford this tower...\n");
                             
-                            warningShown.restart();
-                            draggedSprite = nullptr;
-                            isDraggingTower = false;
-                            break;
-                        } else{
-                            //std::cout << "tower 1 - 3\n";
-                            m_iCurrentWealth -= 200;
-                            m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
+                //             warningShown.restart();
+                //             draggedSprite = nullptr;
+                //             isDraggingTower = false;
+                //             break;
+                //         } else{
+                //             //std::cout << "tower 1 - 3\n";
+                //             m_iCurrentWealth -= 200;
+                //             m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
 
-                            draggedTower.AddObserver(&m_TowerView);  // Add this line
-                            draggedTower.SetType(TowerType::Rapid);
-                            a_activeWoodTowers.push_back(draggedTower);
-                            a_allActiveTowers.push_back(draggedTower);
-                            justPlacedTower = true;
-                            placementOrUpgradeTimer.restart();
-                            //std::cout << "tower 1 - 4\n";
-                        }
-                        //std::cout << "break at tower 1\n";
-                    }
-                    else if(draggedSprite->getTexture() == &m_towerTexture2)
-                    {
+                //             draggedTower.AddObserver(&m_TowerView);  // Add this line
+                //             draggedTower.SetType(TowerType::Rapid);
+                //             a_activeWoodTowers.push_back(draggedTower);
+                //             a_allActiveTowers.push_back(draggedTower);
+                //             justPlacedTower = true;
+                //             placementOrUpgradeTimer.restart();
+                //             //std::cout << "tower 1 - 4\n";
+                //         }
+                //         //std::cout << "break at tower 1\n";
+                //     }
+                //     else if(draggedSprite->getTexture() == &m_towerTexture2)
+                //     {
                         
-                        //std::cout << "start at tower 2\n";
+                //         //std::cout << "start at tower 2\n";
                         
-                        //std::cout << "tower 2 - 2\n";
-                        if(m_iCurrentWealth < 300){
-                            //std::cout << "tower 2 - 2a\n";
-                            // currentWarning = "Warning: Cannot afford this tower...\n";
-                            // m_warningText.setFillColor(Color::Red);
-                            m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
-                            m_GUIManager.GetInfoUI()->SetWarningString("Warning: Cannot afford this tower...\n");
+                //         //std::cout << "tower 2 - 2\n";
+                //         if(m_iCurrentWealth < 300){
+                //             //std::cout << "tower 2 - 2a\n";
+                //             // currentWarning = "Warning: Cannot afford this tower...\n";
+                //             // m_warningText.setFillColor(Color::Red);
+                //             m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+                //             m_GUIManager.GetInfoUI()->SetWarningString("Warning: Cannot afford this tower...\n");
 
-                            warningShown.restart();
-                            draggedSprite = nullptr;
-                            break;
-                        } else{
-                            //std::cout << "tower 2 - 3\n";
-                            m_iCurrentWealth -= 300;
-                            m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
+                //             warningShown.restart();
+                //             draggedSprite = nullptr;
+                //             break;
+                //         } else{
+                //             //std::cout << "tower 2 - 3\n";
+                //             m_iCurrentWealth -= 300;
+                //             m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
 
-                            draggedTower.AddObserver(&m_TowerView);  // Add this line
-                            draggedTower.SetType(TowerType::Sniper);    // stat must hcange after adding observer
-                            a_activeStoneTowers.push_back(draggedTower);
-                            a_allActiveTowers.push_back(draggedTower);
-                            justPlacedTower = true;
-                            placementOrUpgradeTimer.restart();
-                            //std::cout << "tower 2 - 4\n";
-                        }
-                        //std::cout << "break at tower 2\n";
-                    }
-                    else 
-                    {
-                        std::cerr << "Error: Unknown tower texture\n"; // Added error handling for unknown texture
-                    }
+                //             draggedTower.AddObserver(&m_TowerView);  // Add this line
+                //             draggedTower.SetType(TowerType::Sniper);    // stat must hcange after adding observer
+                //             a_activeStoneTowers.push_back(draggedTower);
+                //             a_allActiveTowers.push_back(draggedTower);
+                //             justPlacedTower = true;
+                //             placementOrUpgradeTimer.restart();
+                //             //std::cout << "tower 2 - 4\n";
+                //         }
+                //         //std::cout << "break at tower 2\n";
+                //     }
+                //     else 
+                //     {
+                //         std::cerr << "Error: Unknown tower texture\n"; // Added error handling for unknown texture
+                //     }
                     //std::cout << "break at end\n";
-                    draggedSprite = nullptr;
+                    // draggedSprite = nullptr;
                     // currentWarning = "Successfully placed tower\n";
                     // m_warningText.setFillColor(Color::Green);
-                    m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Green);
-                    m_GUIManager.GetInfoUI()->SetWarningString("Successfully placed tower\n");
+                //     m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Green);
+                //     m_GUIManager.GetInfoUI()->SetWarningString("Successfully placed tower\n");
 
-                    warningShown.restart();
-                } else {
-                    std::cout << "Mouse released outside window\n";
-                    draggedSprite = nullptr;
+                //     warningShown.restart();
+                // } else {
+                //     std::cout << "Mouse released outside window\n";
+                //     draggedSprite = nullptr;
+                // }
+                // std::cout << "Mouse released done\n";
+                // isDraggingTower = false;
+            }
+
+            //Removes built towers on right click
+            // const TowerEntityView::TowerEntityData* draggedTowerData = towerView.GetDraggedTowerEntityData();
+            // if(Mouse::isButtonPressed(Mouse::Right) && draggedTowerData == nullptr){
+            //     // if (justPlacedTower && placementOrUpgradeTimer.getElapsedTime().asMilliseconds() < 200) {
+            //     //     return;  // Ignore clicks right after placement
+            //     // }
+            //     //justPlacedTower = false;  // Reset flag after some time
+            //     // sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+            //     // Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(newPos, 50);
+
+            //     //for (auto it = a_allActiveTowers.begin(); it != a_allActiveTowers.end(); ++it) 
+            //     std::vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
+            //     for (auto it = activeTowers.begin(); it != activeTowers.end(); ++it)
+            //     {
+            //         if (it->GetPosition().x == snapGrid.x && it->GetPosition().y == snapGrid.y) {
+            //             //currentWarning = "Successfully removed a tower\n";
+            //             //m_warningText.setFillColor(Color::Green);
+            //             //warningShown.restart();
+            //             m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Green);
+            //             m_GUIManager.GetInfoUI()->SetWarningString("Successfully removed a tower\n");
+            //             m_GUIManager.GetInfoUI()->GetWarningShown().restart();
+                        
+            //             m_iCurrentWealth += it->GetCost()/2;
+            //             m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
+                    
+            //             // //  Remove the clicked tower
+            //             // if (std::find(a_activeWoodTowers.begin(), a_activeWoodTowers.end(), *it) != a_activeWoodTowers.end()) {
+            //             //     // Tower is in wood towers list, remove it
+            //             //     a_activeWoodTowers.erase(std::remove(a_activeWoodTowers.begin(), a_activeWoodTowers.end(), *it), a_activeWoodTowers.end());
+            //             // } else if (std::find(a_activeStoneTowers.begin(), a_activeStoneTowers.end(), *it) != a_activeStoneTowers.end()) {
+            //             //     // Tower is in stone towers list, remove it
+            //             //     a_activeStoneTowers.erase(std::remove(a_activeStoneTowers.begin(), a_activeStoneTowers.end(), *it), a_activeStoneTowers.end());
+            //             // }
+                    
+            //             // Remove the tower from all active towers
+            //             activeTowers.erase(it);
+            //             break;  // Stop looping after removing one tower
+            //         }
+            //     }
+            // }
+
+            // Show X when hovering over towers. Need fixing
+            bool isHovering = false;  // Local flag to check if we are hovering over a tower
+            if (event.type == sf::Event::MouseMoved && draggedTowerData == nullptr ) {
+                // sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
+                // Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(newPos, 50);
+                // hoveringOnTower = false;
+                //for (auto& tower : a_allActiveTowers) 
+
+                for (size_t i = 0; i < activeTowers.size(); ++i)       // Modifying a_allActiveTowers while iterating may cause iterators/pointers to become invalid. Use index based iteration
+                {
+                    TowerEntity& tower = activeTowers[i]; 
+                    if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) 
+                    {
+                        // ** Update UIView
+                        //xPosition = Vector2f(snapGrid.x, snapGrid.y);
+                        //hoveringOnTower = true;
+
+                        infoUIView->UpdateCrossShapePosition(snapGrid);
+                        isHovering = true;  // Set flag to true if hovering over this tower
+                        
+                        break;
+                    }
                 }
-                std::cout << "Mouse released done\n";
-                isDraggingTower = false;
+                // Set m_isHoveringOnTower based on whether the mouse is over a tower
+                infoUIView->SetHoveringOnTower(isHovering);
+                towerView.SetHoveringOnTower(isHovering);
+            }   
+
+            // ** UI
+            if (isHovering) {
+                
+                if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
+                    // currentWarning = "Hover and press Q for info";
+                    // m_warningText.setFillColor(Color::Red);
+                    infoUIView->SetWarningTextColor(Color::Red);
+                    infoUI->SetWarningString("Hover and press Q for info");
+                
+                    for (TowerEntity& tower : activeTowers) {
+
+                        if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+                            
+                            const TowerEntityView::TowerEntityData* towerData = towerView.GetTowerEntityData(&tower);
+                            if (towerData != nullptr)
+                            {
+                                std::cout << "Tower damage: " << towerData->damage << std::endl;
+                                infoUI->SetHoverTowerDamage(round(towerData->damage * 100.0f) / 100.0f);
+                                infoUI->SetHoverTowerCooldown(round(towerData->maxCooldown * 100.0f) / 100.0f);
+                                infoUI->SetHoverTowerRange(round(towerData->range * 100.0f) / 100.0f);
+                                infoUI->SetHoverTowerSpeed(round(towerData->speed * 100.0f) / 100.0f);
+                            }
+                            //std::cout << towerView.GetTowerStats(&tower);     // returns null pointer
+
+                            // if (const auto* stats = m_TowerView.GetTowerStats(&tower)) {
+                            //     std::cout << "Im here\n";
+                            //     std::cout << "Fdf" << stats->damage << std::endl;
+                            //     hoverTowerDamage = round(stats->damage * 100.0f) / 100.0f;
+                            //     hoverTowerCooldown = round(stats->cooldown * 100.0f) / 100.0f;
+                            //     hoverTowerRange = round(stats->range * 100.0f) / 100.0f;
+                            //     hoverTowerSpeed = round(stats->speed * 100.0f) / 100.0f;
+                            //     //m_GUIManager.GetInfoUI()->SetHoverTowerDamage(round(stats->damage * 100.0f) / 100.0f);
+                            //     //m_GUIManager.GetInfoUI()->SetHoverTowerCooldown(round(stats->cooldown * 100.0f) / 100.0f);
+                            //     //m_GUIManager.GetInfoUI()->SetHoverTowerRange(round(stats->range * 100.0f) / 100.0f);
+                            //     //m_GUIManager.GetInfoUI()->SetHoverTowerSpeed(round(stats->speed * 100.0f) / 100.0f);
+                            // }
+                            break;  // Only break after finding the correct tower
+                        }
+                    }
+                }
+
+                // Show upgrade info when Q is pressed
+                if (Keyboard::isKeyPressed(Keyboard::Q)) {
+                    Vector2f mousePos = m_Window.mapPixelToCoords(Mouse::getPosition(m_Window));
+                    Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mousePos, 50);
+
+                    // Check which tower we're hovering over
+                    for (Tower& tower : a_allActiveTowers) {
+                        if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+                            m_pSelectedTower = &tower;
+                            m_bShowUpgradeUI = true;
+                            break;
+                        }
+                    }
+                }
+        
+                // ** UI related
+                // Perform upgrade when E is pressed
+                if (Keyboard::isKeyPressed(Keyboard::E) && m_bShowUpgradeUI) {
+                    if (m_pSelectedTower && m_pSelectedTower->CanUpgrade()) {
+                        int upgradeCost = m_pSelectedTower->GetUpgradeCost();
+                        if (m_iCurrentWealth >= upgradeCost) 
+                        {
+                            if (m_pSelectedTower->Upgrade()) 
+                            {
+                                m_iCurrentWealth -= upgradeCost;
+                                infoUI->SetCurrentWealth(m_iCurrentWealth);
+                            
+                                // currentWarning = "Tower upgraded successfully!";
+                                // m_warningText.setFillColor(Color::Green);
+                                infoUIView->SetWarningTextColor(Color::Green);
+                                infoUI->SetWarningString("Tower upgraded successfully!");
+                            
+                                placementOrUpgradeTimer.restart();
+                            }
+                        } 
+                        else 
+                        {
+                            // currentWarning = "Not enough money for upgrade!";
+                            // m_warningText.setFillColor(Color::Red);
+                            infoUIView->SetWarningTextColor(Color::Red);
+                            infoUI->SetWarningString("Not enough money for upgrade!");
+                        
+                            placementOrUpgradeTimer.restart();
+                        }
+                        warningShown.restart();
+                    }
+                    m_bShowUpgradeUI = false;
+                    m_pSelectedTower = nullptr;
+                }
+            } 
+            else
+            {
+                m_pSelectedTower = nullptr;
+                m_bShowUpgradeUI = false;
             }
             
             // To start a new round
@@ -1277,117 +1552,92 @@ void Game::HandleInput()
                 bTWasPressedLastUpdate = false;
             }
         }
-
-
-        if (event.type == sf::Event::MouseMoved && !isDraggingTower) {
-            sf::Vector2f newPos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
-            Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(newPos, 50);
-            hoveringOnTower = false;
-            //for (auto& tower : a_allActiveTowers) 
-            for (size_t i = 0; i < a_allActiveTowers.size(); ++i)       // Modifying a_allActiveTowers while iterating may cause iterators/pointers to become invalid. Use index based iteration
-            {
-                Tower& tower = a_allActiveTowers[i]; 
-                if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
-                    
-                    // ** Update UIView
-                    //xPosition = Vector2f(snapGrid.x, snapGrid.y);
-                    m_GUIManager.GetInfoUIView()->UpdateCrossShapePosition(snapGrid);
-                    hoveringOnTower = true;
-                    break;
-                }
-            }
-        }
-        
-        // Makes X go away right after releasing on them
-        if(event.type == sf::Event::MouseButtonReleased){
-            hoveringOnTower = false;
-        }
         
     }
     
     
-    // ** UI
-    if (hoveringOnTower) {
-        if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
-            // currentWarning = "Hover and press Q for info";
-            // m_warningText.setFillColor(Color::Red);
-            m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
-            m_GUIManager.GetInfoUI()->SetWarningString("Hover and press Q for info");
+    // // ** UI
+    // if (hoveringOnTower) {
+    //     if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
+    //         // currentWarning = "Hover and press Q for info";
+    //         // m_warningText.setFillColor(Color::Red);
+    //         m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+    //         m_GUIManager.GetInfoUI()->SetWarningString("Hover and press Q for info");
 
-            Vector2i mousePos = sf::Mouse::getPosition(m_Window);
-            Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
-            Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
-            for (Tower& tower : a_allActiveTowers) {
+    //         Vector2i mousePos = sf::Mouse::getPosition(m_Window);
+    //         Vector2f mouseWorldPos = m_Window.mapPixelToCoords(mousePos);
+    //         Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mouseWorldPos, 50);
+    //         for (Tower& tower : a_allActiveTowers) {
                 
-                if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
-                    std::cout << m_TowerView.GetTowerStats(&tower);     // returns null pointer
+    //             if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+    //                 std::cout << m_TowerView.GetTowerStats(&tower);     // returns null pointer
                     
-                    if (const auto* stats = m_TowerView.GetTowerStats(&tower)) {
-                        std::cout << "Im here\n";
-                        std::cout << "Fdf" << stats->damage << std::endl;
-                        hoverTowerDamage = round(stats->damage * 100.0f) / 100.0f;
-                        hoverTowerCooldown = round(stats->cooldown * 100.0f) / 100.0f;
-                        hoverTowerRange = round(stats->range * 100.0f) / 100.0f;
-                        hoverTowerSpeed = round(stats->speed * 100.0f) / 100.0f;
-                        //m_GUIManager.GetInfoUI()->SetHoverTowerDamage(round(stats->damage * 100.0f) / 100.0f);
-                        //m_GUIManager.GetInfoUI()->SetHoverTowerCooldown(round(stats->cooldown * 100.0f) / 100.0f);
-                        //m_GUIManager.GetInfoUI()->SetHoverTowerRange(round(stats->range * 100.0f) / 100.0f);
-                        //m_GUIManager.GetInfoUI()->SetHoverTowerSpeed(round(stats->speed * 100.0f) / 100.0f);
-                    }
-                    break;  // Only break after finding the correct tower
-                }
-            }
-        }
+    //                 if (const auto* stats = m_TowerView.GetTowerStats(&tower)) {
+    //                     std::cout << "Im here\n";
+    //                     std::cout << "Fdf" << stats->damage << std::endl;
+    //                     hoverTowerDamage = round(stats->damage * 100.0f) / 100.0f;
+    //                     hoverTowerCooldown = round(stats->cooldown * 100.0f) / 100.0f;
+    //                     hoverTowerRange = round(stats->range * 100.0f) / 100.0f;
+    //                     hoverTowerSpeed = round(stats->speed * 100.0f) / 100.0f;
+    //                     //m_GUIManager.GetInfoUI()->SetHoverTowerDamage(round(stats->damage * 100.0f) / 100.0f);
+    //                     //m_GUIManager.GetInfoUI()->SetHoverTowerCooldown(round(stats->cooldown * 100.0f) / 100.0f);
+    //                     //m_GUIManager.GetInfoUI()->SetHoverTowerRange(round(stats->range * 100.0f) / 100.0f);
+    //                     //m_GUIManager.GetInfoUI()->SetHoverTowerSpeed(round(stats->speed * 100.0f) / 100.0f);
+    //                 }
+    //                 break;  // Only break after finding the correct tower
+    //             }
+    //         }
+    //     }
 
-        // Show upgrade info when Q is pressed
-        if (Keyboard::isKeyPressed(Keyboard::Q)) {
-            Vector2f mousePos = m_Window.mapPixelToCoords(Mouse::getPosition(m_Window));
-            Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mousePos, 50);
+    //     // Show upgrade info when Q is pressed
+    //     if (Keyboard::isKeyPressed(Keyboard::Q)) {
+    //         Vector2f mousePos = m_Window.mapPixelToCoords(Mouse::getPosition(m_Window));
+    //         Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mousePos, 50);
             
-            // Check which tower we're hovering over
-            for (Tower& tower : a_allActiveTowers) {
-                if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
-                    m_pSelectedTower = &tower;
-                    m_bShowUpgradeUI = true;
-                    break;
-                }
-            }
-        }
+    //         // Check which tower we're hovering over
+    //         for (Tower& tower : a_allActiveTowers) {
+    //             if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+    //                 m_pSelectedTower = &tower;
+    //                 m_bShowUpgradeUI = true;
+    //                 break;
+    //             }
+    //         }
+    //     }
         
-        // ** UI related
-        // Perform upgrade when E is pressed
-        if (Keyboard::isKeyPressed(Keyboard::E) && m_bShowUpgradeUI) {
-            if (m_pSelectedTower && m_pSelectedTower->CanUpgrade()) {
-                int upgradeCost = m_pSelectedTower->GetUpgradeCost();
-                if (m_iCurrentWealth >= upgradeCost) {
-                    if (m_pSelectedTower->Upgrade()) {
-                        m_iCurrentWealth -= upgradeCost;
-                        m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
+    //     // ** UI related
+    //     // Perform upgrade when E is pressed
+    //     if (Keyboard::isKeyPressed(Keyboard::E) && m_bShowUpgradeUI) {
+    //         if (m_pSelectedTower && m_pSelectedTower->CanUpgrade()) {
+    //             int upgradeCost = m_pSelectedTower->GetUpgradeCost();
+    //             if (m_iCurrentWealth >= upgradeCost) {
+    //                 if (m_pSelectedTower->Upgrade()) {
+    //                     m_iCurrentWealth -= upgradeCost;
+    //                     m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
 
-                        // currentWarning = "Tower upgraded successfully!";
-                        // m_warningText.setFillColor(Color::Green);
-                        m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Green);
-                        m_GUIManager.GetInfoUI()->SetWarningString("Tower upgraded successfully!");
+    //                     // currentWarning = "Tower upgraded successfully!";
+    //                     // m_warningText.setFillColor(Color::Green);
+    //                     m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Green);
+    //                     m_GUIManager.GetInfoUI()->SetWarningString("Tower upgraded successfully!");
 
-                        placementOrUpgradeTimer.restart();
-                    }
-                } else {
-                    // currentWarning = "Not enough money for upgrade!";
-                    // m_warningText.setFillColor(Color::Red);
-                    m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
-                    m_GUIManager.GetInfoUI()->SetWarningString("Not enough money for upgrade!");
+    //                     placementOrUpgradeTimer.restart();
+    //                 }
+    //             } else {
+    //                 // currentWarning = "Not enough money for upgrade!";
+    //                 // m_warningText.setFillColor(Color::Red);
+    //                 m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
+    //                 m_GUIManager.GetInfoUI()->SetWarningString("Not enough money for upgrade!");
 
-                    placementOrUpgradeTimer.restart();
-                }
-                warningShown.restart();
-            }
-            m_bShowUpgradeUI = false;
-            m_pSelectedTower = nullptr;
-        }
-    } else{
-        m_pSelectedTower = nullptr;
-        m_bShowUpgradeUI = false;
-    }
+    //                 placementOrUpgradeTimer.restart();
+    //             }
+    //             warningShown.restart();
+    //         }
+    //         m_bShowUpgradeUI = false;
+    //         m_pSelectedTower = nullptr;
+    //     }
+    // } else{
+    //     m_pSelectedTower = nullptr;
+    //     m_bShowUpgradeUI = false;
+    // }
 }
 
 void Game::EditMapSizeInputText(Event& event, std::string& currentText)                   // Add limit condition for input (input must be between 5 and 30??)
@@ -2335,67 +2585,67 @@ void Game::DrawMapEditorMode()
     // m_Window.draw(m_modeText);
     m_GUIManager.GetInfoUIView()->DrawHUD();
     
-    if(m_eCurrentEditState == FinishedPathingState && !hoveringOnTower){
-        for (auto& tower : a_towerMenu) {
-            m_Window.draw(tower);  // If Tile is derived from sf::Drawable               //ADD TOWER INFO HERE
-        }
-        m_Window.draw(woodTowerPrice);
-        m_Window.draw(stoneTowerPrice);
-    } else if (hoveringOnTower){
-        m_Window.draw(m_towerDamage);
-        m_Window.draw(m_towerCooldown);
-        m_Window.draw(m_towerRange);
-        m_Window.draw(m_towerSpeed);
-    }
-    // if (m_eCurrentEditState == FinishedPathingState)  
-    // {  
-    //     m_GUIManager.GetInfoUIView()->DrawTowers(); 
-    // }  
+    // if(m_eCurrentEditState == FinishedPathingState && !isHovering){
+    //     //for (auto& tower : a_towerMenu) 
+    //     // {
+    //     //     m_Window.draw(tower);  // If Tile is derived from sf::Drawable               //ADD TOWER INFO HERE
+    //     // }
 
-    if (hoveringOnTower || m_eCurrentEditState == FinishedPathingState)  
-    {  
-        m_GUIManager.GetInfoUIView()->DrawTowerInfo(hoveringOnTower);  
-    } 
+    //     // Draw tower templates on UI
+    //     m_TowerManager.GetTowerEntityView().Draw();
+
+    //     m_Window.draw(woodTowerPrice);
+    //     m_Window.draw(stoneTowerPrice);
+    // } else {
+    //     m_Window.draw(m_towerDamage);
+    //     m_Window.draw(m_towerCooldown);
+    //     m_Window.draw(m_towerRange);
+    //     m_Window.draw(m_towerSpeed);
+    // }
+    m_TowerManager.GetTowerEntityView().Draw();
+
+    m_GUIManager.GetInfoUIView()->DrawTowerInfo();
+
 
     // TowerView Draw
-    if(m_eCurrentEditState == FinishedPathingState){
+    // if(m_eCurrentEditState == FinishedPathingState){
 
-        m_TowerView.Draw(m_Window, a_activeWoodTowers);
+    //     m_TowerView.Draw(m_Window, a_activeWoodTowers);
         
-    }
+    // }
 
     // ** UIView
-    if(draggedSprite != nullptr){
-        m_Window.draw(draggedTower);
-    }
+    // if(draggedSprite != nullptr){
+    //     m_Window.draw(draggedTower);
+    // }
 
     // ** MapSetupView 
     //m_Window.draw(m_sfPathLines);
     //m_Window.draw(m_MonsterTemplate.m_Sprite);
 
     // ** UIView 
-    if(hoveringOnTower){
-        // sf::Vector2f position(xPosition.x-15, xPosition.y-15); // Top-left position of X
-        // float lineThickness = 6.0f;     // Thickness of X
-        // float lineLength = 30.0f;       // Length of each line in X
+    m_GUIManager.GetInfoUIView()->DrawCrossShape();
+    // if(hoveringOnTower){
+    //     // sf::Vector2f position(xPosition.x-15, xPosition.y-15); // Top-left position of X
+    //     // float lineThickness = 6.0f;     // Thickness of X
+    //     // float lineLength = 30.0f;       // Length of each line in X
 
-        // // Create two diagonal lines using RectangleShape
-        // sf::RectangleShape line1(sf::Vector2f(lineLength, lineThickness));
-        // line1.setFillColor(sf::Color::Red);
-        // line1.setOrigin(lineLength / 2, lineThickness / 2);
-        // line1.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
-        // line1.setRotation(45);  // Diagonal top-left to bottom-right
+    //     // // Create two diagonal lines using RectangleShape
+    //     // sf::RectangleShape line1(sf::Vector2f(lineLength, lineThickness));
+    //     // line1.setFillColor(sf::Color::Red);
+    //     // line1.setOrigin(lineLength / 2, lineThickness / 2);
+    //     // line1.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+    //     // line1.setRotation(45);  // Diagonal top-left to bottom-right
 
-        // sf::RectangleShape line2(sf::Vector2f(lineLength, lineThickness));
-        // line2.setFillColor(sf::Color::Red);
-        // line2.setOrigin(lineLength / 2, lineThickness / 2);
-        // line2.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
-        // line2.setRotation(-45); // Diagonal top-right to bottom-left
+    //     // sf::RectangleShape line2(sf::Vector2f(lineLength, lineThickness));
+    //     // line2.setFillColor(sf::Color::Red);
+    //     // line2.setOrigin(lineLength / 2, lineThickness / 2);
+    //     // line2.setPosition(position + sf::Vector2f(lineLength / 2, lineLength / 2));
+    //     // line2.setRotation(-45); // Diagonal top-right to bottom-left
 
-        // m_Window.draw(line1);
-        // m_Window.draw(line2);
-        m_GUIManager.GetInfoUIView()->DrawCrossShape();
-    }
+    //     // m_Window.draw(line1);
+    //     // m_Window.draw(line2);
+    // }
 
     // ** UIView
     if(m_gameOver){
@@ -2472,27 +2722,30 @@ void Game::DrawPlayMode()
     // m_Window.draw(m_modeText);
     m_GUIManager.GetInfoUIView()->DrawHUD();
     
-    if(m_eCurrentEditState == FinishedPathingState && !hoveringOnTower){
-        for (auto& tower : a_towerMenu) {
-            m_Window.draw(tower);  // If Tile is derived from sf::Drawable               //ADD TOWER INFO HERE
-        }
-        m_Window.draw(woodTowerPrice);
-        m_Window.draw(stoneTowerPrice);
-    } else if (hoveringOnTower){
-        m_Window.draw(m_towerDamage);
-        m_Window.draw(m_towerCooldown);
-        m_Window.draw(m_towerRange);
-        m_Window.draw(m_towerSpeed);
-    }
+    // if(m_eCurrentEditState == FinishedPathingState && !hoveringOnTower){
+    //     // for (auto& tower : a_towerMenu) {
+    //     //     m_Window.draw(tower);  // If Tile is derived from sf::Drawable               //ADD TOWER INFO HERE
+    //     // }
+    //     m_TowerManager.GetTowerEntityView().Draw();
+
+    //     m_Window.draw(woodTowerPrice);
+    //     m_Window.draw(stoneTowerPrice);
+    // } else if (hoveringOnTower){
+    //     m_Window.draw(m_towerDamage);
+    //     m_Window.draw(m_towerCooldown);
+    //     m_Window.draw(m_towerRange);
+    //     m_Window.draw(m_towerSpeed);
+    // }
     // if (m_eCurrentEditState == FinishedPathingState)  
     // {  
     //     m_GUIManager.GetInfoUIView()->DrawTowers(); 
     // }  
 
-    if (hoveringOnTower || m_eCurrentEditState == FinishedPathingState)  
-    {  
-        m_GUIManager.GetInfoUIView()->DrawTowerInfo(hoveringOnTower);  
-    } 
+    m_TowerManager.GetTowerEntityView().Draw();
+
+    m_GUIManager.GetInfoUIView()->DrawCrossShape();
+
+    m_GUIManager.GetInfoUIView()->DrawTowerInfo(); 
 
     if(m_bIsRoundEnded){
         //m_Window.draw(m_nextRoundText);
@@ -2514,9 +2767,9 @@ void Game::DrawPlayMode()
         m_Window.draw(bullet.m_Sprite);
     }
 
-    if(draggedSprite != nullptr){
-        m_Window.draw(draggedTower);
-    }
+    // if(draggedSprite != nullptr){
+    //     m_Window.draw(draggedTower);
+    // }
     // if(draggedSprite != nullptr){
     //     m_GUIManager.GetInfoUIView()->DrawDraggedTower();
     // }

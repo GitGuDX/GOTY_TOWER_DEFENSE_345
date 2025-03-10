@@ -32,7 +32,7 @@ class TowerView : public IGameObserver{
     bool m_bHasStats;
 
 public:
-TowerView() = default;
+    TowerView() = default;
     
 // Virtual destructor since we inherit from IGameObserver
 virtual ~TowerView() override {
