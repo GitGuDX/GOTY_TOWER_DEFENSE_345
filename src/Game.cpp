@@ -997,11 +997,20 @@ void Game::HandleInput()
                 //PATHING RELATED
                 if (m_IsPathingMousePressed && m_eCurrentEditState == PathState)
                 {
+                    
+                    int tileSize = m_GUIManager.GetMapSetup()->GetTileSize();
+                    Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
+
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
-                    sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(mousePos, m_GUIManager.GetMapSetup()->GetTileSize());      // Snap the mouse position to the grid
+
+                    // Constrain gridPos to the window boundaries
+                    sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(mousePos, tileSize);      // Snap the mouse position to the grid
+                    gridPos.x = std::clamp(gridPos.x, 0.f, static_cast<float>(mapSize.x));  // Clamp x-coordinate
+                    gridPos.y = std::clamp(gridPos.y, 0.f, static_cast<float>(mapSize.y));  // Clamp y-coordinate
+
                     // if (!m_aPath.empty() && MathHelpers::isAdjacent(m_aPath.back(), gridPos, m_GUIManager.GetMapSetup()->GetTileSize()))
                     std::vector<sf::Vector2f> path = m_GUIManager.GetMapSetup()->GetPath();
-                    if (!path.empty() && MathHelpers::isAdjacent(path.back(), gridPos, m_GUIManager.GetMapSetup()->GetTileSize()))
+                    if (!path.empty() && MathHelpers::isAdjacent(path.back(), gridPos, tileSize))
                     {
                         // When the path tile overlaps with the exit tile, we reached the end of pathing. Append exit tile. Ensure we don't move beyond the exit tile
                         //if (gridPos == m_vExitTile)
