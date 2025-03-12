@@ -2528,12 +2528,13 @@ void Game::UpdateAxes()
             }
         }
 
+        Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
         // Remove axe if it hit something or went off screen
         if (hitMonster || 
             it->GetPosition().x < 0 || 
-            it->GetPosition().x > m_vWindowSize.x || 
+            it->GetPosition().x > mapSize.x || 
             it->GetPosition().y < 0 || 
-            it->GetPosition().y > m_vWindowSize.y)
+            it->GetPosition().y > mapSize.y)
         {
             it = m_aAxes.erase(it);
         }
