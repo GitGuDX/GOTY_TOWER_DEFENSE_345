@@ -2041,7 +2041,7 @@ void Game::UpdateMonsters()
     //     }
     // }
 
-    // Handle monster removal upon reaching the exit.
+    // Handle monster removal upon reaching the exit or health reached less than or equal to zero.
     // Legacy code
     // m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
     //     [this, &path](Monster& monster) {
@@ -2054,11 +2054,23 @@ void Game::UpdateMonsters()
     ////
     for (MonsterEntity& monster : activeMonsters)
     {
-        // If monster reaches the exit tile, player looses wealth then monster is removed
-        if (monster.GetIsDead() == false && monster.GetIsDying() == false && monster.GetCurrentPathIndex() >= path.size() - 1)
+        if (monster.GetIsDead() == false && monster.GetIsDying() == false)
         { 
-            m_iCurrentWealth -= monster.GetStrength();
-            m_MonsterManager.RemoveMonster(monster);
+            if (monster.GetHealth() <= 0)
+            {
+                #ifdef DEBUG
+                std::cout << "Monster destroyed!" << std::endl;
+                #endif
+
+                m_iCurrentWealth += monster.GetReward();
+                monster.SetIsDying(true);
+            }
+            // If monster reaches the exit tile, player looses wealth then monster is removed
+            else if (monster.GetCurrentPathIndex() >= path.size() - 1)
+            {
+                m_iCurrentWealth -= monster.GetStrength();
+                m_MonsterManager.RemoveMonster(monster);
+            }
         }
 
         // If monster is finished dying, remove monster
@@ -2379,12 +2391,13 @@ void Game::UpdateTowers()
             float fShortestDistance = std::numeric_limits<float>::max();
             
             // for (Entity& monster : m_aMonstersQueue)
+            // ** Related to strategy pattern
             // Find nearest monster within this tower's range
             for (MonsterEntity& monster : activeMonsters)
             {
                 sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
                 float fDistance = MathHelpers::Length(vTowerToMonster);
-                if (fDistance < fShortestDistance && fDistance < tower.GetRange())
+                if (!monster.GetIsDying() && !monster.GetIsDead() && fDistance < fShortestDistance && fDistance < tower.GetRange())
                 {
                     fShortestDistance = fDistance;
                     pNearestEnemy = &monster;
@@ -2575,20 +2588,20 @@ void Game::UpdateAxes()
                 std::cout << "\n" << monster.GetHealth() << "\n";
                 #endif
 
-                if (monster.GetHealth() <= 0)
-                {
-                    #ifdef DEBUG
-                    std::cout << "Monster destroyed!" << std::endl;
-                    #endif
+                // if (monster.GetHealth() <= 0)
+                // {
+                //     #ifdef DEBUG
+                //     std::cout << "Monster destroyed!" << std::endl;
+                //     #endif
 
-                    // m_MonsterView.RemoveMonster(monster);  // First, remove from observer list
-                    // monster.RemoveObserver(&m_MonsterView);  // Then, make sure the monster doesn't reference the observer
-                    // m_aDeadMonsters.push_back(monster);
-                    // m_iCurrentWealth += monster.GetReward();
-                    // m_aMonstersQueue.erase(m_aMonstersQueue.begin() + i);
-                    m_iCurrentWealth += monster.GetReward();
-                    monster.SetIsDying(true);
-                }
+                //     // m_MonsterView.RemoveMonster(monster);  // First, remove from observer list
+                //     // monster.RemoveObserver(&m_MonsterView);  // Then, make sure the monster doesn't reference the observer
+                //     // m_aDeadMonsters.push_back(monster);
+                //     // m_iCurrentWealth += monster.GetReward();
+                //     // m_aMonstersQueue.erase(m_aMonstersQueue.begin() + i);
+                //     m_iCurrentWealth += monster.GetReward();
+                //     monster.SetIsDying(true);
+                // }
                 break;
             }
         }
