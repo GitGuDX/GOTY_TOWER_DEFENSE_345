@@ -5,8 +5,8 @@
 @brief Declares the MonsterGenerator class for managing enemy waves.
 */
 
-#ifndef MONSTER_GENERATOR_H
-#define MONSTER_GENERATOR_H
+#ifndef MONSTER__GENERATOR_H
+#define MONSTER__GENERATOR_H
 
 #include "MonsterView.h"
 #include <vector>
@@ -45,11 +45,11 @@ E.g.)
 class Monster;          // Forward declaration to know what Monster class is
 class MonsterView;      // Forward declaration to know what MonsterView class is
 
-class MonsterGenerator
+class Monster_Generator
 {
 public:
     // Constructor initializes base number of monsters and their increase rate per level
-    MonsterGenerator(int baseMonsters, MonsterView& monsterView);
+    Monster_Generator(int baseMonsters, MonsterView& monsterView);
 
     enum class Type
     {
@@ -97,7 +97,7 @@ private:
     void updateMonsterRoster();
     template <Type type>
     void updateMonsterStats(Monster& monster);
-    int getWaveStrength(MonsterGenerator::Type currentType);
+    int getWaveStrength(Monster_Generator::Type currentType);
     float getLevelUpRateAtLevel(int level, float baseRate);
 
 private:

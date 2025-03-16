@@ -37,6 +37,8 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_iTileSize(50)                                                                          // Set Tile size to 50px
     // ** TOWER
     , m_TowerManager(m_Window)
+    // ** MONSTER
+    , m_MonsterManager(m_Window)
     // ** GAME SETUP
     , m_eCurrentlyActiveInputBox(ClickedInputBox::None)
     , m_RapidBulletTemplate()
@@ -156,6 +158,12 @@ void Game::Run()
                 LoadPlayModeAssets();
                 LoadMonsterTextures();
                 LoadTowerTextures();
+
+                // Assign entry tile position and prepare the first wave of monsters
+                Vector2f entryTile = m_GUIManager.GetMapSetup()->GetEntryTile();
+                m_MonsterManager.SetEntryTilePosition(entryTile);
+                m_MonsterManager.PrepareNextWave();
+
                 m_ePrevGameMode = PlayMode;
             }
 
@@ -172,9 +180,14 @@ void Game::Run()
                 {
                     if (!m_bIsMonsterGeneratorUpdated)
                     {
-                        m_MonsterGenerator.updateNextRoundMonsterGenerator();
-                        m_bIsMonsterGeneratorUpdated = true;
+                        // Legacy Code
+                        m_MonsterGenerator.updateNextRoundMonsterGenerator();                        
                         m_iCurrentLevel += 1;
+                        ////
+
+                        // Prepare the next wave of monsters
+                        m_MonsterManager.PrepareNextWave();
+                        m_bIsMonsterGeneratorUpdated = true;
                     }
                 }
             }
@@ -1834,6 +1847,10 @@ void Game::UpdateMonsters()
     //     }
     // }
     const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
+    std::vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
+
+    // Generate monsters
+    // Legacy code
     m_MonsterGenerator.incrementTimeSinceLastGeneration(m_DeltaTime.asSeconds());
     // Fixed first two monster generating on top of each other. Now only generates one monster at a time
     if (m_MonsterGenerator.getTimeSinceLastGeneration() >= m_MonsterGenerator.getGenerationCoolDown())
@@ -1841,6 +1858,9 @@ void Game::UpdateMonsters()
         m_MonsterGenerator.generateMonster(*this);
         m_MonsterGenerator.resetTimeSinceLastGeneration();
     }
+    ////
+    m_MonsterManager.incrementTimeSinceLastGeneration(m_DeltaTime.asSeconds());
+    m_MonsterManager.GenerateCurrentWave();
 
     // Remove finished monsters
     // m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
@@ -2016,7 +2036,9 @@ void Game::UpdateMonsters()
     //         }
     //     }
     // }
-    // Remove finished monsters
+
+    // Remove monsters that reach the end of the path
+    // Legacy code
     m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
         [this, &path](Monster& monster) {
             if (monster.GetCurrentPathIndex() >= path.size() - 1) {
@@ -2025,6 +2047,15 @@ void Game::UpdateMonsters()
             }
             return false;
         }), m_aMonstersQueue.end());
+    ////
+    for (MonsterEntity& monster : activeMonsters)
+    {
+        if (monster.GetCurrentPathIndex() >= path.size() - 1)
+        {
+            m_iCurrentWealth -= monster.GetStrength();
+            m_MonsterManager.RemoveMonster(monster);
+        }
+    }
 
 
     // ALL ENEMY ANIMATION RELATED
@@ -2039,22 +2070,22 @@ void Game::UpdateMonsters()
 
                 // Choose the correct texture based on monster type
                 switch (enemy.GetMonsterType()) {
-                    case MonsterGenerator::Type::Skeleton:
+                    case Monster_Generator::Type::Skeleton:
                         enemy.SetTexture(m_SkeletonTextures[currentEnemyFrame]);
                         break;
-                    case MonsterGenerator::Type::Reaper:
+                    case Monster_Generator::Type::Reaper:
                         enemy.SetTexture(m_ReaperTextures[currentEnemyFrame]);
                         break;
-                    case MonsterGenerator::Type::Golem:
+                    case Monster_Generator::Type::Golem:
                         enemy.SetTexture(m_GolemTextures[currentEnemyFrame]);
                         break;
-                    case MonsterGenerator::Type::Minotaur:
+                    case Monster_Generator::Type::Minotaur:
                         enemy.SetTexture(m_MinotaurTextures[currentEnemyFrame]);
                         break;
-                    case MonsterGenerator::Type::Ogre:
+                    case Monster_Generator::Type::Ogre:
                         enemy.SetTexture(m_OgreTextures[currentEnemyFrame]);
                         break;
-                    case MonsterGenerator::Type::SIZE:
+                    case Monster_Generator::Type::SIZE:
                         break;
                 }
 
@@ -2086,22 +2117,22 @@ void Game::UpdateMonsters()
                     } else {
                         // Update death animation if still in progress
                         switch (enemy.GetMonsterType()) {
-                            case MonsterGenerator::Type::Skeleton:
+                            case Monster_Generator::Type::Skeleton:
                                 enemy.SetTexture(m_SkeletonDeathTextures[enemy.GetDeathFrame()]);
                                 break;
-                            case MonsterGenerator::Type::Reaper:
+                            case Monster_Generator::Type::Reaper:
                                 enemy.SetTexture(m_ReaperDeathTextures[enemy.GetDeathFrame()]);
                                 break;
-                            case MonsterGenerator::Type::Golem:
+                            case Monster_Generator::Type::Golem:
                                 enemy.SetTexture(m_GolemDeathTextures[enemy.GetDeathFrame()]);
                                 break;
-                            case MonsterGenerator::Type::Minotaur:
+                            case Monster_Generator::Type::Minotaur:
                                 enemy.SetTexture(m_MinotaurDeathTextures[enemy.GetDeathFrame()]);
                                 break;
-                            case MonsterGenerator::Type::Ogre:
+                            case Monster_Generator::Type::Ogre:
                                 enemy.SetTexture(m_OgreDeathTextures[enemy.GetDeathFrame()]);
                                 break;
-                            case MonsterGenerator::Type::SIZE:
+                            case Monster_Generator::Type::SIZE:
                                 break;
                         }
 
@@ -2135,7 +2166,8 @@ void Game::UpdateMonsters()
 
 
     // Update monster positions
-    for (Monster& monster : m_aMonstersQueue)
+    //for (Monster& monster : m_aMonstersQueue)
+    for (MonsterEntity& monster : activeMonsters)
     {
         size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
         if (monsterCurrentTileIndex < path.size() - 1)
@@ -2166,29 +2198,29 @@ void Game::UpdateMonsters()
         }
     }
 
-    for (Monster& monster : m_aMonstersQueue)
-    {
-        monster.UpdateAttackCooldown(m_DeltaTime.asSeconds());
+    // for (Monster& monster : m_aMonstersQueue)
+    // {
+    //     monster.UpdateAttackCooldown(m_DeltaTime.asSeconds());
 
-        for (auto it = a_allActiveTowers.begin(); it != a_allActiveTowers.end(); )
-        {
-            float distance = MathHelpers::Length(monster.GetPosition() - it->GetPosition());
+    //     for (auto it = a_allActiveTowers.begin(); it != a_allActiveTowers.end(); )
+    //     {
+    //         float distance = MathHelpers::Length(monster.GetPosition() - it->GetPosition());
 
-            if (distance < 100.0f)  // Monster attacks if close enough
-            {
-                monster.Attack(*it);
-            }
+    //         if (distance < 100.0f)  // Monster attacks if close enough
+    //         {
+    //             monster.Attack(*it);
+    //         }
 
-            if (it->IsDestroyed())  // Remove destroyed towers
-            {
-                it = a_allActiveTowers.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-    }
+    //         if (it->IsDestroyed())  // Remove destroyed towers
+    //         {
+    //             it = a_allActiveTowers.erase(it);
+    //         }
+    //         else
+    //         {
+    //             ++it;
+    //         }
+    //     }
+    // }
 }
 
 
@@ -2298,6 +2330,7 @@ void Game::UpdateUI()
 }
 
 
+//void UpdateHealthBar(Monster& enemy) 
 void UpdateHealthBar(Monster& enemy) 
 {
     float healthPercentage = enemy.GetHealth() / enemy.GetMaxHealth();
@@ -2715,7 +2748,7 @@ void Game::DrawPlayMode()
     m_Window.clear();
 
     // Get Path for the current map
-    const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
+    //const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
 
     ////// Draw Tiles
     // for (std::vector<Tile>& row : m_aTiles)
@@ -2730,36 +2763,39 @@ void Game::DrawPlayMode()
     m_GUIManager.GetMapSetupView()->Draw();
 
     // Draw Monsters
-    for (Monster& monster : m_aMonstersQueue)
-    {
-        //if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
-        if (monster.GetCurrentPathIndex() < path.size() - 1)
-        {
-            m_Window.draw(monster);
-        } 
-    }
+    // for (MonsterEntity& monster : activeMonsters)
+    // {
+    //     //if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+    //     if (monster.GetCurrentPathIndex() < path.size() - 1)
+    //     {
+    //         m_Window.draw(monster);
+    //     } 
+    // }
+    m_MonsterManager.GetMonsterEntityView().Draw();
     
     //Draw Health Bars
-    for (Monster& monster : m_aMonstersQueue)
-    {
-        // if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
-        if (monster.GetCurrentPathIndex() < path.size() - 1)
-        {
-            UpdateHealthBar(monster);
-            m_Window.draw(monster.GetHealthBar());
-        }
-    }
+    //for (Monster& monster : m_aMonstersQueue)
+    // vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
+    // for (MonsterEntity& monster : activeMonsters)
+    // {
+    //     // if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+    //     if (monster.GetCurrentPathIndex() < path.size() - 1)
+    //     {
+    //         UpdateHealthBar(monster);
+    //         m_Window.draw(monster.GetHealthBar());
+    //     }
+    // }
     
 
     //Draw dying monsters
-    for (Monster& monster : m_aDeadMonsters)
-    {
-        //if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
-        if (monster.GetCurrentPathIndex() < path.size() - 1)
-        {
-            m_Window.draw(monster);
-        } 
-    }
+    // for (Monster& monster : m_aDeadMonsters)
+    // {
+    //     //if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
+    //     if (monster.GetCurrentPathIndex() < path.size() - 1)
+    //     {
+    //         m_Window.draw(monster);
+    //     } 
+    // }
 
 
 
@@ -2803,14 +2839,15 @@ void Game::DrawPlayMode()
 
 
     // Draw the towers and enemies (every frame, without waiting for the animation delay)
-    if(m_eCurrentEditState == FinishedPathingState){
-        m_TowerView.Draw(m_Window, a_activeStoneTowers);
+    // if(m_eCurrentEditState == FinishedPathingState){
+    //     m_TowerView.Draw(m_Window, a_activeStoneTowers);
         
-    }
-    if(m_eCurrentEditState == FinishedPathingState){
-        m_TowerView.Draw(m_Window, a_activeWoodTowers);
+    // }
+    // if(m_eCurrentEditState == FinishedPathingState){
+    //     m_TowerView.Draw(m_Window, a_activeWoodTowers);
 
-    }
+    // }
+
     for (const Entity& bullet : m_aAxes)
     {
         m_Window.draw(bullet.m_Sprite);
@@ -2858,10 +2895,10 @@ void Game::DrawPlayMode()
     }
 
     // Draw upgrade UI if shown
-    if (m_bShowUpgradeUI && m_pSelectedTower) {
-        m_Window.draw(m_upgradeText);
-        //m_GUIManager.GetInfoUIView()->DrawUpgradeText();
-    }
+    // if (m_bShowUpgradeUI && m_pSelectedTower) {
+    //     m_Window.draw(m_upgradeText);
+    //     //m_GUIManager.GetInfoUIView()->DrawUpgradeText();
+    // }
 
     //m_Window.draw(m_MonsterTemplate);
     

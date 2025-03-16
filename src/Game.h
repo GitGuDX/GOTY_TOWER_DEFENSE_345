@@ -20,12 +20,19 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include "GUI/Tile.h"
 #include "GUI/GUIManager.h"
 
+// Legacy code
 #include "Monster.h"
 #include "Monster_Generator.h"
 #include "MonsterView.h"
+////
 
+#include "EntityManagers/MonsterManager.h"
+
+// Legacy code
 #include "Tower.h"
 #include "TowerView.h"
+////
+
 #include "EntityManagers/TowerManager.h"
 
 
@@ -175,8 +182,11 @@ private:
     Vector2i m_vGridSize;
     const int m_iTileSize;
 
-    // Tower
+    // ** Tower
     TowerManager m_TowerManager;
+
+    // ** MONSTER
+    MonsterManager m_MonsterManager;
 
     float m_fElapesdTimeInSeconds;
 
@@ -245,7 +255,7 @@ private:
     
 
     // Play mode 
-    MonsterGenerator m_MonsterGenerator;
+    Monster_Generator m_MonsterGenerator;
     bool m_bIsRoundEnded = false;
     bool m_gameOver = false;
     bool m_bIsMonsterGeneratorUpdated = false;
@@ -270,7 +280,7 @@ private:
     }
     
 
-    friend class MonsterGenerator;                  // make MonsterGenerator friend of Game so that MonsterGenerator has access to Game class's private members
+    friend class Monster_Generator;                  // make MonsterGenerator friend of Game so that MonsterGenerator has access to Game class's private members
 
 
 

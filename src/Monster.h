@@ -100,7 +100,7 @@ public:
         return m_iReward;
     }
 
-    MonsterGenerator::Type GetMonsterType()
+    Monster_Generator::Type GetMonsterType()
     {
         return m_eMonsterType;
     }
@@ -159,7 +159,7 @@ public:
         NotifyStatsChanged();
     }
 
-    void SetMonsterType(MonsterGenerator::Type newType)
+    void SetMonsterType(Monster_Generator::Type newType)
     {
         m_eMonsterType = newType;
         NotifyStatsChanged();
@@ -176,7 +176,7 @@ private:
     int m_iStrength;                           // Determines the rate that the monster steals coin from the player
     int m_iReward;
     int deathFrame = 0;
-    MonsterGenerator::Type m_eMonsterType;
+    Monster_Generator::Type m_eMonsterType;
 
     float m_fAttackCooldown = 2.0f;  // Time between attacks (seconds)
     float m_fTimeSinceLastAttack = 0.0f;  // Time tracker

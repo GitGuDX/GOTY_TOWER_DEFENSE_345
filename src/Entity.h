@@ -88,7 +88,7 @@ public:
 		return m_vVelocity;
 	}
 
-	void Move(const sf::Vector2f& offset)
+	virtual void Move(const sf::Vector2f& offset)
 	{
 		m_Sprite.move(offset);
 	}

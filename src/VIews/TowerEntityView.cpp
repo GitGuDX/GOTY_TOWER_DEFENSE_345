@@ -61,7 +61,10 @@ void TowerEntityView::Update(const IGameSubject &subject)
     const TowerEntity *towerEntity = dynamic_cast<const TowerEntity *>(&subject);
     //std::cout << "tower entity pointer: " << towerEntity << std::endl;
     if (!towerEntity)
+    {
+        //std::cout << "TowerEntityView::Update() - Not a TowerEntity\n";
         return;
+    }
 
     // Remove towers that are no longer valid
     auto it = m_TowerEntitySubjects.begin();
