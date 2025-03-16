@@ -7,8 +7,29 @@ MonsterEntity::MonsterEntity(MonsterGenerator::MonsterType type, int level)
     , m_iActiveFrameIndex(0)
     , m_iDyingFrameIndex(0)
     , m_bIsDying(false)
+    , m_bIsFinishedDying(false)
+    , m_bIsDead(false)
 {
     SetInitialStats();
+}
+
+void MonsterEntity::IncrementActiveFrameIndex(int indexLimit)
+{
+    m_iActiveFrameIndex++;
+    if (m_iActiveFrameIndex >= indexLimit) {
+        m_iActiveFrameIndex = 0;
+    }
+    NotifyStatsChanged();
+}
+
+void MonsterEntity::IncrementDyingFrameIndex(int indexLimit)
+{
+    m_iDyingFrameIndex++;
+    if (m_bIsFinishedDying == false && m_iDyingFrameIndex >= indexLimit) {
+        m_bIsFinishedDying = true;
+        //m_iDyingFrameIndex = 0;
+    }
+    NotifyStatsChanged();
 }
 
 void MonsterEntity::SetInitialStats()

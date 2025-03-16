@@ -162,7 +162,7 @@ void Game::Run()
                 // Assign entry tile position and prepare the first wave of monsters
                 Vector2f entryTile = m_GUIManager.GetMapSetup()->GetEntryTile();
                 m_MonsterManager.SetEntryTilePosition(entryTile);
-                m_MonsterManager.PrepareNextWave();
+                m_MonsterManager.PrepareFirstWave();
 
                 m_ePrevGameMode = PlayMode;
             }
@@ -184,7 +184,7 @@ void Game::Run()
                         m_MonsterGenerator.updateNextRoundMonsterGenerator();                        
                         m_iCurrentLevel += 1;
                         ////
-
+                        std::cout << "Next roubd" << std::endl;
                         // Prepare the next wave of monsters
                         m_MonsterManager.PrepareNextWave();
                         m_bIsMonsterGeneratorUpdated = true;
@@ -1600,8 +1600,10 @@ void Game::HandleInput()
             static bool bTWasPressedLastUpdate = false;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
             {
+                
                 if (!bTWasPressedLastUpdate && m_eGameMode == PlayMode)
                 {
+                    std::cout << "T pressed\n";
                     m_eGameMode = PlayMode;
                     m_bIsRoundEnded = false;
                     m_bIsMonsterGeneratorUpdated = false;
@@ -1824,8 +1826,10 @@ void Game::UpdatePlay()
     UpdateTowers();
     UpdateAxes();
 
-    if (m_MonsterGenerator.getIsAllMonstersSpawned() && m_aMonstersQueue.empty())
+    //if (m_MonsterGenerator.getIsAllMonstersSpawned() && m_aMonstersQueue.empty())
+    if (m_MonsterManager.IsAllMonstersSpawned() && m_MonsterManager.IsAllMonstersDead())
     {
+        std::cout << "All monsters spawned and dead\n";
         m_bIsRoundEnded = true;
     }
 
@@ -1859,7 +1863,7 @@ void Game::UpdateMonsters()
         m_MonsterGenerator.resetTimeSinceLastGeneration();
     }
     ////
-    m_MonsterManager.incrementTimeSinceLastGeneration(m_DeltaTime.asSeconds());
+    m_MonsterManager.IncrementTimeSinceLastGeneration(m_DeltaTime.asSeconds());
     m_MonsterManager.GenerateCurrentWave();
 
     // Remove finished monsters
@@ -2037,130 +2041,140 @@ void Game::UpdateMonsters()
     //     }
     // }
 
-    // Remove monsters that reach the end of the path
+    // Handle monster removal upon reaching the exit.
     // Legacy code
-    m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
-        [this, &path](Monster& monster) {
-            if (monster.GetCurrentPathIndex() >= path.size() - 1) {
-                m_iCurrentWealth -= monster.GetStrength();
-                return true;
-            }
-            return false;
-        }), m_aMonstersQueue.end());
+    // m_aMonstersQueue.erase(std::remove_if(m_aMonstersQueue.begin(), m_aMonstersQueue.end(),
+    //     [this, &path](Monster& monster) {
+    //         if (monster.GetCurrentPathIndex() >= path.size() - 1) {
+    //             m_iCurrentWealth -= monster.GetStrength();
+    //             return true;
+    //         }
+    //         return false;
+    //     }), m_aMonstersQueue.end());
     ////
     for (MonsterEntity& monster : activeMonsters)
     {
-        if (monster.GetCurrentPathIndex() >= path.size() - 1)
-        {
+        // If monster reaches the exit tile, player looses wealth then monster is removed
+        if (monster.GetIsDead() == false && monster.GetIsDying() == false && monster.GetCurrentPathIndex() >= path.size() - 1)
+        { 
             m_iCurrentWealth -= monster.GetStrength();
+            m_MonsterManager.RemoveMonster(monster);
+        }
+
+        // If monster is finished dying, remove monster
+        if (monster.GetIsFinishedDying() == true && monster.GetIsDead() == false)
+        {
             m_MonsterManager.RemoveMonster(monster);
         }
     }
 
 
     // ALL ENEMY ANIMATION RELATED
-    if (enemyAnimationDelay.getElapsedTime().asSeconds() >= frameTime) {
+    // if (enemyAnimationDelay.getElapsedTime().asSeconds() >= frameTime) 
+    MonsterEntityView& monsterView = m_MonsterManager.GetMonsterEntityView();
+    Clock& monsterAnimationDelay = monsterView.GetMonsterAnimationDelay();
+    if (monsterAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) 
+    {
         //std::cout <<"Current enemy frame: " << currentEnemyFrame << '\n';
         if (m_eCurrentEditState == FinishedPathingState) {
             
             //RUNNING ANIMATION
             //std::cout << "Updating enemy textures\n";
-            for (int i = m_aMonstersQueue.size() - 1; i >= 0; --i) {
-                auto& enemy = m_aMonstersQueue[i]; // Access enemy by index
+            // for (int i = m_aMonstersQueue.size() - 1; i >= 0; --i)
+            vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
+            for (MonsterEntity& monster : activeMonsters)
+            {
+                // auto& enemy = m_aMonstersQueue[i]; // Access enemy by index
 
-                // Choose the correct texture based on monster type
-                switch (enemy.GetMonsterType()) {
-                    case Monster_Generator::Type::Skeleton:
-                        enemy.SetTexture(m_SkeletonTextures[currentEnemyFrame]);
-                        break;
-                    case Monster_Generator::Type::Reaper:
-                        enemy.SetTexture(m_ReaperTextures[currentEnemyFrame]);
-                        break;
-                    case Monster_Generator::Type::Golem:
-                        enemy.SetTexture(m_GolemTextures[currentEnemyFrame]);
-                        break;
-                    case Monster_Generator::Type::Minotaur:
-                        enemy.SetTexture(m_MinotaurTextures[currentEnemyFrame]);
-                        break;
-                    case Monster_Generator::Type::Ogre:
-                        enemy.SetTexture(m_OgreTextures[currentEnemyFrame]);
-                        break;
-                    case Monster_Generator::Type::SIZE:
-                        break;
-                }
-
-                // Set common properties
-                enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
-                FloatRect monsterSize = enemy.m_Sprite.getLocalBounds(); // Get Monster sprite width and height
-                enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2)); // Center the sprite
+                // // Choose the correct texture based on monster type
+                // switch (enemy.GetMonsterType()) {
+                //     case Monster_Generator::Type::Skeleton:
+                //         enemy.SetTexture(m_SkeletonTextures[currentEnemyFrame]);
+                //         break;
+                //     case Monster_Generator::Type::Reaper:
+                //         enemy.SetTexture(m_ReaperTextures[currentEnemyFrame]);
+                //         break;
+                //     case Monster_Generator::Type::Golem:
+                //         enemy.SetTexture(m_GolemTextures[currentEnemyFrame]);
+                //         break;
+                //     case Monster_Generator::Type::Minotaur:
+                //         enemy.SetTexture(m_MinotaurTextures[currentEnemyFrame]);
+                //         break;
+                //     case Monster_Generator::Type::Ogre:
+                //         enemy.SetTexture(m_OgreTextures[currentEnemyFrame]);
+                //         break;
+                //     case Monster_Generator::Type::SIZE:
+                //         break;
+                // }
+                m_MonsterManager.UpdateMonsterTexture(monster);
+                m_MonsterManager.IncrementMonsterFrameIndex(monster);
             }
-
-            
-            currentEnemyFrame++;
-            if (currentEnemyFrame > 10) {
-                currentEnemyFrame = 0;
-            }
+            // currentEnemyFrame++;
+            // if (currentEnemyFrame > 10) {
+            //     currentEnemyFrame = 0;
+            // }
 
 
-            // Ensure we're only dealing with monsters that need to be updated
-            if (!m_aDeadMonsters.empty()) {
-                // First pass: Update death animation
-                std::vector<Monster*> monstersToRemove; // Vector to hold monsters to remove
+            // // Ensure we're only dealing with monsters that need to be updated
+            // if (!m_aDeadMonsters.empty()) {
+            //     // First pass: Update death animation
+            //     std::vector<Monster*> monstersToRemove; // Vector to hold monsters to remove
 
-                for (int i = m_aDeadMonsters.size() - 1; i >= 0; --i) {
-                    auto& enemy = m_aDeadMonsters[i];
+            //     for (int i = m_aDeadMonsters.size() - 1; i >= 0; --i) {
+            //         auto& enemy = m_aDeadMonsters[i];
 
-                    // Check if the death animation has completed
-                    if (enemy.GetDeathFrame() > 14) {
-                        // Add the monster to the list for removal
-                        monstersToRemove.push_back(&enemy);
-                    } else {
-                        // Update death animation if still in progress
-                        switch (enemy.GetMonsterType()) {
-                            case Monster_Generator::Type::Skeleton:
-                                enemy.SetTexture(m_SkeletonDeathTextures[enemy.GetDeathFrame()]);
-                                break;
-                            case Monster_Generator::Type::Reaper:
-                                enemy.SetTexture(m_ReaperDeathTextures[enemy.GetDeathFrame()]);
-                                break;
-                            case Monster_Generator::Type::Golem:
-                                enemy.SetTexture(m_GolemDeathTextures[enemy.GetDeathFrame()]);
-                                break;
-                            case Monster_Generator::Type::Minotaur:
-                                enemy.SetTexture(m_MinotaurDeathTextures[enemy.GetDeathFrame()]);
-                                break;
-                            case Monster_Generator::Type::Ogre:
-                                enemy.SetTexture(m_OgreDeathTextures[enemy.GetDeathFrame()]);
-                                break;
-                            case Monster_Generator::Type::SIZE:
-                                break;
-                        }
+            //         // Check if the death animation has completed
+            //         if (enemy.GetDeathFrame() > 14) {
+            //             // Add the monster to the list for removal
+            //             monstersToRemove.push_back(&enemy);
+            //         } else {
+            //             // Update death animation if still in progress
+            //             switch (enemy.GetMonsterType()) {
+            //                 case Monster_Generator::Type::Skeleton:
+            //                     enemy.SetTexture(m_SkeletonDeathTextures[enemy.GetDeathFrame()]);
+            //                     break;
+            //                 case Monster_Generator::Type::Reaper:
+            //                     enemy.SetTexture(m_ReaperDeathTextures[enemy.GetDeathFrame()]);
+            //                     break;
+            //                 case Monster_Generator::Type::Golem:
+            //                     enemy.SetTexture(m_GolemDeathTextures[enemy.GetDeathFrame()]);
+            //                     break;
+            //                 case Monster_Generator::Type::Minotaur:
+            //                     enemy.SetTexture(m_MinotaurDeathTextures[enemy.GetDeathFrame()]);
+            //                     break;
+            //                 case Monster_Generator::Type::Ogre:
+            //                     enemy.SetTexture(m_OgreDeathTextures[enemy.GetDeathFrame()]);
+            //                     break;
+            //                 case Monster_Generator::Type::SIZE:
+            //                     break;
+            //             }
 
-                        // Increment death frame
-                        enemy.SetDeathFrame(enemy.GetDeathFrame() + 1);
-                        enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
+            //             // Increment death frame
+            //             enemy.SetDeathFrame(enemy.GetDeathFrame() + 1);
+            //             enemy.SetScale(sf::Vector2f(0.08f, 0.08f));
 
-                        // Center the sprite
-                        FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();
-                        enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));
-                    }
-                }
+            //             // Center the sprite
+            //             FloatRect monsterSize = enemy.m_Sprite.getLocalBounds();
+            //             enemy.SetOrigin(sf::Vector2f(monsterSize.width / 2, monsterSize.height / 2));
+            //         }
+            //     }
 
-                // Second pass: Safely remove monsters
-                for (auto* monster : monstersToRemove) {
-                    // Remove from observer view
-                    //m_MonsterView.RemoveMonster(*monster);
-                    //monster->RemoveObserver(&m_MonsterView);
+            //     // Second pass: Safely remove monsters
+            //     for (auto* monster : monstersToRemove) {
+            //         // Remove from observer view
+            //         //m_MonsterView.RemoveMonster(*monster);
+            //         //monster->RemoveObserver(&m_MonsterView);
 
-                    // Now remove from the dead list
-                    auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), *monster);
-                    if (it != m_aDeadMonsters.end()) {
-                        m_aDeadMonsters.erase(it);
-                    }
-                }
-            }
+            //         // Now remove from the dead list
+            //         auto it = std::find(m_aDeadMonsters.begin(), m_aDeadMonsters.end(), *monster);
+            //         if (it != m_aDeadMonsters.end()) {
+            //             m_aDeadMonsters.erase(it);
+            //         }
+            //     }
+            // }
 
-            enemyAnimationDelay.restart();
+            //enemyAnimationDelay.restart();
+            monsterAnimationDelay.restart();
         }
     }
 
@@ -2170,7 +2184,7 @@ void Game::UpdateMonsters()
     for (MonsterEntity& monster : activeMonsters)
     {
         size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
-        if (monsterCurrentTileIndex < path.size() - 1)
+        if (monster.GetIsDying() == false && monster.GetIsDead() == false && monsterCurrentTileIndex < path.size() - 1)
         {
             Vector2f nextTilePos = path[monsterCurrentTileIndex + 1];
             Vector2f tileToMonster = nextTilePos - monster.GetPosition();
@@ -2352,7 +2366,8 @@ void UpdateHealthBar(Monster& enemy)
 
 void Game::UpdateTowers()
 {
-    std::vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
+    vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
+    vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
 
     for (TowerEntity& tower : activeTowers)
     {
@@ -2363,8 +2378,9 @@ void Game::UpdateTowers()
             Entity* pNearestEnemy = nullptr;
             float fShortestDistance = std::numeric_limits<float>::max();
             
+            // for (Entity& monster : m_aMonstersQueue)
             // Find nearest monster within this tower's range
-            for (Entity& monster : m_aMonstersQueue)
+            for (MonsterEntity& monster : activeMonsters)
             {
                 sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
                 float fDistance = MathHelpers::Length(vTowerToMonster);
@@ -2379,9 +2395,12 @@ void Game::UpdateTowers()
             {
                 // Create and setup new axe
                 
-                if (tower.GetType() == TowerGenerator::TowerType::Rapid) {
+                if (tower.GetType() == TowerGenerator::TowerType::Rapid) 
+                {
                     m_aAxes.push_back(m_RapidBulletTemplate);
-                } else if (tower.GetType() == TowerGenerator::TowerType::Sniper) {
+                } 
+                else if (tower.GetType() == TowerGenerator::TowerType::Sniper) 
+                {
                     m_aAxes.push_back(m_SniperBulletTemplate);
                 }
                 //ADD BULLET WHEN I ADD TOWERS
@@ -2414,7 +2433,7 @@ void Game::UpdateTowers()
     // ALL TOWER ANIMATION RELATED
     TowerEntityView& towerView = m_TowerManager.GetTowerEntityView();
     Clock& towerAnimationDelay = towerView.GetTowerAnimationDelay();
-    if (towerAnimationDelay.getElapsedTime().asSeconds() >= frameTime) {
+    if (towerAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) {
         if (m_eCurrentEditState == FinishedPathingState) {
             // Set the texture for each tower
             for (TowerEntity& tower : activeTowers) 
@@ -2512,6 +2531,7 @@ void Game::UpdateTowers()
 void Game::UpdateAxes()
 {
     const float COLLISION_DISTANCE = 25.0f; // Adjust collision radius as needed
+    vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
 
     for (auto it = m_aAxes.begin(); it != m_aAxes.end();)
     {
@@ -2520,18 +2540,21 @@ void Game::UpdateAxes()
         // Move axe
         it->Move(it->GetDirection() * it->GetSpeed() * m_DeltaTime.asSeconds());
 
+        // ** Strategy Pattern
         // Check collision with monsters
-        for (int i = static_cast<int>(m_aMonstersQueue.size()) - 1; i >= 0; --i)
+        for (int i = static_cast<int>(activeMonsters.size()) - 1; i >= 0; --i)
         {
-            auto& monster = m_aMonstersQueue[i];
+            auto& monster = activeMonsters[i];
             sf::Vector2f diff = monster.GetPosition() - it->GetPosition();
             float distance = MathHelpers::Length(diff);
 
 
-            if (distance < COLLISION_DISTANCE)
+            if (monster.GetIsDead() == false && monster.GetIsDying() == false && distance < COLLISION_DISTANCE)
             {
                 std::string hitMonsterName;
-                switch (static_cast<int>(monster.GetMonsterType()))
+
+                #ifdef DEBUG
+                switch (static_cast<int>(monster.GetType()))
                 {
                     case 0: hitMonsterName = "Skeleton"; break;
                     case 1: hitMonsterName = "Reaper"; break;
@@ -2543,19 +2566,28 @@ void Game::UpdateAxes()
                 std::cout << "Debug: Axe hit " << hitMonsterName << " at position ("
                         << monster.GetPosition().x << ", "
                         << monster.GetPosition().y << ")" << std::endl;
+                #endif
+
                 hitMonster = true;
                 monster.SetHealth(monster.GetHealth() - it->GetDamage());
+
+                #ifdef DEBUG
                 std::cout << "\n" << monster.GetHealth() << "\n";
+                #endif
+
                 if (monster.GetHealth() <= 0)
                 {
+                    #ifdef DEBUG
                     std::cout << "Monster destroyed!" << std::endl;
-                    m_MonsterView.RemoveMonster(monster);  // First, remove from observer list
-                    monster.RemoveObserver(&m_MonsterView);  // Then, make sure the monster doesn't reference the observer
-                    m_aDeadMonsters.push_back(monster);
-                    m_iCurrentWealth += monster.GetReward();
-                    m_aMonstersQueue.erase(m_aMonstersQueue.begin() + i);
-                    std::cout << "Monsters in observer after removal: " << std::endl;
+                    #endif
 
+                    // m_MonsterView.RemoveMonster(monster);  // First, remove from observer list
+                    // monster.RemoveObserver(&m_MonsterView);  // Then, make sure the monster doesn't reference the observer
+                    // m_aDeadMonsters.push_back(monster);
+                    // m_iCurrentWealth += monster.GetReward();
+                    // m_aMonstersQueue.erase(m_aMonstersQueue.begin() + i);
+                    m_iCurrentWealth += monster.GetReward();
+                    monster.SetIsDying(true);
                 }
                 break;
             }

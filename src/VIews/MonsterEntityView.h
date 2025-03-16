@@ -27,6 +27,7 @@ public:
         int activeMonsterFrameIndex;
         int dyingMonsterFrameIndex;
         bool isDying;
+        bool isDead;
     };
 
     MonsterEntityView(RenderWindow& window);
@@ -44,9 +45,15 @@ public:
 
     void SetMonsterTexture(MonsterEntityData& data, MonsterGenerator::MonsterType type);
 
-    void SyncMonsterData(MonsterEntityData& data, const MonsterEntity& monster);
+    void RemoveMonster(const MonsterEntity* monsterPtr);
 
-    void SyncMonsters(const std::vector<MonsterEntity>& activeMonsters);
+    MonsterEntityView::MonsterEntityData* GetMonsterEntityData(const MonsterEntity* monster);
+
+    Clock& GetMonsterAnimationDelay() { return m_monsterAnimationDelay; }
+
+    int GetActiveTextureArraySize(MonsterGenerator::MonsterType type);
+
+    int GetDyingTextureArraySize(MonsterGenerator::MonsterType type);
 
 private:
     std::unordered_map<const MonsterEntity*, MonsterEntityData> m_MonsterEntitySubjects;

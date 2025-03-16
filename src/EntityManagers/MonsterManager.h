@@ -19,9 +19,15 @@ public:
 
     void SetEntryTilePosition(const Vector2f& position) { m_EntryTilePosition = position; }
 
+    void PrepareFirstWave();
+
     void PrepareNextWave();
 
     void GenerateCurrentWave();
+
+    bool IsAllMonstersSpawned();
+
+    bool IsAllMonstersDead();
 
     MonsterEntityView& GetMonsterEntityView() { return m_MonsterEntityView; }
 
@@ -29,16 +35,26 @@ public:
 
     std::vector<MonsterEntity>& GetActiveMonsters() { return m_activeMonsters; }
 
-    void RemoveMonster(const Vector2f& position);
+    void RemoveMonster(MonsterEntity& monster);
 
-    void incrementTimeSinceLastGeneration(float addedTime)
+    void IncrementTimeSinceLastGeneration(float addedTime)
     {
         //std::cout << "added time: " << addedTime << std::endl;
         m_fTimeSinceLastGeneration += addedTime;
     }
 
+    void IncrementMonsterFrameIndex(MonsterEntity& monster);
+
+    void UpdateMonsterTexture(MonsterEntity& monster);
+
 private:
     void ClearMonsters();
+
+    void PrepareWave();
+    
+    void IncrementActiveMonsterFrameIndex(MonsterEntity& monster);
+
+    void IncrementDyingMonsterFrameIndex(MonsterEntity& monster);
 
     void resetTimeSinceLastGeneration()
     {
@@ -59,7 +75,7 @@ private:
 
     int m_iNumberOfMonsterSpawned;
 
-    bool m_isAllMonstersSpawned;
+    int m_iNumberOfMonsterDead;
 
     float m_fTimeSinceLastGeneration;                 // Time elapsed since the last monster was generated
     float m_fGenerationCooldown;               // The cooldown time (in seconds) between monster generations

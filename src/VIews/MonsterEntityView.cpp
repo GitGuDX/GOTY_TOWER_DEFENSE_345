@@ -186,6 +186,7 @@ void MonsterEntityView::Update(const IGameSubject &subject)
             data.activeMonsterFrameIndex = monsterEntityPtr->GetActiveFrameIndex();
             data.dyingMonsterFrameIndex = monsterEntityPtr->GetDyingFrameIndex();
             data.isDying = monsterEntityPtr->GetIsDying();
+            data.isDead = monsterEntityPtr->GetIsDead();
             m_MonsterEntitySubjects[monsterEntityPtr] = data;
         }
         else
@@ -211,6 +212,10 @@ void MonsterEntityView::Update(const IGameSubject &subject)
             if (data.isDying != monsterEntityPtr->GetIsDying())
             {
                 data.isDying = monsterEntityPtr->GetIsDying();
+            }
+            if (data.isDead != monsterEntityPtr->GetIsDead())
+            {
+                data.isDead = monsterEntityPtr->GetIsDead();
             }
 
         }
@@ -315,30 +320,65 @@ void MonsterEntityView::SetMonsterTexture(MonsterEntityData &data, MonsterGenera
     }
 }
 
-void MonsterEntityView::SyncMonsterData(MonsterEntityData& data, const MonsterEntity& monster)
+void MonsterEntityView::RemoveMonster(const MonsterEntity* monsterPtr)
 {
-    data.sprite.setPosition(monster.GetPosition());
-    data.health = monster.GetHealth();
-    data.maxHealth = monster.GetMaxHealth();
-    data.speed = monster.GetSpeed();
-    data.level = monster.GetLevel();
-    data.strength = monster.GetStrength();
-    data.reward = monster.GetReward();
-    data.type = monster.GetType();
-    data.activeMonsterFrameIndex = monster.GetActiveFrameIndex();
-    data.dyingMonsterFrameIndex = monster.GetDyingFrameIndex();
-    SetMonsterTexture(data, monster.GetType());
+    if (monsterPtr)  // Ensure the pointer is valid
+    {
+        m_MonsterEntitySubjects.erase(monsterPtr);
+    }
+    else
+    {
+        std::cerr << "MonsterEntityView::RemoveMonster() - Invalid monster pointer\n";
+    }
 }
 
-void MonsterEntityView::SyncMonsters(const std::vector<MonsterEntity> &activeMonsters)
+MonsterEntityView::MonsterEntityData *MonsterEntityView::GetMonsterEntityData(const MonsterEntity *monster)
 {
-    // Clear the existing map to start fresh
-    m_MonsterEntitySubjects.clear();
-
-    for (const MonsterEntity& monster : activeMonsters)
+    auto it = m_MonsterEntitySubjects.find(monster);
+    if (it != m_MonsterEntitySubjects.end())
     {
-        MonsterEntityData data;
-        SyncMonsterData(data, monster);
-        m_MonsterEntitySubjects[&monster] = data;
+        return &it->second;
+    }
+    return nullptr;
+}
+
+int MonsterEntityView::GetActiveTextureArraySize(MonsterGenerator::MonsterType type)
+{
+    switch (type)
+    {
+        case MonsterGenerator::MonsterType::Skeleton:
+            return m_SkeletonTextures.size();
+        case MonsterGenerator::MonsterType::Reaper:
+            return m_ReaperTextures.size();
+        case MonsterGenerator::MonsterType::Golem:
+            return m_GolemTextures.size();
+        case MonsterGenerator::MonsterType::Minotaur:
+            return m_MinotaurTextures.size();
+        case MonsterGenerator::MonsterType::Ogre:
+            return m_OgreTextures.size();
+        default:
+            std::cerr << "MonsterEntityView::GetTextureArraySize() - Invalid monster type\n";
+            return 0;
+    }
+}
+
+
+int MonsterEntityView::GetDyingTextureArraySize(MonsterGenerator::MonsterType type)
+{
+    switch (type)
+    {
+        case MonsterGenerator::MonsterType::Skeleton:
+            return m_SkeletonDeathTextures.size();
+        case MonsterGenerator::MonsterType::Reaper:
+            return m_ReaperDeathTextures.size();
+        case MonsterGenerator::MonsterType::Golem:
+            return m_GolemDeathTextures.size();
+        case MonsterGenerator::MonsterType::Minotaur:
+            return m_MinotaurDeathTextures.size();
+        case MonsterGenerator::MonsterType::Ogre:
+            return m_OgreDeathTextures.size();
+        default:
+            std::cerr << "MonsterEntityView::GetDyingTextureArraySize() - Invalid monster type\n";
+            return 0;
     }
 }

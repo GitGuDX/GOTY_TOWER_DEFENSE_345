@@ -6,7 +6,7 @@ MonsterManager::MonsterManager(RenderWindow &window)
     , m_MonsterGenerator()
     , m_CurrentWaveStrength(0)
     , m_iNumberOfMonsterSpawned(0)
-    , m_isAllMonstersSpawned(false)
+    , m_iNumberOfMonsterDead(0)
     , m_fTimeSinceLastGeneration(0.f)
     , m_fGenerationCooldown(0.5f)
 {
@@ -27,18 +27,29 @@ void MonsterManager::ClearMonsters()
     #endif
 }
 
-void MonsterManager::PrepareNextWave()
+void MonsterManager::PrepareWave()
 {
-    // If so, prepare the next round
     m_iNumberOfMonsterSpawned = 0;
-    
-    m_MonsterGenerator.UpdateNextRoundMonsterGenerator();
+
+    m_iNumberOfMonsterDead = 0;
 
     ClearMonsters();
 
     m_CurrentWaveStrength = m_MonsterGenerator.GetMonsterCountForRound();
 
     m_activeMonsters.reserve(m_CurrentWaveStrength);
+}
+
+void MonsterManager::PrepareFirstWave()
+{
+    PrepareWave();
+}
+
+void MonsterManager::PrepareNextWave()
+{
+    m_MonsterGenerator.UpdateNextRoundMonsterGenerator();
+
+    PrepareWave();
 }
 
 void MonsterManager::GenerateCurrentWave()
@@ -70,17 +81,58 @@ void MonsterManager::GenerateCurrentWave()
     }    
 }
 
+bool MonsterManager::IsAllMonstersSpawned()
+{
+    return m_iNumberOfMonsterSpawned >= m_CurrentWaveStrength;
+}
+
+bool MonsterManager::IsAllMonstersDead()
+{
+    return m_iNumberOfMonsterDead >= m_CurrentWaveStrength;
+}
+
 void MonsterManager::RemoveMonster(MonsterEntity& monster)
 {
-    // Remove the monster from the active monsters vector
-    for (auto it = m_activeMonsters.begin(); it != m_activeMonsters.end(); ++it)
+    m_iNumberOfMonsterDead++;
+    monster.SetIsDead(true);
+    m_MonsterEntityView.RemoveMonster(&monster);
+    monster.RemoveObserver(&m_MonsterEntityView);
+}
+
+
+void MonsterManager::IncrementActiveMonsterFrameIndex(MonsterEntity& monster)
+{
+    int indexLimit = m_MonsterEntityView.GetActiveTextureArraySize(monster.GetType());
+    monster.IncrementActiveFrameIndex(indexLimit);
+}
+
+void MonsterManager::IncrementDyingMonsterFrameIndex(MonsterEntity &monster)
+{
+    int indexLimit = m_MonsterEntityView.GetDyingTextureArraySize(monster.GetType());
+    monster.IncrementDyingFrameIndex(indexLimit);
+}
+
+void MonsterManager::IncrementMonsterFrameIndex(MonsterEntity &monster)
+{
+    if (monster.GetIsDying())
     {
-        if (&(*it) == &monster)
-        {
-            it->RemoveObserver(&m_MonsterEntityView);
-            m_activeMonsters.erase(it);
-            m_MonsterEntityView.SyncMonsters(m_activeMonsters);
-            break;
-        }
+        IncrementDyingMonsterFrameIndex(monster);
+    }
+    else
+    {
+        IncrementActiveMonsterFrameIndex(monster);
+    }
+}
+
+void MonsterManager::UpdateMonsterTexture(MonsterEntity &monster)
+{
+    MonsterEntityView::MonsterEntityData *data = m_MonsterEntityView.GetMonsterEntityData(&monster);
+    if (data != nullptr)
+    {
+        m_MonsterEntityView.SetMonsterTexture(*data, monster.GetType());
+    }
+    else
+    {
+        std::cerr << "MonsterManager::UpdateMonsterTexture() - Monster data not found\n";
     }
 }

@@ -86,20 +86,19 @@ public:
         NotifyStatsChanged();
     }
 
-    void SetActiveFrameIndex(int index) { 
-        m_iActiveFrameIndex = index; 
-        NotifyStatsChanged();
-    }
-
-    void SetDyingFrameIndex(int index) { 
-        m_iDyingFrameIndex = index; 
-        NotifyStatsChanged();
-    }
-
     void SetIsDying(bool isDying) { 
         m_bIsDying = isDying; 
         NotifyStatsChanged();
     }
+
+    void SetIsDead(bool isDead) { 
+        m_bIsDead = isDead; 
+        NotifyStatsChanged();
+    }
+
+    void IncrementActiveFrameIndex(int indexLimit);
+
+    void IncrementDyingFrameIndex(int indexLimit);
 
     MonsterGenerator::MonsterType GetType() const { return m_eType; }
 
@@ -123,6 +122,10 @@ public:
 
     bool GetIsDying() const { return m_bIsDying; }
 
+    bool GetIsFinishedDying() const { return m_bIsFinishedDying; }
+
+    bool GetIsDead() const { return m_bIsDead; }
+
 private:
     void SetInitialStats();
 
@@ -140,6 +143,8 @@ private:
     int m_iActiveFrameIndex;
     int m_iDyingFrameIndex;
     bool m_bIsDying;
+    bool m_bIsFinishedDying;
+    bool m_bIsDead;
 
 };
 

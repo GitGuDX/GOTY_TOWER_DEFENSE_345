@@ -361,7 +361,7 @@ private:
     //Clock towerAnimationDelay;
     int currentTowerFrame = 1;
     int currentEnemyFrame = 0;
-    const float frameTime = 0.07f; // Time per frame in seconds
+    const float m_fFrameTime = 0.07f; // Time per frame in seconds
     //Texture tower1TempTexture;
     //Texture tower2TempTexture;
     
