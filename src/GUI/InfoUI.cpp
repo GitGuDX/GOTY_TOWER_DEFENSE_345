@@ -1,7 +1,8 @@
 #include "InfoUI.h"
 
 InfoUI::InfoUI()
-    : m_iCurrentLevel(0)
+    : m_InfoUIWidth(300)
+    , m_iCurrentLevel(0)
     , m_iCurrentWealth(0)
     , m_hoverTowerDamage(0.0f)
     , m_hoverTowerCooldown(0.0f)

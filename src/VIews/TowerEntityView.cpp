@@ -133,7 +133,6 @@ void TowerEntityView::SyncTowerData(TowerEntityData& data, const TowerEntity& to
 
 void TowerEntityView::SyncTowers(const std::vector<TowerEntity>& templateTowers, const std::vector<TowerEntity> &activeTowers)
 {
-    //std::cout << "Syncing towers" << std::endl;
     // Clear the existing map to start fresh
     m_TowerEntitySubjects.clear();
 
@@ -174,7 +173,6 @@ TowerEntityView::TowerEntityData *TowerEntityView::GetTowerEntityData(const Towe
 
 void TowerEntityView::StartDraggingTower(const TowerEntityView::TowerEntityData* towerData)
 {
-    //std::cout << "TowerEntityView::StartDraggingTower() - Tower type: " << static_cast<int>(towerType) << std::endl;
     // Prevent memory leak by deleting old dragged tower data if it exists
     if (m_draggedTowerData)
     {
@@ -187,12 +185,8 @@ void TowerEntityView::StartDraggingTower(const TowerEntityView::TowerEntityData*
     m_draggedTowerData->type = towerData->type;
     m_draggedTowerData->cost = towerData->cost;
 
-    
-    
     // Set the type and other properties of the dragged tower based on the tower type
     SetTemplateTowerSprite(*m_draggedTowerData, towerData->type);
-    //std::cout << "dragged tower type: " << static_cast<int>(m_draggedTowerData->type) << std::endl;
-    // Additional properties like scale, position, etc. can be set here.
 }
 
 void TowerEntityView::UpdateDraggedTower(sf::Vector2f mousePos)

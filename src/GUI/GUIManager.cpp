@@ -37,8 +37,9 @@ void GUIManager::InitializeGameSetup()
     m_gameSetup.SetSizeLimitWarning("Size must be between 10 and 20.");
 }
 
-void GUIManager::InitializeMapSetup(Vector2i gridSize)
+void GUIManager::InitializeMapSetup()
 {
+    Vector2i gridSize = GetGridSize();
     m_mapSetup = std::make_unique<MapSetup>(gridSize);
     m_mapSetupView = std::make_unique<MapSetupView>(m_Window);
     m_mapSetup->AddObserver(m_mapSetupView.get());

@@ -32,6 +32,10 @@ public:
 
     void InitializeInfoUI();
 
+    int GetInfoUIWidth() const {
+        return m_InfoUIWidth;
+    }
+
 private:
     void notifyObservers() {
         
@@ -43,6 +47,8 @@ private:
 
 private:
     std::vector<IGameObserver*> m_observers;
+
+    int m_InfoUIWidth;
 
     std::string m_scoreString;
     std::string m_levelString;
@@ -174,7 +180,7 @@ public:
 
     void SetCurrentLevel(int level) {
         m_iCurrentLevel = level;
-        SetLevelString("Score: " + std::to_string(level));
+        SetLevelString("Level: " + std::to_string(level));
     }
 
     void SetCurrentWealth(int wealth) {
