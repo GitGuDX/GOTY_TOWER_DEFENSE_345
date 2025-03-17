@@ -12,7 +12,13 @@ MonsterManager::MonsterManager(RenderWindow &window)
 {
 }
 
-void MonsterManager::InitializeMonsters(const Vector2f& position)
+void MonsterManager::LoadMonsterAssets()
+{
+    m_MonsterEntityView.LoadActiveMonsterTextures();
+    m_MonsterEntityView.LoadDyingMonsterTextures();
+}
+
+void MonsterManager::InitializeMonsters(const Vector2f &position)
 {
     m_EntryTilePosition = position;
 

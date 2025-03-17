@@ -5,9 +5,6 @@ using namespace sf;
 MonsterEntityView::MonsterEntityView(RenderWindow &window)
     : m_Window(window)
 {
-    LoadActiveMonsterTextures();
-
-    LoadDyingMonsterTextures();
 }
 
 void MonsterEntityView::LoadActiveMonsterTextures()

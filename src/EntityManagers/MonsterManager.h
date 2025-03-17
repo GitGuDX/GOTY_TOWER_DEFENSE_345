@@ -17,6 +17,8 @@ public:
     MonsterManager(RenderWindow& window);
     ~MonsterManager() = default;
 
+    void LoadMonsterAssets();
+
     void InitializeMonsters(const Vector2f& position);
 
     void PrepareFirstWave();

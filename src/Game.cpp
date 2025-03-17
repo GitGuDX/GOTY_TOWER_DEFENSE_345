@@ -86,6 +86,9 @@ void Game::Run()
                 // Bullet texture is loaded here. Need to be implemented by the bullet observer pattern
                 LoadPlayModeAssets();
 
+                // Load Monster assets
+                m_MonsterManager.LoadMonsterAssets();
+
                 // Assign the entry tile position and prepare the first wave of monsters
                 Vector2f entryTile = m_GUIManager.GetMapSetup()->GetEntryTile();
                 m_MonsterManager.InitializeMonsters(entryTile);
