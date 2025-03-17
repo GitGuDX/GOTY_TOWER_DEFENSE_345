@@ -1,7 +1,7 @@
 #ifndef TOWER_ENTITY_H
 #define TOWER_ENTITY_H
 
-#include "../Entity.h"
+#include "Entity.h"
 #include "../GameEvents.h"
 #include "../Generators/TowerGenerator.h"
 #include <iostream>

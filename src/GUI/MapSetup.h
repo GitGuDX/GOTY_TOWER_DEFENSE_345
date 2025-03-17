@@ -2,7 +2,7 @@
 #define MAPSETUP_H
 
 #include "../GameEvents.h"
-#include "Tile.h"
+#include "../Entities/Tile.h"
 #include <SFML/Graphics.hpp>
 
 #include <iostream>
@@ -38,6 +38,7 @@ public:
     std::vector<std::vector<TileData>>& GetTiles() { return m_aTiles; }
     const std::vector<std::vector<TileData>>& GetTiles() const { return m_aTiles; }
     const std::vector<sf::Vector2f>& GetPath() const { return m_aPath; }
+    std::vector<sf::Vector2f>& GetPath() { return m_aPath; }
     const std::vector<sf::Vector2f>& GetDeletedPath() const { return m_aDeletedPath; }
     const sf::Vector2i& GetGridSize() const { return m_vGridSize; }
     const sf::Vector2f GetEntryTile() const { return m_vEntryTile; }

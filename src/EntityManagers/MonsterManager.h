@@ -17,13 +17,13 @@ public:
     MonsterManager(RenderWindow& window);
     ~MonsterManager() = default;
 
-    void SetEntryTilePosition(const Vector2f& position) { m_EntryTilePosition = position; }
+    void InitializeMonsters(const Vector2f& position);
 
     void PrepareFirstWave();
 
     void PrepareNextWave();
 
-    void GenerateCurrentWave();
+    void GenerateCurrentWave(float addedTime);
 
     bool IsAllMonstersSpawned();
 
@@ -37,6 +37,10 @@ public:
 
     void RemoveMonster(MonsterEntity& monster);
 
+    void UpdateMonsterAnimations(const float m_fFrameTime);
+
+private:
+
     void IncrementTimeSinceLastGeneration(float addedTime)
     {
         //std::cout << "added time: " << addedTime << std::endl;
@@ -47,7 +51,6 @@ public:
 
     void UpdateMonsterTexture(MonsterEntity& monster);
 
-private:
     void ClearMonsters();
 
     void PrepareWave();

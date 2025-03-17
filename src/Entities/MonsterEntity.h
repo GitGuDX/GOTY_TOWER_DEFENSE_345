@@ -1,7 +1,7 @@
 #ifndef MONSTER_ENTITY_H
 #define MONSTER_ENTITY_H
 
-#include "../Entity.h"
+#include "Entity.h"
 #include "../GameEvents.h"
 #include "../Generators/MonsterGenerator.h"
 #include <iostream>

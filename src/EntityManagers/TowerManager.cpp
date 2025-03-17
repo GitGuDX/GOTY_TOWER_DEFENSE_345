@@ -81,3 +81,25 @@ void TowerManager::RemoveTower(const sf::Vector2f &position)
         }
     }
 }
+
+void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
+{
+    Clock& towerAnimationDelay = m_TowerEntityView.GetTowerAnimationDelay();
+    if (towerAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) {
+        // Set the texture for each tower
+        std::vector<TowerEntity>& activeTowers = GetActiveTowers();
+        for (TowerEntity& tower : activeTowers) 
+        {
+            TowerEntityView::TowerEntityData* towerData = m_TowerEntityView.GetTowerEntityData(&tower);
+
+            if (towerData != nullptr)
+            {
+                m_TowerEntityView.SetActiveTowerTexture(towerData);
+            }
+        }
+
+        m_TowerEntityView.IncrementCurentTowerFrameIndex();
+        // Restart the clock after updating the frame
+        towerAnimationDelay.restart();
+    }
+}

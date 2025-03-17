@@ -31,6 +31,8 @@ public:
 
     void RemoveTower(const sf::Vector2f& position);
 
+    void UpdateTowerAnimations(const float m_fFrameTime);
+
     float GetSellRate() const { return m_sellRate; }
 
 private:

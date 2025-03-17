@@ -8,7 +8,7 @@
 #ifndef TOWER_H
 #define TOWER_H
 
-#include "Entity.h"
+#include "Entities/Entity.h"
 #include <iostream>
 #include "GameEvents.h"
 

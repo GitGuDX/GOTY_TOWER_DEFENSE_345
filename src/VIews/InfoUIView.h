@@ -4,7 +4,6 @@
 #include "../Platform.h"
 #include "../GameEvents.h"
 #include "../GUI/InfoUI.h"
-#include "../Tower.h"
 #include <SFML/Graphics.hpp>
 
 #include <iostream>

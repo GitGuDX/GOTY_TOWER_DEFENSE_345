@@ -6,13 +6,14 @@
 #include "../Views/GameSetupView.h"
 #include "MapSetup.h"
 #include "../Views/MapSetupView.h"
-#include "Tile.h"
+#include "../Entities/Tile.h"
 #include "InfoUI.h"
 #include "../Views/InfoUIView.h"
 #include <SFML/Graphics.hpp>
 
 #include <memory>
 
+class TowerEntity;
 
 class GUIManager
 {
@@ -56,37 +57,34 @@ public:
         return m_infoUIView.get();
     }
 
-    Vector2i GetWindowSize() const
-    {
-        if (m_mapSetup != nullptr)
-        {
-            Vector2i mapSize = m_mapSetup->GetMapSize();
-            int InfoUIWidth = m_infoUI->GetInfoUIWidth();
-            return Vector2i(mapSize.x + InfoUIWidth, mapSize.y);
-        }
-        return Vector2i(0, 0);
-    }
+    Vector2i GetGridSize() const;
 
-    Vector2i GetMapSize() const
-    {
-        if (m_mapSetup != nullptr)
-        {
-            return m_mapSetup->GetMapSize();
-        }
-        return Vector2i(0, 0);
-    }
+    Vector2i GetWindowSize() const;
 
-private:
-    Vector2i GetGridSize() const
-    {
-        Vector2i gridSize;
-        gridSize.x = std::stoi(m_gameSetup.GetUserInputWindowWidth());                // converting sf::String -> std::string -> unsigned int
-        gridSize.y = std::stoi(m_gameSetup.GetUserInputWindowHeight());
-        return gridSize;
-    }
+    Vector2i GetMapSize() const;
+
+    void InitiailizeTowerPrice(std::vector<TowerEntity>& templateTowers);
+
+    bool InitializeEntryTile(const sf::Vector2f& position);
+
+    bool InitializeExitTile(const sf::Vector2f& position);
+
+    bool FinalizeExitTile(const sf::Vector2f& position);
+
+    void UpdateTowerHoverUI(TowerEntity& tower);
+
+    void BlinkTiles(Tile::Type type, sf::Time deltaTime);
+
+    void UpdatePathTiles();
+
+    void SetInstructionAndColor(const std::string& instruction, const Color& color);
+
+    void SetWarningAndColor(const std::string& warning, const Color& color);
 
 private:
     sf::RenderWindow& m_Window;
+
+    float m_fElapsedTimeInSeconds;
 
     sf::Font m_Font;
 

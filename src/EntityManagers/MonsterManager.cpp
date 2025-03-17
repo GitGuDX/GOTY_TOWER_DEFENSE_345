@@ -12,6 +12,13 @@ MonsterManager::MonsterManager(RenderWindow &window)
 {
 }
 
+void MonsterManager::InitializeMonsters(const Vector2f& position)
+{
+    m_EntryTilePosition = position;
+
+    PrepareFirstWave();
+}
+
 void MonsterManager::ClearMonsters()
 {
     // Remove all observers
@@ -52,8 +59,10 @@ void MonsterManager::PrepareNextWave()
     PrepareWave();
 }
 
-void MonsterManager::GenerateCurrentWave()
+void MonsterManager::GenerateCurrentWave(float addedTime)
 {
+    IncrementTimeSinceLastGeneration(addedTime);
+
     // std::cout << "Time since last generation: " << m_fTimeSinceLastGeneration << '\n';
     // std::cout << "Generation cooldown: " << m_fGenerationCooldown << '\n';
     // std::cout << "Number of monster spawned: " << m_iNumberOfMonsterSpawned << '\n';
@@ -99,6 +108,21 @@ void MonsterManager::RemoveMonster(MonsterEntity& monster)
     monster.RemoveObserver(&m_MonsterEntityView);
 }
 
+void MonsterManager::UpdateMonsterAnimations(const float m_fFrameTime)
+{
+    Clock& monsterAnimationDelay = m_MonsterEntityView.GetMonsterAnimationDelay();
+    if (monsterAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) 
+    {
+        //RUNNING ANIMATION
+        std::vector<MonsterEntity>& activeMonsters = GetActiveMonsters();
+        for (MonsterEntity& monster : activeMonsters)
+        {
+            UpdateMonsterTexture(monster);
+            IncrementMonsterFrameIndex(monster);
+        }
+        monsterAnimationDelay.restart();
+    }
+}
 
 void MonsterManager::IncrementActiveMonsterFrameIndex(MonsterEntity& monster)
 {

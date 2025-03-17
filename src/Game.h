@@ -13,7 +13,7 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include "Platform.h"
 
 // GUI and Map
-#include "GUI/Tile.h"
+#include "Entities/Tile.h"
 #include "GUI/GUIManager.h"
 
 // Monster
@@ -88,6 +88,8 @@ public:
     void Run(); 
 
 private:
+
+    void InitializeMapEnditorMode();
 
     /** * @brief Loads assets for the play mode. */
     void LoadPlayModeAssets();
@@ -168,15 +170,17 @@ private:
     // Time management
     Time m_DeltaTime;
     float m_fTimeInPlayMode = 0.0f;
-    float m_fElapesdTimeInSeconds;
+    
     Clock warningShown;
     Clock placementOrUpgradeTimer;
     const float m_fFrameTime = 0.07f; // Time per frame in seconds
 
-    // **** Not used. Assign it if used multiple times
+    // Defines window dimensions (pixels), map size (pixels) and tile size (pixels).
     Vector2i m_vWindowSize;
-    Vector2i m_vGridSize;
-    const int m_iTileSize;
+    Vector2i m_vMapSize;
+    int m_iTileSize;
+
+    // **** Not used. Assign it if used multiple times
     std::vector<sf::Vector2f> m_aPath;
     sf::VertexArray m_sfPathLines; 
 

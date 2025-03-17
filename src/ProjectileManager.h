@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "Entity.h"
+#include "Entities/Entity.h"
 #include "Monster.h"
 #include "Tower.h"
 

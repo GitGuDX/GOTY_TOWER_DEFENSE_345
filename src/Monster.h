@@ -9,10 +9,10 @@
 #define MONSTER_H
 
 #include<iostream>
-#include "Entity.h"
-#include "Monster_Generator.h"
+#include "Entities/Entity.h"
+//#include "Monster_Generator.h"
 #include "GameEvents.h"
-#include "Tower.h"
+//#include "Tower.h"
 
 ////////// Monster Class ////////////
 /*
@@ -34,7 +34,7 @@ public:
     ~Monster();
 
     bool CanAttack();  // Checks if the monster is ready to attack
-    void Attack(Tower& tower);  // Attacks a nearby tower
+    //void Attack(Tower& tower);  // Attacks a nearby tower
     void UpdateAttackCooldown(float deltaTime);  // Updates attack timer
 
 public:

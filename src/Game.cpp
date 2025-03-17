@@ -8,15 +8,12 @@
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
 #include "Game.h"
+#include "Math_Helpers.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
 #include <algorithm>
 #include <limits>
-#include "TowerView.h"
-
-
-#include "Math_Helpers.h"
 
 using namespace sf;
 using namespace std;
@@ -26,8 +23,6 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
     // Initialize previous game mode to InitialSetUp to track game mode transitions later 
     , m_ePrevGameMode(GameMode::InitialSetUp)
-    // ** TILE
-    , m_iTileSize(50)                                                                          // Set Tile size to 50px
     // Initialize GUI driver class
     , m_GUIManager(m_Window)
     // ** TOWER
@@ -70,36 +65,7 @@ void Game::Run()
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode) {
 
-                // Initialize GameSetup with user given grid size and GameSetupView objects and load thier assets
-                m_GUIManager.InitializeMapSetup();
-
-                // Initialize InfoUI and InfoUIView objects and load their assets
-                m_GUIManager.InitializeInfoUI();
-                m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
-                m_GUIManager.GetInfoUI()->SetCurrentLevel(m_iCurrentLevel);
-
-                // Resize window to fit the map size + UI width
-                Vector2i windowSize = m_GUIManager.GetWindowSize();
-                m_Window.create(VideoMode(windowSize.x, windowSize.y), "New Game");
-
-                // Initialize Tower template for the UI with mapSize to set position to template towers for the UI
-                Vector2i mapSize = m_GUIManager.GetMapSize();
-                m_TowerManager.SetMapSize(mapSize);
-                m_TowerManager.InitializeGameSetup();
-
-                // Get tower price from TowerManager and set it to the InfoUI
-                std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
-                for (const TowerEntity& tower : templateTowers)
-                {
-                    if (tower.GetType() == TowerGenerator::TowerType::Rapid)
-                    {
-                        m_GUIManager.GetInfoUI()->SetWoodTowerPriceString(sf::String(std::to_string(tower.GetCost())));
-                    }
-                    else if (tower.GetType() == TowerGenerator::TowerType::Sniper)
-                    {
-                        m_GUIManager.GetInfoUI()->SetStoneTowerPriceString(sf::String(std::to_string(tower.GetCost())));
-                    }
-                }
+                InitializeMapEnditorMode();
 
                 m_eCurrentEditState = PathEditingState::EntryState;
                 m_ePrevGameMode = MapEditorMode;
@@ -120,35 +86,39 @@ void Game::Run()
                 // Bullet texture is loaded here. Need to be implemented by the bullet observer pattern
                 LoadPlayModeAssets();
 
-                // Assign entry tile position and prepare the first wave of monsters
+                // Assign the entry tile position and prepare the first wave of monsters
                 Vector2f entryTile = m_GUIManager.GetMapSetup()->GetEntryTile();
-                m_MonsterManager.SetEntryTilePosition(entryTile);
-                m_MonsterManager.PrepareFirstWave();
+                m_MonsterManager.InitializeMonsters(entryTile);
 
                 m_ePrevGameMode = PlayMode;
             }
 
-            if(m_gameOver){
+            if (m_gameOver)
+            {
                 HandleGameOver(); // Implement this function to show a game over screen, restart, etc.
-            } else {
+            } 
+            else 
+            {
                 // If round hasn't ended, game is still playing so keep updating
                 if (!m_bIsRoundEnded)
                 {
                     UpdatePlay();
                 }
-                // If the round ended, prepare for the next round.
+                // If the round ended, stop updating the play and prepare for the next round.
                 else
                 {
+                    // Condition to update the monster generator only once after the round ends
                     if (!m_bIsMonsterGeneratorUpdated)
                     {
                         // Prepare the next wave of monsters
                         m_MonsterManager.PrepareNextWave();
                         m_bIsMonsterGeneratorUpdated = true;
-                        
                     }
                 }
             }
+
             UpdateUI();
+
             DrawPlayMode();
             break;
         }
@@ -157,9 +127,33 @@ void Game::Run()
             break;
         }
         }
-        
-        //m_Window.display();                 //Placeholder, create new method
     }
+}
+
+void Game::InitializeMapEnditorMode()
+{
+    // Initialize the Map with user given grid size and GameSetupView objects and load thier assets
+    m_GUIManager.InitializeMapSetup();
+
+    // Initialize InfoUI and InfoUIView objects and load their assets
+    m_GUIManager.InitializeInfoUI();
+    m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
+    m_GUIManager.GetInfoUI()->SetCurrentLevel(m_iCurrentLevel);
+
+    // Resize window to fit the map size + UI width
+    m_vWindowSize = m_GUIManager.GetWindowSize();
+    m_Window.create(VideoMode(m_vWindowSize.x, m_vWindowSize.y), "New Game");
+
+    m_iTileSize = m_GUIManager.GetMapSetup()->GetTileSize();
+
+    // Initialize Tower manager with mapSize and load its assets
+    m_vMapSize = m_GUIManager.GetMapSize();
+    m_TowerManager.SetMapSize(m_vMapSize);
+    m_TowerManager.InitializeGameSetup();
+
+    // Get tower price from TowerManager and give it to the InfoUI
+    std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
+    m_GUIManager.InitiailizeTowerPrice(templateTowers);
 }
 
 // Bullet observer pattern need to be implemented
@@ -271,11 +265,8 @@ void Game::HandleInput()
                 // When submit button click is released, resize window with given inputs, switch game mode, and load map editor assets
                 if (buttonBoxArray[1].getGlobalBounds().contains(translatedPosition))
                 {
-                    // **** Need to handled by GUI manager
-                    // Convert the user input string to unsigned int and reassign the new grid size
-                    Vector2i gridSize;
-                    gridSize.x = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowWidth());                // converting sf::String -> std::string -> unsigned int
-                    gridSize.y = std::stoi(m_GUIManager.GetGameSetup()->GetUserInputWindowHeight());
+                    // Get the grid size from the user input
+                    Vector2i gridSize = m_GUIManager.GetGridSize();
 
                     // Apply input limit from 10 to 20
                     if (gridSize.x >= 10 && gridSize.x <= 20 && gridSize.y >= 10 && gridSize.y <= 20)
@@ -286,11 +277,10 @@ void Game::HandleInput()
                     {
                         m_GUIManager.GetGameSetupView()->SetIsSizeLimitTextShown(true);
                     }
-                    /////
                 }
             }
 
-            // **** Some logic could be decoupled and handled by GUI Manager
+            // **** Need separate class for InputHandle
             if (event.type == Event::TextEntered)
             {
                 // Depending on which box is clicked, update the corresponding text
@@ -326,18 +316,15 @@ void Game::HandleInput()
             if (event.type == sf::Event::MouseButtonPressed) 
             {
                 sf::Vector2f clickedPos(event.mouseButton.x, event.mouseButton.y);
-                sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_GUIManager.GetMapSetup()->GetTileSize());
+                sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(clickedPos, m_iTileSize);
 
-                sf::Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
-                if (event.mouseButton.button == sf::Mouse::Left && clickedPos.x <= mapSize.x && clickedPos.y <= mapSize.y)
+                if (event.mouseButton.button == sf::Mouse::Left && clickedPos.x <= m_vMapSize.x && clickedPos.y <= m_vMapSize.y)
                 {
                     // If EntryState, check if the tile clicked is from the edge tiles then save the clicked tile as the entry tile then append is to the arrays
                     if (m_eCurrentEditState == EntryState)
                     {
-                        if (m_GUIManager.GetMapSetup()->isEdgeTile(gridPos))
+                        if (m_GUIManager.InitializeEntryTile(gridPos))
                         {
-                            m_GUIManager.GetMapSetup()->PushPathTile(gridPos);
-                            m_GUIManager.GetMapSetup()->SetEntryTile(gridPos);
                             m_eCurrentEditState = ExitState;
                         }
                     }
@@ -345,10 +332,8 @@ void Game::HandleInput()
                     // the exit tile will be appended to the arrays later when the entry tile and the exit tiles are linked together with path tile
                     else if (m_eCurrentEditState == ExitState) 
                     {
-                        if (m_GUIManager.GetMapSetup()->isEdgeTile(gridPos))
+                        if (m_GUIManager.InitializeExitTile(gridPos))
                         {
-                            m_GUIManager.GetMapSetup()->SetExitTile(gridPos);
-                            m_GUIManager.GetMapSetup()->HighlightEdgeTiles(Tile::Type::Grass);
                             m_eCurrentEditState = PathState;
                         }
 
@@ -371,26 +356,21 @@ void Game::HandleInput()
                 // If this is true, mouse is being dragged within the map
                 if (m_IsPathingMousePressed)
                 {
-                    
-                    int tileSize = m_GUIManager.GetMapSetup()->GetTileSize();
-                    Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
 
                     sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
 
                     // Constrain gridPos to the window boundaries
-                    sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(mousePos, tileSize);      // Snap the mouse position to the grid
-                    gridPos.x = std::clamp(gridPos.x, 0.f, static_cast<float>(mapSize.x));  // Clamp x-coordinate
-                    gridPos.y = std::clamp(gridPos.y, 0.f, static_cast<float>(mapSize.y));  // Clamp y-coordinate
+                    sf::Vector2f gridPos = MathHelpers::getNearestTileCenterPosition(mousePos, m_iTileSize);      // Snap the mouse position to the grid
+                    gridPos.x = std::clamp(gridPos.x, 0.f, static_cast<float>(m_vMapSize.x));  // Clamp x-coordinate
+                    gridPos.y = std::clamp(gridPos.y, 0.f, static_cast<float>(m_vMapSize.y));  // Clamp y-coordinate
 
                     // Check if the gridPos is adjacent to the last path tile
-                    std::vector<sf::Vector2f> path = m_GUIManager.GetMapSetup()->GetPath();
-                    if (!path.empty() && MathHelpers::isAdjacent(path.back(), gridPos, tileSize))
+                    std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
+                    if (!path.empty() && MathHelpers::isAdjacent(path.back(), gridPos, m_iTileSize))
                     {
                         // When the path tile overlaps with the exit tile, we reached the end of pathing. Append exit tile. Ensure we don't move beyond the exit tile
-                        sf::Vector2f exitTile = m_GUIManager.GetMapSetup()->GetExitTile();
-                        if (gridPos == exitTile)
+                        if (m_GUIManager.FinalizeExitTile(gridPos))
                         {
-                            m_GUIManager.GetMapSetup()->PushPathTile(exitTile);
                             m_eCurrentEditState = FinishedPathingState;
                         }
                         // Prevent backtracking
@@ -449,7 +429,6 @@ void Game::HandleInput()
             std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
             std::vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
 
-            InfoUI* infoUI = m_GUIManager.GetInfoUI();
             InfoUIView* infoUIView = m_GUIManager.GetInfoUIView();
             TowerEntityView& towerView = m_TowerManager.GetTowerEntityView();
             const TowerEntityView::TowerEntityData* draggedTowerData = towerView.GetDraggedTowerEntityData();
@@ -491,8 +470,7 @@ void Game::HandleInput()
 
                             m_TowerManager.RemoveTower(snapGrid);
 
-                            infoUIView->SetWarningTextColor(sf::Color::Green);
-                            infoUI->SetWarningString("Tower removed\n");
+                            m_GUIManager.SetWarningAndColor("Tower removed", sf::Color::Green);
 
                             warningShown.restart();
 
@@ -517,9 +495,7 @@ void Game::HandleInput()
 
                     if (towerExists) 
                     {
-                        // Provide feedback (e.g., show a warning message)
-                        infoUIView->SetWarningTextColor(Color::Red);
-                        infoUI->SetWarningString("Warning: There's already a tower here...\n");
+                        m_GUIManager.SetWarningAndColor("Warning: There's already a tower here", sf::Color::Red);
                         warningShown.restart();   // Start the timer to show the warning for a short time
 
                         towerView.StopDraggingTower();
@@ -538,14 +514,12 @@ void Game::HandleInput()
                             }
                         }
 
-                        Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
-                        if (draggedTowerData != nullptr && snapGrid.x >= 0 && snapGrid.y >= 0 && snapGrid.x < mapSize.x && snapGrid.y < mapSize.y && !onPath) 
+                        if (draggedTowerData != nullptr && snapGrid.x >= 0 && snapGrid.y >= 0 && snapGrid.x < m_vMapSize.x && snapGrid.y < m_vMapSize.y && !onPath) 
                         {
                             int cost = draggedTowerData->cost;
                             if (m_iCurrentWealth < cost)
                             {
-                                infoUIView->SetWarningTextColor(Color::Red);
-                                infoUI->SetWarningString("Warning: Cannot afford this tower...\n");
+                                m_GUIManager.SetWarningAndColor("Warning: Cannot afford this tower", sf::Color::Red);
                                 warningShown.restart();
                             }
                             else
@@ -554,8 +528,7 @@ void Game::HandleInput()
 
                                 m_TowerManager.CreateTower(draggedTowerData->type, snapGrid);
 
-                                infoUIView->SetWarningTextColor(Color::Green);
-                                infoUI->SetWarningString("Successfully placed tower\n");
+                                m_GUIManager.SetWarningAndColor("Successfully placed tower", sf::Color::Green);
                                 warningShown.restart();
                             }
 
@@ -566,8 +539,7 @@ void Game::HandleInput()
                         {
                             if (draggedTowerData != nullptr)
                             {
-                                m_GUIManager.GetInfoUIView()->SetWarningTextColor(Color::Red);
-                                infoUI->SetWarningString("Warning: Invalid tower placement\n");
+                                m_GUIManager.SetWarningAndColor("Warning: Invalid tower placement", sf::Color::Red);
                                 warningShown.restart();   // Start the timer to show the warning for a short time
                             }
                             
@@ -612,19 +584,8 @@ void Game::HandleInput()
 
                         if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
                             
-                            // **** Refactor. Noneed to get data from the TowerEntityView. Use the TowerEntity directly
-                            const TowerEntityView::TowerEntityData* towerData = towerView.GetTowerEntityData(&tower);
-                            if (towerData != nullptr)
-                            {
-                                infoUI->SetHoverTowerLevel(towerData->level);
-                                infoUI->SetHoverTowerDamage(round(towerData->damage * 100.0f) / 100.0f);
-                                infoUI->SetHoverTowerCooldown(round(towerData->maxCooldown * 100.0f) / 100.0f);
-                                infoUI->SetHoverTowerRange(round(towerData->range * 100.0f) / 100.0f);
-                                infoUI->SetHoverTowerSpeed(round(towerData->speed * 100.0f) / 100.0f);
-                                infoUI->SetHoverTowerUpgradeCost(tower.GetUpgradeCost());
-
-                            }
-                            break;  // Only break after finding the correct tower
+                            m_GUIManager.UpdateTowerHoverUI(tower);
+                            break;
                         }
                     }
                 }
@@ -640,24 +601,21 @@ void Game::HandleInput()
                 {
                     if (m_lastHoveredTower->CanUpgrade()) 
                     {
-                        UpdateWealth(-upgradeCost);
+                        UpdateWealth(-(upgradeCost));
 
                         m_lastHoveredTower->Upgrade();
 
-                        infoUIView->SetWarningTextColor(Color::Green);
-                        infoUI->SetWarningString("Tower upgraded successfully!");
+                        m_GUIManager.SetWarningAndColor("Tower upgraded successfully!", sf::Color::Green);
                     }
                     else 
                     {
-                        infoUIView->SetWarningTextColor(Color::Red);
-                        infoUI->SetWarningString("Tower is at max level!");
+                        m_GUIManager.SetWarningAndColor("Warning: Tower is at max level!", sf::Color::Red);
                     }
                     
                 } 
                 else 
                 {
-                    infoUIView->SetWarningTextColor(Color::Red);
-                    infoUI->SetWarningString("Not enough money for upgrade!");
+                    m_GUIManager.SetWarningAndColor("Warning: Not enough money for upgrade!", sf::Color::Red);
                     
                 }
                 warningShown.restart();
@@ -698,60 +656,24 @@ void Game::EditMapSizeInputText(Event& event, std::string& currentText)         
     }
 }
 
-// **** Refactor into GUI Manager?
-void Game::BlinkTiles(Tile::Type type)
-{
-    // Highlight tiles that are available to choose for the entry (green) and the exit (red) tiles
-    m_fElapesdTimeInSeconds += m_DeltaTime.asSeconds();                                     // Measure elapsed time
-    
-    // Allow the highlight to blink every 0.5 seconds
-    if (m_fElapesdTimeInSeconds >= 0.5)
-    {
-        m_GUIManager.GetMapSetup()->HighlightEdgeTiles(type);
-        // reset time after 0.5 seconds
-        if (m_fElapesdTimeInSeconds >= 1)
-        {
-            m_GUIManager.GetMapSetup()->HighlightEdgeTiles(Tile::Type::Grass);
-            m_fElapesdTimeInSeconds = 0;
-        }
-    }
-}
-
 // ** MAP
 void Game::UpdateTiles()
 {
     if (m_eCurrentEditState == EntryState)
     {
-        BlinkTiles(Tile::Type::EntryHighlight);
+        m_GUIManager.BlinkTiles(Tile::Type::EntryHighlight, m_DeltaTime);
     }
     // Change the colors, set tile type of entry, exit.
     else if (m_eCurrentEditState == ExitState)
     {
-        BlinkTiles(Tile::Type::ExitHighlight);
+        m_GUIManager.BlinkTiles(Tile::Type::ExitHighlight, m_DeltaTime);
     }
     else if (m_eCurrentEditState == PathState)
     {
         // If deleted path exist in the array, reset the tile type and texture of the deleted path for all elements in the array
         // Then remove all elements from the array
-        if (!m_GUIManager.GetMapSetup()->GetDeletedPath().empty())
-        {
-            for (Vector2f vector : m_GUIManager.GetMapSetup()->GetDeletedPath())
-            {
-                m_GUIManager.GetMapSetup()->SetTileType(vector, Tile::Type::Grass);
-    
-            }
-            // Remove all elements from m_aDeletedPath
-            m_GUIManager.GetMapSetup()->ClearDeletedPath();
-        }        
-
-        // Set tile type and change the texture of all current path tiles
-        for (Vector2f vector : m_GUIManager.GetMapSetup()->GetPath())
-        {
-            if (vector != m_GUIManager.GetMapSetup()->GetEntryTile() && vector != m_GUIManager.GetMapSetup()->GetExitTile())
-            {
-                m_GUIManager.GetMapSetup()->SetTileType(vector, Tile::Type::Path);
-            }
-        }
+        // And, set tile type and change the texture of all current path tiles
+        m_GUIManager.UpdatePathTiles();      
     }
 }
 
@@ -777,8 +699,7 @@ void Game::UpdateMonsters()
     std::vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
 
     // Generate monsters
-    m_MonsterManager.IncrementTimeSinceLastGeneration(m_DeltaTime.asSeconds());
-    m_MonsterManager.GenerateCurrentWave();
+    m_MonsterManager.GenerateCurrentWave(m_DeltaTime.asSeconds());
 
     // Update monsters
     for (MonsterEntity& monster : activeMonsters)
@@ -812,23 +733,8 @@ void Game::UpdateMonsters()
     }
 
 
-    // ALL ENEMY ANIMATION RELATED
-    MonsterEntityView& monsterView = m_MonsterManager.GetMonsterEntityView();
-    Clock& monsterAnimationDelay = monsterView.GetMonsterAnimationDelay();
-    if (monsterAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) 
-    {
-        if (m_eCurrentEditState == FinishedPathingState) {
-            
-            //RUNNING ANIMATION
-            vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
-            for (MonsterEntity& monster : activeMonsters)
-            {
-                m_MonsterManager.UpdateMonsterTexture(monster);
-                m_MonsterManager.IncrementMonsterFrameIndex(monster);
-            }
-            monsterAnimationDelay.restart();
-        }
-    }
+    // Monster animation related
+    m_MonsterManager.UpdateMonsterAnimations(m_fFrameTime);
 
 
     // Update monster positions
@@ -873,21 +779,21 @@ void Game::UpdateUI()
         m_GUIManager.GetInfoUI()->SetWarningString("");
     }
     
-    if (m_eCurrentEditState == ExitState){
-        m_GUIManager.GetInfoUI()->SetInstructionString("Choose an exit Tile...");
-        m_GUIManager.GetInfoUIView()->SetInstructionTextColor(Color::Red);
-        
-    } else if (m_eCurrentEditState == EntryState){        
-        m_GUIManager.GetInfoUI()->SetInstructionString("Choose an entry Tile...");
-        m_GUIManager.GetInfoUIView()->SetInstructionTextColor(Color::Green);
-
-    } else if (m_eCurrentEditState == PathState){
-        m_GUIManager.GetInfoUI()->SetInstructionString("Draw path and press Enter to start");
-        m_GUIManager.GetInfoUIView()->SetInstructionTextColor(Color::Yellow);
-
-    } else {
-        m_GUIManager.GetInfoUI()->SetInstructionString("Tower Selection");
-        m_GUIManager.GetInfoUIView()->SetInstructionTextColor(Color::White);
+    // Handle different game edit states
+    switch (m_eCurrentEditState) 
+    {
+        case ExitState:
+            m_GUIManager.SetInstructionAndColor("Choose an exit Tile...", Color::Red);
+            break;
+        case EntryState:
+            m_GUIManager.SetInstructionAndColor("Choose an entry Tile...", Color::Green);
+            break;
+        case PathState:
+            m_GUIManager.SetInstructionAndColor("Draw path and press Enter to start", Color::Yellow);
+            break;
+        default:
+            m_GUIManager.SetInstructionAndColor("Tower Selection", Color::White);
+            break;
     }
 }
 
@@ -976,26 +882,7 @@ void Game::UpdateTowers()
 
 
     // ALL TOWER ANIMATION RELATED
-    TowerEntityView& towerView = m_TowerManager.GetTowerEntityView();
-    Clock& towerAnimationDelay = towerView.GetTowerAnimationDelay();
-    if (towerAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) {
-        if (m_eCurrentEditState == FinishedPathingState) {
-            // Set the texture for each tower
-            for (TowerEntity& tower : activeTowers) 
-            {
-                TowerEntityView::TowerEntityData* towerData = towerView.GetTowerEntityData(&tower);
-
-                if (towerData != nullptr)
-                {
-                    towerView.SetActiveTowerTexture(towerData);
-                }
-            }
-
-            towerView.IncrementCurentTowerFrameIndex();
-            // Restart the clock after updating the frame
-            towerAnimationDelay.restart();
-        }
-    }
+    m_TowerManager.UpdateTowerAnimations(m_fFrameTime);
 
 }
 
@@ -1050,13 +937,12 @@ void Game::UpdateAxes()
             }
         }
 
-        Vector2i mapSize = m_GUIManager.GetMapSetup()->GetMapSize();
         // Remove axe if it hit something or went off screen
         if (hitMonster || 
             it->GetPosition().x < 0 || 
-            it->GetPosition().x > mapSize.x || 
+            it->GetPosition().x > m_vMapSize.x || 
             it->GetPosition().y < 0 || 
-            it->GetPosition().y > mapSize.y)
+            it->GetPosition().y > m_vMapSize.y)
         {
             it = m_aAxes.erase(it);
         }
