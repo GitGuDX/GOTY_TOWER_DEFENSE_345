@@ -6,6 +6,7 @@
 #include "../Generators/TowerGenerator.h"
 #include <iostream>
 #include <vector>
+#include "../TowerTargetStrategy.h"
 
 class TowerGenerator;
 
@@ -24,6 +25,17 @@ private:
 public:
     TowerEntity(TowerGenerator::TowerType type); // Default constructor takes a type
     ~TowerEntity() = default;
+
+    void SetTargetStrategy(TowerTargetStrategy* strategy) {
+        m_targetStrategy = strategy;
+    }
+
+    Monster* SelectTarget(const std::vector<Monster>& enemies) const {
+        if (m_targetStrategy) {
+            return m_targetStrategy->SelectTarget(*this, enemies);
+        }
+        return nullptr;
+    }
 
     void AddObserver(IGameObserver* observer) override {
         //std::cout << "This pointer when addObserver is called: " << this << std::endl;
@@ -137,6 +149,8 @@ private:
     int m_iLevel;
 
     float m_fShootCooldown;
+    TowerTargetStrategy* m_targetStrategy;
+
 
     bool m_isTemplate = false;
 

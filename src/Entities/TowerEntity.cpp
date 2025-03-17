@@ -9,6 +9,8 @@ TowerEntity::TowerEntity(TowerGenerator::TowerType type)
     , m_iCost(0)
     , m_iLevel(1)  // Start at level 1
     , m_fShootCooldown(0.0f)
+    , m_targetStrategy(nullptr) 
+
 {
 }
 

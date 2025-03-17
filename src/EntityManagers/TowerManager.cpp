@@ -1,4 +1,5 @@
 #include "TowerManager.h"
+#include "../Strategies/TowerTargetStrategies.h"
 
 TowerManager::TowerManager(RenderWindow &window)
     : m_Window(window)
@@ -47,18 +48,20 @@ void TowerManager::InitializeGameSetup()
 
 void TowerManager::CreateTower(TowerGenerator::TowerType towerType, const sf::Vector2f &position)
 {
-    //std::cout << "position: " << position.x << ", " << position.y << std::endl;
     m_activeTowers.emplace_back(m_TowerGenerator.GenerateTower(towerType));
     TowerEntity &newTower = m_activeTowers.back();
     newTower.AddObserver(&m_TowerEntityView);
-    //std::cout << "Tower created at address: " << &newTower << std::endl;
-    // Update the tower's stats based on the tower type
     newTower.InitializeStat();
-
-    // Set tower position
     newTower.SetPosition(position);
-   //std::cout << "Tower position: " << newTower.GetPosition().x << ", " << newTower.GetPosition().y << std::endl;
     
+    // Set default targeting strategy based on tower type
+    if (towerType == TowerGenerator::TowerType::Sniper) {
+        newTower.SetTargetStrategy(new StrongestTargetStrategy());
+    } else if (towerType == TowerGenerator::TowerType::Rapid) {
+        newTower.SetTargetStrategy(new ClosestTargetStrategy());
+    } else {
+        newTower.SetTargetStrategy(new WeakestTargetStrategy());
+    }
 }
 
 void TowerManager::RemoveTower(const sf::Vector2f &position)
