@@ -26,7 +26,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     // Initialize GUI driver class
     , m_GUIManager(m_Window)
     // ** TOWER
-    , m_TowerManager(m_Window)
+    , m_TowerManager(m_Window, m_MonsterManager)
     // ** MONSTER
     , m_MonsterManager(m_Window)
     // ** GAME SETUP

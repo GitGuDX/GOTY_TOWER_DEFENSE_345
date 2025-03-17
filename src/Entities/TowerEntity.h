@@ -26,14 +26,18 @@ public:
     TowerEntity(TowerGenerator::TowerType type); // Default constructor takes a type
     ~TowerEntity() = default;
 
-    void SetTargetStrategy(TowerTargetStrategy* strategy) {
-        m_targetStrategy = strategy;
+    void SetTargetStrategy(TowerTargetStrategy* strategy) { 
+        m_targetStrategy = strategy; 
+        std::cout << "Strategy set for tower at position: " << GetPosition().x << "," << GetPosition().y << std::endl;
     }
 
-    Monster* SelectTarget(const std::vector<Monster>& enemies) const {
+   
+
+    MonsterEntity* SelectTarget(const std::vector<MonsterEntity>& enemies) const {
         if (m_targetStrategy) {
             return m_targetStrategy->SelectTarget(*this, enemies);
         }
+        std::cout << "No targeting strategy set!" << std::endl;
         return nullptr;
     }
 
@@ -149,7 +153,9 @@ private:
     int m_iLevel;
 
     float m_fShootCooldown;
-    TowerTargetStrategy* m_targetStrategy;
+    TowerTargetStrategy* m_targetStrategy = nullptr;
+
+
 
 
     bool m_isTemplate = false;

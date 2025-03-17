@@ -8,13 +8,14 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "../EntityManagers/MonsterManager.h"
 
 using namespace sf;
 
 class TowerManager
 {
 public:
-    TowerManager(RenderWindow& window);
+    TowerManager(RenderWindow& window, MonsterManager& monsterManager);
     ~TowerManager() = default;
 
     void SetMapSize(Vector2i mapSize) { m_mapSize = mapSize; }
@@ -39,6 +40,8 @@ private:
     RenderWindow& m_Window;
 
     Vector2i m_mapSize;
+    MonsterManager& m_MonsterManager;
+
 
     TowerEntityView m_TowerEntityView;
     TowerGenerator m_TowerGenerator;

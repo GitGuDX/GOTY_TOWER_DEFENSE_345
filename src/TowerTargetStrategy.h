@@ -2,15 +2,13 @@
 #include <vector>
 #include "Entities/Entity.h"
 #include "Entities/TowerEntity.h"
-#include "Monster.h"
-class TowerEntity;  // Forward declaration
-class Monster;
-
+#include "Entities/MonsterEntity.h"
+class TowerEntity;
+class MonsterEntity;
 
 class TowerTargetStrategy {
-    public:
-        virtual ~TowerTargetStrategy() = default;
-        // Change return type to Monster* to match derived classes
-        virtual Monster* SelectTarget(const TowerEntity& tower, const std::vector<Monster>& monsters) const = 0;
+public:
+    virtual ~TowerTargetStrategy() = default;
+    virtual MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<MonsterEntity>& enemies) const = 0;
 };
     

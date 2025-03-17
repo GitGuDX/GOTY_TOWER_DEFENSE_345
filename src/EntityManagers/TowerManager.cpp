@@ -1,11 +1,12 @@
 #include "TowerManager.h"
 #include "../Strategies/TowerTargetStrategies.h"
 
-TowerManager::TowerManager(RenderWindow &window)
+TowerManager::TowerManager(RenderWindow &window, MonsterManager &monsterManager)
     : m_Window(window)
     , m_TowerEntityView(window)
     , m_TowerGenerator()
-    , m_sellRate(0.5f) // Set the sell rate to 50%
+    , m_sellRate(0.5f)
+    , m_MonsterManager(monsterManager)// Set the sell rate to 50%
 {
 }
 
@@ -89,20 +90,27 @@ void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
 {
     Clock& towerAnimationDelay = m_TowerEntityView.GetTowerAnimationDelay();
     if (towerAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) {
-        // Set the texture for each tower
         std::vector<TowerEntity>& activeTowers = GetActiveTowers();
         for (TowerEntity& tower : activeTowers) 
         {
-            TowerEntityView::TowerEntityData* towerData = m_TowerEntityView.GetTowerEntityData(&tower);
+            // Update tower shooting cooldown
+            tower.UpdateCooldown(m_fFrameTime);
+            
+            // Check for targets if tower can shoot
+            if (tower.CanShoot()) {
+                if (MonsterEntity* target = tower.SelectTarget(m_MonsterManager.GetActiveMonsters())) {
+                    tower.ResetCooldown();
+                }
+            }
 
-            if (towerData != nullptr)
-            {
+            // Update tower animation
+            TowerEntityView::TowerEntityData* towerData = m_TowerEntityView.GetTowerEntityData(&tower);
+            if (towerData != nullptr) {
                 m_TowerEntityView.SetActiveTowerTexture(towerData);
             }
         }
 
         m_TowerEntityView.IncrementCurentTowerFrameIndex();
-        // Restart the clock after updating the frame
         towerAnimationDelay.restart();
     }
 }
