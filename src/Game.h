@@ -66,6 +66,7 @@ public:
         PlayMode,       ///< Main gameplay mode.
         MapEditorMode,  ///< Map creation mode.
         Pause,          ///< Paused state.
+        GameOver,       ///< Game over state.
     };
 
     // ** GAMESETUP VIEW
@@ -94,17 +95,16 @@ private:
     /** * @brief Loads assets for the play mode. */
     void LoadPlayModeAssets();
 
-    /** * @brief Handles game over logic. */
-    void HandleGameOver();
+    void HandlePlayAgain();
+
+    void HandleGameRestart();
 
     /** * @brief Handles user input. */
     void HandleInput();
 
     void EditMapSizeInputText(Event& event, std::string& currentText);
 
-    void ShowGameOverScreen();
-
-    void ResetGame(bool);
+    void ResetEntities();
 
     /** * @brief Updates tile states. */
     void UpdateTiles();
@@ -132,11 +132,8 @@ private:
     /** * @brief Draws elements in play mode. */
     void DrawPlayMode();
 
-    void BlinkTiles(Tile::Type type);
-
-    void IncreaseLevel()
+    void UpdateLevel()
     {
-        m_iCurrentLevel++;
         InfoUI* infoUI = m_GUIManager.GetInfoUI();
         if (infoUI != nullptr)
         {
@@ -146,6 +143,12 @@ private:
         {
             std::cerr << "InfoUI is nullptr\n";
         }
+    }
+
+    void IncreaseLevel()
+    {
+        m_iCurrentLevel++;
+        UpdateLevel();
     }
 
     void UpdateWealth(int wealth)
@@ -164,6 +167,7 @@ private:
 
 private:
     RenderWindow m_Window;
+    Vector2i m_vInitialWindowSize;
     GameMode m_eGameMode;
     GameMode m_ePrevGameMode;
     
@@ -203,7 +207,6 @@ private:
     TowerEntity* m_lastHoveredTower = nullptr;
     // For game mode transition
     bool m_bIsRoundEnded = false;
-    bool m_gameOver = false;
     bool m_bIsMonsterGeneratorUpdated = false;
 
     // **** Bullet assets. Implement observer pattern for bullet
@@ -215,6 +218,7 @@ private:
 
     // Player stats
     int m_iCurrentLevel;
+    int m_iInitialWealth;
     int m_iCurrentWealth;
 
     // REMOVE?

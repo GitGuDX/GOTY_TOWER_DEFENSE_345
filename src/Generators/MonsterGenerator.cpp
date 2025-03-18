@@ -3,8 +3,6 @@
 
 MonsterGenerator::MonsterGenerator()
     : m_iBaseMonsters(3)
-    , m_aCurrentMonsterRoaster{MonsterType::Minotaur, MonsterType::Golem, MonsterType::Reaper, MonsterType::Ogre, MonsterType::Skeleton}
-    , m_iMonsterLevel(0)
 {
 }
 
@@ -99,4 +97,11 @@ void MonsterGenerator::UpdateNextRoundMonsterGenerator()
         UpdateMonsterRoster();
     }
 
+}
+
+void MonsterGenerator::InitializeFirstRoaster()
+{
+    m_iMonsterLevel = 0;
+    m_aCurrentMonsterRoaster.clear();
+    m_aCurrentMonsterRoaster = {MonsterType::Ogre, MonsterType::Minotaur, MonsterType::Golem, MonsterType::Reaper, MonsterType::Skeleton};
 }

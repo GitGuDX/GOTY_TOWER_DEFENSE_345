@@ -66,6 +66,8 @@ public:
 
     void IncrementCurentTowerFrameIndex();
 
+    void EmptyTowerEntitySubjects() { m_TowerEntitySubjects.clear(); }
+
 private:
     void SetTemplateTowerSprite(TowerEntityData &data, TowerGenerator::TowerType type);
 

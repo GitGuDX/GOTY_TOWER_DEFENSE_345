@@ -1,7 +1,7 @@
 #include "InfoUI.h"
 
 InfoUI::InfoUI()
-    : m_InfoUIWidth(300)
+    : m_InfoUIWidth(380)
     , m_iCurrentLevel(0)
     , m_iCurrentWealth(0)
     , m_hoverTowerDamage(0.0f)
@@ -27,10 +27,11 @@ void InfoUI::InitializeInfoUI()
     m_modeString = "";
     m_woodTowerPriceString = "Cost: 200";
     m_stoneTowerPriceString = "Cost: 300";
-    m_gameOverString = "Game Over!";
-    m_nextRoundString = "Press Enter for next round";
-    m_nextRoundString = "";
+    m_nextRoundString = "Press Enter to Begin the Round!";
     m_upgradeString = "";
+    m_gameOverString1 = "Game Over";
+    m_gameOverString2 = "Press S to set up a new game";
+    m_gameOverString3 = "Press R to restart with the same map.";
 
     notifyObservers();
 }

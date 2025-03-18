@@ -28,14 +28,16 @@ void MonsterManager::InitializeMonsters(const Vector2f &position)
 void MonsterManager::ClearMonsters()
 {
     // Remove all observers
-    // for (MonsterEntity& monster : m_activeMonsters)
-    // {
-    //     //monster.RemoveObserver(&m_MonsterEntityView);
-    // }
+    for (MonsterEntity& monster : m_activeMonsters)
+    {
+        m_MonsterEntityView.RemoveMonster(&monster);
+        monster.RemoveObserver(&m_MonsterEntityView);
+    }
     m_activeMonsters.clear();
     m_activeMonsters.shrink_to_fit();   // Request capacity reduction
 
     #ifdef DEBUG
+    std::cout << "Size of subjects: " << m_MonsterEntityView.GetSize() << std::endl;
     std::cout << "MonsterManager::ClearMonsters() - Cleared all monsters" << std::endl;
     #endif
 }
@@ -55,11 +57,15 @@ void MonsterManager::PrepareWave()
 
 void MonsterManager::PrepareFirstWave()
 {
+    std::cout << "Preparing first wave\n";
+    m_MonsterGenerator.InitializeFirstRoaster();
+
     PrepareWave();
 }
 
 void MonsterManager::PrepareNextWave()
 {
+    std::cout << "Preparing next wave\n";
     m_MonsterGenerator.UpdateNextRoundMonsterGenerator();
 
     PrepareWave();

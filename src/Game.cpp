@@ -19,7 +19,8 @@ using namespace sf;
 using namespace std;
 
 Game::Game(int initialWindowWidth, int initialWindowHeight)
-    : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense 1")           // Initiliaze window screen
+    : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense Game")           // Initiliaze window screen
+    , m_vInitialWindowSize(Vector2i(initialWindowWidth, initialWindowHeight))                    // Set initial window sizes
     , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
     // Initialize previous game mode to InitialSetUp to track game mode transitions later 
     , m_ePrevGameMode(GameMode::InitialSetUp)
@@ -33,9 +34,9 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iCurrentWealth(10000)
+    , m_iInitialWealth(1600)
     #else
-    , m_iCurrentWealth(500)
+    , m_iInitialWealth(500)
     #endif
    
 {
@@ -63,7 +64,9 @@ void Game::Run()
         case MapEditorMode:
         {   
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
-            if (m_ePrevGameMode != MapEditorMode) {
+            if (m_ePrevGameMode != MapEditorMode) 
+            {
+                m_iCurrentWealth = m_iInitialWealth;
 
                 InitializeMapEnditorMode();
 
@@ -96,30 +99,22 @@ void Game::Run()
                 m_ePrevGameMode = PlayMode;
             }
 
-            if (m_gameOver)
+            // If round hasn't ended, game is still playing so keep updating
+            if (!m_bIsRoundEnded)
             {
-                HandleGameOver(); // Implement this function to show a game over screen, restart, etc.
-            } 
-            else 
+                UpdatePlay();
+            }
+            // If the round ended, stop updating the play and prepare for the next round.
+            else
             {
-                // If round hasn't ended, game is still playing so keep updating
-                if (!m_bIsRoundEnded)
+                // Condition to update the monster generator only once after the round ends
+                if (!m_bIsMonsterGeneratorUpdated)
                 {
-                    UpdatePlay();
-                }
-                // If the round ended, stop updating the play and prepare for the next round.
-                else
-                {
-                    // Condition to update the monster generator only once after the round ends
-                    if (!m_bIsMonsterGeneratorUpdated)
-                    {
-                        // Prepare the next wave of monsters
-                        m_MonsterManager.PrepareNextWave();
-                        m_bIsMonsterGeneratorUpdated = true;
-                    }
+                    // Prepare the next wave of monsters
+                    m_MonsterManager.PrepareNextWave();
+                    m_bIsMonsterGeneratorUpdated = true;
                 }
             }
-
             UpdateUI();
 
             DrawPlayMode();
@@ -127,6 +122,11 @@ void Game::Run()
         }
         case Pause:
         {
+            break;
+        }
+        case GameOver:
+        {
+            DrawPlayMode();
             break;
         }
         }
@@ -152,6 +152,7 @@ void Game::InitializeMapEnditorMode()
     // Initialize Tower manager with mapSize and load its assets
     m_vMapSize = m_GUIManager.GetMapSize();
     m_TowerManager.SetMapSize(m_vMapSize);
+    m_TowerManager.SetInfoUIWidth(m_GUIManager.GetInfoUI()->GetInfoUIWidth());
     m_TowerManager.InitializeGameSetup();
 
     // Get tower price from TowerManager and give it to the InfoUI
@@ -180,56 +181,54 @@ void Game::LoadPlayModeAssets()
 	m_SniperBulletTemplate.SetOrigin(Vector2f(8, 8));
 }
 
-// ** GAMEOVER
-void Game::ShowGameOverScreen()
-{   
-    //m_Window.draw(m_gameOverText);
-}
-
-void Game::HandleGameOver()
+void Game::HandlePlayAgain()
 {
+    m_ePrevGameMode = PlayMode;
+    m_eGameMode = PlayMode;
+
     m_bIsRoundEnded = true;
-    m_bIsMonsterGeneratorUpdated = false;
-    
-    // Show Game Over message
-    ShowGameOverScreen();
+    m_bIsMonsterGeneratorUpdated = true;
 
-    bool restartChosen = false;
-    
-    while (m_Window.isOpen() && !restartChosen) {
-        sf::Event event;
-        while (m_Window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                m_Window.close();
-            }
-            // Restart game with same map
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
-                ResetGame(false);
-                restartChosen = true;
-            }
-            // Restart game with new map
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::N) {
-                ResetGame(true);
-                restartChosen = true;
-            }
-        }
-    }
+    m_iCurrentWealth = 0;
+    UpdateWealth(m_iInitialWealth);
+
+    m_iCurrentLevel = 0;
+    UpdateLevel();
+
+    ResetEntities();
 }
 
-void Game::ResetGame(bool newMap)
+void Game::HandleGameRestart()
 {
-    m_gameOver = false;
-    m_bIsRoundEnded = false;
-    m_bIsMonsterGeneratorUpdated = false;
-    m_iCurrentWealth = 500;
-    m_iCurrentLevel = 1;
-
-    if (newMap) {
-        //m_aTiles.clear(); // Clear the current map
-        // Reload assets for a new map
-    }
+    m_Window.create(VideoMode(m_vInitialWindowSize.x, m_vInitialWindowSize.y), "Tower Defense Game");
 
     m_eGameMode = InitialSetUp;
+    m_ePrevGameMode = InitialSetUp;
+
+    // Reset flags
+    m_eCurrentEditState = EntryState;
+    m_IsPathingMousePressed = false;
+    m_isHovering = false;
+    m_lastHoveredTower = nullptr;
+    m_bIsRoundEnded = false;
+    m_bIsMonsterGeneratorUpdated = false;
+
+    // Reset player stat
+    m_iCurrentLevel = 1;
+    m_iCurrentWealth = m_iInitialWealth;
+}
+
+void Game::ResetEntities()
+{
+    // Clear towers and reinitialize
+    m_TowerManager.RemoveAllTowers();
+    m_TowerManager.InitializeGameSetup();
+
+    // Clear monsters and reinitialize
+    m_MonsterManager.PrepareFirstWave();
+
+    // Clear projectiles and reinitialize
+    m_aAxes.clear();
 }
 
 void Game::HandleInput()
@@ -471,7 +470,7 @@ void Game::HandleInput()
                             float sellRate = m_TowerManager.GetSellRate();
                             UpdateWealth(cost * sellRate);
 
-                            m_TowerManager.RemoveTower(snapGrid);
+                            m_TowerManager.RemoveTowerAtPosition(snapGrid);
 
                             m_GUIManager.SetWarningAndColor("Tower removed", sf::Color::Green);
 
@@ -641,7 +640,18 @@ void Game::HandleInput()
             {
                 bTWasPressedLastUpdate = false;
             }
-        }   
+        }
+        if (m_eGameMode == GameOver)
+        {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+            {
+                HandlePlayAgain();
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+            {
+                HandleGameRestart();
+            }
+        }
     }
 }
 
@@ -692,7 +702,7 @@ void Game::UpdatePlay()
     }
 
     if (m_iCurrentWealth < 0){
-        m_gameOver = true;
+        m_eGameMode = GameOver;
     }
 }
 
@@ -792,7 +802,7 @@ void Game::UpdateUI()
             m_GUIManager.SetInstructionAndColor("Choose an entry Tile...", Color::Green);
             break;
         case PathState:
-            m_GUIManager.SetInstructionAndColor("Draw path and press Enter to start", Color::Yellow);
+            m_GUIManager.SetInstructionAndColor("Drag to draw a path from entry to exit", Color::Yellow);
             break;
         default:
             m_GUIManager.SetInstructionAndColor("Tower Selection", Color::White);
@@ -980,17 +990,15 @@ void Game::DrawMapEditorMode()
     m_GUIManager.GetInfoUIView()->DrawHUD();
 
     // Draw Template towers or tower info
-    if(m_eCurrentEditState == FinishedPathingState){
+    if(m_eCurrentEditState == FinishedPathingState)
+    {
+        m_GUIManager.GetInfoUIView()->DrawNextRoundText();
         m_TowerManager.GetTowerEntityView().Draw();
         m_GUIManager.GetInfoUIView()->DrawTowerInfo();
     }
 
     // Draw cross that indicate tower to be deleted
     m_GUIManager.GetInfoUIView()->DrawCrossShape();
-
-    if(m_gameOver){
-        ShowGameOverScreen();
-    }
     
     m_Window.display();
 }
@@ -1046,8 +1054,8 @@ void Game::DrawPlayMode()
     //m_Window.draw(m_sfPathLines);
     #endif
 
-    if(m_gameOver){
-        ShowGameOverScreen();
+    if(m_eGameMode == GameOver){
+        m_GUIManager.GetInfoUIView()->DrawGameOverText();
     }
 
     m_Window.display();

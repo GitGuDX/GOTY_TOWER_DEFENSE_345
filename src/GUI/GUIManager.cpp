@@ -32,6 +32,13 @@ GUIManager::GUIManager(RenderWindow& m_Window)
 
 void GUIManager::InitializeGameSetup()
 {
+    // If the game setup view is not nullptr, remove the observer before setting up the view
+    if (m_gameSetupView != nullptr)
+    {
+    m_gameSetup.RemoveObserver(m_gameSetupView.get());                       // Remove the observer before setting up the view
+    m_gameSetupView->ClearSubjects();                                        // Clear the subjects before setting up the view
+    }
+
     // Pass the raw pointer of the unique_ptr to AddObserver
     m_gameSetup.AddObserver(m_gameSetupView.get());                          // Must be done before setting up the view
     m_gameSetup.SetIntroTitle("Welcome to Tower Defense!");
@@ -43,6 +50,13 @@ void GUIManager::InitializeGameSetup()
 
 void GUIManager::InitializeMapSetup()
 {
+    // If the map setup view is not nullptr, remove the observer before setting up the view
+    if (m_mapSetup != nullptr && m_mapSetupView != nullptr)
+    {
+        m_mapSetup->RemoveObserver(m_mapSetupView.get());
+        m_mapSetupView->ClearSubjects();
+    }
+
     Vector2i gridSize = GetGridSize();
     m_mapSetup = std::make_unique<MapSetup>(gridSize);
     m_mapSetupView = std::make_unique<MapSetupView>(m_Window);
@@ -52,10 +66,19 @@ void GUIManager::InitializeMapSetup()
 
 void GUIManager::InitializeInfoUI()
 {
-    Vector2i mapSize = GetMapSetup()->GetMapSize();
+
+    if (m_infoUI != nullptr && m_infoUIView != nullptr)
+    {
+        m_infoUI->RemoveObserver(m_infoUIView.get());
+        m_infoUIView->ClearSubjects();
+    }
 
     m_infoUI = std::make_unique<InfoUI>();
-    m_infoUIView = std::make_unique<InfoUIView>(m_Window, mapSize, m_Font);
+
+    Vector2i mapSize = GetMapSetup()->GetMapSize();
+    int infoUIWidth = m_infoUI->GetInfoUIWidth();
+
+    m_infoUIView = std::make_unique<InfoUIView>(m_Window, mapSize, infoUIWidth, m_Font);
     m_infoUI->AddObserver(m_infoUIView.get());
     m_infoUI->InitializeInfoUI();
 }

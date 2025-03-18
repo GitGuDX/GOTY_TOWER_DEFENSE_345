@@ -10,6 +10,8 @@ TowerManager::TowerManager(RenderWindow &window)
 
 void TowerManager::InitializeGameSetup()
 {
+    RemoveAllTowers();
+
     m_templateTowers.reserve(3);   // Reserve space to avoid memory reallocation
     m_activeTowers.reserve(m_mapSize.x/50 * m_mapSize.y/50);   // Reserve space to avoid memory reallocation. Divide by 50 since each title is 50 by 50 pixels
 
@@ -26,7 +28,7 @@ void TowerManager::InitializeGameSetup()
     // Set the position of the tower in the game world.
     // Accessing it via index ensures stability in case of vector reallocation.
     m_templateTowers[rapidTowerIndex].AddObserver(&m_TowerEntityView);
-    m_templateTowers[rapidTowerIndex].SetPosition(Vector2f(m_mapSize.x + 100, m_mapSize.y / 3 + 75));
+    m_templateTowers[rapidTowerIndex].SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*1/4, m_mapSize.y / 3 + 75));
     m_templateTowers[rapidTowerIndex].SetCost(200);
     m_templateTowers[rapidTowerIndex].SetIsTemplate(true);
     //std::cout << "rapid tower addres: " << &m_templateTowers[rapidTowerIndex] << std::endl;
@@ -39,7 +41,7 @@ void TowerManager::InitializeGameSetup()
     //std::cout << "Tower 2 added at address: " << &m_templateTowers.back() << std::endl;
     size_t sniperTowerIndex = m_templateTowers.size() - 1;
     m_templateTowers[sniperTowerIndex].AddObserver(&m_TowerEntityView);
-    m_templateTowers[sniperTowerIndex].SetPosition(Vector2f(m_mapSize.x + 200, m_mapSize.y / 3 + 75));
+    m_templateTowers[sniperTowerIndex].SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4, m_mapSize.y / 3 + 75));
     m_templateTowers[sniperTowerIndex].SetCost(300);
     m_templateTowers[sniperTowerIndex].SetIsTemplate(true);
     //std::cout << "sniper tower addres: " << &m_templateTowers[rapidTowerIndex] << std::endl;
@@ -61,7 +63,7 @@ void TowerManager::CreateTower(TowerGenerator::TowerType towerType, const sf::Ve
     
 }
 
-void TowerManager::RemoveTower(const sf::Vector2f &position)
+void TowerManager::RemoveTowerAtPosition(const sf::Vector2f &position)
 {
     for (auto it = m_activeTowers.begin(); it != m_activeTowers.end(); ++it)
     {
@@ -80,6 +82,23 @@ void TowerManager::RemoveTower(const sf::Vector2f &position)
             return; // Exit after removing to avoid iterator issues
         }
     }
+}
+
+void TowerManager::RemoveAllTowers()
+{
+    for (TowerEntity &tower : m_templateTowers)
+    {
+        tower.RemoveObserver(&m_TowerEntityView);
+    }
+
+    for (TowerEntity &tower : m_activeTowers)
+    {
+        tower.RemoveObserver(&m_TowerEntityView);
+    }
+
+    m_templateTowers.clear();
+    m_activeTowers.clear();
+    m_TowerEntityView.EmptyTowerEntitySubjects();
 }
 
 void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)

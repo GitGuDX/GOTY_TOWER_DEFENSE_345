@@ -55,6 +55,8 @@ public:
 
     int GetDyingTextureArraySize(MonsterGenerator::MonsterType type);
 
+    int GetSize() { return m_MonsterEntitySubjects.size(); }
+
 private:
     std::unordered_map<const MonsterEntity*, MonsterEntityData> m_MonsterEntitySubjects;
 

@@ -98,6 +98,8 @@ public:
 
     void UpdateNextRoundMonsterGenerator();
 
+    void InitializeFirstRoaster();
+
     MonsterType GetCurrentMonsterType() const { return m_aCurrentMonsterRoaster.back(); }
 
 private:
