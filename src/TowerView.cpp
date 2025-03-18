@@ -1,4 +1,4 @@
-#include "TowerView.h"
+/*#include "TowerView.h"
 
 
 
@@ -30,3 +30,4 @@ const TowerStats* TowerView::GetTowerStats(const Tower* tower) const
     }
     return nullptr;
 }
+*/

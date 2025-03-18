@@ -34,7 +34,7 @@ public:
     float GetSellRate() const { return m_sellRate; }
 
 private:
-    RenderWindow& m_Window;
+    //RenderWindow& m_Window;
 
     Vector2i m_mapSize;
 

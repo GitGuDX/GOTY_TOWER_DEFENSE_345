@@ -17,8 +17,8 @@ MapSetupView::MapSetupView(RenderWindow &m_Window)
     #ifdef MAC
     m_GrassTexture.loadFromFile("Images/grass_tile.png");
     m_PathTexture.loadFromFile("Images/path_tile.png");
-    m_EntryTexture.loadFromFile("Images/entry_tile.png");
-    m_ExitTexture.loadFromFile("Images/exit_tile.png");
+    m_EntryTileTexture.loadFromFile("Images/entry_tile.png");
+    m_ExitTileTexture.loadFromFile("Images/exit_tile.png");
     #endif
 
     //m_sfPathLines.setPrimitiveType(sf::LineStrip); // Set the drawing type to a continuous line

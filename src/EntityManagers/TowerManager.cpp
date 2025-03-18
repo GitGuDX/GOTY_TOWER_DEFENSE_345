@@ -1,8 +1,8 @@
 #include "TowerManager.h"
 
 TowerManager::TowerManager(RenderWindow &window)
-    : m_Window(window)
-    , m_TowerEntityView(window)
+    //: m_Window(window)
+    : m_TowerEntityView(window)
     , m_TowerGenerator()
     , m_sellRate(0.5f) // Set the sell rate to 50%
 {

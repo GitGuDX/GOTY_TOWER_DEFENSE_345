@@ -16,7 +16,7 @@
 #include <string>
 #include <algorithm>
 #include <limits>
-#include "TowerView.h"
+//#include "TowerView.h"
 
 
 #include "Math_Helpers.h"
@@ -68,9 +68,9 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     m_SubmitButtonPressedTexture.loadFromFile("../src/Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
     #endif
     #ifdef MAC
-    m_Font.loadFromFile("Fonts/Kreon-Medium.ttf");    
-    m_SubmitButtonTexture.loadFromFile("Images/placeholder_play_button.png");                    // placeholder image. Change button image
-    m_SubmitButtonPressedTexture.loadFromFile("Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+    m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf");  // One extra ".." to go up another level;
+    m_SubmitButtonTexture.loadFromFile("../src/Images/placeholder_play_button.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("../src/Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
     #endif
 
 }
@@ -209,6 +209,7 @@ void Game::Run()
 // ** GAME SETUP AND GUIMANAGER
 void Game::LoadInitialSetUpAssets()
 {
+    /*
     // ** GUIMANAGER AND GAMESETUP
     #ifdef LINUX
     m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf");  
@@ -216,13 +217,14 @@ void Game::LoadInitialSetUpAssets()
     m_SubmitButtonPressedTexture.loadFromFile("../src/Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
     #endif
     #ifdef MAC
-    m_Font.loadFromFile("Fonts/Kreon-Medium.ttf");    
+    m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf");  // One extra ".." to go up another level
     m_SubmitButtonTexture.loadFromFile("Images/placeholder_play_button.png");                    // placeholder image. Change button image
     m_SubmitButtonPressedTexture.loadFromFile("Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
     #endif
     #ifdef WINDOW
     // add for window
     #endif
+    */
     
     // ** GAME SETUP AND SOME GUIMANAGER
     m_IntroText.setFont(m_Font);
@@ -848,6 +850,7 @@ void Game::HandleInput()
             Vector2f translatedPosition = m_Window.mapPixelToCoords(mousePosition);   
             std::array<sf::Sprite, 2>& buttonBoxArray = m_GUIManager.GetGameSetupView()->GetButtonBoxes();              // Translate mouse position to game coordinate
             if (event.type == Event::MouseButtonPressed) {
+                cout << "Pressed" << endl;
                 // Input box conditions
                 std::array<sf::RectangleShape, 2>& userInputBoxArray = m_GUIManager.GetGameSetupView()->GetUserInputBoxWindowSize();
                 if (userInputBoxArray[0].getGlobalBounds().contains(translatedPosition))        // Check if mouse position is within the width input box

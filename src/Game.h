@@ -269,7 +269,7 @@ private:
     sf::Clock placementOrUpgradeTimer;  // Timer to track recent tower placements
     GameEventManager m_GameEventManager;   
     ProjectileManager m_ProjectileManager;
-    TowerView m_TowerView;
+    //TowerView m_TowerView;
     MonsterView m_MonsterView;
 
     void DebugPrintGameState() const {

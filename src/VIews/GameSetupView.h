@@ -7,14 +7,14 @@
 #include <SFML/Graphics.hpp>
 
 #include <iostream>
-#include <unordered_map> 
+#include <unordered_map>
 #include <array>
 
 
 class GameSetupView : public IGameObserver
 {
 private:
-    struct GameSetupData 
+    struct GameSetupData
     {
         std::string m_IntroTitle;
         std::string m_EnterSizeSign;

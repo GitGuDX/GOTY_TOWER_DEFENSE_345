@@ -32,11 +32,11 @@ elseif(UNIX)
     set(EXECUTABLE_NAME Tower_Defense_Linux)  # Set the name for Linux
 endif()
 
-# Specify the location of SFMLConfig.cmake
-set(SFML_DIR "C:/msys64/mingw64/lib/cmake/sfml")
 
 # Find the SFML package (adjusted for any version)
-find_package(SFML REQUIRED COMPONENTS system window graphics)
+find_package(SFML 2 REQUIRED COMPONENTS system window graphics audio)
+# Ensure SFML include directory is set
+include_directories(${SFML_INCLUDE_DIR} /opt/homebrew/opt/sfml@2/include)
 
 # Collect all .cpp files in the src directory
 file(GLOB SOURCES src/*.cpp src/GUI/*.cpp src/Views/*.cpp src/Entities/*.cpp src/EntityManagers/*.cpp src/Generators/*.cpp)  # Recursively grab all .cpp files
@@ -50,10 +50,13 @@ add_executable(${EXECUTABLE_NAME} ${SOURCES})
 # Link SFML libraries (adjust the version and names based on your installed version)
 if(WIN32)
     target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system)
+    # Specify the location of SFMLConfig.cmake
+    set(SFML_DIR "C:/msys64/mingw64/lib/cmake/sfml")
 elseif(UNIX AND NOT APPLE)
     target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system)
 elseif(APPLE)
-    target_link_libraries(${EXECUTABLE_NAME} sfml-main)
+    target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system)
+    set(SFML_DIR "/opt/homebrew/opt/sfml@2/lib/cmake/SFML")
 endif()
 
 # For Linux/Unix, link additional libraries if needed
@@ -66,13 +69,6 @@ endif()
 #         Xcursor    # X cursor library
 #     )
 # endif()
-if(WIN32)
-    target_link_libraries(${EXECUTABLE_NAME} opengl32 gdi32)  # Required for SFML on Windows
-elseif(UNIX AND NOT APPLE)
-    target_link_libraries(${EXECUTABLE_NAME} X11 Xrandr Xcursor stdc++ m)
-elseif(APPLE)
-    target_link_libraries(${EXECUTABLE_NAME} sfml-main)  # SFML requires sfml-main on macOS
-endif()
 
 # Set up include directories (specifically SFML includes from the src/include folder)
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)

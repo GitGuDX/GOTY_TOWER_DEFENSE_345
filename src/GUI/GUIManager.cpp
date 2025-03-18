@@ -13,7 +13,7 @@ GUIManager::GUIManager(RenderWindow& m_Window)
     }
     #endif
     #ifdef MAC
-    if (!m_Font.loadFromFile("Fonts/Kreon-Medium.ttf")) {
+    if (!m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf")) {
         throw std::runtime_error("Failed to load font");
     }
     #endif

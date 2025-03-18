@@ -1,8 +1,8 @@
 #include "MonsterManager.h"
 
 MonsterManager::MonsterManager(RenderWindow &window)
-    : m_Window(window)
-    , m_MonsterEntityView(window)
+    //: m_Window(window)
+    : m_MonsterEntityView(window)
     , m_MonsterGenerator()
     , m_CurrentWaveStrength(0)
     , m_iNumberOfMonsterSpawned(0)
