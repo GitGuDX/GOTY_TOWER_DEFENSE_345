@@ -120,6 +120,8 @@ private:
 
     void UpdateAxes();
 
+    void UpdateNextMonsterUI();
+
     /** * @brief Updates UI components. */
     void UpdateUI();
 

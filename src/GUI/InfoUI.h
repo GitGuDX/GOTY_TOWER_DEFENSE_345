@@ -69,6 +69,11 @@ private:
     std::string m_nextRoundString;
     std::string m_upgradeString;
 
+    std::string m_nextMonsterTitleString;
+    std::string m_nextMonsterLevelString;
+    std::string m_nextMonsterDescriptionString;
+
+
     int m_iCurrentLevel;
     int m_iCurrentWealth;
 
@@ -257,6 +262,21 @@ public:
         notifyObservers();
     }
 
+    void SetNextMonsterTitleString(const String& title) {
+        m_nextMonsterTitleString = title;
+        notifyObservers();
+    }
+
+    void SetNextMonsterLevelString(const String& level) {
+        m_nextMonsterLevelString = level;
+        notifyObservers();
+    }
+
+    void SetNextMonsterDescriptionString(const String& description) {
+        m_nextMonsterDescriptionString = description;
+        notifyObservers();
+    }
+
     const std::string& GetScoreString() const {
         return m_scoreString;
     }
@@ -337,6 +357,18 @@ public:
         return m_upgradeString;
     }
 
+    const std::string& GetNextMonsterTitleString() const {
+        return m_nextMonsterTitleString;
+    }
+
+    const std::string& GetNextMonsterLevelString() const {
+        return m_nextMonsterLevelString;
+    }
+
+    const std::string& GetNextMonsterDescriptionString() const {
+        return m_nextMonsterDescriptionString;
+    }
+
     int GetCurrentLevel() const {
         return m_iCurrentLevel;
     }
@@ -368,6 +400,7 @@ public:
     Clock& GetWarningShown() {
         return m_warningShown;
     }
+    
 
 
 };

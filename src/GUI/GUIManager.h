@@ -9,6 +9,7 @@
 #include "../Entities/Tile.h"
 #include "InfoUI.h"
 #include "../Views/InfoUIView.h"
+#include "../Generators/MonsterGenerator.h"
 #include <SFML/Graphics.hpp>
 
 #include <memory>
@@ -72,6 +73,8 @@ public:
     bool FinalizeExitTile(const sf::Vector2f& position);
 
     void UpdateTowerHoverUI(TowerEntity& tower);
+
+    void UpdateMonsterUi(MonsterGenerator::MonsterType type, int level);
 
     void BlinkTiles(Tile::Type type, sf::Time deltaTime);
 

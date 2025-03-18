@@ -40,6 +40,10 @@ private:
         std::string m_nextRoundString;
         std::string m_upgradeString;
 
+        std::string m_nextMonsterTitleString;
+        std::string m_nextMonsterLevelString;
+        std::string m_nextMonsterDescriptionString;
+
         Vector2f m_CrossPosition;
 
     };
@@ -118,6 +122,10 @@ private:
     Text m_gameOverText_3;
     Text m_nextRoundText;
     Text m_upgradeText;
+
+    Text m_nextMonsterTitleText;
+    Text m_nextMonsterLevelText;
+    Text m_nextMonsterDescriptionText;
 
     Color m_instructionTextColor;
     Color m_warningTextColor;

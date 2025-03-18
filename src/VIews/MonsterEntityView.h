@@ -28,6 +28,7 @@ public:
         int dyingMonsterFrameIndex;
         bool isDying;
         bool isDead;
+        bool isTemplate;
     };
 
     MonsterEntityView(RenderWindow& window);
@@ -44,6 +45,8 @@ public:
     void SetTemplateMonsterSprite(MonsterEntityData& data, MonsterGenerator::MonsterType type);
 
     void SetMonsterTexture(MonsterEntityData& data, MonsterGenerator::MonsterType type);
+
+    void SetHoveringOnTower(bool isHovering) { m_isHoveringOnTower = isHovering; }
 
     void RemoveMonster(const MonsterEntity* monsterPtr);
 
@@ -75,6 +78,8 @@ private:
     std::vector<sf::Texture> m_OgreDeathTextures;
 
     Clock m_monsterAnimationDelay;
+
+    bool m_isHoveringOnTower = false; // Flag to track if the mouse is hovering over a tower. If so don't show next monster
 
 };
 

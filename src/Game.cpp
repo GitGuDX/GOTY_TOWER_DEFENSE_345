@@ -73,7 +73,7 @@ void Game::Run()
                 m_eCurrentEditState = PathEditingState::EntryState;
                 m_ePrevGameMode = MapEditorMode;
             }
-            
+
             UpdateTiles();
             UpdateUI();
 
@@ -89,13 +89,7 @@ void Game::Run()
                 // Bullet texture is loaded here. Need to be implemented by the bullet observer pattern
                 LoadPlayModeAssets();
 
-                // Load Monster assets
-                m_MonsterManager.LoadMonsterAssets();
-
-                // Assign the entry tile position and prepare the first wave of monsters
-                Vector2f entryTile = m_GUIManager.GetMapSetup()->GetEntryTile();
-                m_MonsterManager.InitializeMonsters(entryTile);
-
+                
                 m_ePrevGameMode = PlayMode;
             }
 
@@ -112,6 +106,8 @@ void Game::Run()
                 {
                     // Prepare the next wave of monsters
                     m_MonsterManager.PrepareNextWave();
+                    m_MonsterManager.UpdateNextMonster();
+                    UpdateNextMonsterUI();
                     m_bIsMonsterGeneratorUpdated = true;
                 }
             }
@@ -151,18 +147,32 @@ void Game::InitializeMapEnditorMode()
 
     // Initialize Tower manager with mapSize and load its assets
     m_vMapSize = m_GUIManager.GetMapSize();
+    int infoUIWidth = m_GUIManager.GetInfoUI()->GetInfoUIWidth();
     m_TowerManager.SetMapSize(m_vMapSize);
-    m_TowerManager.SetInfoUIWidth(m_GUIManager.GetInfoUI()->GetInfoUIWidth());
+    m_TowerManager.SetInfoUIWidth(infoUIWidth);
     m_TowerManager.InitializeGameSetup();
+
+    m_MonsterManager.SetMapSize(m_vMapSize);
+    m_MonsterManager.SetInfoUIWidth(infoUIWidth);
 
     // Get tower price from TowerManager and give it to the InfoUI
     std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
     m_GUIManager.InitiailizeTowerPrice(templateTowers);
 }
 
-// Bullet observer pattern need to be implemented
+
 void Game::LoadPlayModeAssets()
 {
+    // Load Monster assets
+    m_MonsterManager.LoadMonsterAssets();
+
+    // Assign the entry tile position and prepare the first wave of monsters
+    Vector2f entryTile = m_GUIManager.GetMapSetup()->GetEntryTile();
+    m_MonsterManager.InitializeMonsters(entryTile);
+    m_MonsterManager.UpdateNextMonster();
+    UpdateNextMonsterUI();
+
+    // Bullet observer pattern need to be implemented
     #ifdef LINUX
     m_RapidBulletTexture.loadFromFile("../src/Images/Rapid_Bullet.png");
     m_SniperBulletTexture.loadFromFile("../src/Images/Sniper_Bullet.png");
@@ -575,6 +585,7 @@ void Game::HandleInput()
                 // Set m_isHoveringOnTower based on whether the mouse is over a tower
                 infoUIView->SetHoveringOnTower(m_isHovering);
                 towerView.SetHoveringOnTower(m_isHovering);
+                m_MonsterManager.GetMonsterEntityView().SetHoveringOnTower(m_isHovering);
             }   
 
             // ** UI
@@ -966,6 +977,12 @@ void Game::UpdateAxes()
     }
 }
 
+void Game::UpdateNextMonsterUI()
+{
+    MonsterEntity& nextMonster = m_MonsterManager.GetNextMonster();
+    m_GUIManager.UpdateMonsterUi(nextMonster.GetType(), nextMonster.GetLevel());
+}
+
 // ** EDIT TO IMPLEMENT GAMESETUP VIEW CLASS
 void Game::DrawInitialSetUp()
 {
@@ -995,6 +1012,7 @@ void Game::DrawMapEditorMode()
         m_GUIManager.GetInfoUIView()->DrawNextRoundText();
         m_TowerManager.GetTowerEntityView().Draw();
         m_GUIManager.GetInfoUIView()->DrawTowerInfo();
+        m_MonsterManager.GetMonsterEntityView().Draw();
     }
 
     // Draw cross that indicate tower to be deleted

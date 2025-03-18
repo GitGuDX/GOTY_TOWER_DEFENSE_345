@@ -8,6 +8,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <array>
 
 using namespace sf;
 
@@ -25,6 +26,8 @@ public:
 
     void PrepareNextWave();
 
+    void UpdateNextMonster();
+
     void GenerateCurrentWave(float addedTime);
 
     bool IsAllMonstersSpawned();
@@ -37,9 +40,15 @@ public:
 
     std::vector<MonsterEntity>& GetActiveMonsters() { return m_activeMonsters; }
 
+    MonsterEntity& GetNextMonster() { return m_nextMonsters[0]; }
+
     void RemoveMonster(MonsterEntity& monster);
 
     void UpdateMonsterAnimations(const float m_fFrameTime);
+
+    void SetMapSize(Vector2i mapSize) { m_mapSize = mapSize; }
+
+    void SetInfoUIWidth(int infoUIWidth) { m_infoUIWidth = infoUIWidth; }
 
 private:
 
@@ -68,6 +77,8 @@ private:
 
 private:
     RenderWindow& m_Window;
+    Vector2i m_mapSize;
+    int m_infoUIWidth;
 
     MonsterEntityView m_MonsterEntityView;
     MonsterGenerator m_MonsterGenerator;
@@ -77,6 +88,8 @@ private:
     int m_CurrentWaveStrength;
 
     std::vector<MonsterEntity> m_activeMonsters;
+
+    std::array<MonsterEntity, 1> m_nextMonsters;
 
     int m_iNumberOfMonsterSpawned;
 

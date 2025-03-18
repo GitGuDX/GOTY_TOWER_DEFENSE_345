@@ -171,6 +171,39 @@ void GUIManager::UpdateTowerHoverUI(TowerEntity &tower)
     m_infoUI->SetHoverTowerUpgradeCost(tower.GetUpgradeCost());
 }
 
+void GUIManager::UpdateMonsterUi(MonsterGenerator::MonsterType type, int level)
+{
+    if (!m_infoUI)
+    {
+        std::cerr << "Error: InfoUI is nullptr\n";
+        return;  // Prevent null pointer dereference
+    }
+    m_infoUI->SetNextMonsterTitleString("Next Monster");
+    m_infoUI->SetNextMonsterLevelString("Level: " + std::to_string(level + 1));
+
+    switch (type)
+    {
+    case MonsterGenerator::MonsterType::Skeleton:
+        m_infoUI->SetNextMonsterDescriptionString("Basic, vanilla baby");
+        break;
+    case MonsterGenerator::MonsterType::Reaper:
+        m_infoUI->SetNextMonsterDescriptionString("Fast and weak");
+        break;
+    case MonsterGenerator::MonsterType::Golem:
+        m_infoUI->SetNextMonsterDescriptionString("Slow but tanky");
+        break;
+    case MonsterGenerator::MonsterType::Minotaur:
+        m_infoUI->SetNextMonsterDescriptionString("Strong and swift");
+        break;
+    case MonsterGenerator::MonsterType::Ogre:
+        m_infoUI->SetNextMonsterDescriptionString("Balanced all-rounder");
+        break;
+    default:
+        m_infoUI->SetNextMonsterDescriptionString("Unknown monster type");
+        break;
+    }
+}
+
 void GUIManager::BlinkTiles(Tile::Type type, sf::Time deltaTime)
 {
     m_fElapsedTimeInSeconds += deltaTime.asSeconds();  // Use the passed deltaTime

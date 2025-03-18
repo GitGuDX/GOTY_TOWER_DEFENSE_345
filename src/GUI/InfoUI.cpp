@@ -32,6 +32,7 @@ void InfoUI::InitializeInfoUI()
     m_gameOverString1 = "Game Over";
     m_gameOverString2 = "Press S to set up a new game";
     m_gameOverString3 = "Press R to restart with the same map.";
+    m_nextMonsterTitleString = "";
 
     notifyObservers();
 }

@@ -100,7 +100,9 @@ public:
 
     void InitializeFirstRoaster();
 
-    MonsterType GetCurrentMonsterType() const { return m_aCurrentMonsterRoaster.back(); }
+    MonsterType GetCurrentMonsterType() const { return m_aCurrentMonsterRoster.back(); }
+
+    MonsterEntity GetNextMonster() const;
 
 private:
     int GetWaveStrength(MonsterGenerator::MonsterType currentType);
@@ -109,7 +111,8 @@ private:
 
 private:
     int m_iBaseMonsters;                                                // Starting monster number
-    std::vector<MonsterType> m_aCurrentMonsterRoaster;             // Store Monster roaster size depend on the size of the Type enum
+    std::vector<MonsterType> m_aCurrentMonsterRoster;             // Store Monster roaster size depend on the size of the Type enum
+    std::vector<MonsterType> m_aNextMonsterRoster;      
     int m_iMonsterLevel;                                                // Current monster level
 };
 

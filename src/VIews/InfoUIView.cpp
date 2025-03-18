@@ -32,6 +32,10 @@ void InfoUIView::Update(const IGameSubject &subject)
         data.m_towerUpgradeCostString = infoUI->GetTowerUpgradeCostString();
         data.m_towerInstructionString_1 = infoUI->GetTowerInstructionString_1();
         data.m_towerInstructionString_2 = infoUI->GetTowerInstructionString_2();
+
+        data.m_nextMonsterTitleString = infoUI->GetNextMonsterTitleString();
+        data.m_nextMonsterLevelString = infoUI->GetNextMonsterLevelString();
+        data.m_nextMonsterDescriptionString = infoUI->GetNextMonsterDescriptionString();
         
         data.m_warningString = infoUI->GetWarningString();
         data.m_modeString = infoUI->GetModeString();
@@ -64,6 +68,9 @@ void InfoUIView::DrawTowerInfo()
     {
         m_Window.draw(m_woodTowerPriceText);
         m_Window.draw(m_stoneTowerPriceText);
+        m_Window.draw(m_nextMonsterTitleText);
+        m_Window.draw(m_nextMonsterLevelText);
+        m_Window.draw(m_nextMonsterDescriptionText);
     } 
     else
     {
@@ -190,6 +197,17 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     FloatRect towerInstructionBounds_2 = m_towerInstructionText_2.getLocalBounds();
     m_towerInstructionText_2.setOrigin(towerInstructionBounds_2.width / 2, towerInstructionBounds_2.height / 2);
 
+    m_nextMonsterTitleText.setString(data.m_nextMonsterTitleString);   // Set text
+    FloatRect nextMonsterTitleBounds = m_nextMonsterTitleText.getLocalBounds();
+    m_nextMonsterTitleText.setOrigin(nextMonsterTitleBounds.width / 2, nextMonsterTitleBounds.height / 2);
+
+    m_nextMonsterLevelText.setString(data.m_nextMonsterLevelString);   // Set text
+    FloatRect nextMonsterLevelBounds = m_nextMonsterLevelText.getLocalBounds();
+    m_nextMonsterLevelText.setOrigin(nextMonsterLevelBounds.width / 2, nextMonsterLevelBounds.height / 2);
+
+    m_nextMonsterDescriptionText.setString(data.m_nextMonsterDescriptionString);   // Set text
+    FloatRect nextMonsterDescriptionBounds = m_nextMonsterDescriptionText.getLocalBounds();
+    m_nextMonsterDescriptionText.setOrigin(nextMonsterDescriptionBounds.width / 2, nextMonsterDescriptionBounds.height / 2);
 }
 
 void InfoUIView::UpdateUpgradeTextPosition(Vector2f position)
@@ -219,6 +237,10 @@ void InfoUIView::InitializeTextAssets()
     Vector2f towerUpgradeCostPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 295);
     Vector2f towerInstructionPosition_1 = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 360);
     Vector2f towerInstructionPosition_2 = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 390);
+
+    Vector2f nextMonsterTitlePosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 165);
+    Vector2f nextMonsterLevelPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 245);
+    Vector2f nextMonsterDescriptionPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 270);
 
     Vector2f nextRoundTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 80); //Fix this because it should be the same values as instruciton but its not
 
@@ -329,6 +351,21 @@ void InfoUIView::InitializeTextAssets()
     m_towerInstructionText_2.setCharacterSize(15);        // Set size
     m_towerInstructionText_2.setFillColor(Color::Yellow);
     m_towerInstructionText_2.setPosition(towerInstructionPosition_2);       // Set position
+
+    m_nextMonsterTitleText.setFont(m_Font);               // Set font
+    m_nextMonsterTitleText.setCharacterSize(15);        // Set size
+    m_nextMonsterTitleText.setFillColor(Color::White);    
+    m_nextMonsterTitleText.setPosition(nextMonsterTitlePosition);       // Set position
+
+    m_nextMonsterLevelText.setFont(m_Font);               // Set font
+    m_nextMonsterLevelText.setCharacterSize(15);        // Set size
+    m_nextMonsterLevelText.setFillColor(Color::White);
+    m_nextMonsterLevelText.setPosition(nextMonsterLevelPosition);       // Set position
+
+    m_nextMonsterDescriptionText.setFont(m_Font);               // Set font
+    m_nextMonsterDescriptionText.setCharacterSize(15);        // Set size
+    m_nextMonsterDescriptionText.setFillColor(Color::White);
+    m_nextMonsterDescriptionText.setPosition(nextMonsterDescriptionPosition);       // Set position
 
 }
 
