@@ -103,17 +103,17 @@ Vector2i GUIManager::GetMapSize() const
     return Vector2i(0, 0);
 }
 
-void GUIManager::InitiailizeTowerPrice(std::vector<TowerEntity> &templateTowers)
+void GUIManager::InitiailizeTowerPrice(std::vector<TowerEntity*>& templateTowers)
 {
-    for (const TowerEntity& tower : templateTowers)
+    for (const TowerEntity* towerPtr : templateTowers)
     {
-        if (tower.GetType() == TowerGenerator::TowerType::Rapid)
+        if (towerPtr->GetType() == TowerGenerator::TowerType::Rapid)
         {
-            m_infoUI->SetWoodTowerPriceString(sf::String(std::to_string(tower.GetCost())));
+            m_infoUI->SetWoodTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
         }
-        else if (tower.GetType() == TowerGenerator::TowerType::Sniper)
+        else if (towerPtr->GetType() == TowerGenerator::TowerType::Sniper)
         {
-            m_infoUI->SetStoneTowerPriceString(sf::String(std::to_string(tower.GetCost())));
+            m_infoUI->SetStoneTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
         }
     }
 }
@@ -151,7 +151,7 @@ bool GUIManager::FinalizeExitTile(const sf::Vector2f &position)
     return false;
 }
 
-void GUIManager::UpdateTowerHoverUI(TowerEntity &tower)
+void GUIManager::UpdateTowerHoverUI(TowerEntity* towerPtr)
 {
     if (!m_infoUI)
     {
@@ -163,12 +163,12 @@ void GUIManager::UpdateTowerHoverUI(TowerEntity &tower)
         return std::round(value * 100.0f) / 100.0f;
     };
 
-    m_infoUI->SetHoverTowerLevel(tower.GetLevel());
-    m_infoUI->SetHoverTowerDamage(roundTwoDecimals(tower.GetDamage()));
-    m_infoUI->SetHoverTowerCooldown(roundTwoDecimals(tower.GetMaxCooldown()));
-    m_infoUI->SetHoverTowerRange(roundTwoDecimals(tower.GetRange()));
-    m_infoUI->SetHoverTowerSpeed(roundTwoDecimals(tower.GetSpeed()));
-    m_infoUI->SetHoverTowerUpgradeCost(tower.GetUpgradeCost());
+    m_infoUI->SetHoverTowerLevel(towerPtr->GetLevel());
+    m_infoUI->SetHoverTowerDamage(roundTwoDecimals(towerPtr->GetDamage()));
+    m_infoUI->SetHoverTowerCooldown(roundTwoDecimals(towerPtr->GetMaxCooldown()));
+    m_infoUI->SetHoverTowerRange(roundTwoDecimals(towerPtr->GetRange()));
+    m_infoUI->SetHoverTowerSpeed(roundTwoDecimals(towerPtr->GetSpeed()));
+    m_infoUI->SetHoverTowerUpgradeCost(towerPtr->GetUpgradeCost());
 }
 
 void GUIManager::UpdateMonsterUi(MonsterGenerator::MonsterType type, int level)

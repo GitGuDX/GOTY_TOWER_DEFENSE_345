@@ -8,6 +8,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <memory>
 
 using namespace sf;
 
@@ -23,9 +24,13 @@ public:
 
     void InitializeGameSetup();
 
-    std::vector<TowerEntity>& GetTemplateTowers() { return m_templateTowers; }
+    // std::vector<TowerEntity>& GetTemplateTowers() { return m_templateTowers; }
 
-    std::vector<TowerEntity>& GetActiveTowers() { return m_activeTowers; }
+    // std::vector<TowerEntity>& GetActiveTowers() { return m_activeTowers; }
+
+    std::vector<TowerEntity*> GetTemplateTowers();
+
+    std::vector<TowerEntity*> GetActiveTowers();
 
     TowerEntityView& GetTowerEntityView() { return m_TowerEntityView; }
 
@@ -48,8 +53,8 @@ private:
     TowerEntityView m_TowerEntityView;
     TowerGenerator m_TowerGenerator;
 
-    std::vector<TowerEntity> m_templateTowers;
-    std::vector<TowerEntity> m_activeTowers;
+    std::vector<std::unique_ptr<TowerEntity>> m_templateTowers;
+    std::vector<std::unique_ptr<TowerEntity>> m_activeTowers;
 
     float m_sellRate;
 };

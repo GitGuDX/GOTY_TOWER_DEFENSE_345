@@ -15,90 +15,176 @@ void TowerManager::InitializeGameSetup()
     m_templateTowers.reserve(3);   // Reserve space to avoid memory reallocation
     m_activeTowers.reserve(m_mapSize.x/50 * m_mapSize.y/50);   // Reserve space to avoid memory reallocation. Divide by 50 since each title is 50 by 50 pixels
 
-    //// Create a rapid tower template ////
-    // Add a new Rapid Tower to the template tower list using emplace_back.
-    // This constructs the object in-place, avoiding an extra copy/move operation.
-    m_templateTowers.emplace_back(m_TowerGenerator.GenerateRapidTowerTemplate());
-    //std::cout << "Tower 1 added at address: " << &m_templateTowers.back() << std::endl;
+    // Create a Rapid Tower template
+    // Allocate TowerEntity on the heap using std::make_unique<TowerEntity>().
+    auto rapidTower = std::make_unique<TowerEntity>(m_TowerGenerator.GenerateRapidTowerTemplate());
+    rapidTower->AddObserver(&m_TowerEntityView);
+    rapidTower->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*1/4, m_mapSize.y / 3 + 75));
+    rapidTower->SetCost(200);
+    rapidTower->SetIsTemplate(true);
+
+    // std::move(newTower) transfers ownership to m_templateTowers.
+    m_templateTowers.push_back(std::move(rapidTower));
+
+    // Create a sniper Tower template
+    // Allocate TowerEntity on the heap using std::make_unique<TowerEntity>().
+    auto sniperTower = std::make_unique<TowerEntity>(m_TowerGenerator.GenerateSniperTowerTemplate());
+    sniperTower->AddObserver(&m_TowerEntityView);
+    sniperTower->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4, m_mapSize.y / 3 + 75));
+    sniperTower->SetCost(200);
+    sniperTower->SetIsTemplate(true);
+
+    // std::move(newTower) transfers ownership to m_templateTowers.
+    m_templateTowers.push_back(std::move(sniperTower));
+    std::cout << m_templateTowers.size() << std::endl;
+
+    // //// Create a rapid tower template ////
+    // // Add a new Rapid Tower to the template tower list using emplace_back.
+    // // This constructs the object in-place, avoiding an extra copy/move operation.
+    // m_templateTowers.emplace_back(m_TowerGenerator.GenerateRapidTowerTemplate());
+    // //std::cout << "Tower 1 added at address: " << &m_templateTowers.back() << std::endl;
     
-    // Store the index of the newly added tower to access it safely.
-    // This ensures we reference the correct object even if the vector resizes.
-    size_t rapidTowerIndex = m_templateTowers.size() - 1;
+    // // Store the index of the newly added tower to access it safely.
+    // // This ensures we reference the correct object even if the vector resizes.
+    // size_t rapidTowerIndex = m_templateTowers.size() - 1;
 
-    // Set the position of the tower in the game world.
-    // Accessing it via index ensures stability in case of vector reallocation.
-    m_templateTowers[rapidTowerIndex].AddObserver(&m_TowerEntityView);
-    m_templateTowers[rapidTowerIndex].SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*1/4, m_mapSize.y / 3 + 75));
-    m_templateTowers[rapidTowerIndex].SetCost(200);
-    m_templateTowers[rapidTowerIndex].SetIsTemplate(true);
-    //std::cout << "rapid tower addres: " << &m_templateTowers[rapidTowerIndex] << std::endl;
+    // // Set the position of the tower in the game world.
+    // // Accessing it via index ensures stability in case of vector reallocation.
+    // m_templateTowers[rapidTowerIndex].AddObserver(&m_TowerEntityView);
+    // m_templateTowers[rapidTowerIndex].SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*1/4, m_mapSize.y / 3 + 75));
+    // m_templateTowers[rapidTowerIndex].SetCost(200);
+    // m_templateTowers[rapidTowerIndex].SetIsTemplate(true);
+    // //std::cout << "rapid tower addres: " << &m_templateTowers[rapidTowerIndex] << std::endl;
 
-    // Note: Using indices instead of references to `m_templateTowers.back()` prevents 
-    // potential invalid references if the vector resizes due to reallocation.
+    // // Note: Using indices instead of references to `m_templateTowers.back()` prevents 
+    // // potential invalid references if the vector resizes due to reallocation.
 
-    //// Create a sniper tower template ////
-    m_templateTowers.emplace_back(m_TowerGenerator.GenerateSniperTowerTemplate());
-    //std::cout << "Tower 2 added at address: " << &m_templateTowers.back() << std::endl;
-    size_t sniperTowerIndex = m_templateTowers.size() - 1;
-    m_templateTowers[sniperTowerIndex].AddObserver(&m_TowerEntityView);
-    m_templateTowers[sniperTowerIndex].SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4, m_mapSize.y / 3 + 75));
-    m_templateTowers[sniperTowerIndex].SetCost(300);
-    m_templateTowers[sniperTowerIndex].SetIsTemplate(true);
-    //std::cout << "sniper tower addres: " << &m_templateTowers[rapidTowerIndex] << std::endl;
+    // //// Create a sniper tower template ////
+    // m_templateTowers.emplace_back(m_TowerGenerator.GenerateSniperTowerTemplate());
+    // //std::cout << "Tower 2 added at address: " << &m_templateTowers.back() << std::endl;
+    // size_t sniperTowerIndex = m_templateTowers.size() - 1;
+    // m_templateTowers[sniperTowerIndex].AddObserver(&m_TowerEntityView);
+    // m_templateTowers[sniperTowerIndex].SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4, m_mapSize.y / 3 + 75));
+    // m_templateTowers[sniperTowerIndex].SetCost(300);
+    // m_templateTowers[sniperTowerIndex].SetIsTemplate(true);
+    // //std::cout << "sniper tower addres: " << &m_templateTowers[rapidTowerIndex] << std::endl;
+}
+
+std::vector<TowerEntity *> TowerManager::GetTemplateTowers()
+{
+    std::vector<TowerEntity*> result;
+    for (auto& tower : m_templateTowers)
+    {
+        result.push_back(tower.get());
+    }
+    return result;
+}
+
+std::vector<TowerEntity *> TowerManager::GetActiveTowers()
+{
+    std::vector<TowerEntity*> result;
+    for (auto& tower : m_activeTowers)
+    {
+        result.push_back(tower.get());
+    }
+    return result;
 }
 
 void TowerManager::CreateTower(TowerGenerator::TowerType towerType, const sf::Vector2f &position)
 {
-    //std::cout << "position: " << position.x << ", " << position.y << std::endl;
-    m_activeTowers.emplace_back(m_TowerGenerator.GenerateTower(towerType));
-    TowerEntity &newTower = m_activeTowers.back();
-    newTower.AddObserver(&m_TowerEntityView);
-    //std::cout << "Tower created at address: " << &newTower << std::endl;
-    // Update the tower's stats based on the tower type
-    newTower.InitializeStat();
+    // Allocate TowerEntity on the heap using std::make_unique<TowerEntity>().
+    auto newTower = std::make_unique<TowerEntity>(m_TowerGenerator.GenerateTower(towerType));
+    newTower->AddObserver(&m_TowerEntityView);
+    newTower->InitializeStat();
+    newTower->SetPosition(position);
 
-    // Set tower position
-    newTower.SetPosition(position);
-   //std::cout << "Tower position: " << newTower.GetPosition().x << ", " << newTower.GetPosition().y << std::endl;
+    // std::move(newTower) transfers ownership to m_activeTowers.
+    m_activeTowers.push_back(std::move(newTower));
+
+//     //std::cout << "position: " << position.x << ", " << position.y << std::endl;
+//     m_activeTowers.emplace_back(m_TowerGenerator.GenerateTower(towerType));
+//     TowerEntity &newTower = m_activeTowers.back();
+//     newTower.AddObserver(&m_TowerEntityView);
+//     //std::cout << "Tower created at address: " << &newTower << std::endl;
+//     // Update the tower's stats based on the tower type
+//     newTower.InitializeStat();
+
+//     // Set tower position
+//     newTower.SetPosition(position);
+//    //std::cout << "Tower position: " << newTower.GetPosition().x << ", " << newTower.GetPosition().y << std::endl;
     
 }
 
 void TowerManager::RemoveTowerAtPosition(const sf::Vector2f &position)
 {
-    for (auto it = m_activeTowers.begin(); it != m_activeTowers.end(); ++it)
-    {
-        //std::cout << "Removing tower" << std::endl;
-        if (std::abs(it->GetPosition().x - position.x) < 0.5f &&
-            std::abs(it->GetPosition().y - position.y) < 0.5f)
-        {
-            it->RemoveObserver(&m_TowerEntityView); // Remove observer before deleting
+    // Use std::find_if to find the tower by position.
+    auto it = std::find_if(m_activeTowers.begin(), m_activeTowers.end(),
+        [&](const std::unique_ptr<TowerEntity>& tower) {
+            return std::abs(tower->GetPosition().x - position.x) < 0.5f &&
+                    std::abs(tower->GetPosition().y - position.y) < 0.5f;
+        });
 
-            // Remove the tower from active towers
-            m_activeTowers.erase(it);
+    // Check if the tower was found.
+    if (it != m_activeTowers.end()) {
+        // Remove the observer from the tower.
+        (*it)->RemoveObserver(&m_TowerEntityView);
 
-            // Re-sync TowerEntityView after removal to update the visual representation
-            m_TowerEntityView.SyncTowers(m_templateTowers, m_activeTowers);
-
-            return; // Exit after removing to avoid iterator issues
-        }
+        // Notify the TowerEntityView of the removal.
+        m_TowerEntityView.RemoveSubject(it->get());
+        
+        // Erase the tower from the vector.
+        m_activeTowers.erase(it);
     }
+
+
+    // for (auto it = m_activeTowers.begin(); it != m_activeTowers.end(); ++it)
+    // {
+    //     //std::cout << "Removing tower" << std::endl;
+    //     if (std::abs(it->GetPosition().x - position.x) < 0.5f &&
+    //         std::abs(it->GetPosition().y - position.y) < 0.5f)
+    //     {
+    //         it->RemoveObserver(&m_TowerEntityView); // Remove observer before deleting
+
+    //         // Remove the tower from active towers
+    //         m_activeTowers.erase(it);
+
+    //         // Re-sync TowerEntityView after removal to update the visual representation
+    //         m_TowerEntityView.SyncTowers(m_templateTowers, m_activeTowers);
+
+    //         return; // Exit after removing to avoid iterator issues
+    //     }
+    // }
 }
 
 void TowerManager::RemoveAllTowers()
 {
-    for (TowerEntity &tower : m_templateTowers)
+    for (auto& tower : m_templateTowers)
     {
-        tower.RemoveObserver(&m_TowerEntityView);
+        tower->RemoveObserver(&m_TowerEntityView);
     }
 
-    for (TowerEntity &tower : m_activeTowers)
+    for (auto& tower : m_activeTowers)
     {
-        tower.RemoveObserver(&m_TowerEntityView);
+        tower->RemoveObserver(&m_TowerEntityView);
     }
 
     m_templateTowers.clear();
     m_activeTowers.clear();
     m_TowerEntityView.EmptyTowerEntitySubjects();
+
+    // for (TowerEntity &tower : m_templateTowers)
+    // {
+    //     tower.RemoveObserver(&m_TowerEntityView);
+    // }
+
+    // for (TowerEntity &tower : m_activeTowers)
+    // {
+    //     tower.RemoveObserver(&m_TowerEntityView);
+    // }
+
+    // m_templateTowers.clear();
+    // m_activeTowers.clear();
+    // m_TowerEntityView.EmptyTowerEntitySubjects();
 }
 
 void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
@@ -106,12 +192,11 @@ void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
     Clock& towerAnimationDelay = m_TowerEntityView.GetTowerAnimationDelay();
     if (towerAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) {
         // Set the texture for each tower
-        std::vector<TowerEntity>& activeTowers = GetActiveTowers();
-        for (TowerEntity& tower : activeTowers) 
+        for (auto& tower : m_activeTowers) 
         {
-            TowerEntityView::TowerEntityData* towerData = m_TowerEntityView.GetTowerEntityData(&tower);
+            TowerEntityView::TowerEntityData* towerData = m_TowerEntityView.GetTowerEntityData(tower.get());
 
-            if (towerData != nullptr)
+            if (towerData)
             {
                 m_TowerEntityView.SetActiveTowerTexture(towerData);
             }
@@ -121,4 +206,23 @@ void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
         // Restart the clock after updating the frame
         towerAnimationDelay.restart();
     }
+
+    // Clock& towerAnimationDelay = m_TowerEntityView.GetTowerAnimationDelay();
+    // if (towerAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) {
+    //     // Set the texture for each tower
+    //     std::vector<TowerEntity>& activeTowers = GetActiveTowers();
+    //     for (TowerEntity& tower : activeTowers) 
+    //     {
+    //         TowerEntityView::TowerEntityData* towerData = m_TowerEntityView.GetTowerEntityData(&tower);
+
+    //         if (towerData != nullptr)
+    //         {
+    //             m_TowerEntityView.SetActiveTowerTexture(towerData);
+    //         }
+    //     }
+
+    //     m_TowerEntityView.IncrementCurentTowerFrameIndex();
+    //     // Restart the clock after updating the frame
+    //     towerAnimationDelay.restart();
+    // }
 }
