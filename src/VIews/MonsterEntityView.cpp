@@ -215,6 +215,10 @@ void MonsterEntityView::Update(const IGameSubject &subject)
             {
                 data.isDead = monsterEntityPtr->GetIsDead();
             }
+            if (data.isTemplate != monsterEntityPtr->GetIsTemplate())
+            {
+                data.isTemplate = monsterEntityPtr->GetIsTemplate();
+            }
 
         }
     }

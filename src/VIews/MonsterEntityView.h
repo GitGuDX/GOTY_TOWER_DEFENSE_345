@@ -50,6 +50,8 @@ public:
 
     void RemoveMonster(const MonsterEntity* monsterPtr);
 
+    void ClearSubjects() { m_MonsterEntitySubjects.clear(); }
+
     MonsterEntityView::MonsterEntityData* GetMonsterEntityData(const MonsterEntity* monster);
 
     Clock& GetMonsterAnimationDelay() { return m_monsterAnimationDelay; }

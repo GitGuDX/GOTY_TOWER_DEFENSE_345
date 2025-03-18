@@ -34,7 +34,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iInitialWealth(1600)
+    , m_iInitialWealth(0)
     #else
     , m_iInitialWealth(500)
     #endif
@@ -106,8 +106,6 @@ void Game::Run()
                 {
                     // Prepare the next wave of monsters
                     m_MonsterManager.PrepareNextWave();
-                    m_MonsterManager.UpdateNextMonster();
-                    UpdateNextMonsterUI();
                     m_bIsMonsterGeneratorUpdated = true;
                 }
             }
@@ -226,6 +224,8 @@ void Game::HandleGameRestart()
     // Reset player stat
     m_iCurrentLevel = 1;
     m_iCurrentWealth = m_iInitialWealth;
+
+    ResetEntities();
 }
 
 void Game::ResetEntities()
@@ -642,6 +642,10 @@ void Game::HandleInput()
                 if (!bTWasPressedLastUpdate && m_eGameMode == PlayMode && m_bIsRoundEnded == true)
                 {
                     IncreaseLevel();
+
+                    m_MonsterManager.UpdateNextMonster();
+                    UpdateNextMonsterUI();
+
                     m_bIsRoundEnded = false;
                     m_bIsMonsterGeneratorUpdated = false;
                 }

@@ -132,7 +132,7 @@ public:
 
     bool GetIsDead() const { return m_bIsDead; }
 
-    bool GetIsTemplate() const { std::cout << "returning isTemplate: " << m_bIsTemplate << std::endl; return m_bIsTemplate; }
+    bool GetIsTemplate() const { return m_bIsTemplate; }
 
 private:
     void SetInitialStats();

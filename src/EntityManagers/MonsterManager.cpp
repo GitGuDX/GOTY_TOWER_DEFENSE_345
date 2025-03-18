@@ -36,6 +36,8 @@ void MonsterManager::ClearMonsters()
     m_activeMonsters.clear();
     m_activeMonsters.shrink_to_fit();   // Request capacity reduction
 
+    m_MonsterEntityView.ClearSubjects();
+
     #ifdef DEBUG
     std::cout << "Size of subjects: " << m_MonsterEntityView.GetSize() << std::endl;
     std::cout << "MonsterManager::ClearMonsters() - Cleared all monsters" << std::endl;
@@ -82,9 +84,6 @@ void MonsterManager::UpdateNextMonster()
     monster.AddObserver(&m_MonsterEntityView);
     monster.SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth/2, m_mapSize.y / 3 + 210));
     monster.SetIsTemplate(true);
-    std::cout << "Original Is template: " << monster.GetIsTemplate() << '\n';
-    std::cout << "Monster just created address: " << &monster << '\n';
-    std::cout << "isTemplate: " << m_MonsterEntityView.GetMonsterEntityData(&monster)->isTemplate << '\n';
 }
 
 void MonsterManager::GenerateCurrentWave(float addedTime)
