@@ -26,14 +26,14 @@ public:
     TowerEntity(TowerGenerator::TowerType type); // Default constructor takes a type
     ~TowerEntity() = default;
 
-    void SetTargetStrategy(TowerTargetStrategy* strategy) { 
+    virtual void SetTargetStrategy(TowerTargetStrategy* strategy) { 
         m_targetStrategy = strategy; 
         std::cout << "Strategy set for tower at position: " << GetPosition().x << "," << GetPosition().y << std::endl;
     }
 
    
 
-    MonsterEntity* SelectTarget(const std::vector<MonsterEntity>& enemies) const {
+    virtual MonsterEntity* SelectTarget(const std::vector<MonsterEntity>& enemies) const {
         if (m_targetStrategy) {
             return m_targetStrategy->SelectTarget(*this, enemies);
         }

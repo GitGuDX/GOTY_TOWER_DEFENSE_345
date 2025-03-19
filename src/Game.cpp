@@ -870,24 +870,27 @@ void Game::UpdateTowers()
         towerPtr->UpdateCooldown(m_DeltaTime.asSeconds());
 
         if (towerPtr->CanShoot()) {
-            Entity* pNearestEnemy = nullptr;
-            float fShortestDistance = std::numeric_limits<float>::max();
+            MonsterEntity* pNearestEnemy = nullptr;
+            // float fShortestDistance = std::numeric_limits<float>::max();
             
             // **** Related to strategy pattern
             // Find nearest monster within this tower's range
-            for (MonsterEntity& monster : activeMonsters)
-            {
-                sf::Vector2f vTowerToMonster = monster.GetPosition() - towerPtr->GetPosition();
-                float fDistance = MathHelpers::Length(vTowerToMonster);
-                if (!monster.GetIsDying() && !monster.GetIsDead() && fDistance < fShortestDistance && fDistance < towerPtr->GetRange())
-                {
-                    fShortestDistance = fDistance;
-                    pNearestEnemy = &monster;
-                }
-            }
+            // for (MonsterEntity& monster : activeMonsters)
+            // {
+            //     sf::Vector2f vTowerToMonster = monster.GetPosition() - towerPtr->GetPosition();
+            //     float fDistance = MathHelpers::Length(vTowerToMonster);
+            //     if (!monster.GetIsDying() && !monster.GetIsDead() && fDistance < fShortestDistance && fDistance < towerPtr->GetRange())
+            //     {
+            //         fShortestDistance = fDistance;
+            //         pNearestEnemy = &monster;
+            //     }
+            // }
+            pNearestEnemy = towerPtr->SelectTarget(m_MonsterManager.GetActiveMonsters());
     
             if (pNearestEnemy != nullptr)
             {
+                // Vector2f monsterPosition = pNearestEnemy->GetPosition();
+                // std::cout << "target monster position: " << monsterPosition.x << " " << monsterPosition.y << std::endl;
                 // Create and setup new axe
                 if (towerPtr->GetType() == TowerGenerator::TowerType::Rapid) 
                 {
@@ -922,6 +925,11 @@ void Game::UpdateTowers()
                 towerPtr->ResetCooldown(); // Reset this tower's cooldown
             }
         }
+        // else
+        // {
+        //     std::cout << "Can't shoot yet" << std::endl;
+        //     std::cout << "Preparing to shoot" << std::endl;
+        // }
     }
 
 

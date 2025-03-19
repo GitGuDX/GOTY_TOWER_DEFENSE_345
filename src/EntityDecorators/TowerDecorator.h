@@ -17,6 +17,16 @@ public:
 
     virtual ~TowerEntityDecorator() = default;
 
+    virtual void SetTargetStrategy(TowerTargetStrategy* strategy) override
+    {
+        m_decoratedTower->SetTargetStrategy(strategy);
+    }
+
+    virtual MonsterEntity* SelectTarget(const std::vector<MonsterEntity>& enemies) const override
+    {
+        return m_decoratedTower->SelectTarget(enemies);
+    }
+
     void AddObserver(IGameObserver* observer) override
     {
         m_decoratedTower->AddObserver(observer);

@@ -9,7 +9,7 @@
 class ClosestTargetStrategy : public TowerTargetStrategy {
     public:
         MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<MonsterEntity>& enemies) const override {
-            std::cout << "ClosestTargetStrategy: Searching for target..." << std::endl;
+            //std::cout << "ClosestTargetStrategy: Searching for target..." << std::endl;
             MonsterEntity* nearestEnemy = nullptr;
             float shortestDistance = std::numeric_limits<float>::max();
     
@@ -17,12 +17,15 @@ class ClosestTargetStrategy : public TowerTargetStrategy {
                 sf::Vector2f vectorToEnemy = enemy.GetPosition() - tower.GetPosition();
                 float distance = MathHelpers::Length(vectorToEnemy);
                 
-                if (distance < shortestDistance && distance < tower.GetRange()) {
+                if (!enemy.GetIsDying() && !enemy.GetIsDead() && distance < shortestDistance && distance < tower.GetRange()) {
                     shortestDistance = distance;
                     nearestEnemy = const_cast<MonsterEntity*>(&enemy);
                 }
             }
-            
+            // if (nearestEnemy)
+            // {
+            //     std::cout << "found monster at position: " << nearestEnemy->GetPosition().x << " " << nearestEnemy->GetPosition().y << std::endl;
+            // }
             return nearestEnemy;
         }
     };
@@ -30,7 +33,7 @@ class ClosestTargetStrategy : public TowerTargetStrategy {
     class StrongestTargetStrategy : public TowerTargetStrategy {
     public:
         MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<MonsterEntity>& enemies) const override {
-            std::cout << "StrongestTargetStrategy: Searching for target..." << std::endl;
+            //std::cout << "StrongestTargetStrategy: Searching for target..." << std::endl;
             MonsterEntity* strongestEnemy = nullptr;
             float highestHealth = 0.0f;
     
@@ -38,11 +41,15 @@ class ClosestTargetStrategy : public TowerTargetStrategy {
                 sf::Vector2f vectorToEnemy = enemy.GetPosition() - tower.GetPosition();
                 float distance = MathHelpers::Length(vectorToEnemy);
                 
-                if (distance < tower.GetRange() && enemy.GetHealth() > highestHealth) {
+                if (!enemy.GetIsDying() && !enemy.GetIsDead() && distance < tower.GetRange() && enemy.GetHealth() > highestHealth) {
                     highestHealth = enemy.GetHealth();
                     strongestEnemy = const_cast<MonsterEntity*>(&enemy);
                 }
             }
+            // if (strongestEnemy)
+            // {
+            //     std::cout << "found monster at position: " << strongestEnemy->GetPosition().x << " " << strongestEnemy->GetPosition().y << std::endl;
+            // }
     
             return strongestEnemy;
         }
@@ -51,7 +58,7 @@ class ClosestTargetStrategy : public TowerTargetStrategy {
     class WeakestTargetStrategy : public TowerTargetStrategy {
     public:
         MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<MonsterEntity>& enemies) const override {
-            std::cout << "WeakestTargetStrategy: Searching for target..." << std::endl;
+            //std::cout << "WeakestTargetStrategy: Searching for target..." << std::endl;
             MonsterEntity* weakestEnemy = nullptr;
             float lowestHealth = std::numeric_limits<float>::max();
     
@@ -59,7 +66,7 @@ class ClosestTargetStrategy : public TowerTargetStrategy {
                 sf::Vector2f vectorToEnemy = enemy.GetPosition() - tower.GetPosition();
                 float distance = MathHelpers::Length(vectorToEnemy);
                 
-                if (distance < tower.GetRange() && enemy.GetHealth() < lowestHealth) {
+                if (!enemy.GetIsDying() && !enemy.GetIsDead() && distance < tower.GetRange() && enemy.GetHealth() < lowestHealth) {
                     lowestHealth = enemy.GetHealth();
                     weakestEnemy = const_cast<MonsterEntity*>(&enemy);
                 }
