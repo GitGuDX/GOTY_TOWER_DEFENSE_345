@@ -32,6 +32,13 @@ GUIManager::GUIManager(RenderWindow& m_Window)
 
 void GUIManager::InitializeGameSetup()
 {
+    // If the game setup view is not nullptr, remove the observer before setting up the view
+    if (m_gameSetupView != nullptr)
+    {
+    m_gameSetup.RemoveObserver(m_gameSetupView.get());                       // Remove the observer before setting up the view
+    m_gameSetupView->ClearSubjects();                                        // Clear the subjects before setting up the view
+    }
+
     // Pass the raw pointer of the unique_ptr to AddObserver
     m_gameSetup.AddObserver(m_gameSetupView.get());                          // Must be done before setting up the view
     m_gameSetup.SetIntroTitle("Welcome to Tower Defense!");
@@ -43,6 +50,13 @@ void GUIManager::InitializeGameSetup()
 
 void GUIManager::InitializeMapSetup()
 {
+    // If the map setup view is not nullptr, remove the observer before setting up the view
+    if (m_mapSetup != nullptr && m_mapSetupView != nullptr)
+    {
+        m_mapSetup->RemoveObserver(m_mapSetupView.get());
+        m_mapSetupView->ClearSubjects();
+    }
+
     Vector2i gridSize = GetGridSize();
     m_mapSetup = std::make_unique<MapSetup>(gridSize);
     m_mapSetupView = std::make_unique<MapSetupView>(m_Window);
@@ -52,10 +66,19 @@ void GUIManager::InitializeMapSetup()
 
 void GUIManager::InitializeInfoUI()
 {
-    Vector2i mapSize = GetMapSetup()->GetMapSize();
+
+    if (m_infoUI != nullptr && m_infoUIView != nullptr)
+    {
+        m_infoUI->RemoveObserver(m_infoUIView.get());
+        m_infoUIView->ClearSubjects();
+    }
 
     m_infoUI = std::make_unique<InfoUI>();
-    m_infoUIView = std::make_unique<InfoUIView>(m_Window, mapSize, m_Font);
+
+    Vector2i mapSize = GetMapSetup()->GetMapSize();
+    int infoUIWidth = m_infoUI->GetInfoUIWidth();
+
+    m_infoUIView = std::make_unique<InfoUIView>(m_Window, mapSize, infoUIWidth, m_Font);
     m_infoUI->AddObserver(m_infoUIView.get());
     m_infoUI->InitializeInfoUI();
 }
@@ -80,17 +103,17 @@ Vector2i GUIManager::GetMapSize() const
     return Vector2i(0, 0);
 }
 
-void GUIManager::InitiailizeTowerPrice(std::vector<TowerEntity> &templateTowers)
+void GUIManager::InitiailizeTowerPrice(std::vector<TowerEntity*>& templateTowers)
 {
-    for (const TowerEntity& tower : templateTowers)
+    for (const TowerEntity* towerPtr : templateTowers)
     {
-        if (tower.GetType() == TowerGenerator::TowerType::Rapid)
+        if (towerPtr->GetType() == TowerGenerator::TowerType::Rapid)
         {
-            m_infoUI->SetWoodTowerPriceString(sf::String(std::to_string(tower.GetCost())));
+            m_infoUI->SetWoodTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
         }
-        else if (tower.GetType() == TowerGenerator::TowerType::Sniper)
+        else if (towerPtr->GetType() == TowerGenerator::TowerType::Sniper)
         {
-            m_infoUI->SetStoneTowerPriceString(sf::String(std::to_string(tower.GetCost())));
+            m_infoUI->SetStoneTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
         }
     }
 }
@@ -128,7 +151,7 @@ bool GUIManager::FinalizeExitTile(const sf::Vector2f &position)
     return false;
 }
 
-void GUIManager::UpdateTowerHoverUI(TowerEntity &tower)
+void GUIManager::UpdateTowerHoverUI(TowerEntity* towerPtr)
 {
     if (!m_infoUI)
     {
@@ -140,12 +163,45 @@ void GUIManager::UpdateTowerHoverUI(TowerEntity &tower)
         return std::round(value * 100.0f) / 100.0f;
     };
 
-    m_infoUI->SetHoverTowerLevel(tower.GetLevel());
-    m_infoUI->SetHoverTowerDamage(roundTwoDecimals(tower.GetDamage()));
-    m_infoUI->SetHoverTowerCooldown(roundTwoDecimals(tower.GetMaxCooldown()));
-    m_infoUI->SetHoverTowerRange(roundTwoDecimals(tower.GetRange()));
-    m_infoUI->SetHoverTowerSpeed(roundTwoDecimals(tower.GetSpeed()));
-    m_infoUI->SetHoverTowerUpgradeCost(tower.GetUpgradeCost());
+    m_infoUI->SetHoverTowerLevel(towerPtr->GetLevel());
+    m_infoUI->SetHoverTowerDamage(roundTwoDecimals(towerPtr->GetDamage()));
+    m_infoUI->SetHoverTowerCooldown(roundTwoDecimals(towerPtr->GetMaxCooldown()));
+    m_infoUI->SetHoverTowerRange(roundTwoDecimals(towerPtr->GetRange()));
+    m_infoUI->SetHoverTowerSpeed(roundTwoDecimals(towerPtr->GetSpeed()));
+    m_infoUI->SetHoverTowerUpgradeCost(towerPtr->GetUpgradeCost());
+}
+
+void GUIManager::UpdateMonsterUi(MonsterGenerator::MonsterType type, int level)
+{
+    if (!m_infoUI)
+    {
+        std::cerr << "Error: InfoUI is nullptr\n";
+        return;  // Prevent null pointer dereference
+    }
+    m_infoUI->SetNextMonsterTitleString("Next Monster");
+    m_infoUI->SetNextMonsterLevelString("Level: " + std::to_string(level + 1));
+
+    switch (type)
+    {
+    case MonsterGenerator::MonsterType::Skeleton:
+        m_infoUI->SetNextMonsterDescriptionString("Basic, vanilla baby");
+        break;
+    case MonsterGenerator::MonsterType::Reaper:
+        m_infoUI->SetNextMonsterDescriptionString("Fast and weak");
+        break;
+    case MonsterGenerator::MonsterType::Golem:
+        m_infoUI->SetNextMonsterDescriptionString("Slow but tanky");
+        break;
+    case MonsterGenerator::MonsterType::Minotaur:
+        m_infoUI->SetNextMonsterDescriptionString("Strong and swift");
+        break;
+    case MonsterGenerator::MonsterType::Ogre:
+        m_infoUI->SetNextMonsterDescriptionString("Balanced all-rounder");
+        break;
+    default:
+        m_infoUI->SetNextMonsterDescriptionString("Unknown monster type");
+        break;
+    }
 }
 
 void GUIManager::BlinkTiles(Tile::Type type, sf::Time deltaTime)

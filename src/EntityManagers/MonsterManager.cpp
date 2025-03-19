@@ -28,14 +28,18 @@ void MonsterManager::InitializeMonsters(const Vector2f &position)
 void MonsterManager::ClearMonsters()
 {
     // Remove all observers
-    // for (MonsterEntity& monster : m_activeMonsters)
-    // {
-    //     //monster.RemoveObserver(&m_MonsterEntityView);
-    // }
+    for (MonsterEntity& monster : m_activeMonsters)
+    {
+        m_MonsterEntityView.RemoveMonster(&monster);
+        monster.RemoveObserver(&m_MonsterEntityView);
+    }
     m_activeMonsters.clear();
     m_activeMonsters.shrink_to_fit();   // Request capacity reduction
 
+    m_MonsterEntityView.ClearSubjects();
+
     #ifdef DEBUG
+    std::cout << "Size of subjects: " << m_MonsterEntityView.GetSize() << std::endl;
     std::cout << "MonsterManager::ClearMonsters() - Cleared all monsters" << std::endl;
     #endif
 }
@@ -55,6 +59,8 @@ void MonsterManager::PrepareWave()
 
 void MonsterManager::PrepareFirstWave()
 {
+    m_MonsterGenerator.InitializeFirstRoaster();
+
     PrepareWave();
 }
 
@@ -63,6 +69,21 @@ void MonsterManager::PrepareNextWave()
     m_MonsterGenerator.UpdateNextRoundMonsterGenerator();
 
     PrepareWave();
+}
+
+void MonsterManager::UpdateNextMonster()
+{
+    // Clear the previous monster (if any) and remove observer
+    m_MonsterEntityView.RemoveMonster(&m_nextMonsters[0]);
+    m_nextMonsters[0].RemoveObserver(&m_MonsterEntityView);
+    
+    // The size of m_nextMonsters is fixed at 1, so we directly update the first element
+    m_nextMonsters[0] = m_MonsterGenerator.GetNextMonster();
+    
+    MonsterEntity &monster = m_nextMonsters[0];  // Use the first (and only) monster in the array
+    monster.AddObserver(&m_MonsterEntityView);
+    monster.SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth/2, m_mapSize.y / 3 + 210));
+    monster.SetIsTemplate(true);
 }
 
 void MonsterManager::GenerateCurrentWave(float addedTime)

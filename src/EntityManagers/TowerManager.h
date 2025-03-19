@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "../EntityManagers/MonsterManager.h"
+#include <memory>
 
 using namespace sf;
 
@@ -20,17 +21,25 @@ public:
 
     void SetMapSize(Vector2i mapSize) { m_mapSize = mapSize; }
 
+    void SetInfoUIWidth(int infoUIWidth) { m_infoUIWidth = infoUIWidth; }
+
     void InitializeGameSetup();
 
-    std::vector<TowerEntity>& GetTemplateTowers() { return m_templateTowers; }
+    // std::vector<TowerEntity>& GetTemplateTowers() { return m_templateTowers; }
 
-    std::vector<TowerEntity>& GetActiveTowers() { return m_activeTowers; }
+    // std::vector<TowerEntity>& GetActiveTowers() { return m_activeTowers; }
+
+    std::vector<TowerEntity*> GetTemplateTowers();
+
+    std::vector<TowerEntity*> GetActiveTowers();
 
     TowerEntityView& GetTowerEntityView() { return m_TowerEntityView; }
 
     void CreateTower(TowerGenerator::TowerType towerType, const sf::Vector2f& position);
 
-    void RemoveTower(const sf::Vector2f& position);
+    void RemoveTowerAtPosition(const sf::Vector2f& position);
+
+    void RemoveAllTowers();
 
     void UpdateTowerAnimations(const float m_fFrameTime);
 
@@ -42,12 +51,13 @@ private:
     Vector2i m_mapSize;
     MonsterManager& m_MonsterManager;
 
+    int m_infoUIWidth;
 
     TowerEntityView m_TowerEntityView;
     TowerGenerator m_TowerGenerator;
 
-    std::vector<TowerEntity> m_templateTowers;
-    std::vector<TowerEntity> m_activeTowers;
+    std::vector<std::unique_ptr<TowerEntity>> m_templateTowers;
+    std::vector<std::unique_ptr<TowerEntity>> m_activeTowers;
 
     float m_sellRate;
 };

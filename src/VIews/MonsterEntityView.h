@@ -28,6 +28,7 @@ public:
         int dyingMonsterFrameIndex;
         bool isDying;
         bool isDead;
+        bool isTemplate;
     };
 
     MonsterEntityView(RenderWindow& window);
@@ -45,7 +46,11 @@ public:
 
     void SetMonsterTexture(MonsterEntityData& data, MonsterGenerator::MonsterType type);
 
+    void SetHoveringOnTower(bool isHovering) { m_isHoveringOnTower = isHovering; }
+
     void RemoveMonster(const MonsterEntity* monsterPtr);
+
+    void ClearSubjects() { m_MonsterEntitySubjects.clear(); }
 
     MonsterEntityView::MonsterEntityData* GetMonsterEntityData(const MonsterEntity* monster);
 
@@ -54,6 +59,8 @@ public:
     int GetActiveTextureArraySize(MonsterGenerator::MonsterType type);
 
     int GetDyingTextureArraySize(MonsterGenerator::MonsterType type);
+
+    int GetSize() { return m_MonsterEntitySubjects.size(); }
 
 private:
     std::unordered_map<const MonsterEntity*, MonsterEntityData> m_MonsterEntitySubjects;
@@ -73,6 +80,8 @@ private:
     std::vector<sf::Texture> m_OgreDeathTextures;
 
     Clock m_monsterAnimationDelay;
+
+    bool m_isHoveringOnTower = false; // Flag to track if the mouse is hovering over a tower. If so don't show next monster
 
 };
 

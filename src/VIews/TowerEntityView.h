@@ -36,9 +36,11 @@ public:
 
     void Update(const IGameSubject& subject);
 
-    void SyncTowerData(TowerEntityData& data, const TowerEntity& tower);
+    void RemoveSubject(TowerEntity* towerPtr);
 
-    void SyncTowers(const std::vector<TowerEntity>& templateTowers, const std::vector<TowerEntity>& activeTowers);
+    void SyncTowerData(TowerEntityData& data, const TowerEntity* towerPtr);
+
+    void SyncTowers(const std::vector<TowerEntity*>& templateTowers, const std::vector<TowerEntity*>& activeTowers);
 
     const TowerEntityData* GetDraggedTowerEntityData() const
     {
@@ -65,6 +67,10 @@ public:
     void SetActiveTowerTexture(TowerEntityData* data);
 
     void IncrementCurentTowerFrameIndex();
+
+    void EmptyTowerEntitySubjects() { m_TowerEntitySubjects.clear(); }
+
+    std::unordered_map<const TowerEntity*, TowerEntityData>& GetSubjects() { return m_TowerEntitySubjects; }
 
 private:
     void SetTemplateTowerSprite(TowerEntityData &data, TowerGenerator::TowerType type);

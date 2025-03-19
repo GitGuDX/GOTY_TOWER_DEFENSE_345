@@ -12,6 +12,7 @@ class MonsterGenerator;
 class MonsterEntity : public Entity, public IGameSubject
 {
 public:
+    MonsterEntity();
     MonsterEntity(MonsterGenerator::MonsterType type, int level);
     ~MonsterEntity() = default;
 
@@ -96,6 +97,11 @@ public:
         NotifyStatsChanged();
     }
 
+    void SetIsTemplate(bool isTemplate) { 
+        m_bIsTemplate = isTemplate; 
+        NotifyStatsChanged();
+    }
+
     void IncrementActiveFrameIndex(int indexLimit);
 
     void IncrementDyingFrameIndex(int indexLimit);
@@ -126,6 +132,8 @@ public:
 
     bool GetIsDead() const { return m_bIsDead; }
 
+    bool GetIsTemplate() const { return m_bIsTemplate; }
+
 private:
     void SetInitialStats();
 
@@ -146,6 +154,7 @@ private:
     bool m_bIsFinishedDying;
     bool m_bIsDead;
 
+    bool m_bIsTemplate;
 };
 
 #endif

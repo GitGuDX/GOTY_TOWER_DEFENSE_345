@@ -32,6 +32,8 @@ public:
 
     void Draw();
 
+    void ClearSubjects() { m_MapSetupSubjects.clear(); }
+
 private:
     void InitializeTiles(std::vector<std::vector<Tile>>& tilePositions, const std::vector<std::vector<MapSetup::TileData>>& tiles);
     void UpdateTilesType(Tile& tile, Tile::Type type);

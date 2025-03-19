@@ -19,7 +19,8 @@ using namespace sf;
 using namespace std;
 
 Game::Game(int initialWindowWidth, int initialWindowHeight)
-    : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense 1")           // Initiliaze window screen
+    : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense Game")           // Initiliaze window screen
+    , m_vInitialWindowSize(Vector2i(initialWindowWidth, initialWindowHeight))                    // Set initial window sizes
     , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
     // Initialize previous game mode to InitialSetUp to track game mode transitions later 
     , m_ePrevGameMode(GameMode::InitialSetUp)
@@ -33,9 +34,9 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iCurrentWealth(10000)
+    , m_iInitialWealth(10000)
     #else
-    , m_iCurrentWealth(500)
+    , m_iInitialWealth(500)
     #endif
    
 {
@@ -63,14 +64,16 @@ void Game::Run()
         case MapEditorMode:
         {   
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
-            if (m_ePrevGameMode != MapEditorMode) {
+            if (m_ePrevGameMode != MapEditorMode) 
+            {
+                m_iCurrentWealth = m_iInitialWealth;
 
                 InitializeMapEnditorMode();
 
                 m_eCurrentEditState = PathEditingState::EntryState;
                 m_ePrevGameMode = MapEditorMode;
             }
-            
+
             UpdateTiles();
             UpdateUI();
 
@@ -86,40 +89,26 @@ void Game::Run()
                 // Bullet texture is loaded here. Need to be implemented by the bullet observer pattern
                 LoadPlayModeAssets();
 
-                // Load Monster assets
-                m_MonsterManager.LoadMonsterAssets();
-
-                // Assign the entry tile position and prepare the first wave of monsters
-                Vector2f entryTile = m_GUIManager.GetMapSetup()->GetEntryTile();
-                m_MonsterManager.InitializeMonsters(entryTile);
-
+                
                 m_ePrevGameMode = PlayMode;
             }
 
-            if (m_gameOver)
+            // If round hasn't ended, game is still playing so keep updating
+            if (!m_bIsRoundEnded)
             {
-                HandleGameOver(); // Implement this function to show a game over screen, restart, etc.
-            } 
-            else 
+                UpdatePlay();
+            }
+            // If the round ended, stop updating the play and prepare for the next round.
+            else
             {
-                // If round hasn't ended, game is still playing so keep updating
-                if (!m_bIsRoundEnded)
+                // Condition to update the monster generator only once after the round ends
+                if (!m_bIsMonsterGeneratorUpdated)
                 {
-                    UpdatePlay();
-                }
-                // If the round ended, stop updating the play and prepare for the next round.
-                else
-                {
-                    // Condition to update the monster generator only once after the round ends
-                    if (!m_bIsMonsterGeneratorUpdated)
-                    {
-                        // Prepare the next wave of monsters
-                        m_MonsterManager.PrepareNextWave();
-                        m_bIsMonsterGeneratorUpdated = true;
-                    }
+                    // Prepare the next wave of monsters
+                    m_MonsterManager.PrepareNextWave();
+                    m_bIsMonsterGeneratorUpdated = true;
                 }
             }
-
             UpdateUI();
 
             DrawPlayMode();
@@ -127,6 +116,11 @@ void Game::Run()
         }
         case Pause:
         {
+            break;
+        }
+        case GameOver:
+        {
+            DrawPlayMode();
             break;
         }
         }
@@ -151,17 +145,32 @@ void Game::InitializeMapEnditorMode()
 
     // Initialize Tower manager with mapSize and load its assets
     m_vMapSize = m_GUIManager.GetMapSize();
+    int infoUIWidth = m_GUIManager.GetInfoUI()->GetInfoUIWidth();
     m_TowerManager.SetMapSize(m_vMapSize);
+    m_TowerManager.SetInfoUIWidth(infoUIWidth);
     m_TowerManager.InitializeGameSetup();
 
+    m_MonsterManager.SetMapSize(m_vMapSize);
+    m_MonsterManager.SetInfoUIWidth(infoUIWidth);
+
     // Get tower price from TowerManager and give it to the InfoUI
-    std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
+    std::vector<TowerEntity*> templateTowers = m_TowerManager.GetTemplateTowers();
     m_GUIManager.InitiailizeTowerPrice(templateTowers);
 }
 
-// Bullet observer pattern need to be implemented
+
 void Game::LoadPlayModeAssets()
 {
+    // Load Monster assets
+    m_MonsterManager.LoadMonsterAssets();
+
+    // Assign the entry tile position and prepare the first wave of monsters
+    Vector2f entryTile = m_GUIManager.GetMapSetup()->GetEntryTile();
+    m_MonsterManager.InitializeMonsters(entryTile);
+    m_MonsterManager.UpdateNextMonster();
+    UpdateNextMonsterUI();
+
+    // Bullet observer pattern need to be implemented
     #ifdef LINUX
     m_RapidBulletTexture.loadFromFile("../src/Images/Rapid_Bullet.png");
     m_SniperBulletTexture.loadFromFile("../src/Images/Sniper_Bullet.png");
@@ -180,56 +189,56 @@ void Game::LoadPlayModeAssets()
 	m_SniperBulletTemplate.SetOrigin(Vector2f(8, 8));
 }
 
-// ** GAMEOVER
-void Game::ShowGameOverScreen()
-{   
-    //m_Window.draw(m_gameOverText);
-}
-
-void Game::HandleGameOver()
+void Game::HandlePlayAgain()
 {
+    m_ePrevGameMode = PlayMode;
+    m_eGameMode = PlayMode;
+
     m_bIsRoundEnded = true;
-    m_bIsMonsterGeneratorUpdated = false;
-    
-    // Show Game Over message
-    ShowGameOverScreen();
+    m_bIsMonsterGeneratorUpdated = true;
 
-    bool restartChosen = false;
-    
-    while (m_Window.isOpen() && !restartChosen) {
-        sf::Event event;
-        while (m_Window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                m_Window.close();
-            }
-            // Restart game with same map
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
-                ResetGame(false);
-                restartChosen = true;
-            }
-            // Restart game with new map
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::N) {
-                ResetGame(true);
-                restartChosen = true;
-            }
-        }
-    }
+    m_iCurrentWealth = 0;
+    UpdateWealth(m_iInitialWealth);
+
+    m_iCurrentLevel = 0;
+    UpdateLevel();
+
+    ResetEntities();
 }
 
-void Game::ResetGame(bool newMap)
+void Game::HandleGameRestart()
 {
-    m_gameOver = false;
-    m_bIsRoundEnded = false;
-    m_bIsMonsterGeneratorUpdated = false;
-    m_iCurrentWealth = 500;
-    m_iCurrentLevel = 1;
-
-    if (newMap) {
-        //m_aTiles.clear(); // Clear the current map
-        // Reload assets for a new map
-    }
+    m_Window.create(VideoMode(m_vInitialWindowSize.x, m_vInitialWindowSize.y), "Tower Defense Game");
 
     m_eGameMode = InitialSetUp;
+    m_ePrevGameMode = InitialSetUp;
+
+    // Reset flags
+    m_eCurrentEditState = EntryState;
+    m_IsPathingMousePressed = false;
+    m_isHovering = false;
+    m_lastHoveredTower = nullptr;
+    m_bIsRoundEnded = false;
+    m_bIsMonsterGeneratorUpdated = false;
+
+    // Reset player stat
+    m_iCurrentLevel = 1;
+    m_iCurrentWealth = m_iInitialWealth;
+
+    ResetEntities();
+}
+
+void Game::ResetEntities()
+{
+    // Clear towers and reinitialize
+    m_TowerManager.RemoveAllTowers();
+    m_TowerManager.InitializeGameSetup();
+
+    // Clear monsters and reinitialize
+    m_MonsterManager.PrepareFirstWave();
+
+    // Clear projectiles and reinitialize
+    m_aAxes.clear();
 }
 
 void Game::HandleInput()
@@ -429,8 +438,10 @@ void Game::HandleInput()
             sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
             Vector2f snapGrid = MathHelpers::getNearestTileCenterPosition(mousePos, 50);
             
-            std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
-            std::vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
+            // std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
+            // std::vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
+            std::vector<TowerEntity*> templateTowers = m_TowerManager.GetTemplateTowers();
+            std::vector<TowerEntity*> activeTowers = m_TowerManager.GetActiveTowers();
 
             InfoUIView* infoUIView = m_GUIManager.GetInfoUIView();
             TowerEntityView& towerView = m_TowerManager.GetTowerEntityView();
@@ -441,9 +452,9 @@ void Game::HandleInput()
                 
                 for (size_t i = 0; i < templateTowers.size(); ++i)
                 {
-                    TowerEntity& tower = templateTowers[i];
+                    TowerEntity* tower = templateTowers[i];
                     
-                    const TowerEntityView::TowerEntityData* towerData = towerView.GetTowerEntityData(&tower);
+                    const TowerEntityView::TowerEntityData* towerData = towerView.GetTowerEntityData(tower);
 
                     // Check if tower exists in the view, the mouse is within the bounds of the tower sprite, and no tower is currently being dragged...
                     if (towerData != nullptr && towerData->sprite.getGlobalBounds().contains(mousePos) && draggedTowerData == nullptr) 
@@ -459,19 +470,21 @@ void Game::HandleInput()
             // Handle mouse release (stop dragging)
             if (event.type == sf::Event::MouseButtonReleased && m_eCurrentEditState == FinishedPathingState) {
 
+                
                 // **RIGHT CLICK TO REMOVE A TOWER**
                 if (event.mouseButton.button == sf::Mouse::Right) 
                 {
-                    for (TowerEntity& tower : activeTowers) 
+                    for (TowerEntity* towerPtr : activeTowers) 
                     {
-                        if (std::abs(tower.GetPosition().x - snapGrid.x) < 0.5f &&
-                            std::abs(tower.GetPosition().y - snapGrid.y) < 0.5f)
+                        Vector2f towerPosition = towerPtr->GetPosition();
+                        if (std::abs(towerPosition.x - snapGrid.x) < 0.5f &&
+                            std::abs(towerPosition.y - snapGrid.y) < 0.5f)
                         {
-                            int cost = tower.GetCost();
+                            int cost = towerPtr->GetCost();
                             float sellRate = m_TowerManager.GetSellRate();
                             UpdateWealth(cost * sellRate);
 
-                            m_TowerManager.RemoveTower(snapGrid);
+                            m_TowerManager.RemoveTowerAtPosition(snapGrid);
 
                             m_GUIManager.SetWarningAndColor("Tower removed", sf::Color::Green);
 
@@ -485,11 +498,12 @@ void Game::HandleInput()
                 {
                     // Check for existing towers at the snapGrid position
                     bool towerExists = false;
-                    for (const TowerEntity& tower : activeTowers) 
+                    for (const TowerEntity* towerPtr : activeTowers) 
                     {
                         const float tolerance = 0.5f;
-                        if (std::abs(tower.GetPosition().x - snapGrid.x) < tolerance &&
-                            std::abs(tower.GetPosition().y - snapGrid.y) < tolerance)
+                        Vector2f towerPosition = towerPtr->GetPosition();
+                        if (std::abs(towerPosition.x - snapGrid.x) < tolerance &&
+                            std::abs(towerPosition.y - snapGrid.y) < tolerance)
                         {
                             towerExists = true; // No need to check further once we find an existing tower
                             break;
@@ -557,12 +571,13 @@ void Game::HandleInput()
                 m_isHovering = false;  // Reset the flag to false
                 for (size_t i = 0; i < activeTowers.size(); ++i)       // Modifying a_allActiveTowers while iterating may cause iterators/pointers to become invalid. Use index based iteration
                 {
-                    TowerEntity& tower = activeTowers[i]; 
-                    if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) 
+                    TowerEntity* towerPtr = activeTowers[i]; 
+                    Vector2f towerPosition = towerPtr->GetPosition();
+                    if (towerPosition.x == snapGrid.x && towerPosition.y == snapGrid.y) 
                     {
                         infoUIView->UpdateCrossShapePosition(snapGrid);
                         m_isHovering = true;  // Set flag to true if hovering over this tower
-                        m_lastHoveredTower = &tower; // Update the last hovered tower
+                        m_lastHoveredTower = towerPtr; // Update the last hovered tower
                         
                         break;
                     }
@@ -576,6 +591,7 @@ void Game::HandleInput()
                 // Set m_isHoveringOnTower based on whether the mouse is over a tower
                 infoUIView->SetHoveringOnTower(m_isHovering);
                 towerView.SetHoveringOnTower(m_isHovering);
+                m_MonsterManager.GetMonsterEntityView().SetHoveringOnTower(m_isHovering);
             }   
 
             // ** UI
@@ -583,11 +599,12 @@ void Game::HandleInput()
                 
                 if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
                  
-                    for (TowerEntity& tower : activeTowers) {
+                    for (TowerEntity* towerPtr : activeTowers) {
 
-                        if (tower.GetPosition().x == snapGrid.x && tower.GetPosition().y == snapGrid.y) {
+                        Vector2f towerPosition = towerPtr->GetPosition();
+                        if (towerPosition.x == snapGrid.x && towerPosition.y == snapGrid.y) {
                             
-                            m_GUIManager.UpdateTowerHoverUI(tower);
+                            m_GUIManager.UpdateTowerHoverUI(towerPtr);
                             break;
                         }
                     }
@@ -632,6 +649,10 @@ void Game::HandleInput()
                 if (!bTWasPressedLastUpdate && m_eGameMode == PlayMode && m_bIsRoundEnded == true)
                 {
                     IncreaseLevel();
+
+                    m_MonsterManager.UpdateNextMonster();
+                    UpdateNextMonsterUI();
+
                     m_bIsRoundEnded = false;
                     m_bIsMonsterGeneratorUpdated = false;
                 }
@@ -641,7 +662,18 @@ void Game::HandleInput()
             {
                 bTWasPressedLastUpdate = false;
             }
-        }   
+        }
+        if (m_eGameMode == GameOver)
+        {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+            {
+                HandlePlayAgain();
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+            {
+                HandleGameRestart();
+            }
+        }
     }
 }
 
@@ -692,7 +724,7 @@ void Game::UpdatePlay()
     }
 
     if (m_iCurrentWealth < 0){
-        m_gameOver = true;
+        m_eGameMode = GameOver;
     }
 }
 
@@ -792,7 +824,7 @@ void Game::UpdateUI()
             m_GUIManager.SetInstructionAndColor("Choose an entry Tile...", Color::Green);
             break;
         case PathState:
-            m_GUIManager.SetInstructionAndColor("Draw path and press Enter to start", Color::Yellow);
+            m_GUIManager.SetInstructionAndColor("Drag to draw a path from entry to exit", Color::Yellow);
             break;
         default:
             m_GUIManager.SetInstructionAndColor("Tower Selection", Color::White);
@@ -821,15 +853,15 @@ void UpdateHealthBar(Monster& enemy)
 
 void Game::UpdateTowers()
 {
-    vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
-    vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
+    vector<TowerEntity*> activeTowers = m_TowerManager.GetActiveTowers();
+    vector<MonsterEntity> activeMonsters = m_MonsterManager.GetActiveMonsters();
 
-    for (TowerEntity& tower : activeTowers)
+    for (TowerEntity* towerPtr : activeTowers)
     {
         // Update individual tower cooldown
-        tower.UpdateCooldown(m_DeltaTime.asSeconds());
+        towerPtr->UpdateCooldown(m_DeltaTime.asSeconds());
 
-        if (tower.CanShoot()) {
+        if (towerPtr->CanShoot()) {
             Entity* pNearestEnemy = nullptr;
             float fShortestDistance = std::numeric_limits<float>::max();
             
@@ -837,9 +869,9 @@ void Game::UpdateTowers()
             // Find nearest monster within this tower's range
             for (MonsterEntity& monster : activeMonsters)
             {
-                sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
+                sf::Vector2f vTowerToMonster = monster.GetPosition() - towerPtr->GetPosition();
                 float fDistance = MathHelpers::Length(vTowerToMonster);
-                if (!monster.GetIsDying() && !monster.GetIsDead() && fDistance < fShortestDistance && fDistance < tower.GetRange())
+                if (!monster.GetIsDying() && !monster.GetIsDead() && fDistance < fShortestDistance && fDistance < towerPtr->GetRange())
                 {
                     fShortestDistance = fDistance;
                     pNearestEnemy = &monster;
@@ -849,11 +881,11 @@ void Game::UpdateTowers()
             if (pNearestEnemy != nullptr)
             {
                 // Create and setup new axe
-                if (tower.GetType() == TowerGenerator::TowerType::Rapid) 
+                if (towerPtr->GetType() == TowerGenerator::TowerType::Rapid) 
                 {
                     m_aAxes.push_back(m_RapidBulletTemplate);
                 } 
-                else if (tower.GetType() == TowerGenerator::TowerType::Sniper) 
+                else if (towerPtr->GetType() == TowerGenerator::TowerType::Sniper) 
                 {
                     m_aAxes.push_back(m_SniperBulletTemplate);
                 }
@@ -863,14 +895,15 @@ void Game::UpdateTowers()
                 Entity& newAxe = m_aAxes.back();
                 FloatRect newAxeBounds = newAxe.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
                 newAxe.SetOrigin(Vector2f(newAxeBounds.width / 2, newAxeBounds.height / 2));
-                newAxe.SetPosition(Vector2f(tower.GetPosition().x, tower.GetPosition().y));
+                Vector2f towerPosition = towerPtr->GetPosition();
+                newAxe.SetPosition(Vector2f(towerPosition.x, towerPosition.y));
 
                 //Depending on tower the bullet will be faster or slower and do more or less damage
-                newAxe.m_speed = tower.GetSpeed();
-                newAxe.m_fDamage = tower.GetDamage();
+                newAxe.m_speed = towerPtr->GetSpeed();
+                newAxe.m_fDamage = towerPtr->GetDamage();
                 
                 // Calculate direction to enemy
-                sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
+                sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - towerPosition;
                 vTowerToMonster = MathHelpers::getNormalize(vTowerToMonster);
                 // Calculate the angle in degrees
                 float angle = atan2(vTowerToMonster.y, vTowerToMonster.x) * 180.0f / M_PI + 90.0f;
@@ -878,7 +911,7 @@ void Game::UpdateTowers()
                 newAxe.SetRotation(angle);
                 
 
-                tower.ResetCooldown(); // Reset this tower's cooldown
+                towerPtr->ResetCooldown(); // Reset this tower's cooldown
             }
         }
     }
@@ -956,6 +989,12 @@ void Game::UpdateAxes()
     }
 }
 
+void Game::UpdateNextMonsterUI()
+{
+    MonsterEntity& nextMonster = m_MonsterManager.GetNextMonster();
+    m_GUIManager.UpdateMonsterUi(nextMonster.GetType(), nextMonster.GetLevel());
+}
+
 // ** EDIT TO IMPLEMENT GAMESETUP VIEW CLASS
 void Game::DrawInitialSetUp()
 {
@@ -980,17 +1019,16 @@ void Game::DrawMapEditorMode()
     m_GUIManager.GetInfoUIView()->DrawHUD();
 
     // Draw Template towers or tower info
-    if(m_eCurrentEditState == FinishedPathingState){
+    if(m_eCurrentEditState == FinishedPathingState)
+    {
+        m_GUIManager.GetInfoUIView()->DrawNextRoundText();
         m_TowerManager.GetTowerEntityView().Draw();
         m_GUIManager.GetInfoUIView()->DrawTowerInfo();
+        m_MonsterManager.GetMonsterEntityView().Draw();
     }
 
     // Draw cross that indicate tower to be deleted
     m_GUIManager.GetInfoUIView()->DrawCrossShape();
-
-    if(m_gameOver){
-        ShowGameOverScreen();
-    }
     
     m_Window.display();
 }
@@ -1046,8 +1084,8 @@ void Game::DrawPlayMode()
     //m_Window.draw(m_sfPathLines);
     #endif
 
-    if(m_gameOver){
-        ShowGameOverScreen();
+    if(m_eGameMode == GameOver){
+        m_GUIManager.GetInfoUIView()->DrawGameOverText();
     }
 
     m_Window.display();

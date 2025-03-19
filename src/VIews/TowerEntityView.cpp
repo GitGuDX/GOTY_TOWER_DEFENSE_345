@@ -117,39 +117,51 @@ void TowerEntityView::Update(const IGameSubject &subject)
     //std::cout << "Notified TowerEntityView\n";
 }
 
-void TowerEntityView::SyncTowerData(TowerEntityData& data, const TowerEntity& tower)
+void TowerEntityView::RemoveSubject(TowerEntity * towerPtr)
 {
-    SetTemplateTowerSprite(data, tower.GetType());
-    data.sprite.setPosition(tower.GetPosition());
-    data.range = tower.GetRange();
-    data.maxCooldown = tower.GetMaxCooldown();
-    data.damage = tower.GetDamage();
-    data.speed = tower.GetSpeed();
-    data.cost = tower.GetCost();
-    data.level = tower.GetLevel();
-    data.type = tower.GetType();
-    data.isTemplate = tower.GetIsTemplate();
+    if (towerPtr)  // Ensure the pointer is valid
+    {
+        m_TowerEntitySubjects.erase(towerPtr);
+    }
+    else
+    {
+        std::cerr << "MonsterEntityView::RemoveMonster() - Invalid monster pointer\n";
+    }
 }
 
-void TowerEntityView::SyncTowers(const std::vector<TowerEntity>& templateTowers, const std::vector<TowerEntity> &activeTowers)
+void TowerEntityView::SyncTowerData(TowerEntityData& data, const TowerEntity* towerPtr)
+{
+    SetTemplateTowerSprite(data, towerPtr->GetType());
+    data.sprite.setPosition(towerPtr->GetPosition());
+    data.range = towerPtr->GetRange();
+    data.maxCooldown = towerPtr->GetMaxCooldown();
+    data.damage = towerPtr->GetDamage();
+    data.speed = towerPtr->GetSpeed();
+    data.cost = towerPtr->GetCost();
+    data.level = towerPtr->GetLevel();
+    data.type = towerPtr->GetType();
+    data.isTemplate = towerPtr->GetIsTemplate();
+}
+
+void TowerEntityView::SyncTowers(const std::vector<TowerEntity*>& templateTowers, const std::vector<TowerEntity*> &activeTowers)
 {
     // Clear the existing map to start fresh
     m_TowerEntitySubjects.clear();
 
     // Sync template towers
-    for (const TowerEntity& tower : templateTowers)
+    for (const TowerEntity* towerPtr : templateTowers)
     {
         TowerEntityData data;
-        SyncTowerData(data, tower);
-        m_TowerEntitySubjects[&tower] = data;
+        SyncTowerData(data, towerPtr);
+        m_TowerEntitySubjects[towerPtr] = data;
     }
 
     // Sync active towers
-    for (const TowerEntity& tower : activeTowers)
+    for (const TowerEntity* towerPtr : activeTowers)
     {
         TowerEntityData data;
-        SyncTowerData(data, tower);
-        m_TowerEntitySubjects[&tower] = data;
+        SyncTowerData(data, towerPtr);
+        m_TowerEntitySubjects[towerPtr] = data;
     }
 }
 

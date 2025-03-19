@@ -1,5 +1,18 @@
 #include "MonsterEntity.h"
 
+MonsterEntity::MonsterEntity()
+    : m_eType(MonsterGenerator::MonsterType::SIZE)
+    , m_stCurrentPathIndex(0)
+    , m_iLevel(0)
+    , m_iActiveFrameIndex(0)
+    , m_iDyingFrameIndex(0)
+    , m_bIsDying(false)
+    , m_bIsFinishedDying(false)
+    , m_bIsDead(false)
+    , m_bIsTemplate(true)
+{
+}
+
 MonsterEntity::MonsterEntity(MonsterGenerator::MonsterType type, int level)
     : m_eType(type)
     , m_stCurrentPathIndex(0)
@@ -9,6 +22,7 @@ MonsterEntity::MonsterEntity(MonsterGenerator::MonsterType type, int level)
     , m_bIsDying(false)
     , m_bIsFinishedDying(false)
     , m_bIsDead(false)
+    , m_bIsTemplate(false)
 {
     SetInitialStats();
 }
