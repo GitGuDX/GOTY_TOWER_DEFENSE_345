@@ -72,7 +72,7 @@ public:
 
     bool FinalizeExitTile(const sf::Vector2f& position);
 
-    void UpdateTowerHoverUI(TowerEntity* tower);
+    void UpdateTowerHoverUI(std::unique_ptr<TowerEntity>& towerPtr);
 
     void UpdateMonsterUi(MonsterGenerator::MonsterType type, int level);
 

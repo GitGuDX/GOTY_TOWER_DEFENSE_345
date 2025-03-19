@@ -80,20 +80,29 @@ std::vector<TowerEntity *> TowerManager::GetTemplateTowers()
     return result;
 }
 
-std::vector<TowerEntity *> TowerManager::GetActiveTowers()
-{
-    std::vector<TowerEntity*> result;
-    for (auto& tower : m_activeTowers)
-    {
-        result.push_back(tower.get());
-    }
-    return result;
-}
+// std::vector<TowerEntity *> TowerManager::GetActiveTowers()
+// {
+//     std::vector<TowerEntity*> result;
+//     for (auto& tower : m_activeTowers)
+//     {
+//         result.push_back(tower.get());
+//     }
+//     return result;
+// }
 
 void TowerManager::CreateTower(TowerGenerator::TowerType towerType, const sf::Vector2f &position)
 {
     // Allocate TowerEntity on the heap using std::make_unique<TowerEntity>().
     auto newTower = std::make_unique<TowerEntity>(m_TowerGenerator.GenerateTower(towerType));
+
+    // Wrap it in the TowerEntityDecorator to start with no boosts
+    newTower = std::make_unique<TowerEntityDecorator>(std::move(newTower));
+
+    #ifdef DEBUG
+    std::cout << "tower created at: " << newTower.get() << std::endl;
+    std::cout << "created tower base address: " << newTower->GetBaseTowerEntity() << std::endl;
+    #endif
+
     newTower->AddObserver(&m_TowerEntityView);
     newTower->InitializeStat();
     newTower->SetPosition(position);
@@ -130,7 +139,7 @@ void TowerManager::RemoveTowerAtPosition(const sf::Vector2f &position)
         (*it)->RemoveObserver(&m_TowerEntityView);
 
         // Notify the TowerEntityView of the removal.
-        m_TowerEntityView.RemoveSubject(it->get());
+        m_TowerEntityView.RemoveSubject((*it)->GetBaseTowerEntity());
         
         // Erase the tower from the vector.
         m_activeTowers.erase(it);
@@ -225,4 +234,25 @@ void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
     //     // Restart the clock after updating the frame
     //     towerAnimationDelay.restart();
     // }
+}
+
+// Function to apply all decorators to a tower
+void TowerManager::ApplyUpgrades(std::unique_ptr<TowerEntity>* towerPtr)
+{
+    #ifdef DEBUG
+    std::cout << "applying upgrade to " << (*towerPtr).get() << std::endl;
+    #endif
+
+    // Apply decorators for range, speed, damage, and cooldown
+    *towerPtr = std::make_unique<RangeBoostDecorator>(std::move(*towerPtr));  // Always wrap with RangeBoostDecorator
+    *towerPtr = std::make_unique<SpeedBoostDecorator>(std::move(*towerPtr));  // Always wrap with SpeedBoostDecorator
+    *towerPtr = std::make_unique<DamageBoostDecorator>(std::move(*towerPtr)); // Always wrap with DamageBoostDecorator
+    *towerPtr = std::make_unique<CooldownBoostDecorator>(std::move(*towerPtr)); // Always wrap with CooldownBoostDecorator
+
+    #ifdef DEBUG
+    std::cout << "applied range decorator: " << (*towerPtr)->GetRange() << std::endl;
+    std::cout << "applied tower speed: " << (*towerPtr)->GetSpeed() << std::endl;
+    std::cout << "applied tower damage: " << (*towerPtr)->GetDamage() << std::endl;
+    std::cout << "applied tower cooldown: " << (*towerPtr)->GetMaxCooldown() << std::endl;
+    #endif
 }

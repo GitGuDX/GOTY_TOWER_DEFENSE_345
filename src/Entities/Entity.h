@@ -63,7 +63,7 @@ public:
 		m_vVelocity = velocity;
 	}
 
-	sf::Vector2f GetPosition() const
+	virtual sf::Vector2f GetPosition() const
 	{
 		return m_Sprite.getPosition();
 	}

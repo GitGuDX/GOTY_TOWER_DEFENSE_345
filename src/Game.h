@@ -206,7 +206,7 @@ private:
     // For cursor hovering
     bool m_isHovering = false;
     // For tower reference for tower upgrade
-    TowerEntity* m_lastHoveredTower = nullptr;
+    std::unique_ptr<TowerEntity>* m_lastHoveredTower = nullptr;
     // For game mode transition
     bool m_bIsRoundEnded = false;
     bool m_bIsMonsterGeneratorUpdated = false;

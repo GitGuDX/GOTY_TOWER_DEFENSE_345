@@ -49,12 +49,12 @@ bool TowerEntity::Upgrade()
         return false;
     }
 
-    m_iLevel++;
+    IncrementLevel();
     
-    m_fRange *= UpgradeRate::fRangeMultiplier;
-    m_fMaxCooldown *= UpgradeRate::fCooldownMultiplier;
-    m_fDamage *= UpgradeRate::fDamageMultiplier;
-    m_speed *= UpgradeRate::fSpeedMultiplier;
+    // m_fRange *= UpgradeRate::fRangeMultiplier;
+    // m_fMaxCooldown *= UpgradeRate::fCooldownMultiplier;
+    // m_fDamage *= UpgradeRate::fDamageMultiplier;
+    // m_speed *= UpgradeRate::fSpeedMultiplier;
 
     NotifyStatsChanged();
 

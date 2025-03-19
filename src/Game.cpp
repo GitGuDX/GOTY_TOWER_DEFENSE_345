@@ -441,7 +441,7 @@ void Game::HandleInput()
             // std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
             // std::vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
             std::vector<TowerEntity*> templateTowers = m_TowerManager.GetTemplateTowers();
-            std::vector<TowerEntity*> activeTowers = m_TowerManager.GetActiveTowers();
+            std::vector<std::unique_ptr<TowerEntity>>& activeTowers = m_TowerManager.GetActiveTowers();
 
             InfoUIView* infoUIView = m_GUIManager.GetInfoUIView();
             TowerEntityView& towerView = m_TowerManager.GetTowerEntityView();
@@ -474,7 +474,7 @@ void Game::HandleInput()
                 // **RIGHT CLICK TO REMOVE A TOWER**
                 if (event.mouseButton.button == sf::Mouse::Right) 
                 {
-                    for (TowerEntity* towerPtr : activeTowers) 
+                    for (std::unique_ptr<TowerEntity>& towerPtr : activeTowers) 
                     {
                         Vector2f towerPosition = towerPtr->GetPosition();
                         if (std::abs(towerPosition.x - snapGrid.x) < 0.5f &&
@@ -498,7 +498,7 @@ void Game::HandleInput()
                 {
                     // Check for existing towers at the snapGrid position
                     bool towerExists = false;
-                    for (const TowerEntity* towerPtr : activeTowers) 
+                    for (const std::unique_ptr<TowerEntity>& towerPtr : activeTowers) 
                     {
                         const float tolerance = 0.5f;
                         Vector2f towerPosition = towerPtr->GetPosition();
@@ -571,13 +571,14 @@ void Game::HandleInput()
                 m_isHovering = false;  // Reset the flag to false
                 for (size_t i = 0; i < activeTowers.size(); ++i)       // Modifying a_allActiveTowers while iterating may cause iterators/pointers to become invalid. Use index based iteration
                 {
-                    TowerEntity* towerPtr = activeTowers[i]; 
+                    std::unique_ptr<TowerEntity>& towerPtr = activeTowers[i]; 
                     Vector2f towerPosition = towerPtr->GetPosition();
                     if (towerPosition.x == snapGrid.x && towerPosition.y == snapGrid.y) 
                     {
                         infoUIView->UpdateCrossShapePosition(snapGrid);
                         m_isHovering = true;  // Set flag to true if hovering over this tower
-                        m_lastHoveredTower = towerPtr; // Update the last hovered tower
+
+                        m_lastHoveredTower = &towerPtr; // Update the last hovered tower
                         
                         break;
                     }
@@ -585,6 +586,7 @@ void Game::HandleInput()
 
                 // If the mouse is not over any tower, reset the hover state
                 if (!m_isHovering) {
+                    
                     m_lastHoveredTower = nullptr;
                 }
 
@@ -599,7 +601,7 @@ void Game::HandleInput()
                 
                 if(placementOrUpgradeTimer.getElapsedTime().asMilliseconds() > 800){
                  
-                    for (TowerEntity* towerPtr : activeTowers) {
+                    for (std::unique_ptr<TowerEntity>& towerPtr : activeTowers) {
 
                         Vector2f towerPosition = towerPtr->GetPosition();
                         if (towerPosition.x == snapGrid.x && towerPosition.y == snapGrid.y) {
@@ -616,14 +618,20 @@ void Game::HandleInput()
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::E && m_lastHoveredTower != nullptr) 
             {
                 
-                int upgradeCost = m_lastHoveredTower->GetUpgradeCost();
+                int upgradeCost = (*m_lastHoveredTower)->GetUpgradeCost();
                 if (m_iCurrentWealth >= upgradeCost) 
                 {
-                    if (m_lastHoveredTower->CanUpgrade()) 
+                    if ((*m_lastHoveredTower) && (*m_lastHoveredTower)->CanUpgrade())  
                     {
                         UpdateWealth(-(upgradeCost));
 
-                        m_lastHoveredTower->Upgrade();
+                         // Apply all upgrades (decorators)
+                        m_TowerManager.ApplyUpgrades(m_lastHoveredTower);
+
+                        // Upgrade the tower level and notifychange 
+                        (*m_lastHoveredTower)->IncrementLevel();
+                        
+                        //std::cout << "level: " << (*m_lastHoveredTower)->GetLevel() << std::endl;
 
                         m_GUIManager.SetWarningAndColor("Tower upgraded successfully!", sf::Color::Green);
                     }
@@ -853,10 +861,10 @@ void UpdateHealthBar(Monster& enemy)
 
 void Game::UpdateTowers()
 {
-    vector<TowerEntity*> activeTowers = m_TowerManager.GetActiveTowers();
+    std::vector<std::unique_ptr<TowerEntity>>& activeTowers = m_TowerManager.GetActiveTowers();
     vector<MonsterEntity> activeMonsters = m_MonsterManager.GetActiveMonsters();
 
-    for (TowerEntity* towerPtr : activeTowers)
+    for (std::unique_ptr<TowerEntity>& towerPtr : activeTowers)
     {
         // Update individual tower cooldown
         towerPtr->UpdateCooldown(m_DeltaTime.asSeconds());
