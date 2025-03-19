@@ -3,10 +3,10 @@
 
 TowerManager::TowerManager(RenderWindow &window, MonsterManager &monsterManager)
     : m_Window(window)
+    , m_MonsterManager(monsterManager)// Set the sell rate to 50%
     , m_TowerEntityView(window)
     , m_TowerGenerator()
     , m_sellRate(0.5f)
-    , m_MonsterManager(monsterManager)// Set the sell rate to 50%
 {
 }
 
@@ -233,7 +233,7 @@ void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
             
             // Check for targets if tower can shoot
             if (tower->CanShoot()) {
-                if (MonsterEntity* target = tower->SelectTarget(m_MonsterManager.GetActiveMonsters())) {
+                if (tower->SelectTarget(m_MonsterManager.GetActiveMonsters())) {
                     tower->ResetCooldown();
                 }
             }
