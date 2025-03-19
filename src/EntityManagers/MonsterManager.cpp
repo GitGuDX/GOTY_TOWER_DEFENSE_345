@@ -2,6 +2,7 @@
 
 MonsterManager::MonsterManager(RenderWindow &window)
     : m_Window(window)
+    , m_HealthBarView(window)
     , m_MonsterEntityView(window)
     , m_MonsterGenerator()
     , m_CurrentWaveStrength(0)
@@ -30,12 +31,14 @@ void MonsterManager::ClearMonsters()
     // Remove all observers
     for (MonsterEntity& monster : m_activeMonsters)
     {
-        m_MonsterEntityView.RemoveMonster(&monster);
-        monster.RemoveObserver(&m_MonsterEntityView);
+        //m_MonsterEntityView.RemoveMonster(&monster);
+        //m_HealthBarView.RemoveMonster(&monster);
+        monster.RemoveAllObservers();
     }
     m_activeMonsters.clear();
     m_activeMonsters.shrink_to_fit();   // Request capacity reduction
 
+    m_HealthBarView.ClearSubjects();
     m_MonsterEntityView.ClearSubjects();
 
     #ifdef DEBUG
@@ -74,8 +77,8 @@ void MonsterManager::PrepareNextWave()
 void MonsterManager::UpdateNextMonster()
 {
     // Clear the previous monster (if any) and remove observer
-    m_MonsterEntityView.RemoveMonster(&m_nextMonsters[0]);
-    m_nextMonsters[0].RemoveObserver(&m_MonsterEntityView);
+    //m_MonsterEntityView.RemoveMonster(&m_nextMonsters[0]);
+    //m_nextMonsters[0].RemoveObserver(&m_MonsterEntityView);
     
     // The size of m_nextMonsters is fixed at 1, so we directly update the first element
     m_nextMonsters[0] = m_MonsterGenerator.GetNextMonster();
@@ -99,6 +102,7 @@ void MonsterManager::GenerateCurrentWave(float addedTime)
         std::cout << "Generating monster\n";
         m_activeMonsters.push_back(m_MonsterGenerator.GenerateMonster());
         MonsterEntity &monster = m_activeMonsters.back();
+        monster.AddObserver(&m_HealthBarView);
         monster.AddObserver(&m_MonsterEntityView);
         monster.SetPosition(m_EntryTilePosition);
 
@@ -127,12 +131,13 @@ bool MonsterManager::IsAllMonstersDead()
     return m_iNumberOfMonsterDead >= m_CurrentWaveStrength;
 }
 
-void MonsterManager::RemoveMonster(MonsterEntity& monster)
+void MonsterManager::RemoveMonster(MonsterEntity &monster)
 {
     m_iNumberOfMonsterDead++;
     monster.SetIsDead(true);
+    m_HealthBarView.RemoveMonster(&monster);
     m_MonsterEntityView.RemoveMonster(&monster);
-    monster.RemoveObserver(&m_MonsterEntityView);
+    monster.RemoveAllObservers();
 }
 
 void MonsterManager::UpdateMonsterAnimations(const float m_fFrameTime)

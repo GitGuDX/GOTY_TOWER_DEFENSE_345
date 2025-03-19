@@ -3,6 +3,7 @@
 
 #include "../Platform.h"
 #include "../Entities/MonsterEntity.h"
+#include "../Views/HealthBarView.h"
 #include "../Views/MonsterEntityView.h"
 #include "../Generators/MonsterGenerator.h"
 #include <vector>
@@ -33,6 +34,8 @@ public:
     bool IsAllMonstersSpawned();
 
     bool IsAllMonstersDead();
+
+    HealthBarView& GetHealthBarView() { return m_HealthBarView; }
 
     MonsterEntityView& GetMonsterEntityView() { return m_MonsterEntityView; }
 
@@ -80,6 +83,7 @@ private:
     Vector2i m_mapSize;
     int m_infoUIWidth;
 
+    HealthBarView m_HealthBarView;
     MonsterEntityView m_MonsterEntityView;
     MonsterGenerator m_MonsterGenerator;
 

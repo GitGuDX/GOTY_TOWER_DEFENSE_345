@@ -105,7 +105,7 @@ void Game::Run()
                 if (!m_bIsMonsterGeneratorUpdated)
                 {
                     // Prepare the next wave of monsters
-                    m_MonsterManager.PrepareNextWave();
+                    // m_MonsterManager.PrepareNextWave();
                     m_bIsMonsterGeneratorUpdated = true;
                 }
             }
@@ -656,8 +656,8 @@ void Game::HandleInput()
                 
                 if (!bTWasPressedLastUpdate && m_eGameMode == PlayMode && m_bIsRoundEnded == true)
                 {
-                    IncreaseLevel();
-
+                    m_MonsterManager.PrepareNextWave();
+                    
                     m_MonsterManager.UpdateNextMonster();
                     UpdateNextMonsterUI();
 
@@ -728,6 +728,8 @@ void Game::UpdatePlay()
 
     if (m_MonsterManager.IsAllMonstersSpawned() && m_MonsterManager.IsAllMonstersDead())
     {
+        IncreaseLevel();
+        
         m_bIsRoundEnded = true;
     }
 
@@ -754,9 +756,7 @@ void Game::UpdateMonsters()
                 #ifdef DEBUG
                 std::cout << "Monster destroyed!" << std::endl;
                 #endif
-
                 UpdateWealth(monster.GetReward());
-
                 monster.SetIsDying(true);
             }
             // If monster reaches the exit tile, player looses wealth then monster is removed
@@ -1064,6 +1064,8 @@ void Game::DrawPlayMode()
 
     // Draw Monsters
     m_MonsterManager.GetMonsterEntityView().Draw();
+
+    m_MonsterManager.GetHealthBarView().Draw();
     
     //Draw Health Bars
     //for (Monster& monster : m_aMonstersQueue)
