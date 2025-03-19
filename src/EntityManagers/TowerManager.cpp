@@ -82,46 +82,71 @@ std::vector<TowerEntity *> TowerManager::GetTemplateTowers()
     return result;
 }
 
-std::vector<TowerEntity *> TowerManager::GetActiveTowers()
-{
-    std::vector<TowerEntity*> result;
-    for (auto& tower : m_activeTowers)
-    {
-        result.push_back(tower.get());
-    }
-    return result;
-}
+// std::vector<TowerEntity *> TowerManager::GetActiveTowers()
+// {
+//     std::vector<TowerEntity*> result;
+//     for (auto& tower : m_activeTowers)
+//     {
+//         result.push_back(tower.get());
+//     }
+//     return result;
+// }
 
 void TowerManager::CreateTower(TowerGenerator::TowerType towerType, const sf::Vector2f &position)
 {
     try {
-        std::cout << "Creating tower of type: " << static_cast<int>(towerType) << std::endl;
-        
+        // Create tower
+        std::cout << "Creating tower..." << std::endl;
         auto newTower = std::make_unique<TowerEntity>(m_TowerGenerator.GenerateTower(towerType));
+        
+        // Wrap in decorator
+        newTower = std::make_unique<TowerEntityDecorator>(std::move(newTower));
         std::cout << "Tower created at: " << newTower.get() << std::endl;
         
-        newTower->AddObserver(&m_TowerEntityView);
-        newTower->InitializeStat();
-        newTower->SetPosition(position);
-    
-        switch(towerType) {
-            case TowerGenerator::TowerType::Rapid:
-                newTower->SetTargetStrategy(new ClosestTargetStrategy());
-                break;
-            case TowerGenerator::TowerType::Sniper:
-                newTower->SetTargetStrategy(new StrongestTargetStrategy());
-                break;
-            default:
-                newTower->SetTargetStrategy(new WeakestTargetStrategy());
-                break;
+        try {
+            // Initialize tower
+            newTower->AddObserver(&m_TowerEntityView);
+            newTower->InitializeStat();
+            newTower->SetPosition(position);
+            
+            // Set strategy
+            try {
+                TowerTargetStrategy* strategy = nullptr;
+                switch(towerType) {
+                    case TowerGenerator::TowerType::Rapid:
+                        strategy = new ClosestTargetStrategy();
+                        std::cout << "Setting Closest Target Strategy" << std::endl;
+                        break;
+                    case TowerGenerator::TowerType::Sniper:
+                        strategy = new StrongestTargetStrategy();
+                        std::cout << "Setting Strongest Target Strategy" << std::endl;
+                        break;
+                    default:
+                        strategy = new WeakestTargetStrategy();
+                        std::cout << "Setting Weakest Target Strategy" << std::endl;
+                        break;
+                }
+                if (strategy) {
+                    newTower->SetTargetStrategy(strategy);
+                }
+            }
+            catch (const std::exception& e) {
+                std::cout << "Strategy creation failed: " << e.what() << std::endl;
+                throw;
+            }
+            
+            // Add to active towers
+            std::cout << "Adding tower to active towers..." << std::endl;
+            m_activeTowers.push_back(std::move(newTower));
+            std::cout << "Tower creation complete" << std::endl;
         }
-        
-        std::cout << "Strategy set, pushing tower to active towers" << std::endl;
-        m_activeTowers.push_back(std::move(newTower));
-        std::cout << "Tower added successfully" << std::endl;
+        catch (const std::exception& e) {
+            std::cout << "Tower initialization failed: " << e.what() << std::endl;
+            throw;
+        }
     }
     catch (const std::exception& e) {
-        std::cout << "Exception in CreateTower: " << e.what() << std::endl;
+        std::cout << "Tower creation failed: " << e.what() << std::endl;
     }
 }
 void TowerManager::RemoveTowerAtPosition(const sf::Vector2f &position)
@@ -139,7 +164,7 @@ void TowerManager::RemoveTowerAtPosition(const sf::Vector2f &position)
         (*it)->RemoveObserver(&m_TowerEntityView);
 
         // Notify the TowerEntityView of the removal.
-        m_TowerEntityView.RemoveSubject(it->get());
+        m_TowerEntityView.RemoveSubject((*it)->GetBaseTowerEntity());
         
         // Erase the tower from the vector.
         m_activeTowers.erase(it);
@@ -243,3 +268,24 @@ void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
     //     towerAnimationDelay.restart();
     // }
 
+
+// Function to apply all decorators to a tower
+void TowerManager::ApplyUpgrades(std::unique_ptr<TowerEntity>* towerPtr)
+{
+    #ifdef DEBUG
+    std::cout << "applying upgrade to " << (*towerPtr).get() << std::endl;
+    #endif
+
+    // Apply decorators for range, speed, damage, and cooldown
+    *towerPtr = std::make_unique<RangeBoostDecorator>(std::move(*towerPtr));  // Always wrap with RangeBoostDecorator
+    *towerPtr = std::make_unique<SpeedBoostDecorator>(std::move(*towerPtr));  // Always wrap with SpeedBoostDecorator
+    *towerPtr = std::make_unique<DamageBoostDecorator>(std::move(*towerPtr)); // Always wrap with DamageBoostDecorator
+    *towerPtr = std::make_unique<CooldownBoostDecorator>(std::move(*towerPtr)); // Always wrap with CooldownBoostDecorator
+
+    #ifdef DEBUG
+    std::cout << "applied range decorator: " << (*towerPtr)->GetRange() << std::endl;
+    std::cout << "applied tower speed: " << (*towerPtr)->GetSpeed() << std::endl;
+    std::cout << "applied tower damage: " << (*towerPtr)->GetDamage() << std::endl;
+    std::cout << "applied tower cooldown: " << (*towerPtr)->GetMaxCooldown() << std::endl;
+    #endif
+}

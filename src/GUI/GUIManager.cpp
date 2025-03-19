@@ -151,7 +151,7 @@ bool GUIManager::FinalizeExitTile(const sf::Vector2f &position)
     return false;
 }
 
-void GUIManager::UpdateTowerHoverUI(TowerEntity* towerPtr)
+void GUIManager::UpdateTowerHoverUI(std::unique_ptr<TowerEntity>& towerPtr)
 {
     if (!m_infoUI)
     {

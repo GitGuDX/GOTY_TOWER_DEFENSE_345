@@ -35,17 +35,11 @@ else()
     find_package(SFML REQUIRED COMPONENTS system window graphics)
 endif()
 
-# Collect source files
-file(GLOB SOURCES 
-    src/*.cpp 
-    src/GUI/*.cpp 
-    src/Views/*.cpp 
-    src/Entities/*.cpp 
-    src/EntityManagers/*.cpp 
-    src/Generators/*.cpp
-)
 
-# Create executable
+# Collect all .cpp files in the src directory
+file(GLOB SOURCES src/*.cpp src/GUI/*.cpp src/Views/*.cpp src/Entities/*.cpp src/EntityManagers/*.cpp src/Generators/*.cpp src/EntityDecorators/*.cpp)  # Recursively grab all .cpp files
+
+# Add your source files (adjust based on your project structure)
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
 # Link libraries

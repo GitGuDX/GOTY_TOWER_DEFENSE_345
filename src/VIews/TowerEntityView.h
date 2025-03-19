@@ -36,7 +36,7 @@ public:
 
     void Update(const IGameSubject& subject);
 
-    void RemoveSubject(TowerEntity* towerPtr);
+    void RemoveSubject(const TowerEntity* towerPtr);
 
     void SyncTowerData(TowerEntityData& data, const TowerEntity* towerPtr);
 

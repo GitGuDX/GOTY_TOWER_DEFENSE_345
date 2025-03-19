@@ -5,6 +5,11 @@
 #include "../Entities/TowerEntity.h"
 #include "../Views/TowerEntityView.h"
 #include "../Generators/TowerGenerator.h"
+#include "../EntityDecorators/TowerDecorator.h"
+#include "../EntityDecorators/CooldownBoostDecorator.h"
+#include "../EntityDecorators/DamageBoostDecorator.h"
+#include "../EntityDecorators/RangeBoostDecorator.h"
+#include "../EntityDecorators/SpeedBoostDecorator.h"
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -31,7 +36,7 @@ public:
 
     std::vector<TowerEntity*> GetTemplateTowers();
 
-    std::vector<TowerEntity*> GetActiveTowers();
+    std::vector<std::unique_ptr<TowerEntity>>& GetActiveTowers() { return m_activeTowers; };
 
     TowerEntityView& GetTowerEntityView() { return m_TowerEntityView; }
 
@@ -44,6 +49,8 @@ public:
     void UpdateTowerAnimations(const float m_fFrameTime);
 
     float GetSellRate() const { return m_sellRate; }
+
+    void ApplyUpgrades(std::unique_ptr<TowerEntity>* towerPtr);
 
 private:
     RenderWindow& m_Window;

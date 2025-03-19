@@ -58,8 +58,13 @@ void TowerEntityView::LoadActiveTowerTextures()
 void TowerEntityView::Update(const IGameSubject &subject)
 {
     //std::cout << "subject pointer: " << &subject << std::endl;
-    const TowerEntity *towerEntity = dynamic_cast<const TowerEntity *>(&subject);
-    //std::cout << "tower entity pointer: " << towerEntity << std::endl;
+    // Cast the subject (which is of type IGameSubject) to a const TowerEntity*.
+    // This assumes that subject is a type of TowerEntity or a derived class (e.g., TowerEntityDecorator).
+    // Then, call GetBaseTowerEntity() to retrieve the base TowerEntity pointer that the decorator wraps.
+    // The final result is the actual base TowerEntity pointer, not the decorator object itself.
+    const TowerEntity *towerEntity = (dynamic_cast<const TowerEntity *>(&subject))->GetBaseTowerEntity();
+    //std::cout << "tower entity base pointer: " << towerEntity << std::endl;
+    //std::cout << "Subjects size before update: " << m_TowerEntitySubjects.size() << std::endl;
     if (!towerEntity)
     {
         //std::cout << "TowerEntityView::Update() - Not a TowerEntity\n";
@@ -114,18 +119,27 @@ void TowerEntityView::Update(const IGameSubject &subject)
         data.type = towerEntity->GetType();
         data.isTemplate = towerEntity->GetIsTemplate();
     }
-    //std::cout << "Notified TowerEntityView\n";
+    //std::cout << "Subjects size after update: " << m_TowerEntitySubjects.size() << std::endl;
 }
 
-void TowerEntityView::RemoveSubject(TowerEntity * towerPtr)
+void TowerEntityView::RemoveSubject(const TowerEntity * towerPtr)
 {
+    //std::cout << "remove - passed tower pointer: " << towerPtr << std::endl;
+    
     if (towerPtr)  // Ensure the pointer is valid
     {
-        m_TowerEntitySubjects.erase(towerPtr);
+        //std::cout << "Remove subject: " << towerPtr << std::endl;
+        // Call GetBaseTowerEntity() on the towerPtr (which is a TowerEntity or a decorator).
+        // This function returns the base TowerEntity pointer, removing any decorations that might be applied.
+        // The result is a pointer to the core TowerEntity object, not the decorated version.
+        const TowerEntity* towerBasePtr = towerPtr->GetBaseTowerEntity();
+        //std::cout << "tower base address: " << towerBasePtr << std::endl;
+        m_TowerEntitySubjects.erase(towerBasePtr);
+       
     }
     else
     {
-        std::cerr << "MonsterEntityView::RemoveMonster() - Invalid monster pointer\n";
+        std::cerr << "TowerEntityView::RemoveSubject() - Invalid tower pointer\n";
     }
 }
 
