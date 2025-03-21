@@ -36,7 +36,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     #ifdef DEBUG
     , m_iInitialWealth(10000)
     #else
-    , m_iInitialWealth(500)
+    , m_iInitialWealth(5000)
     #endif
    
 {
@@ -202,7 +202,7 @@ void Game::LoadPlayModeAssets()
 	m_SniperBulletTemplate.SetOrigin(Vector2f(8, 8));
 
     m_FlameThrowerBulletTemplate.SetTexture(m_FlameThrowerBulletTexture);
-    m_FlameThrowerBulletTemplate.SetScale(Vector2f(1.5, 1.5));
+    m_FlameThrowerBulletTemplate.SetScale(Vector2f(0.5, 0.5));
     m_FlameThrowerBulletTemplate.SetOrigin(Vector2f(8, 8));
 }
 
@@ -878,7 +878,7 @@ void UpdateHealthBar(Monster& enemy)
 void Game::UpdateTowers()
 {
     std::vector<std::unique_ptr<TowerEntity>>& activeTowers = m_TowerManager.GetActiveTowers();
-    vector<MonsterEntity> activeMonsters = m_MonsterManager.GetActiveMonsters();
+    vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
 
     for (std::unique_ptr<TowerEntity>& towerPtr : activeTowers)
     {
@@ -887,50 +887,38 @@ void Game::UpdateTowers()
 
         if (towerPtr->CanShoot()) {
             MonsterEntity* pNearestEnemy = nullptr;
-            // float fShortestDistance = std::numeric_limits<float>::max();
+            float fShortestDistance = std::numeric_limits<float>::max();
             
             // **** Related to strategy pattern
             // Find nearest monster within this tower's range
             for (MonsterEntity& monster : activeMonsters)
             {
-                sf::Vector2f vTowerToMonster = monster.GetPosition() - tower.GetPosition();
+                sf::Vector2f vTowerToMonster = monster.GetPosition() - towerPtr->GetPosition();
                 float fDistance = MathHelpers::Length(vTowerToMonster);
-                if (!monster.GetIsDying() && !monster.GetIsDead() && fDistance < fShortestDistance && fDistance < tower.GetRange())
+                if (!monster.GetIsDying() && !monster.GetIsDead() && fDistance < fShortestDistance && fDistance < towerPtr->GetRange())
                 {
                     fShortestDistance = fDistance;
                     pNearestEnemy = &monster;
                 }
             }
-
-            if (pNearestEnemy == nullptr && FlameThrower) {  // No enemies? Retract the flame
-                if (FlameThrowerClock.getElapsedTime().asMilliseconds() > 100 && FlameThrowerFrame > 0) {
-                    m_FlameThrowerBulletTemplate.SetTexture(m_aFlames[FlameThrowerFrame]);
-                    FlameThrowerFrame--;  // 🔄 Move backwards in animation frames
-                    FlameThrowerClock.restart();
-                }
-                
-                if (FlameThrowerFrame == 0) {
-                    FlameThrower = false;  // 🔥 Fully retracted, stop the flame
-                }
-            }
-
     
             if (pNearestEnemy != nullptr)
             {
                 // Vector2f monsterPosition = pNearestEnemy->GetPosition();
                 // std::cout << "target monster position: " << monsterPosition.x << " " << monsterPosition.y << std::endl;
                 // Create and setup new axe
-                if (towerPtr->GetType() == TowerGenerator::TowerType::Rapid) 
+                if (towerPtr->GetType() == TowerGenerator::TowerType::Rapid)
                 {
                     m_aAxes.push_back(m_RapidBulletTemplate);
                 }
-                else if (tower.GetType() == TowerGenerator::TowerType::Sniper) 
+                else if (towerPtr->GetType() == TowerGenerator::TowerType::Sniper)
                 {
                     m_aAxes.push_back(m_SniperBulletTemplate);
                 }
-                else if (tower.GetType() == TowerGenerator::TowerType::FlameThrower) 
+                else if (towerPtr->GetType() == TowerGenerator::TowerType::FlameThrower)
                 {
-                    FlameThrower = true;
+                    m_aAxes.push_back(m_InvisibleFlameThrowerBulletTemplate);
+                    towerPtr->SetIsFlameThrowerActive(true);
                 }
                 else
                 {
@@ -944,84 +932,85 @@ void Game::UpdateTowers()
                     Entity& newAxe = m_aAxes.back();
                     FloatRect newAxeBounds = newAxe.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
                     newAxe.SetOrigin(Vector2f(newAxeBounds.width / 2, newAxeBounds.height / 2));
-                    newAxe.SetPosition(Vector2f(tower.GetPosition().x, tower.GetPosition().y));
+                    newAxe.SetPosition(Vector2f(towerPtr->GetPosition().x, towerPtr->GetPosition().y));
                     //Depending on tower the bullet will be faster or slower and do more or less damage
-                    newAxe.m_speed = tower.GetSpeed();
-                    newAxe.m_fDamage = tower.GetDamage();
+                    newAxe.m_speed = towerPtr->GetSpeed();
+                    newAxe.m_fDamage = towerPtr->GetDamage();
                     // Calculate direction to enemy
-                    sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - tower.GetPosition();
+                    sf::Vector2f vTowerToMonster = pNearestEnemy->GetPosition() - towerPtr->GetPosition();
                     vTowerToMonster = MathHelpers::getNormalize(vTowerToMonster);
                     // Calculate the angle in degrees
                     float angle = atan2(vTowerToMonster.y, vTowerToMonster.x) * 180.0f / M_PI + 90.0f;
                     newAxe.SetDirection(vTowerToMonster);
                     newAxe.SetRotation(angle);
                 }
-                
 
-                //Flame Thrower Bullets
-                if (FlameThrower) {
-                    // Frame Handling Animation
+                // Flame Thrower Bullets
+                if (towerPtr->GetType() == TowerGenerator::TowerType::FlameThrower) {
+                    // Flame thrower animation turning on
 
-                    //Damage enemy when flames it hit
-                    static_cast<MonsterEntity*>(pNearestEnemy)->SetHealth(
-                        static_cast<MonsterEntity*>(pNearestEnemy)->GetHealth() - tower.GetDamage()
-                    );
+                    sf::Clock& clock = towerPtr->GetFlameClock();
+                    if (pNearestEnemy && clock.getElapsedTime().asMilliseconds() > 85) {
+                        MonsterEntity* target = static_cast<MonsterEntity*>(pNearestEnemy);
 
-                    //pNearestEnemy->SetHealth(pNearestEnemy->GetHealth() - tower.GetDamage());
-                    
-                    if (FlameThrowerClock.getElapsedTime().asMilliseconds() > 85) {
-                        m_FlameThrowerBulletTemplate.SetTexture(m_aFlames[FlameThrowerFrame]);
-                        FlameThrowerFrame++;
+                        int frame = towerPtr->GetFlameFrame();
+                        towerPtr->GetFlameSprite().SetTexture(m_aFlames[frame]);
 
-                        if (FlameThrowerFrame >= 8) {  // Reset animation when it reaches the last frame
-                            FlameThrowerFrame = 4;
-                        }
-                        FlameThrowerClock.restart();
+                        towerPtr->IncrementFlameFrame();
+                        if (towerPtr->GetFlameFrame() >= 7)
+                            towerPtr->SetFlameFrame(4);
+
+                        clock.restart();
                     }
-                    // Get the tower's position
-                    sf::Vector2f towerPos = tower.GetPosition();
 
-                    // Get direction from tower to the enemy
-                    sf::Vector2f directionToEnemy = pNearestEnemy->GetPosition() - towerPos;
-                    directionToEnemy = MathHelpers::getNormalize(directionToEnemy); // Normalize it
+                    // Set flame position and rotation
+                    if (pNearestEnemy) {
+                        sf::Vector2f towerPos = towerPtr->GetPosition();
+                        sf::Vector2f dir = MathHelpers::getNormalize(pNearestEnemy->GetPosition() - towerPos);
+                        float angle = atan2(dir.y, dir.x) * 180.0f / M_PI + 90.0f;
+                        float offset = 60.0f;
 
-                    // Set a VERY small offset distance
-                    float fireOffset = 60.0f;  // Lower this value to make the flame closer
-
-                    // Calculate the flame's new starting position
-                    sf::Vector2f fireStartPos = towerPos + (directionToEnemy * fireOffset);
-
-                    // Ensure the flame's origin is centered for proper positioning
-                    sf::FloatRect flameBounds = m_FlameThrowerBulletTemplate.GetSprite().getLocalBounds();
-                    m_FlameThrowerBulletTemplate.SetOrigin(sf::Vector2f(flameBounds.width / 2, flameBounds.height / 2));
-
-                    // Set the flame's position
-                    m_FlameThrowerBulletTemplate.SetPosition(fireStartPos);
-                    m_FlameThrowerBulletTemplate.SetScale(Vector2f(0.5, 0.5));
-
-                    // Correct the rotation angle
-                    float targetAngle = atan2(directionToEnemy.y, directionToEnemy.x) * 180.0f / M_PI + 90.0;
-                    m_FlameThrowerBulletTemplate.SetRotation(targetAngle);
-
-                    // Debugging: Check values
-                    #ifdef DEBUG
-                        std::cout << "Fire Position: " << fireStartPos.x << ", " << fireStartPos.y << std::endl;
-                        std::cout << "Fire Rotation: " << targetAngle << " degrees" << std::endl;
-                    #endif
+                        sf::FloatRect flameBounds = towerPtr->GetFlameSprite().GetSprite().getLocalBounds();
+                        towerPtr->GetFlameSprite().SetOrigin(sf::Vector2f(flameBounds.width / 2, flameBounds.height / 2));
+                        towerPtr->GetFlameSprite().SetPosition(towerPos + dir * offset);
+                        towerPtr->GetFlameSprite().SetRotation(angle);
+                        towerPtr->GetFlameSprite().SetScale(Vector2f(0.5f, 0.5f));
+                    }
                 }
+                towerPtr->ResetCooldown(); // Reset this tower's cooldown
                 
-                tower.ResetCooldown(); // Reset this tower's cooldown
-                
+            } else {
+                if (towerPtr->GetType() == TowerGenerator::TowerType::FlameThrower) {
+
+                    sf::Clock& clock = towerPtr->GetFlameClock();
+
+                    if (!pNearestEnemy && towerPtr->GetIsFlameThrowerActive()) {
+                        if (clock.getElapsedTime().asMilliseconds() > 100 && towerPtr->GetFlameFrame() > 0) {
+                            towerPtr->GetFlameSprite().SetTexture(m_aFlames[towerPtr->GetFlameFrame()]);
+                            towerPtr->DecrementFlameFrame();
+                            clock.restart();
+                        }
+                        if (towerPtr->GetFlameFrame() == 0)
+                            towerPtr->SetIsFlameThrowerActive(false);
+                    }
+                    
+                    // Set flame position and rotation
+                    if (pNearestEnemy && towerPtr->GetIsFlameThrowerActive()) {
+                        sf::Vector2f towerPos = towerPtr->GetPosition();
+                        sf::Vector2f dir = MathHelpers::getNormalize(pNearestEnemy->GetPosition() - towerPos);
+                        float angle = atan2(dir.y, dir.x) * 180.0f / M_PI + 90.0f;
+                        float offset = 60.0f;
+
+                        sf::FloatRect flameBounds = towerPtr->GetFlameSprite().GetSprite().getLocalBounds();
+                        towerPtr->GetFlameSprite().SetOrigin(sf::Vector2f(flameBounds.width / 2, flameBounds.height / 2));
+                        towerPtr->GetFlameSprite().SetPosition(towerPos + dir * offset);
+                        towerPtr->GetFlameSprite().SetRotation(angle);
+                        towerPtr->GetFlameSprite().SetScale(Vector2f(0.5f, 0.5f));
+                    }
+                }
             }
         }
-        // else
-        // {
-        //     std::cout << "Can't shoot yet" << std::endl;
-        //     std::cout << "Preparing to shoot" << std::endl;
-        // }
     }
-
-
     // ALL TOWER ANIMATION RELATED
     m_TowerManager.UpdateTowerAnimations(m_fFrameTime);
 
@@ -1185,12 +1174,11 @@ void Game::DrawPlayMode()
         m_Window.draw(bullet.m_Sprite);
     }
 
-
-    if(FlameThrower){
-        m_Window.draw(m_FlameThrowerBulletTemplate.m_Sprite);
+    for (const auto& towerPtr : m_TowerManager.GetActiveTowers()) {
+        if(towerPtr->GetType() == TowerGenerator::TowerType::FlameThrower && towerPtr->GetIsFlameThrowerActive()){
+            m_Window.draw(towerPtr->GetFlameSprite());
+        }
     }
-
-
 
 
     #ifdef DEBUG

@@ -1,8 +1,8 @@
 #include "MonsterManager.h"
 
 MonsterManager::MonsterManager(RenderWindow &window)
-    : m_Window(window)
-    , m_HealthBarView(window)
+    //: m_Window(window)
+    : m_HealthBarView(window)
     , m_MonsterEntityView(window)
     , m_MonsterGenerator()
     , m_CurrentWaveStrength(0)

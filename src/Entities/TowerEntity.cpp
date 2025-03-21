@@ -9,7 +9,9 @@ TowerEntity::TowerEntity(TowerGenerator::TowerType type)
     , m_iCost(0)
     , m_iLevel(1)  // Start at level 1
     , m_fShootCooldown(0.0f)
-    , m_targetStrategy(nullptr) 
+    , bIsFlameThrowerActive(false)
+    , iFlameFrame(0)
+    , m_targetStrategy(nullptr)
 
 {
 }
@@ -25,6 +27,7 @@ void TowerEntity::InitializeStat()
         m_fDamage = TowerGenerator::TowerTypeData::Basic::fDamage;
         m_speed = TowerGenerator::TowerTypeData::Basic::fspeed;
         m_iCost = TowerGenerator::TowerTypeData::Basic::iCost;
+
     }
     else if (m_eType == TowerGenerator::TowerType::Sniper) 
     {
@@ -49,6 +52,8 @@ void TowerEntity::InitializeStat()
         m_fDamage = TowerGenerator::TowerTypeData::FlameThrower::fDamage;
         m_speed = TowerGenerator::TowerTypeData::FlameThrower::fspeed;
         m_iCost = TowerGenerator::TowerTypeData::FlameThrower::iCost;
+        bIsFlameThrowerActive = TowerGenerator::TowerTypeData::FlameThrower::bIsFlameThrowerActive;
+        iFlameFrame = TowerGenerator::TowerTypeData::FlameThrower::iFlameFrame;
     }
     else 
     {
@@ -83,4 +88,28 @@ int TowerEntity::GetUpgradeCost() const
     
     // Cost increases with each level
     return m_iCost * m_iLevel;
+}
+
+int TowerEntity::GetFlameFrame() const {
+    return iFlameFrame;
+}
+
+void TowerEntity::SetFlameFrame(int frame) {
+    iFlameFrame = frame;
+}
+
+void TowerEntity::IncrementFlameFrame() {
+    iFlameFrame++;
+}
+
+void TowerEntity::DecrementFlameFrame() {
+    iFlameFrame--;
+}
+
+sf::Clock& TowerEntity::GetFlameClock() {
+    return flameClock;
+}
+
+Entity& TowerEntity::GetFlameSprite() {
+    return flameSprite;
 }

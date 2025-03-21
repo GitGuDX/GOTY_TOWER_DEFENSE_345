@@ -115,9 +115,9 @@ void GUIManager::InitiailizeTowerPrice(std::vector<TowerEntity*>& templateTowers
         {
             m_infoUI->SetStoneTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
         }
-        else if (tower.GetType() == TowerGenerator::TowerType::FlameThrower)
+        else if (towerPtr->GetType() == TowerGenerator::TowerType::FlameThrower)
         {
-            m_infoUI->SetFlameThrowerTowerPriceString(sf::String(std::to_string(tower.GetCost())));
+            m_infoUI->SetFlameThrowerTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
         }
     }
 }

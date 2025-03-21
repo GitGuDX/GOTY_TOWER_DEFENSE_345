@@ -2,8 +2,8 @@
 #include "../Strategies/TowerTargetStrategies.h"
 
 TowerManager::TowerManager(RenderWindow &window, MonsterManager &monsterManager)
-    : m_Window(window)
-    , m_MonsterManager(monsterManager)// Set the sell rate to 50%
+    //: m_Window(window)
+    : m_MonsterManager(monsterManager)// Set the sell rate to 50%
     , m_TowerEntityView(window)
     , m_TowerGenerator()
     , m_sellRate(0.5f)
@@ -12,6 +12,7 @@ TowerManager::TowerManager(RenderWindow &window, MonsterManager &monsterManager)
 
 void TowerManager::InitializeGameSetup()
 {
+
     RemoveAllTowers();
 
     m_templateTowers.reserve(3);   // Reserve space to avoid memory reallocation
@@ -40,6 +41,19 @@ void TowerManager::InitializeGameSetup()
     m_templateTowers.push_back(std::move(sniperTower));
     std::cout << m_templateTowers.size() << std::endl;
 
+    // Create a flame thrower Tower template
+    // Allocate TowerEntity on the heap using std::make_unique<TowerEntity>().
+    auto flameTower = std::make_unique<TowerEntity>(m_TowerGenerator.GenerateFlameThrowerTowerTemplate());
+    flameTower->AddObserver(&m_TowerEntityView);
+    flameTower->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4 + 100, m_mapSize.y / 3 + 75));
+    flameTower->SetCost(400);
+    flameTower->SetIsTemplate(true);
+
+
+    // std::move(newTower) transfers ownership to m_templateTowers.
+    m_templateTowers.push_back(std::move(flameTower));
+    std::cout << m_templateTowers.size() << std::endl;
+
     // //// Create a rapid tower template ////
     // // Add a new Rapid Tower to the template tower list using emplace_back.
     // // This constructs the object in-place, avoiding an extra copy/move operation.
@@ -61,25 +75,16 @@ void TowerManager::InitializeGameSetup()
     // // Note: Using indices instead of references to `m_templateTowers.back()` prevents 
     // // potential invalid references if the vector resizes due to reallocation.
 
-    //// Create a sniper tower template ////
-    m_templateTowers.emplace_back(m_TowerGenerator.GenerateSniperTowerTemplate());
-    //std::cout << "Tower 2 added at address: " << &m_templateTowers.back() << std::endl;
-    size_t sniperTowerIndex = m_templateTowers.size() - 1;
-    m_templateTowers[sniperTowerIndex].AddObserver(&m_TowerEntityView);
-    m_templateTowers[sniperTowerIndex].SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4, m_mapSize.y / 3 + 75));
-    m_templateTowers[sniperTowerIndex].SetCost(300);
-    m_templateTowers[sniperTowerIndex].SetIsTemplate(true);
-    //std::cout << "sniper tower addres: " << &m_templateTowers[rapidTowerIndex] << std::endl;
-
-
+    /*
     //// Create a FlameThrower tower template ////
     m_templateTowers.emplace_back(m_TowerGenerator.GenerateFlameThrowerTowerTemplate());
     //std::cout << "Tower 2 added at address: " << &m_templateTowers.back() << std::endl;
     size_t FlameThrowerTowerIndex = m_templateTowers.size() - 1;
-    m_templateTowers[FlameThrowerTowerIndex].AddObserver(&m_TowerEntityView);
-    m_templateTowers[FlameThrowerTowerIndex].SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4 + 100, m_mapSize.y / 3 + 75));
-    m_templateTowers[FlameThrowerTowerIndex].SetCost(400);
-    m_templateTowers[FlameThrowerTowerIndex].SetIsTemplate(true);
+    m_templateTowers[FlameThrowerTowerIndex]->AddObserver(&m_TowerEntityView);
+    m_templateTowers[FlameThrowerTowerIndex]->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4 + 100, m_mapSize.y / 3 + 75));
+    m_templateTowers[FlameThrowerTowerIndex]->SetCost(400);
+    m_templateTowers[FlameThrowerTowerIndex]->SetIsTemplate(true);
+    */
 }
 
 std::vector<TowerEntity *> TowerManager::GetTemplateTowers()
@@ -263,7 +268,7 @@ void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
     // if (towerAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) {
     //     // Set the texture for each tower
     //     std::vector<TowerEntity>& activeTowers = GetActiveTowers();
-    //     for (TowerEntity& tower : activeTowers) 
+    //     for (TowerEntity& tower : activeTowers)
     //     {
     //         TowerEntityView::TowerEntityData* towerData = m_TowerEntityView.GetTowerEntityData(&tower);
 

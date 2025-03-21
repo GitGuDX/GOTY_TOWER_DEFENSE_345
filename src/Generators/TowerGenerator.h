@@ -54,8 +54,10 @@ public:
             static constexpr float fRange = 140.0f;
             static constexpr float fMaxCooldown = 0.0f;
             static constexpr float fDamage = 0.025f;
-            static constexpr float fspeed = 200.f;
+            static constexpr float fspeed = 5000.f;
             static constexpr int iCost = 400;
+            static constexpr bool bIsFlameThrowerActive = false;
+            static constexpr int iFlameFrame = 0;
         };
     };
 

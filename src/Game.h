@@ -213,16 +213,16 @@ private:
 
     // **** Bullet assets. Implement observer pattern for bullet
     Texture m_RapidBulletTexture;
-    Texture  m_SniperBulletTexture;
+    Texture m_SniperBulletTexture;
     Texture m_FlameThrowerBulletTexture;
     Entity m_RapidBulletTemplate;
     Entity m_SniperBulletTemplate;
     Entity m_FlameThrowerBulletTemplate;
+    Entity m_InvisibleFlameThrowerBulletTemplate;
 	std::vector<Entity> m_aAxes;
     std::vector<Texture> m_aFlames;
-    int FlameThrowerFrame = 0;
-    bool FlameThrower = false;
     sf::Clock FlameThrowerClock;  // Use Clock to track time
+
 
     // Player stats
     int m_iCurrentLevel;
