@@ -9,6 +9,6 @@ class MonsterEntity;
 class TowerTargetStrategy {
 public:
     virtual ~TowerTargetStrategy() = default;
-    virtual MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<MonsterEntity>& enemies) const = 0;
+    virtual MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<std::unique_ptr<MonsterEntity>>& enemies) const = 0;
 };
     

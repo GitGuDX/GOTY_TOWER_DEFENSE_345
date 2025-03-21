@@ -10,6 +10,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <array>
+#include <memory>
 
 using namespace sf;
 
@@ -41,11 +42,11 @@ public:
 
     MonsterGenerator& GetMonsterGenerator() { return m_MonsterGenerator; }
 
-    std::vector<MonsterEntity>& GetActiveMonsters() { return m_activeMonsters; }
+    std::vector<std::unique_ptr<MonsterEntity>>& GetActiveMonsters() { return m_activeMonsters; }
 
     MonsterEntity& GetNextMonster() { return m_nextMonsters[0]; }
 
-    void RemoveMonster(MonsterEntity& monster);
+    void RemoveMonster(MonsterEntity* monsterPtr);
 
     void UpdateMonsterAnimations(const float m_fFrameTime);
 
@@ -61,17 +62,17 @@ private:
         m_fTimeSinceLastGeneration += addedTime;
     }
 
-    void IncrementMonsterFrameIndex(MonsterEntity& monster);
+    void IncrementMonsterFrameIndex(MonsterEntity* monsterPtr);
 
-    void UpdateMonsterTexture(MonsterEntity& monster);
+    void UpdateMonsterTexture(MonsterEntity* monsterPtr);
 
     void ClearMonsters();
 
     void PrepareWave();
     
-    void IncrementActiveMonsterFrameIndex(MonsterEntity& monster);
+    void IncrementActiveMonsterFrameIndex(MonsterEntity* monsterPtr);
 
-    void IncrementDyingMonsterFrameIndex(MonsterEntity& monster);
+    void IncrementDyingMonsterFrameIndex(MonsterEntity* monsterPtr);
 
     void resetTimeSinceLastGeneration()
     {
@@ -91,7 +92,7 @@ private:
 
     int m_CurrentWaveStrength;
 
-    std::vector<MonsterEntity> m_activeMonsters;
+    std::vector<std::unique_ptr<MonsterEntity>> m_activeMonsters;
 
     std::array<MonsterEntity, 1> m_nextMonsters;
 

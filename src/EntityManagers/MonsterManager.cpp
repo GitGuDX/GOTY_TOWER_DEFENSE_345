@@ -29,11 +29,11 @@ void MonsterManager::InitializeMonsters(const Vector2f &position)
 void MonsterManager::ClearMonsters()
 {
     // Remove all observers
-    for (MonsterEntity& monster : m_activeMonsters)
+    for (std::unique_ptr<MonsterEntity>& monsterPtr : m_activeMonsters)
     {
         //m_MonsterEntityView.RemoveMonster(&monster);
         //m_HealthBarView.RemoveMonster(&monster);
-        monster.RemoveAllObservers();
+        monsterPtr->RemoveAllObservers();
     }
     m_activeMonsters.clear();
     m_activeMonsters.shrink_to_fit();   // Request capacity reduction
@@ -102,20 +102,23 @@ void MonsterManager::GenerateCurrentWave(float addedTime)
     if (m_fTimeSinceLastGeneration >= m_fGenerationCooldown && m_iNumberOfMonsterSpawned < m_CurrentWaveStrength)
     {
         std::cout << "Generating monster\n";
-        m_activeMonsters.push_back(m_MonsterGenerator.GenerateMonster());
-        MonsterEntity &monster = m_activeMonsters.back();
-        monster.AddObserver(&m_HealthBarView);
-        monster.AddObserver(&m_MonsterEntityView);
-        monster.SetPosition(m_EntryTilePosition);
-
+        //m_activeMonsters.push_back(m_MonsterGenerator.GenerateMonster());
+        //MonsterEntity &monster = m_activeMonsters.back();
+        auto newMonster = std::make_unique<MonsterEntity>(m_MonsterGenerator.GenerateMonster());
+        newMonster->AddObserver(&m_HealthBarView);
+        newMonster->AddObserver(&m_MonsterEntityView);
+        newMonster->SetPosition(m_EntryTilePosition);
+        
         #ifdef DEBUG
-        std::cout << "Monster " << static_cast<int>(monster.GetType()) << " spawned at position: " << monster.GetPosition().x << ", " << monster.GetPosition().y << std::endl;
-        std::cout << "Current monster health is: " << monster.GetHealth() << '\n';
-        std::cout << "Current monster speed is: " << monster.GetSpeed() << '\n';
-        std::cout << "Current monster strength is: " << monster.GetStrength() << '\n';
-        std::cout << "Current monster reward is: " << monster.GetReward() << '\n';
-        std::cout << "Current monster level is: " << monster.GetLevel() << '\n';
+        std::cout << "Monster " << static_cast<int>(newMonster->GetType()) << " spawned at position: " << newMonster->GetPosition().x << ", " << newMonster->GetPosition().y << std::endl;
+        std::cout << "Current monster health is: " << newMonster->GetHealth() << '\n';
+        std::cout << "Current monster speed is: " << newMonster->GetSpeed() << '\n';
+        std::cout << "Current monster strength is: " << newMonster->GetStrength() << '\n';
+        std::cout << "Current monster reward is: " << newMonster->GetReward() << '\n';
+        std::cout << "Current monster level is: " << newMonster->GetLevel() << '\n';
         #endif
+
+        m_activeMonsters.push_back(std::move(newMonster));
 
         m_iNumberOfMonsterSpawned++;
 
@@ -133,13 +136,13 @@ bool MonsterManager::IsAllMonstersDead()
     return m_iNumberOfMonsterDead >= m_CurrentWaveStrength;
 }
 
-void MonsterManager::RemoveMonster(MonsterEntity &monster)
+void MonsterManager::RemoveMonster(MonsterEntity* monsterPtr)
 {
     m_iNumberOfMonsterDead++;
-    monster.SetIsDead(true);
-    m_HealthBarView.RemoveMonster(&monster);
-    m_MonsterEntityView.RemoveMonster(&monster);
-    monster.RemoveAllObservers();
+    monsterPtr->SetIsDead(true);
+    m_HealthBarView.RemoveMonster(monsterPtr);
+    m_MonsterEntityView.RemoveMonster(monsterPtr);
+    monsterPtr->RemoveAllObservers();
 }
 
 void MonsterManager::UpdateMonsterAnimations(const float m_fFrameTime)
@@ -148,46 +151,45 @@ void MonsterManager::UpdateMonsterAnimations(const float m_fFrameTime)
     if (monsterAnimationDelay.getElapsedTime().asSeconds() >= m_fFrameTime) 
     {
         //RUNNING ANIMATION
-        std::vector<MonsterEntity>& activeMonsters = GetActiveMonsters();
-        for (MonsterEntity& monster : activeMonsters)
+        for (std::unique_ptr<MonsterEntity>& monsterPtr : m_activeMonsters)
         {
-            UpdateMonsterTexture(monster);
-            IncrementMonsterFrameIndex(monster);
+            UpdateMonsterTexture(monsterPtr.get());
+            IncrementMonsterFrameIndex(monsterPtr.get());
         }
         monsterAnimationDelay.restart();
     }
 }
 
-void MonsterManager::IncrementActiveMonsterFrameIndex(MonsterEntity& monster)
+void MonsterManager::IncrementActiveMonsterFrameIndex(MonsterEntity* monsterPtr)
 {
-    int indexLimit = m_MonsterEntityView.GetActiveTextureArraySize(monster.GetType());
-    monster.IncrementActiveFrameIndex(indexLimit);
+    int indexLimit = m_MonsterEntityView.GetActiveTextureArraySize(monsterPtr->GetType());
+    monsterPtr->IncrementActiveFrameIndex(indexLimit);
 }
 
-void MonsterManager::IncrementDyingMonsterFrameIndex(MonsterEntity &monster)
+void MonsterManager::IncrementDyingMonsterFrameIndex(MonsterEntity* monsterPtr)
 {
-    int indexLimit = m_MonsterEntityView.GetDyingTextureArraySize(monster.GetType());
-    monster.IncrementDyingFrameIndex(indexLimit);
+    int indexLimit = m_MonsterEntityView.GetDyingTextureArraySize(monsterPtr->GetType());
+    monsterPtr->IncrementDyingFrameIndex(indexLimit);
 }
 
-void MonsterManager::IncrementMonsterFrameIndex(MonsterEntity &monster)
+void MonsterManager::IncrementMonsterFrameIndex(MonsterEntity* monsterPtr)
 {
-    if (monster.GetIsDying())
+    if (monsterPtr->GetIsDying())
     {
-        IncrementDyingMonsterFrameIndex(monster);
+        IncrementDyingMonsterFrameIndex(monsterPtr);
     }
     else
     {
-        IncrementActiveMonsterFrameIndex(monster);
+        IncrementActiveMonsterFrameIndex(monsterPtr);
     }
 }
 
-void MonsterManager::UpdateMonsterTexture(MonsterEntity &monster)
+void MonsterManager::UpdateMonsterTexture(MonsterEntity* monsterPtr)
 {
-    MonsterEntityView::MonsterEntityData *data = m_MonsterEntityView.GetMonsterEntityData(&monster);
+    MonsterEntityView::MonsterEntityData *data = m_MonsterEntityView.GetMonsterEntityData(monsterPtr);
     if (data != nullptr)
     {
-        m_MonsterEntityView.SetMonsterTexture(*data, monster.GetType());
+        m_MonsterEntityView.SetMonsterTexture(*data, monsterPtr->GetType());
     }
     else
     {

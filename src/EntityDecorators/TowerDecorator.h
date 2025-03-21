@@ -22,7 +22,7 @@ public:
         m_decoratedTower->SetTargetStrategy(strategy);
     }
 
-    virtual MonsterEntity* SelectTarget(const std::vector<MonsterEntity>& enemies) const override
+    virtual MonsterEntity* SelectTarget(const std::vector<std::unique_ptr<MonsterEntity>>& enemies) const override
     {
         return m_decoratedTower->SelectTarget(enemies);
     }

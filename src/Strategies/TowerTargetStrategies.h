@@ -8,18 +8,18 @@
 
 class ClosestTargetStrategy : public TowerTargetStrategy {
     public:
-        MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<MonsterEntity>& enemies) const override {
+        MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<std::unique_ptr<MonsterEntity>>& enemies) const override {
             //std::cout << "ClosestTargetStrategy: Searching for target..." << std::endl;
             MonsterEntity* nearestEnemy = nullptr;
             float shortestDistance = std::numeric_limits<float>::max();
     
             for (const auto& enemy : enemies) {
-                sf::Vector2f vectorToEnemy = enemy.GetPosition() - tower.GetPosition();
+                sf::Vector2f vectorToEnemy = enemy->GetPosition() - tower.GetPosition();
                 float distance = MathHelpers::Length(vectorToEnemy);
                 
-                if (!enemy.GetIsDying() && !enemy.GetIsDead() && distance < shortestDistance && distance < tower.GetRange()) {
+                if (!enemy->GetIsDying() && !enemy->GetIsDead() && distance < shortestDistance && distance < tower.GetRange()) {
                     shortestDistance = distance;
-                    nearestEnemy = const_cast<MonsterEntity*>(&enemy);
+                    nearestEnemy = enemy.get();
                 }
             }
             // if (nearestEnemy)
@@ -32,18 +32,18 @@ class ClosestTargetStrategy : public TowerTargetStrategy {
     
     class StrongestTargetStrategy : public TowerTargetStrategy {
     public:
-        MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<MonsterEntity>& enemies) const override {
+        MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<std::unique_ptr<MonsterEntity>>& enemies) const override {
             //std::cout << "StrongestTargetStrategy: Searching for target..." << std::endl;
             MonsterEntity* strongestEnemy = nullptr;
             float highestHealth = 0.0f;
     
             for (const auto& enemy : enemies) {
-                sf::Vector2f vectorToEnemy = enemy.GetPosition() - tower.GetPosition();
+                sf::Vector2f vectorToEnemy = enemy->GetPosition() - tower.GetPosition();
                 float distance = MathHelpers::Length(vectorToEnemy);
                 
-                if (!enemy.GetIsDying() && !enemy.GetIsDead() && distance < tower.GetRange() && enemy.GetHealth() > highestHealth) {
-                    highestHealth = enemy.GetHealth();
-                    strongestEnemy = const_cast<MonsterEntity*>(&enemy);
+                if (!enemy->GetIsDying() && !enemy->GetIsDead() && distance < tower.GetRange() && enemy->GetHealth() > highestHealth) {
+                    highestHealth = enemy->GetHealth();
+                    strongestEnemy = enemy.get();
                 }
             }
             // if (strongestEnemy)
@@ -57,18 +57,18 @@ class ClosestTargetStrategy : public TowerTargetStrategy {
     
     class WeakestTargetStrategy : public TowerTargetStrategy {
     public:
-        MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<MonsterEntity>& enemies) const override {
+        MonsterEntity* SelectTarget(const TowerEntity& tower, const std::vector<std::unique_ptr<MonsterEntity>>& enemies) const override {
             //std::cout << "WeakestTargetStrategy: Searching for target..." << std::endl;
             MonsterEntity* weakestEnemy = nullptr;
             float lowestHealth = std::numeric_limits<float>::max();
     
             for (const auto& enemy : enemies) {
-                sf::Vector2f vectorToEnemy = enemy.GetPosition() - tower.GetPosition();
+                sf::Vector2f vectorToEnemy = enemy->GetPosition() - tower.GetPosition();
                 float distance = MathHelpers::Length(vectorToEnemy);
                 
-                if (!enemy.GetIsDying() && !enemy.GetIsDead() && distance < tower.GetRange() && enemy.GetHealth() < lowestHealth) {
-                    lowestHealth = enemy.GetHealth();
-                    weakestEnemy = const_cast<MonsterEntity*>(&enemy);
+                if (!enemy->GetIsDying() && !enemy->GetIsDead() && distance < tower.GetRange() && enemy->GetHealth() < lowestHealth) {
+                    lowestHealth = enemy->GetHealth();
+                    weakestEnemy = enemy.get();
                 }
             }
     

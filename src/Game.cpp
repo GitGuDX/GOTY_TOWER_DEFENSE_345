@@ -34,7 +34,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iInitialWealth(10000)
+    , m_iInitialWealth(0)
     #else
     , m_iInitialWealth(500)
     #endif
@@ -742,37 +742,37 @@ void Game::UpdatePlay()
 void Game::UpdateMonsters()
 {
     const std::vector<sf::Vector2f>& path = m_GUIManager.GetMapSetup()->GetPath();
-    std::vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
+    std::vector<std::unique_ptr<MonsterEntity>>& activeMonsters = m_MonsterManager.GetActiveMonsters();
 
     // Generate monsters
     m_MonsterManager.GenerateCurrentWave(m_DeltaTime.asSeconds());
 
     // Update monsters
-    for (MonsterEntity& monster : activeMonsters)
+    for (std::unique_ptr<MonsterEntity>& monsterPtr : activeMonsters)
     {
-        if (monster.GetIsDead() == false && monster.GetIsDying() == false)
+        if (monsterPtr->GetIsDead() == false && monsterPtr->GetIsDying() == false)
         { 
-            if (monster.GetHealth() <= 0)
+            if (monsterPtr->GetHealth() <= 0)
             {
                 #ifdef DEBUG
                 std::cout << "Monster destroyed!" << std::endl;
                 #endif
-                UpdateWealth(monster.GetReward());
-                monster.SetIsDying(true);
+                UpdateWealth(monsterPtr->GetReward());
+                monsterPtr->SetIsDying(true);
             }
             // If monster reaches the exit tile, player looses wealth then monster is removed
-            else if (monster.GetCurrentPathIndex() >= path.size() - 1)
+            else if (monsterPtr->GetCurrentPathIndex() >= path.size() - 1)
             {
-                UpdateWealth(-monster.GetStrength());
+                UpdateWealth(-(monsterPtr->GetStrength()));
 
-                m_MonsterManager.RemoveMonster(monster);
+                m_MonsterManager.RemoveMonster(monsterPtr.get()); 
             }
         }
 
         // If monster is finished dying, remove monster
-        if (monster.GetIsFinishedDying() == true && monster.GetIsDead() == false)
+        if (monsterPtr->GetIsFinishedDying() == true && monsterPtr->GetIsDead() == false)
         {
-            m_MonsterManager.RemoveMonster(monster);
+            m_MonsterManager.RemoveMonster(monsterPtr.get());
         }
     }
 
@@ -782,18 +782,18 @@ void Game::UpdateMonsters()
 
 
     // Update monster positions
-    for (MonsterEntity& monster : activeMonsters)
+    for (std::unique_ptr<MonsterEntity>& monsterPtr : activeMonsters)
     {
-        size_t monsterCurrentTileIndex = monster.GetCurrentPathIndex();
-        if (monster.GetIsDying() == false && monster.GetIsDead() == false && monsterCurrentTileIndex < path.size() - 1)
+        size_t monsterCurrentTileIndex = monsterPtr->GetCurrentPathIndex();
+        if (monsterPtr->GetIsDying() == false && monsterPtr->GetIsDead() == false && monsterCurrentTileIndex < path.size() - 1)
         {
             Vector2f nextTilePos = path[monsterCurrentTileIndex + 1];
-            Vector2f tileToMonster = nextTilePos - monster.GetPosition();
+            Vector2f tileToMonster = nextTilePos - monsterPtr->GetPosition();
             float distanceToNext = MathHelpers::Length(tileToMonster);
 
             // Calculate movement step based on speed and time
             float dt = std::min(m_DeltaTime.asSeconds(), 0.1f);                 // Fix delta time fluctuations
-            float moveStep = dt * monster.GetSpeed();
+            float moveStep = dt * monsterPtr->GetSpeed();
 
             // Ensure we don't overshoot
             moveStep = std::min(moveStep, distanceToNext);
@@ -802,13 +802,13 @@ void Game::UpdateMonsters()
             Vector2f direction = (distanceToNext > 1e-6f) ? MathHelpers::getNormalize(tileToMonster) : Vector2f(0, 0);
 
             // Move the monster with the adjusted moveStep
-            monster.Move(direction * moveStep);
+            monsterPtr->Move(direction * moveStep);
 
             // If the monster has reached the tile, update its path index
             if (distanceToNext <= moveStep + 1e-6f)  // Small epsilon to handle float precision issues
             {
-                monster.SetCurrentPathIndex(monsterCurrentTileIndex + 1);
-                monster.SetPosition(nextTilePos); // Snap position exactly
+                monsterPtr->SetCurrentPathIndex(monsterCurrentTileIndex + 1);
+                monsterPtr->SetPosition(nextTilePos); // Snap position exactly
             }
         }
     }
@@ -863,7 +863,7 @@ void UpdateHealthBar(Monster& enemy)
 void Game::UpdateTowers()
 {
     std::vector<std::unique_ptr<TowerEntity>>& activeTowers = m_TowerManager.GetActiveTowers();
-    vector<MonsterEntity> activeMonsters = m_MonsterManager.GetActiveMonsters();
+    std::vector<std::unique_ptr<MonsterEntity>>& activeMonsters = m_MonsterManager.GetActiveMonsters();
 
     for (std::unique_ptr<TowerEntity>& towerPtr : activeTowers)
     {
@@ -886,7 +886,7 @@ void Game::UpdateTowers()
             //         pNearestEnemy = &monster;
             //     }
             // }
-            pNearestEnemy = towerPtr->SelectTarget(m_MonsterManager.GetActiveMonsters());
+            pNearestEnemy = towerPtr->SelectTarget(activeMonsters);
     
             if (pNearestEnemy != nullptr)
             {
@@ -942,7 +942,7 @@ void Game::UpdateTowers()
 void Game::UpdateAxes()
 {
     const float COLLISION_DISTANCE = 25.0f; // Adjust collision radius as needed
-    vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
+    std::vector<std::unique_ptr<MonsterEntity>>& activeMonsters = m_MonsterManager.GetActiveMonsters();
 
     for (auto it = m_aAxes.begin(); it != m_aAxes.end();)
     {
@@ -953,19 +953,19 @@ void Game::UpdateAxes()
 
         // ** Strategy Pattern
         // Check collision with monsters
-        for (int i = static_cast<int>(activeMonsters.size()) - 1; i >= 0; --i)
+        // for (int i = static_cast<int>(activeMonsters.size()) - 1; i >= 0; --i)
+        for (std::unique_ptr<MonsterEntity>& monsterPtr : activeMonsters)
         {
-            auto& monster = activeMonsters[i];
-            sf::Vector2f diff = monster.GetPosition() - it->GetPosition();
+            sf::Vector2f diff = monsterPtr->GetPosition() - it->GetPosition();
             float distance = MathHelpers::Length(diff);
 
 
-            if (monster.GetIsDead() == false && monster.GetIsDying() == false && distance < COLLISION_DISTANCE)
+            if (monsterPtr->GetIsDead() == false && monsterPtr->GetIsDying() == false && distance < COLLISION_DISTANCE)
             {
                 std::string hitMonsterName;
 
                 #ifdef DEBUG
-                switch (static_cast<int>(monster.GetType()))
+                switch (static_cast<int>(monsterPtr->GetType()))
                 {
                     case 0: hitMonsterName = "Skeleton"; break;
                     case 1: hitMonsterName = "Reaper"; break;
@@ -975,15 +975,15 @@ void Game::UpdateAxes()
                     default: hitMonsterName = "Unknown"; break;
                 }
                 std::cout << "Debug: Axe hit " << hitMonsterName << " at position ("
-                        << monster.GetPosition().x << ", "
-                        << monster.GetPosition().y << ")" << std::endl;
+                        << monsterPtr->GetPosition().x << ", "
+                        << monsterPtr->GetPosition().y << ")" << std::endl;
                 #endif
 
                 hitMonster = true;
-                monster.SetHealth(monster.GetHealth() - it->GetDamage());
+                monsterPtr->SetHealth(monsterPtr->GetHealth() - it->GetDamage());
 
                 #ifdef DEBUG
-                std::cout << "\n" << monster.GetHealth() << "\n";
+                std::cout << "\n" << monsterPtr->GetHealth() << "\n";
                 #endif
 
                 break;

@@ -6,6 +6,7 @@
 #include "../Generators/TowerGeneratorData.h"
 #include <iostream>
 #include <vector>
+#include <memory>
 #include "../TowerTargetStrategy.h"
 
 //class TowerGenerator;
@@ -33,7 +34,7 @@ public:
 
    
 
-    virtual MonsterEntity* SelectTarget(const std::vector<MonsterEntity>& enemies) const {
+    virtual MonsterEntity* SelectTarget(const std::vector<std::unique_ptr<MonsterEntity>>& enemies) const {
         if (m_targetStrategy) {
             return m_targetStrategy->SelectTarget(*this, enemies);
         }
