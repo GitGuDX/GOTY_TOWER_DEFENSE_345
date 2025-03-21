@@ -13,7 +13,7 @@ public:
 
     float GetSpeed() const override
     {
-        return m_decoratedTower->GetSpeed() * UpgradeRate::fSpeedMultiplier;
+        return m_decoratedTower->GetSpeed() * TowerGeneratorData::UpgradeRate::fSpeedMultiplier;
     }
 };
 

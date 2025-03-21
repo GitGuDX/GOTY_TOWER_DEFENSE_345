@@ -15,7 +15,7 @@ public:
     {
         //std::cout << "range multipler is: " << TowerEntity::UpgradeRate::fRangeMultiplier << std::endl;
         //std::cout << "decorator base range is: " << m_decoratedTower->GetRange() << std::endl;
-        return m_decoratedTower->GetRange() * TowerEntity::UpgradeRate::fRangeMultiplier;
+        return m_decoratedTower->GetRange() * TowerGeneratorData::UpgradeRate::fRangeMultiplier;
     }
 };
 

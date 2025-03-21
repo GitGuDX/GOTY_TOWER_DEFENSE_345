@@ -13,7 +13,7 @@ CooldownBoostDecorator(std::unique_ptr<TowerEntity> tower)
 
     float GetMaxCooldown() const override
     {
-        return m_decoratedTower->GetMaxCooldown() * UpgradeRate::fCooldownMultiplier;
+        return m_decoratedTower->GetMaxCooldown() * TowerGeneratorData::UpgradeRate::fCooldownMultiplier;
     }
 
 };

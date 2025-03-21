@@ -14,14 +14,14 @@
 
 class TowerEntity : public Entity, public IGameSubject
 {
-protected:
-    struct UpgradeRate
-    {
-        static constexpr float fDamageMultiplier = 1.70f;
-        static constexpr float fRangeMultiplier = 1.55f;
-        static constexpr float fCooldownMultiplier = 1.4f;
-        static constexpr float fSpeedMultiplier = 1.60f;
-    };
+// protected:
+//     struct UpgradeRate
+//     {
+//         static constexpr float fDamageMultiplier = 1.70f;
+//         static constexpr float fRangeMultiplier = 1.55f;
+//         static constexpr float fCooldownMultiplier = 1.4f;
+//         static constexpr float fSpeedMultiplier = 1.60f;
+//     };
 
 public:
     TowerEntity(TowerGeneratorData::TowerType type); // Default constructor takes a type

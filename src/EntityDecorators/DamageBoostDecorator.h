@@ -13,7 +13,7 @@ public:
 
     float GetDamage() const override
     {
-        return m_decoratedTower->GetDamage() * UpgradeRate::fDamageMultiplier;
+        return m_decoratedTower->GetDamage() * TowerGeneratorData::UpgradeRate::fDamageMultiplier;
     }
 };
 

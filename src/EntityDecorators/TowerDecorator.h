@@ -2,6 +2,7 @@
 #define TOWER_DECORATOR_H
 
 #include "../Entities/TowerEntity.h"
+#include "../Generators/TowerGeneratorData.h"
 #include <memory>
 
 class TowerEntityDecorator : public TowerEntity

@@ -37,6 +37,14 @@ namespace TowerGeneratorData {  // Renamed namespace to TowerGeneratorData
             static constexpr int iCost = 200;
         };
     };
+
+    struct UpgradeRate
+    {
+        static constexpr float fDamageMultiplier = 1.70f;
+        static constexpr float fRangeMultiplier = 1.55f;
+        static constexpr float fCooldownMultiplier = 1.4f;
+        static constexpr float fSpeedMultiplier = 1.60f;
+    };
 }
 
 #endif // TOWER_GENERATOR_DATA_H
