@@ -5,7 +5,7 @@ namespace TowerGeneratorData {  // Renamed namespace to TowerGeneratorData
     enum class TowerType {
         Basic,
         Sniper,
-        Rapid
+        Rapid, 
     };
 
     struct TowerTypeData

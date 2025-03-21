@@ -767,6 +767,8 @@ void Game::UpdateMonsters()
 
                 m_MonsterManager.RemoveMonster(monsterPtr.get()); 
             }
+
+            m_MonsterManager.UpdateMonsterBuffs(monsterPtr, m_DeltaTime.asSeconds());
         }
 
         // If monster is finished dying, remove monster
@@ -921,7 +923,7 @@ void Game::UpdateTowers()
                 float angle = atan2(vTowerToMonster.y, vTowerToMonster.x) * 180.0f / M_PI + 90.0f;
                 newAxe.SetDirection(vTowerToMonster);
                 newAxe.SetRotation(angle);
-                
+                newAxe.SetProjectileType(towerPtr->GetType());
 
                 towerPtr->ResetCooldown(); // Reset this tower's cooldown
             }
@@ -981,7 +983,12 @@ void Game::UpdateAxes()
 
                 hitMonster = true;
                 monsterPtr->SetHealth(monsterPtr->GetHealth() - it->GetDamage());
-
+                
+                if (it->GetProjectileType() == TowerGeneratorData::TowerType::Sniper)
+                {
+                    monsterPtr = m_MonsterManager.ApplySpeedDebuffToMonster(std::move(monsterPtr));
+                }
+                
                 #ifdef DEBUG
                 std::cout << "\n" << monsterPtr->GetHealth() << "\n";
                 #endif

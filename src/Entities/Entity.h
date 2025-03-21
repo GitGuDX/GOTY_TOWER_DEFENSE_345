@@ -8,6 +8,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include "../Generators/TowerGeneratorData.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 
@@ -110,12 +111,25 @@ public:
 
 	float GetDamage() const { return m_fDamage; }
 
+	// For projectile. Move this to Projectile class when created
+	void SetProjectileType(TowerGeneratorData::TowerType type)
+	{
+		m_projectileType = type;
+	}
+
+	TowerGeneratorData::TowerType GetProjectileType() const
+	{
+		return m_projectileType;
+	}
+
 public:
     Sprite m_Sprite;
 	sf::Vector2f m_Direction;  // Store initial direction
 	float m_speed; // Adjust speed as needed
 	float m_fDamage;
-	
+
+	// For projectile. Move this to Projectile class when created
+	TowerGeneratorData::TowerType m_projectileType;
 
    	bool operator==(const Entity& other) const {
         return this->GetPosition() == other.GetPosition(); // Example, compare based on position or any other criteria

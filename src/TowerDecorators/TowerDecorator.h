@@ -3,7 +3,6 @@
 
 #include "../Entities/TowerEntity.h"
 #include "../Generators/TowerGeneratorData.h"
-#include <memory>
 
 class TowerEntityDecorator : public TowerEntity
 {
@@ -18,12 +17,12 @@ public:
 
     virtual ~TowerEntityDecorator() = default;
 
-    virtual void SetTargetStrategy(TowerTargetStrategy* strategy) override
+    void SetTargetStrategy(TowerTargetStrategy* strategy) override
     {
         m_decoratedTower->SetTargetStrategy(strategy);
     }
 
-    virtual MonsterEntity* SelectTarget(const std::vector<std::unique_ptr<MonsterEntity>>& enemies) const override
+    MonsterEntity* SelectTarget(const std::vector<std::unique_ptr<MonsterEntity>>& enemies) const override
     {
         return m_decoratedTower->SelectTarget(enemies);
     }

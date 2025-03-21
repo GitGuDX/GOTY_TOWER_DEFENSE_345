@@ -96,12 +96,12 @@ void TowerManager::CreateTower(TowerGeneratorData::TowerType towerType, const sf
 {
     try {
         // Create tower
-        std::cout << "Creating tower..." << std::endl;
+        //std::cout << "Creating tower..." << std::endl;
         auto newTower = std::make_unique<TowerEntity>(m_TowerGenerator.GenerateTower(towerType));
         
         // Wrap in decorator
         newTower = std::make_unique<TowerEntityDecorator>(std::move(newTower));
-        std::cout << "Tower created at: " << newTower.get() << std::endl;
+        //std::cout << "Tower created at: " << newTower.get() << std::endl;
         
         try {
             // Initialize tower
