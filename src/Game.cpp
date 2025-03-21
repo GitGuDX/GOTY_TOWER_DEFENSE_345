@@ -34,7 +34,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iInitialWealth(10000)
+    , m_iInitialWealth(40)
     #else
     , m_iInitialWealth(500)
     #endif
@@ -892,11 +892,11 @@ void Game::UpdateTowers()
                 // Vector2f monsterPosition = pNearestEnemy->GetPosition();
                 // std::cout << "target monster position: " << monsterPosition.x << " " << monsterPosition.y << std::endl;
                 // Create and setup new axe
-                if (towerPtr->GetType() == TowerGenerator::TowerType::Rapid) 
+                if (towerPtr->GetType() == TowerGeneratorData::TowerType::Rapid) 
                 {
                     m_aAxes.push_back(m_RapidBulletTemplate);
                 } 
-                else if (towerPtr->GetType() == TowerGenerator::TowerType::Sniper) 
+                else if (towerPtr->GetType() == TowerGeneratorData::TowerType::Sniper) 
                 {
                     m_aAxes.push_back(m_SniperBulletTemplate);
                 }

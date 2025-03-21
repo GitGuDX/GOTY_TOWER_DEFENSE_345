@@ -92,7 +92,7 @@ std::vector<TowerEntity *> TowerManager::GetTemplateTowers()
 //     return result;
 // }
 
-void TowerManager::CreateTower(TowerGenerator::TowerType towerType, const sf::Vector2f &position)
+void TowerManager::CreateTower(TowerGeneratorData::TowerType towerType, const sf::Vector2f &position)
 {
     try {
         // Create tower
@@ -113,11 +113,11 @@ void TowerManager::CreateTower(TowerGenerator::TowerType towerType, const sf::Ve
             try {
                 TowerTargetStrategy* strategy = nullptr;
                 switch(towerType) {
-                    case TowerGenerator::TowerType::Rapid:
+                    case TowerGeneratorData::TowerType::Rapid:
                         strategy = new ClosestTargetStrategy();
                         std::cout << "Setting Closest Target Strategy" << std::endl;
                         break;
-                    case TowerGenerator::TowerType::Sniper:
+                    case TowerGeneratorData::TowerType::Sniper:
                         strategy = new StrongestTargetStrategy();
                         std::cout << "Setting Strongest Target Strategy" << std::endl;
                         break;

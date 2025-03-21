@@ -58,7 +58,7 @@ public:
         m_decoratedTower->SetPosition(position);
     }
 
-    void SetType(TowerGenerator::TowerType type) override
+    void SetType(TowerGeneratorData::TowerType type) override
     {
         m_decoratedTower->SetType(type);
     }
@@ -98,7 +98,7 @@ public:
         m_decoratedTower->SetIsTemplate(isTemplate);
     }
 
-    TowerGenerator::TowerType GetType() const override 
+    TowerGeneratorData::TowerType GetType() const override 
     { 
         return m_decoratedTower->GetType(); 
     }

@@ -272,13 +272,13 @@ void TowerEntityView::SetActiveTowerTexture(TowerEntityData* data)
 {
     switch (data->type)
     {
-        case TowerGenerator::TowerType::Basic:
+        case TowerGeneratorData::TowerType::Basic:
             //data->sprite.setTexture(m_BasicTowerTextures[m_curentTowerFrameIndex]);
             break;
-        case TowerGenerator::TowerType::Sniper:
+        case TowerGeneratorData::TowerType::Sniper:
             data->sprite.setTexture(m_SniperTowerTextures[m_curentTowerFrameIndex]);
             break;
-        case TowerGenerator::TowerType::Rapid:
+        case TowerGeneratorData::TowerType::Rapid:
             data->sprite.setTexture(m_RapidTowerTextures[m_curentTowerFrameIndex]);
             break;
         default:
@@ -295,17 +295,17 @@ void TowerEntityView::IncrementCurentTowerFrameIndex()
     }
 }
 
-void TowerEntityView::SetTemplateTowerSprite(TowerEntityData &data, TowerGenerator::TowerType type)
+void TowerEntityView::SetTemplateTowerSprite(TowerEntityData &data, TowerGeneratorData::TowerType type)
 {
     switch (type)
     {
-    case TowerGenerator::TowerType::Basic:
+    case TowerGeneratorData::TowerType::Basic:
         //data.sprite.setTexture(m_TemplateBasicTowerTexture);
         break;
-    case TowerGenerator::TowerType::Sniper:
+    case TowerGeneratorData::TowerType::Sniper:
         data.sprite.setTexture(m_TemplateSniperTowerTexture);
         break;
-    case TowerGenerator::TowerType::Rapid:
+    case TowerGeneratorData::TowerType::Rapid:
         data.sprite.setTexture(m_TemplateRapidTowerTexture);
         break;
     default:

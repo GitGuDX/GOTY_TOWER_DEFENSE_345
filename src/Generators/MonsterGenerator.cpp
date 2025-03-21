@@ -18,7 +18,7 @@ void MonsterGenerator::UpdateMonsterRoster()
     m_aNextMonsterRoster.clear();
 
     // Refill m_aCurrentMonsterRoaster
-    m_aNextMonsterRoster = {MonsterType::Ogre, MonsterType::Minotaur, MonsterType::Golem, MonsterType::Reaper, MonsterType::Skeleton};
+    m_aNextMonsterRoster = {MonsterGeneratorData::MonsterType::Ogre, MonsterGeneratorData::MonsterType::Minotaur, MonsterGeneratorData::MonsterType::Golem, MonsterGeneratorData::MonsterType::Reaper, MonsterGeneratorData::MonsterType::Skeleton};
 
     // To randomize monster roster, use Fisher-Yates shuffle on m_aCurrentMonsterRoaster
     // Set up random number generator
@@ -47,25 +47,25 @@ MonsterEntity MonsterGenerator::GetNextMonster() const
     }
 }
 
-int MonsterGenerator::GetWaveStrength(MonsterGenerator::MonsterType currentType)
+int MonsterGenerator::GetWaveStrength(MonsterGeneratorData::MonsterType currentType)
 {
     int waveStrength = 0;
     switch (currentType)
     {
-        case MonsterType::Skeleton:
-            waveStrength = MonsterTypeData::Skeleton::iWaveStrength;
+        case MonsterGeneratorData::MonsterType::Skeleton:
+            waveStrength = MonsterGeneratorData::MonsterTypeData::Skeleton::iWaveStrength;
             break;
-        case MonsterType::Reaper:
-            waveStrength = MonsterTypeData::Reaper::iWaveStrength;
+        case MonsterGeneratorData::MonsterType::Reaper:
+            waveStrength = MonsterGeneratorData::MonsterTypeData::Reaper::iWaveStrength;
             break;
-        case MonsterType::Golem:
-            waveStrength = MonsterTypeData::Golem::iWaveStrength;
+        case MonsterGeneratorData::MonsterType::Golem:
+            waveStrength = MonsterGeneratorData::MonsterTypeData::Golem::iWaveStrength;
             break;
-        case MonsterType::Minotaur:
-            waveStrength = MonsterTypeData::Minotaur::iWaveStrength;
+        case MonsterGeneratorData::MonsterType::Minotaur:
+            waveStrength = MonsterGeneratorData::MonsterTypeData::Minotaur::iWaveStrength;
             break;
-        case MonsterType::Ogre:
-            waveStrength = MonsterTypeData::Ogre::iWaveStrength;
+        case MonsterGeneratorData::MonsterType::Ogre:
+            waveStrength = MonsterGeneratorData::MonsterTypeData::Ogre::iWaveStrength;
             break;
         default:
             waveStrength = 0; // Default case, shouldn't happen, but just in case.
@@ -77,7 +77,7 @@ int MonsterGenerator::GetWaveStrength(MonsterGenerator::MonsterType currentType)
 // Calculate how many monsters to spawn on this round depending on the monster level and its spawn rate
 int MonsterGenerator::GetMonsterCountForRound()
 {
-    MonsterGenerator::MonsterType currentType = m_aCurrentMonsterRoster.back();
+    MonsterGeneratorData::MonsterType currentType = m_aCurrentMonsterRoster.back();
 
     int waveStrength = GetWaveStrength(currentType);
     std::cout << "Wave strength: " << waveStrength << '\n';
@@ -85,10 +85,10 @@ int MonsterGenerator::GetMonsterCountForRound()
     return m_iBaseMonsters + std::pow(1, 1.2) * waveStrength;
 }
 
-float MonsterGenerator::GetLevelUpRateAtLevel(int level, float baseRate)
-{
-    return baseRate * std::pow(1.1f, level - 1); // Assuming a 10% increase per level.
-}
+// float MonsterGenerator::GetLevelUpRateAtLevel(int level, float baseRate)
+// {
+//     return baseRate * std::pow(1.1f, level - 1); // Assuming a 10% increase per level.
+// }
 
 void MonsterGenerator::UpdateNextRoundMonsterGenerator()
 {
@@ -121,5 +121,5 @@ void MonsterGenerator::InitializeFirstRoaster()
     m_iMonsterLevel = 0;
     m_aNextMonsterRoster.clear();
     m_aCurrentMonsterRoster.clear();
-    m_aCurrentMonsterRoster = {MonsterType::Ogre, MonsterType::Minotaur, MonsterType::Golem, MonsterType::Reaper, MonsterType::Skeleton};
+    m_aCurrentMonsterRoster = {MonsterGeneratorData::MonsterType::Ogre, MonsterGeneratorData::MonsterType::Minotaur, MonsterGeneratorData::MonsterType::Golem, MonsterGeneratorData::MonsterType::Reaper, MonsterGeneratorData::MonsterType::Skeleton};
 }

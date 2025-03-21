@@ -1,6 +1,6 @@
 #include "TowerEntity.h"
 
-TowerEntity::TowerEntity(TowerGenerator::TowerType type)
+TowerEntity::TowerEntity(TowerGeneratorData::TowerType type)
     : m_eType(type)
     , m_fRange(0.0f)
     , m_fMaxCooldown(0.0f)
@@ -18,29 +18,29 @@ void TowerEntity::InitializeStat()
 {
     // std::cout << "TowerEntity::InitializeStat() - Tower type: " << static_cast<int>(m_eType) << std::endl;
     // Access the appropriate struct based on the tower type
-    if (m_eType == TowerGenerator::TowerType::Basic) 
+    if (m_eType == TowerGeneratorData::TowerType::Basic) 
     {
-        m_fRange = TowerGenerator::TowerTypeData::Basic::fRange;
-        m_fMaxCooldown = TowerGenerator::TowerTypeData::Basic::fMaxCooldown;
-        m_fDamage = TowerGenerator::TowerTypeData::Basic::fDamage;
-        m_speed = TowerGenerator::TowerTypeData::Basic::fspeed;
-        m_iCost = TowerGenerator::TowerTypeData::Basic::iCost;
+        m_fRange = TowerGeneratorData::TowerTypeData::Basic::fRange;
+        m_fMaxCooldown = TowerGeneratorData::TowerTypeData::Basic::fMaxCooldown;
+        m_fDamage = TowerGeneratorData::TowerTypeData::Basic::fDamage;
+        m_speed = TowerGeneratorData::TowerTypeData::Basic::fspeed;
+        m_iCost = TowerGeneratorData::TowerTypeData::Basic::iCost;
     }
-    else if (m_eType == TowerGenerator::TowerType::Sniper) 
+    else if (m_eType == TowerGeneratorData::TowerType::Sniper) 
     {
-        m_fRange = TowerGenerator::TowerTypeData::Sniper::fRange;
-        m_fMaxCooldown = TowerGenerator::TowerTypeData::Sniper::fMaxCooldown;
-        m_fDamage = TowerGenerator::TowerTypeData::Sniper::fDamage;
-        m_speed = TowerGenerator::TowerTypeData::Sniper::fspeed;
-        m_iCost = TowerGenerator::TowerTypeData::Sniper::iCost;
+        m_fRange = TowerGeneratorData::TowerTypeData::Sniper::fRange;
+        m_fMaxCooldown = TowerGeneratorData::TowerTypeData::Sniper::fMaxCooldown;
+        m_fDamage = TowerGeneratorData::TowerTypeData::Sniper::fDamage;
+        m_speed = TowerGeneratorData::TowerTypeData::Sniper::fspeed;
+        m_iCost = TowerGeneratorData::TowerTypeData::Sniper::iCost;
     }
-    else if (m_eType == TowerGenerator::TowerType::Rapid) 
+    else if (m_eType == TowerGeneratorData::TowerType::Rapid) 
     {
-        m_fRange = TowerGenerator::TowerTypeData::Rapid::fRange;
-        m_fMaxCooldown = TowerGenerator::TowerTypeData::Rapid::fMaxCooldown;
-        m_fDamage = TowerGenerator::TowerTypeData::Rapid::fDamage;
-        m_speed = TowerGenerator::TowerTypeData::Rapid::fspeed;
-        m_iCost = TowerGenerator::TowerTypeData::Rapid::iCost;
+        m_fRange = TowerGeneratorData::TowerTypeData::Rapid::fRange;
+        m_fMaxCooldown = TowerGeneratorData::TowerTypeData::Rapid::fMaxCooldown;
+        m_fDamage = TowerGeneratorData::TowerTypeData::Rapid::fDamage;
+        m_speed = TowerGeneratorData::TowerTypeData::Rapid::fspeed;
+        m_iCost = TowerGeneratorData::TowerTypeData::Rapid::iCost;
     }
     NotifyStatsChanged();
 }

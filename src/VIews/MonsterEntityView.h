@@ -17,7 +17,7 @@ public:
     struct MonsterEntityData 
     {
         Sprite sprite;
-        MonsterGenerator::MonsterType type;
+        MonsterGeneratorData::MonsterType type;
         int health;
         int maxHealth;
         float speed;
@@ -42,9 +42,9 @@ public:
 
     void Draw();
 
-    void SetTemplateMonsterSprite(MonsterEntityData& data, MonsterGenerator::MonsterType type);
+    void SetTemplateMonsterSprite(MonsterEntityData& data, MonsterGeneratorData::MonsterType type);
 
-    void SetMonsterTexture(MonsterEntityData& data, MonsterGenerator::MonsterType type);
+    void SetMonsterTexture(MonsterEntityData& data, MonsterGeneratorData::MonsterType type);
 
     void SetHoveringOnTower(bool isHovering) { m_isHoveringOnTower = isHovering; }
 
@@ -56,9 +56,9 @@ public:
 
     Clock& GetMonsterAnimationDelay() { return m_monsterAnimationDelay; }
 
-    int GetActiveTextureArraySize(MonsterGenerator::MonsterType type);
+    int GetActiveTextureArraySize(MonsterGeneratorData::MonsterType type);
 
-    int GetDyingTextureArraySize(MonsterGenerator::MonsterType type);
+    int GetDyingTextureArraySize(MonsterGeneratorData::MonsterType type);
 
     int GetSize() { return m_MonsterEntitySubjects.size(); }
 

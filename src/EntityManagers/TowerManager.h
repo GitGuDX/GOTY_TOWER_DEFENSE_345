@@ -5,6 +5,7 @@
 #include "../Entities/TowerEntity.h"
 #include "../Views/TowerEntityView.h"
 #include "../Generators/TowerGenerator.h"
+#include "../Generators/TowerGeneratorData.h"
 #include "../EntityDecorators/TowerDecorator.h"
 #include "../EntityDecorators/CooldownBoostDecorator.h"
 #include "../EntityDecorators/DamageBoostDecorator.h"
@@ -40,7 +41,7 @@ public:
 
     TowerEntityView& GetTowerEntityView() { return m_TowerEntityView; }
 
-    void CreateTower(TowerGenerator::TowerType towerType, const sf::Vector2f& position);
+    void CreateTower(TowerGeneratorData::TowerType towerType, const sf::Vector2f& position);
 
     void RemoveTowerAtPosition(const sf::Vector2f& position);
 

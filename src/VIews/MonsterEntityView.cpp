@@ -237,23 +237,23 @@ void MonsterEntityView::Draw()
     }
 }
 
-void MonsterEntityView::SetTemplateMonsterSprite(MonsterEntityData &data, MonsterGenerator::MonsterType type)
+void MonsterEntityView::SetTemplateMonsterSprite(MonsterEntityData &data, MonsterGeneratorData::MonsterType type)
 {
     switch (type)
     {
-        case MonsterGenerator::MonsterType::Skeleton:
+        case MonsterGeneratorData::MonsterType::Skeleton:
             data.sprite.setTexture(m_SkeletonTextures[0]);
             break;
-        case MonsterGenerator::MonsterType::Reaper:
+        case MonsterGeneratorData::MonsterType::Reaper:
             data.sprite.setTexture(m_ReaperTextures[0]);
             break;
-        case MonsterGenerator::MonsterType::Golem:
+        case MonsterGeneratorData::MonsterType::Golem:
             data.sprite.setTexture(m_GolemTextures[0]);
             break;
-        case MonsterGenerator::MonsterType::Minotaur:
+        case MonsterGeneratorData::MonsterType::Minotaur:
             data.sprite.setTexture(m_MinotaurTextures[0]);
             break;
-        case MonsterGenerator::MonsterType::Ogre:
+        case MonsterGeneratorData::MonsterType::Ogre:
             data.sprite.setTexture(m_OgreTextures[0]);
             break;
         default:
@@ -265,11 +265,11 @@ void MonsterEntityView::SetTemplateMonsterSprite(MonsterEntityData &data, Monste
     data.sprite.setOrigin(data.sprite.getLocalBounds().width / 2, data.sprite.getLocalBounds().height / 2);
 }
 
-void MonsterEntityView::SetMonsterTexture(MonsterEntityData &data, MonsterGenerator::MonsterType type)
+void MonsterEntityView::SetMonsterTexture(MonsterEntityData &data, MonsterGeneratorData::MonsterType type)
 {
     switch (type)
     {
-        case MonsterGenerator::MonsterType::Skeleton:
+        case MonsterGeneratorData::MonsterType::Skeleton:
             if (data.isDying)
             {
                 data.sprite.setTexture(m_SkeletonDeathTextures[data.dyingMonsterFrameIndex]);
@@ -279,7 +279,7 @@ void MonsterEntityView::SetMonsterTexture(MonsterEntityData &data, MonsterGenera
                 data.sprite.setTexture(m_SkeletonTextures[data.activeMonsterFrameIndex]);
             }
             break;
-        case MonsterGenerator::MonsterType::Reaper:
+        case MonsterGeneratorData::MonsterType::Reaper:
             if (data.isDying)
             {
                 data.sprite.setTexture(m_ReaperDeathTextures[data.dyingMonsterFrameIndex]);
@@ -289,7 +289,7 @@ void MonsterEntityView::SetMonsterTexture(MonsterEntityData &data, MonsterGenera
                 data.sprite.setTexture(m_ReaperTextures[data.activeMonsterFrameIndex]);
             }
             break;
-        case MonsterGenerator::MonsterType::Golem:
+        case MonsterGeneratorData::MonsterType::Golem:
             if (data.isDying)
             {
                 data.sprite.setTexture(m_GolemDeathTextures[data.dyingMonsterFrameIndex]);
@@ -299,7 +299,7 @@ void MonsterEntityView::SetMonsterTexture(MonsterEntityData &data, MonsterGenera
                 data.sprite.setTexture(m_GolemTextures[data.activeMonsterFrameIndex]);
             }
             break;
-        case MonsterGenerator::MonsterType::Minotaur:
+        case MonsterGeneratorData::MonsterType::Minotaur:
             if (data.isDying)
             {
                 data.sprite.setTexture(m_MinotaurDeathTextures[data.dyingMonsterFrameIndex]);
@@ -309,7 +309,7 @@ void MonsterEntityView::SetMonsterTexture(MonsterEntityData &data, MonsterGenera
                 data.sprite.setTexture(m_MinotaurTextures[data.activeMonsterFrameIndex]);
             }
             break;
-        case MonsterGenerator::MonsterType::Ogre:
+        case MonsterGeneratorData::MonsterType::Ogre:
             if (data.isDying)
             {
                 data.sprite.setTexture(m_OgreDeathTextures[data.dyingMonsterFrameIndex]);
@@ -347,19 +347,19 @@ MonsterEntityView::MonsterEntityData *MonsterEntityView::GetMonsterEntityData(co
     return nullptr;
 }
 
-int MonsterEntityView::GetActiveTextureArraySize(MonsterGenerator::MonsterType type)
+int MonsterEntityView::GetActiveTextureArraySize(MonsterGeneratorData::MonsterType type)
 {
     switch (type)
     {
-        case MonsterGenerator::MonsterType::Skeleton:
+        case MonsterGeneratorData::MonsterType::Skeleton:
             return m_SkeletonTextures.size();
-        case MonsterGenerator::MonsterType::Reaper:
+        case MonsterGeneratorData::MonsterType::Reaper:
             return m_ReaperTextures.size();
-        case MonsterGenerator::MonsterType::Golem:
+        case MonsterGeneratorData::MonsterType::Golem:
             return m_GolemTextures.size();
-        case MonsterGenerator::MonsterType::Minotaur:
+        case MonsterGeneratorData::MonsterType::Minotaur:
             return m_MinotaurTextures.size();
-        case MonsterGenerator::MonsterType::Ogre:
+        case MonsterGeneratorData::MonsterType::Ogre:
             return m_OgreTextures.size();
         default:
             std::cerr << "MonsterEntityView::GetTextureArraySize() - Invalid monster type\n";
@@ -368,19 +368,19 @@ int MonsterEntityView::GetActiveTextureArraySize(MonsterGenerator::MonsterType t
 }
 
 
-int MonsterEntityView::GetDyingTextureArraySize(MonsterGenerator::MonsterType type)
+int MonsterEntityView::GetDyingTextureArraySize(MonsterGeneratorData::MonsterType type)
 {
     switch (type)
     {
-        case MonsterGenerator::MonsterType::Skeleton:
+        case MonsterGeneratorData::MonsterType::Skeleton:
             return m_SkeletonDeathTextures.size();
-        case MonsterGenerator::MonsterType::Reaper:
+        case MonsterGeneratorData::MonsterType::Reaper:
             return m_ReaperDeathTextures.size();
-        case MonsterGenerator::MonsterType::Golem:
+        case MonsterGeneratorData::MonsterType::Golem:
             return m_GolemDeathTextures.size();
-        case MonsterGenerator::MonsterType::Minotaur:
+        case MonsterGeneratorData::MonsterType::Minotaur:
             return m_MinotaurDeathTextures.size();
-        case MonsterGenerator::MonsterType::Ogre:
+        case MonsterGeneratorData::MonsterType::Ogre:
             return m_OgreDeathTextures.size();
         default:
             std::cerr << "MonsterEntityView::GetDyingTextureArraySize() - Invalid monster type\n";

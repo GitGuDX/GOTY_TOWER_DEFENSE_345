@@ -23,7 +23,7 @@ public:
         float speed;
         int cost;
         int level;
-        TowerGenerator::TowerType type;
+        TowerGeneratorData::TowerType type;
         bool isTemplate;
     };
 
@@ -73,7 +73,7 @@ public:
     std::unordered_map<const TowerEntity*, TowerEntityData>& GetSubjects() { return m_TowerEntitySubjects; }
 
 private:
-    void SetTemplateTowerSprite(TowerEntityData &data, TowerGenerator::TowerType type);
+    void SetTemplateTowerSprite(TowerEntityData &data, TowerGeneratorData::TowerType type);
 
 private:
     std::unordered_map<const TowerEntity*, TowerEntityData> m_TowerEntitySubjects;

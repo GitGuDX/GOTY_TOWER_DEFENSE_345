@@ -9,7 +9,7 @@
 #include "../Entities/Tile.h"
 #include "InfoUI.h"
 #include "../Views/InfoUIView.h"
-#include "../Generators/MonsterGenerator.h"
+#include "../Generators/MonsterGeneratorData.h"
 #include <SFML/Graphics.hpp>
 
 #include <memory>
@@ -74,7 +74,7 @@ public:
 
     void UpdateTowerHoverUI(std::unique_ptr<TowerEntity>& towerPtr);
 
-    void UpdateMonsterUi(MonsterGenerator::MonsterType type, int level);
+    void UpdateMonsterUi(MonsterGeneratorData::MonsterType type, int level);
 
     void BlinkTiles(Tile::Type type, sf::Time deltaTime);
 

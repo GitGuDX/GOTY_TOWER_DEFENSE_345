@@ -62,6 +62,7 @@ void MonsterManager::PrepareWave()
 
 void MonsterManager::PrepareFirstWave()
 {
+    std::cout << "Preparing first wave" << std::endl;
     m_MonsterGenerator.InitializeFirstRoaster();
 
     PrepareWave();
@@ -69,6 +70,7 @@ void MonsterManager::PrepareFirstWave()
 
 void MonsterManager::PrepareNextWave()
 {
+    std::cout << "Preparing next wave" << std::endl;
     m_MonsterGenerator.UpdateNextRoundMonsterGenerator();
 
     PrepareWave();

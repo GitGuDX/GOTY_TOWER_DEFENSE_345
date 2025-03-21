@@ -3,17 +3,18 @@
 
 #include "Entity.h"
 #include "../GameEvents.h"
-#include "../Generators/MonsterGenerator.h"
+#include "../Generators/MonsterGeneratorData.h"
 #include <iostream>
 #include <vector>
+#include <cmath>
 
-class MonsterGenerator;
+//class MonsterGenerator;
 
 class MonsterEntity : public Entity, public IGameSubject
 {
 public:
     MonsterEntity();
-    MonsterEntity(MonsterGenerator::MonsterType type, int level);
+    MonsterEntity(MonsterGeneratorData::MonsterType type, int level);
     ~MonsterEntity() = default;
 
     void AddObserver(IGameObserver* observer) override {
@@ -52,7 +53,7 @@ public:
         NotifyStatsChanged();
     }
 
-    void SetType(MonsterGenerator::MonsterType type) { 
+    void SetType(MonsterGeneratorData::MonsterType type) { 
         m_eType = type; 
         NotifyStatsChanged();
     }
@@ -111,7 +112,7 @@ public:
 
     void IncrementDyingFrameIndex(int indexLimit);
 
-    MonsterGenerator::MonsterType GetType() const { return m_eType; }
+    MonsterGeneratorData::MonsterType GetType() const { return m_eType; }
 
     float GetHealth() const { return m_iHealth; }
 
@@ -142,10 +143,15 @@ public:
 private:
     void SetInitialStats();
 
+    float GetLevelUpRateAtLevel(int level, float baseRate)
+    {
+        return baseRate * std::pow(1.1f, level - 1); // Assuming a 10% increase per level.
+    }
+
 private:
     std::vector<IGameObserver*> m_observers;
 
-    MonsterGenerator::MonsterType m_eType;
+    MonsterGeneratorData::MonsterType m_eType;
     size_t m_stCurrentPathIndex;           // index of the monster's current path
     float m_iHealth;
     float m_iMaxHealth;

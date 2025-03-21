@@ -1,6 +1,6 @@
 #include "GUIManager.h"
 #include "../Entities/TowerEntity.h"
-#include "../Generators/TowerGenerator.h"
+//#include "../Generators/TowerGenerator.h"
 
 #include <iostream>
 #include <cmath>
@@ -107,11 +107,11 @@ void GUIManager::InitiailizeTowerPrice(std::vector<TowerEntity*>& templateTowers
 {
     for (const TowerEntity* towerPtr : templateTowers)
     {
-        if (towerPtr->GetType() == TowerGenerator::TowerType::Rapid)
+        if (towerPtr->GetType() == TowerGeneratorData::TowerType::Rapid)
         {
             m_infoUI->SetWoodTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
         }
-        else if (towerPtr->GetType() == TowerGenerator::TowerType::Sniper)
+        else if (towerPtr->GetType() == TowerGeneratorData::TowerType::Sniper)
         {
             m_infoUI->SetStoneTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
         }
@@ -171,7 +171,7 @@ void GUIManager::UpdateTowerHoverUI(std::unique_ptr<TowerEntity>& towerPtr)
     m_infoUI->SetHoverTowerUpgradeCost(towerPtr->GetUpgradeCost());
 }
 
-void GUIManager::UpdateMonsterUi(MonsterGenerator::MonsterType type, int level)
+void GUIManager::UpdateMonsterUi(MonsterGeneratorData::MonsterType type, int level)
 {
     if (!m_infoUI)
     {
@@ -183,19 +183,19 @@ void GUIManager::UpdateMonsterUi(MonsterGenerator::MonsterType type, int level)
 
     switch (type)
     {
-    case MonsterGenerator::MonsterType::Skeleton:
+    case MonsterGeneratorData::MonsterType::Skeleton:
         m_infoUI->SetNextMonsterDescriptionString("Basic, vanilla baby");
         break;
-    case MonsterGenerator::MonsterType::Reaper:
+    case MonsterGeneratorData::MonsterType::Reaper:
         m_infoUI->SetNextMonsterDescriptionString("Fast and weak");
         break;
-    case MonsterGenerator::MonsterType::Golem:
+    case MonsterGeneratorData::MonsterType::Golem:
         m_infoUI->SetNextMonsterDescriptionString("Slow but tanky");
         break;
-    case MonsterGenerator::MonsterType::Minotaur:
+    case MonsterGeneratorData::MonsterType::Minotaur:
         m_infoUI->SetNextMonsterDescriptionString("Strong and swift");
         break;
-    case MonsterGenerator::MonsterType::Ogre:
+    case MonsterGeneratorData::MonsterType::Ogre:
         m_infoUI->SetNextMonsterDescriptionString("Balanced all-rounder");
         break;
     default:

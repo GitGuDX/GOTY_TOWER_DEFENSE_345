@@ -3,12 +3,12 @@
 
 #include "Entity.h"
 #include "../GameEvents.h"
-#include "../Generators/TowerGenerator.h"
+#include "../Generators/TowerGeneratorData.h"
 #include <iostream>
 #include <vector>
 #include "../TowerTargetStrategy.h"
 
-class TowerGenerator;
+//class TowerGenerator;
 
 
 class TowerEntity : public Entity, public IGameSubject
@@ -23,7 +23,7 @@ protected:
     };
 
 public:
-    TowerEntity(TowerGenerator::TowerType type); // Default constructor takes a type
+    TowerEntity(TowerGeneratorData::TowerType type); // Default constructor takes a type
     ~TowerEntity() = default;
 
     virtual void SetTargetStrategy(TowerTargetStrategy* strategy) { 
@@ -74,7 +74,7 @@ public:
         NotifyStatsChanged();
     }
 
-    virtual void SetType(TowerGenerator::TowerType type) { 
+    virtual void SetType(TowerGeneratorData::TowerType type) { 
         m_eType = type; 
         NotifyStatsChanged();
     }
@@ -122,7 +122,7 @@ public:
 
     virtual void InitializeStat();
 
-    virtual TowerGenerator::TowerType GetType() const { return m_eType; }
+    virtual TowerGeneratorData::TowerType GetType() const { return m_eType; }
 
     virtual Vector2f GetPosition() const override { return m_vPosition; }
 
@@ -160,7 +160,7 @@ private:
     std::vector<IGameObserver*> m_observers;
     static const int MAX_LEVEL = 3; // Maximum level a tower can reach
 
-    TowerGenerator::TowerType m_eType;
+    TowerGeneratorData::TowerType m_eType;
     sf::Vector2f m_vPosition;
     float m_fRange;
     float m_fMaxCooldown;
