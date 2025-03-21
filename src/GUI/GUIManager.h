@@ -64,7 +64,7 @@ public:
 
     Vector2i GetMapSize() const;
 
-    void InitiailizeTowerPrice(std::vector<TowerEntity>& templateTowers);
+    void InitiailizeTowerPrice(std::vector<TowerEntity*>& templateTowers);
 
     bool InitializeEntryTile(const sf::Vector2f& position);
 
@@ -72,7 +72,7 @@ public:
 
     bool FinalizeExitTile(const sf::Vector2f& position);
 
-    void UpdateTowerHoverUI(TowerEntity& tower);
+    void UpdateTowerHoverUI(std::unique_ptr<TowerEntity>& towerPtr);
 
     void UpdateMonsterUi(MonsterGenerator::MonsterType type, int level);
 

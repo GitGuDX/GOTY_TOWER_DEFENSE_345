@@ -9,6 +9,8 @@ TowerEntity::TowerEntity(TowerGenerator::TowerType type)
     , m_iCost(0)
     , m_iLevel(1)  // Start at level 1
     , m_fShootCooldown(0.0f)
+    , m_targetStrategy(nullptr) 
+
 {
 }
 
@@ -61,12 +63,12 @@ bool TowerEntity::Upgrade()
         return false;
     }
 
-    m_iLevel++;
+    IncrementLevel();
     
-    m_fRange *= UpgradeRate::fRangeMultiplier;
-    m_fMaxCooldown *= UpgradeRate::fCooldownMultiplier;
-    m_fDamage *= UpgradeRate::fDamageMultiplier;
-    m_speed *= UpgradeRate::fSpeedMultiplier;
+    // m_fRange *= UpgradeRate::fRangeMultiplier;
+    // m_fMaxCooldown *= UpgradeRate::fCooldownMultiplier;
+    // m_fDamage *= UpgradeRate::fDamageMultiplier;
+    // m_speed *= UpgradeRate::fSpeedMultiplier;
 
     NotifyStatsChanged();
 

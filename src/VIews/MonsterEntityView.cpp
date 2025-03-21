@@ -230,11 +230,7 @@ void MonsterEntityView::Draw()
     {
         const MonsterEntityData &data = pair.second;
 
-        if (!m_isHoveringOnTower && data.isTemplate)
-        {
-            m_Window.draw(data.sprite);
-        }
-        else if (!data.isTemplate)
+        if (!m_isHoveringOnTower || !data.isTemplate)
         {
             m_Window.draw(data.sprite);
         }

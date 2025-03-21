@@ -27,6 +27,11 @@ public:
         );
     }
 
+    void RemoveAllObservers()
+    {
+        m_observers.clear();
+    }
+
     void NotifyStatsChanged() {
         for (auto observer : m_observers) {
             observer->Update(*this);

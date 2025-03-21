@@ -6,121 +6,153 @@
 #include "../Generators/TowerGenerator.h"
 #include <iostream>
 #include <vector>
+#include "../TowerTargetStrategy.h"
 
 class TowerGenerator;
 
 
 class TowerEntity : public Entity, public IGameSubject
 {
-private:
+protected:
     struct UpgradeRate
     {
-        static constexpr float fDamageMultiplier = 1.20f;
-        static constexpr float fRangeMultiplier = 1.05f;
-        static constexpr float fCooldownMultiplier = 0.9f;
-        static constexpr float fSpeedMultiplier = 1.10f;
+        static constexpr float fDamageMultiplier = 1.70f;
+        static constexpr float fRangeMultiplier = 1.55f;
+        static constexpr float fCooldownMultiplier = 1.4f;
+        static constexpr float fSpeedMultiplier = 1.60f;
     };
 
 public:
     TowerEntity(TowerGenerator::TowerType type); // Default constructor takes a type
     ~TowerEntity() = default;
 
-    void AddObserver(IGameObserver* observer) override {
+    virtual void SetTargetStrategy(TowerTargetStrategy* strategy) { 
+        m_targetStrategy = strategy; 
+        std::cout << "Strategy set for tower at position: " << GetPosition().x << "," << GetPosition().y << std::endl;
+    }
+
+   
+
+    virtual MonsterEntity* SelectTarget(const std::vector<MonsterEntity>& enemies) const {
+        if (m_targetStrategy) {
+            return m_targetStrategy->SelectTarget(*this, enemies);
+        }
+        std::cout << "No targeting strategy set!" << std::endl;
+        return nullptr;
+    }
+
+    virtual void AddObserver(IGameObserver* observer) override {
         //std::cout << "This pointer when addObserver is called: " << this << std::endl;
         m_observers.push_back(observer);
     }
 
-    void RemoveObserver(IGameObserver* observer) override {
+    virtual void RemoveObserver(IGameObserver* observer) override {
         m_observers.erase(
             std::remove(m_observers.begin(), m_observers.end(), observer),
             m_observers.end()
         );
     }
 
-    void NotifyStatsChanged() {
+    virtual void NotifyStatsChanged() {
         //std::cout << "This pointer when notify change is called: " << this << std::endl;
         for (auto observer : m_observers) {
             observer->Update(*this);
         }
     }
 
-    void SetPosition(const sf::Vector2f& position) override
+    virtual const TowerEntity* GetBaseTowerEntity() const
+    {
+        return this;  // In the base class, this is just the current object
+    }
+
+    virtual void SetPosition(const sf::Vector2f& position) override
     {
         //std::cout << "This pointer when set position is called: " << this << std::endl;
-        Entity::SetPosition(position);
+        //Entity::SetPosition(position);
+        m_vPosition = position;
 
         NotifyStatsChanged();
     }
 
-    void SetType(TowerGenerator::TowerType type) { 
+    virtual void SetType(TowerGenerator::TowerType type) { 
         m_eType = type; 
         NotifyStatsChanged();
     }
 
-    void SetRange(float range) { 
+    virtual void SetRange(float range) { 
         m_fRange = range; 
         NotifyStatsChanged();
     }
 
-    void SetMaxCooldown(float cooldown) { 
+    virtual void SetMaxCooldown(float cooldown) { 
         m_fMaxCooldown = cooldown; 
         NotifyStatsChanged();
     }
 
-    void SetDamage(float damage) { 
+    virtual void SetDamage(float damage) { 
         m_fDamage = damage; 
         NotifyStatsChanged();
     }
 
-    void SetSpeed(float speed) { 
+    virtual void SetSpeed(float speed) { 
         m_speed = speed; 
         NotifyStatsChanged();
     }
 
-    void SetCost(int cost) { 
+    virtual void SetCost(int cost) { 
         m_iCost = cost; 
         NotifyStatsChanged();
     }
 
-    void SetLevel(int level) { 
+    virtual void SetLevel(int level) { 
         m_iLevel = level; 
         NotifyStatsChanged();
     }
 
-    void SetIsTemplate(bool isTemplate) { 
+    virtual void SetIsTemplate(bool isTemplate) { 
         m_isTemplate = isTemplate; 
         NotifyStatsChanged();
     }
 
-    void InitializeStat();
+    
+    virtual void IncrementLevel() { 
+        m_iLevel++; 
+        NotifyStatsChanged();
+    }
 
-    TowerGenerator::TowerType GetType() const { return m_eType; }
+    virtual void InitializeStat();
 
-    float GetRange() const { return m_fRange; }
+    virtual TowerGenerator::TowerType GetType() const { return m_eType; }
 
-    float GetMaxCooldown() const { return m_fMaxCooldown; }
+    virtual Vector2f GetPosition() const override { return m_vPosition; }
 
-    float GetDamage() const { return m_fDamage; }
+    virtual float GetRange() const { return m_fRange; }
 
-    float GetSpeed() const { return m_speed; }
+    virtual float GetMaxCooldown() const { return m_fMaxCooldown; }
 
-    int GetCost() const { return m_iCost; }
+    virtual float GetDamage() const { return m_fDamage; }
 
-    int GetLevel() const { return m_iLevel; }
+    virtual float GetSpeed() const { return m_speed; }
 
-    bool GetIsTemplate() const { return m_isTemplate; }
+    virtual int GetCost() const { return m_iCost; }
 
-    bool CanShoot() const { return m_fShootCooldown <= 0.0f; }
+    virtual int GetLevel() const { return m_iLevel; }
 
-    void ResetCooldown() { m_fShootCooldown = m_fMaxCooldown; }
+    virtual bool GetIsTemplate() const { return m_isTemplate; }
 
-    void UpdateCooldown(float deltaTime) { m_fShootCooldown -= deltaTime; }
+    virtual float GetShootCooldown() const { return m_fShootCooldown; }
 
-    bool CanUpgrade() const { return m_iLevel < MAX_LEVEL; }
+    virtual bool CanShoot() const { return m_fShootCooldown <= 0.0f; }
 
-    bool Upgrade();
+    virtual void ResetCooldown() { m_fShootCooldown = GetMaxCooldown(); }
 
-    int GetUpgradeCost() const;
+    virtual void UpdateCooldown(float deltaTime) { m_fShootCooldown -= deltaTime; }
+
+    virtual bool CanUpgrade() const { return m_iLevel < MAX_LEVEL; }
+
+    virtual bool Upgrade();
+
+    virtual int GetUpgradeCost() const;
 
 
 private:
@@ -129,6 +161,7 @@ private:
     static const int MAX_LEVEL = 3; // Maximum level a tower can reach
 
     TowerGenerator::TowerType m_eType;
+    sf::Vector2f m_vPosition;
     float m_fRange;
     float m_fMaxCooldown;
     float m_fDamage;
@@ -137,6 +170,10 @@ private:
     int m_iLevel;
 
     float m_fShootCooldown;
+    TowerTargetStrategy* m_targetStrategy = nullptr;
+
+
+
 
     bool m_isTemplate = false;
 
