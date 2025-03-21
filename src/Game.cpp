@@ -34,7 +34,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iInitialWealth(0)
+    , m_iInitialWealth(10000)
     #else
     , m_iInitialWealth(500)
     #endif
@@ -1008,8 +1008,8 @@ void Game::UpdateAxes()
 
 void Game::UpdateNextMonsterUI()
 {
-    MonsterEntity& nextMonster = m_MonsterManager.GetNextMonster();
-    m_GUIManager.UpdateMonsterUi(nextMonster.GetType(), nextMonster.GetLevel());
+    std::unique_ptr<MonsterEntity>& nextMonster = m_MonsterManager.GetNextMonster();
+    m_GUIManager.UpdateMonsterUi(nextMonster->GetType(), nextMonster->GetLevel());
 }
 
 // ** EDIT TO IMPLEMENT GAMESETUP VIEW CLASS

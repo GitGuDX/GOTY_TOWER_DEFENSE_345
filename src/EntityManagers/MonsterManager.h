@@ -44,7 +44,7 @@ public:
 
     std::vector<std::unique_ptr<MonsterEntity>>& GetActiveMonsters() { return m_activeMonsters; }
 
-    MonsterEntity& GetNextMonster() { return m_nextMonsters[0]; }
+    std::unique_ptr<MonsterEntity>& GetNextMonster() { return m_nextMonsterPtr; }
 
     void RemoveMonster(MonsterEntity* monsterPtr);
 
@@ -94,7 +94,7 @@ private:
 
     std::vector<std::unique_ptr<MonsterEntity>> m_activeMonsters;
 
-    std::array<MonsterEntity, 1> m_nextMonsters;
+    std::unique_ptr<MonsterEntity> m_nextMonsterPtr;
 
     int m_iNumberOfMonsterSpawned;
 

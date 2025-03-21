@@ -83,12 +83,13 @@ void MonsterManager::UpdateNextMonster()
     //m_nextMonsters[0].RemoveObserver(&m_MonsterEntityView);
     
     // The size of m_nextMonsters is fixed at 1, so we directly update the first element
-    m_nextMonsters[0] = m_MonsterGenerator.GetNextMonster();
-    
-    MonsterEntity &monster = m_nextMonsters[0];  // Use the first (and only) monster in the array
-    monster.AddObserver(&m_MonsterEntityView);
-    monster.SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth/2, m_mapSize.y / 3 + 210));
-    monster.SetIsTemplate(true);
+    //m_nextMonsters[0] = m_MonsterGenerator.GetNextMonster();
+    // MonsterEntity &monster = m_nextMonsters[0];  // Use the first (and only) monster in the array
+
+    m_nextMonsterPtr = std::make_unique<MonsterEntity>(m_MonsterGenerator.GetNextMonster());
+    m_nextMonsterPtr->AddObserver(&m_MonsterEntityView);
+    m_nextMonsterPtr->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth/2, m_mapSize.y / 3 + 210));
+    m_nextMonsterPtr->SetIsTemplate(true);
 }
 
 void MonsterManager::GenerateCurrentWave(float addedTime)
