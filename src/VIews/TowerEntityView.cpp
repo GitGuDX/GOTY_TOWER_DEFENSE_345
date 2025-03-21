@@ -18,11 +18,13 @@ void TowerEntityView::LoadTemplateTowerTextures()
     //m_BasicTowerTexture.loadFromFile("../src/Images/Tower1_Frame_1.png");
     m_TemplateSniperTowerTexture.loadFromFile("../src/Images/Tower2_Frame_1.png");
     m_TemplateRapidTowerTexture.loadFromFile("../src/Images/Tower1_Frame_1.png");
+    m_TemplateFlameThrowerTexture.loadFromFile("../src/Images/Tower3_Frame_1.png");
     #endif
     #ifdef MAC
     //m_BasicTowerTexture.loadFromFile("Images/basic_tower.png");
     m_TemplateSniperTowerTexture.loadFromFile("Images/Tower2_Frame_1.png");
     m_TemplateRapidTowerTexture.loadFromFile("Images/Tower1_Frame_1.png");
+    m_TemplateFlameThrowerTexture.loadFromFile("Images/Tower3_Frame_1.png");
     #endif
 }
 
@@ -32,25 +34,35 @@ void TowerEntityView::LoadActiveTowerTextures()
         sf::Texture texture;
         #ifdef MAC
         if (!texture.loadFromFile("Images/Tower1_Frame_" + std::to_string(i) + ".png")) {
-            std::cerr << "Failed to load Skeleton frame " << i << std::endl;
+            std::cerr << "Failed to load tower frame " << i << std::endl;
         }
         m_RapidTowerTextures.push_back(texture);
 
         if (!texture.loadFromFile("Images/Tower2_Frame_" + std::to_string(i) + ".png")) {
-            std::cerr << "Failed to load Skeleton frame " << i << std::endl;
+            std::cerr << "Failed to load tower frame " << i << std::endl;
         }
         m_SniperTowerTextures.push_back(texture);
+
+        if (!texture.loadFromFile("Images/Tower3_Frame_" + std::to_string(i) + ".png")) {
+            std::cerr << "Failed to load tower frame " << i << std::endl;
+        }
+        m_FlameThrower.push_back(texture);
        #endif
        #ifdef LINUX
         if (!texture.loadFromFile("../src/Images/Tower1_Frame_" + std::to_string(i) + ".png")) {
-            std::cerr << "Failed to load Skeleton frame " << i << std::endl;
+            std::cerr << "Failed to load tower frame " << i << std::endl;
         }
         m_RapidTowerTextures.push_back(texture);
 
         if (!texture.loadFromFile("../src/Images/Tower2_Frame_" + std::to_string(i) + ".png")) {
-            std::cerr << "Failed to load Skeleton frame " << i << std::endl;
+            std::cerr << "Failed to load tower frame " << i << std::endl;
         }
         m_SniperTowerTextures.push_back(texture);
+
+        if (!texture.loadFromFile("../src/Images/Tower3_Frame_" + std::to_string(i) + ".png")) {
+            std::cerr << "Failed to load tower frame " << i << std::endl;
+        }
+        m_FlameThrowerTextures.push_back(texture);
         #endif
     }
 }
@@ -133,7 +145,6 @@ void TowerEntityView::SyncTowerData(TowerEntityData& data, const TowerEntity& to
 
 void TowerEntityView::SyncTowers(const std::vector<TowerEntity>& templateTowers, const std::vector<TowerEntity> &activeTowers)
 {
-    //std::cout << "Syncing towers" << std::endl;
     // Clear the existing map to start fresh
     m_TowerEntitySubjects.clear();
 
@@ -174,7 +185,6 @@ TowerEntityView::TowerEntityData *TowerEntityView::GetTowerEntityData(const Towe
 
 void TowerEntityView::StartDraggingTower(const TowerEntityView::TowerEntityData* towerData)
 {
-    //std::cout << "TowerEntityView::StartDraggingTower() - Tower type: " << static_cast<int>(towerType) << std::endl;
     // Prevent memory leak by deleting old dragged tower data if it exists
     if (m_draggedTowerData)
     {
@@ -187,12 +197,8 @@ void TowerEntityView::StartDraggingTower(const TowerEntityView::TowerEntityData*
     m_draggedTowerData->type = towerData->type;
     m_draggedTowerData->cost = towerData->cost;
 
-    
-    
     // Set the type and other properties of the dragged tower based on the tower type
     SetTemplateTowerSprite(*m_draggedTowerData, towerData->type);
-    //std::cout << "dragged tower type: " << static_cast<int>(m_draggedTowerData->type) << std::endl;
-    // Additional properties like scale, position, etc. can be set here.
 }
 
 void TowerEntityView::UpdateDraggedTower(sf::Vector2f mousePos)
@@ -261,6 +267,9 @@ void TowerEntityView::SetActiveTowerTexture(TowerEntityData* data)
         case TowerGenerator::TowerType::Rapid:
             data->sprite.setTexture(m_RapidTowerTextures[m_curentTowerFrameIndex]);
             break;
+        case TowerGenerator::TowerType::FlameThrower:
+            data->sprite.setTexture(m_FlameThrowerTextures[m_curentTowerFrameIndex]);
+            break;
         default:
             break;
     }
@@ -287,6 +296,9 @@ void TowerEntityView::SetTemplateTowerSprite(TowerEntityData &data, TowerGenerat
         break;
     case TowerGenerator::TowerType::Rapid:
         data.sprite.setTexture(m_TemplateRapidTowerTexture);
+        break;
+    case TowerGenerator::TowerType::FlameThrower:
+        data.sprite.setTexture(m_TemplateFlameThrowerTexture);
         break;
     default:
         break;

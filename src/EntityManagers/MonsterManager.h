@@ -8,6 +8,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <array>
 
 using namespace sf;
 
@@ -17,13 +18,17 @@ public:
     MonsterManager(RenderWindow& window);
     ~MonsterManager() = default;
 
-    void SetEntryTilePosition(const Vector2f& position) { m_EntryTilePosition = position; }
+    void LoadMonsterAssets();
+
+    void InitializeMonsters(const Vector2f& position);
 
     void PrepareFirstWave();
 
     void PrepareNextWave();
 
-    void GenerateCurrentWave();
+    void UpdateNextMonster();
+
+    void GenerateCurrentWave(float addedTime);
 
     bool IsAllMonstersSpawned();
 
@@ -35,7 +40,17 @@ public:
 
     std::vector<MonsterEntity>& GetActiveMonsters() { return m_activeMonsters; }
 
+    MonsterEntity& GetNextMonster() { return m_nextMonsters[0]; }
+
     void RemoveMonster(MonsterEntity& monster);
+
+    void UpdateMonsterAnimations(const float m_fFrameTime);
+
+    void SetMapSize(Vector2i mapSize) { m_mapSize = mapSize; }
+
+    void SetInfoUIWidth(int infoUIWidth) { m_infoUIWidth = infoUIWidth; }
+
+private:
 
     void IncrementTimeSinceLastGeneration(float addedTime)
     {
@@ -47,7 +62,6 @@ public:
 
     void UpdateMonsterTexture(MonsterEntity& monster);
 
-private:
     void ClearMonsters();
 
     void PrepareWave();
@@ -63,6 +77,8 @@ private:
 
 private:
     //RenderWindow& m_Window;
+    Vector2i m_mapSize;
+    int m_infoUIWidth;
 
     MonsterEntityView m_MonsterEntityView;
     MonsterGenerator m_MonsterGenerator;
@@ -72,6 +88,8 @@ private:
     int m_CurrentWaveStrength;
 
     std::vector<MonsterEntity> m_activeMonsters;
+
+    std::array<MonsterEntity, 1> m_nextMonsters;
 
     int m_iNumberOfMonsterSpawned;
 

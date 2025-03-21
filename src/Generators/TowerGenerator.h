@@ -16,7 +16,8 @@ public:
     enum class TowerType {
         Basic,
         Sniper,
-        Rapid
+        Rapid,
+        FlameThrower
     };
 
     struct TowerTypeData
@@ -47,12 +48,23 @@ public:
             static constexpr float fspeed = 400.f;
             static constexpr int iCost = 200;
         };
+
+        struct FlameThrower
+        {
+            static constexpr float fRange = 140.0f;
+            static constexpr float fMaxCooldown = 0.0f;
+            static constexpr float fDamage = 0.025f;
+            static constexpr float fspeed = 200.f;
+            static constexpr int iCost = 400;
+        };
     };
 
 
     TowerEntity GenerateRapidTowerTemplate();
 
     TowerEntity GenerateSniperTowerTemplate();
+
+    TowerEntity GenerateFlameThrowerTowerTemplate();
 
     TowerEntity GenerateTower(TowerType type);
 

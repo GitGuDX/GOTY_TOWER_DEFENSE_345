@@ -5,9 +5,6 @@ using namespace sf;
 MonsterEntityView::MonsterEntityView(RenderWindow &window)
     : m_Window(window)
 {
-    LoadActiveMonsterTextures();
-
-    LoadDyingMonsterTextures();
 }
 
 void MonsterEntityView::LoadActiveMonsterTextures()
@@ -187,6 +184,7 @@ void MonsterEntityView::Update(const IGameSubject &subject)
             data.dyingMonsterFrameIndex = monsterEntityPtr->GetDyingFrameIndex();
             data.isDying = monsterEntityPtr->GetIsDying();
             data.isDead = monsterEntityPtr->GetIsDead();
+            data.isTemplate = monsterEntityPtr->GetIsTemplate();
             m_MonsterEntitySubjects[monsterEntityPtr] = data;
         }
         else
@@ -217,6 +215,10 @@ void MonsterEntityView::Update(const IGameSubject &subject)
             {
                 data.isDead = monsterEntityPtr->GetIsDead();
             }
+            if (data.isTemplate != monsterEntityPtr->GetIsTemplate())
+            {
+                data.isTemplate = monsterEntityPtr->GetIsTemplate();
+            }
 
         }
     }
@@ -228,7 +230,14 @@ void MonsterEntityView::Draw()
     {
         const MonsterEntityData &data = pair.second;
 
-        m_Window.draw(data.sprite);
+        if (!m_isHoveringOnTower && data.isTemplate)
+        {
+            m_Window.draw(data.sprite);
+        }
+        else if (!data.isTemplate)
+        {
+            m_Window.draw(data.sprite);
+        }
     }
 }
 

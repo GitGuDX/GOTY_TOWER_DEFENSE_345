@@ -18,7 +18,7 @@ struct TowerStats {
     float speed;
     int level;
 };
-/// add interface later 
+/// add interface later
 class TowerView : public IGameObserver{
     private:
     
@@ -50,11 +50,11 @@ virtual ~TowerView() override {
     float GetCooldown() const{
         return m_fCooldown;
     }
-    float GetSpeed() const 
+    float GetSpeed() const
     {
         return m_fSpeed;
     }
-    float GetRange() const { 
+    float GetRange() const {
         return m_fRange; }
     
 

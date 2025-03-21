@@ -6,7 +6,7 @@
 */
 
 #include "Monster.h"
-#include "Tower.h"
+//#include "Tower.h"
 
 Monster::Monster()
 {
@@ -21,14 +21,14 @@ bool Monster::CanAttack()
     return m_fTimeSinceLastAttack >= m_fAttackCooldown;
 }
 
-void Monster::Attack(Tower& tower)
-{
-    if (CanAttack())
-    {
-        tower.TakeDamage(m_fAttackDamage);  // Tower loses health
-        m_fTimeSinceLastAttack = 0.0f;  // Reset attack cooldown
-    }
-}
+// void Monster::Attack(Tower& tower)
+// {
+//     if (CanAttack())
+//     {
+//         tower.TakeDamage(m_fAttackDamage);  // Tower loses health
+//         m_fTimeSinceLastAttack = 0.0f;  // Reset attack cooldown
+//     }
+// }
 
 void Monster::UpdateAttackCooldown(float deltaTime)
 {

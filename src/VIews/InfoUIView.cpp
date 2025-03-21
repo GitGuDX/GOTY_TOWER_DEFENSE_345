@@ -2,14 +2,15 @@
 
 #include <iostream>
 
-InfoUIView::InfoUIView(sf::RenderWindow& m_Window, Vector2i mapSize, sf::Font& font)
+InfoUIView::InfoUIView(sf::RenderWindow& m_Window, Vector2i mapSize, int infoUIWidth, sf::Font& font)
     : m_Window(m_Window)
     , m_MapSize(mapSize)
+    , m_infoUIWidth(infoUIWidth)
     , m_Font(font)
 {
     //LoadFromFile();
     //InitializeTowerAssets();
-    InitializeTextAssets(); 
+    InitializeTextAssets();
     LoadCrossShapeAssets();
 }
 
@@ -31,23 +32,22 @@ void InfoUIView::Update(const IGameSubject &subject)
         data.m_towerUpgradeCostString = infoUI->GetTowerUpgradeCostString();
         data.m_towerInstructionString_1 = infoUI->GetTowerInstructionString_1();
         data.m_towerInstructionString_2 = infoUI->GetTowerInstructionString_2();
+
+        data.m_nextMonsterTitleString = infoUI->GetNextMonsterTitleString();
+        data.m_nextMonsterLevelString = infoUI->GetNextMonsterLevelString();
+        data.m_nextMonsterDescriptionString = infoUI->GetNextMonsterDescriptionString();
         
         data.m_warningString = infoUI->GetWarningString();
         data.m_modeString = infoUI->GetModeString();
         data.m_woodTowerPriceString = infoUI->GetWoodTowerPriceString();
         data.m_stoneTowerPriceString = infoUI->GetStoneTowerPriceString();
-        data.m_gameOverString = infoUI->GetGameOverString();
+        data.m_FlameThrowerTowerPriceString = infoUI->GetFlameThrowerTowerPriceString();
         data.m_nextRoundString = infoUI->GetNextRoundString();
 
-        // data.m_iCurrentLevel = infoUI->GetCurrentLevel();
-        // data.m_iCurrentWealth = infoUI->GetCurrentWealth();
+        data.m_gameOverString1 = infoUI->GetGameOverString1();
+        data.m_gameOverString2 = infoUI->GetGameOverString2();
+        data.m_gameOverString3 = infoUI->GetGameOverString3();
 
-        // data.m_hoverTowerDamage = infoUI->GetHoverTowerDamage();
-        // data.m_hoverTowerCooldown = infoUI->GetHoverTowerCooldown();
-        // data.m_hoverTowerRange = infoUI->GetHoverTowerRange();
-        // data.m_hoverTowerSpeed = infoUI->GetHoverTowerSpeed();
-
-        //data.m_DraggedTowerPosition = infoUI->GetDraggedTowerPosition();
         data.m_CrossPosition = infoUI->GetCrossPosition();
 
         UpdateTextString(data);
@@ -56,7 +56,7 @@ void InfoUIView::Update(const IGameSubject &subject)
 
 void InfoUIView::DrawHUD()
 {
-    //m_Window.draw(m_scoreText);
+    m_Window.draw(m_scoreText);
     m_Window.draw(m_levelText);
     m_Window.draw(m_instructionText);
     m_Window.draw(m_warningText);
@@ -69,6 +69,10 @@ void InfoUIView::DrawTowerInfo()
     {
         m_Window.draw(m_woodTowerPriceText);
         m_Window.draw(m_stoneTowerPriceText);
+        m_Window.draw(m_FlameThrowerTowerPriceText);
+        m_Window.draw(m_nextMonsterTitleText);
+        m_Window.draw(m_nextMonsterLevelText);
+        m_Window.draw(m_nextMonsterDescriptionText);
     } 
     else
     {
@@ -82,11 +86,6 @@ void InfoUIView::DrawTowerInfo()
         m_Window.draw(m_towerInstructionText_2);
     }
 }
-
-// void InfoUIView::DrawDraggedTower()
-// {
-//     m_Window.draw(m_DraggedTower);
-// }
 
 void InfoUIView::DrawCrossShape()
 {
@@ -107,24 +106,12 @@ void InfoUIView::DrawUpgradeText()
     m_Window.draw(m_upgradeText);
 }
 
-// void InfoUIView::LoadDraggedSprite(Sprite* sprite)
-// {
-//     m_DraggedSprite = sprite;
-// }
-
-// void InfoUIView::UpdateDraggedTowerAsset()
-// {
-//     m_DraggedTower.SetTexture(*m_DraggedSprite->getTexture());
-//     m_DraggedTower.SetScale(Vector2f(0.7f, 0.7f));
-//     FloatRect draggedTowerBounds = m_DraggedTower.GetSprite().getLocalBounds();
-//     m_DraggedTower.SetOrigin(Vector2f(draggedTowerBounds.width / 2, draggedTowerBounds.height / 2 + 10));
-//     m_DraggedTower.SetTextureRect(sf::IntRect(0, 0, 70, 100));
-// }
-
-// void InfoUIView::UpdateDraggedTowerPosition(Vector2f position)
-// {
-//     m_DraggedTower.SetPosition(position);
-// }
+void InfoUIView::DrawGameOverText()
+{
+    m_Window.draw(m_gameOverText_1);
+    m_Window.draw(m_gameOverText_2);
+    m_Window.draw(m_gameOverText_3);
+} 
 
 void InfoUIView::UpdateCrossShapePosition(Vector2f position)
 {
@@ -155,13 +142,25 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     FloatRect stoneTowerPriceBounds = m_stoneTowerPriceText.getLocalBounds();
     m_stoneTowerPriceText.setOrigin(stoneTowerPriceBounds.width / 2, stoneTowerPriceBounds.height / 2);
 
+    m_FlameThrowerTowerPriceText.setString(sf::String("Cost: ") + data.m_FlameThrowerTowerPriceString);   // Set text
+    FloatRect FlameThrowerTowerPriceBounds = m_FlameThrowerTowerPriceText.getLocalBounds();
+    m_FlameThrowerTowerPriceText.setOrigin(FlameThrowerTowerPriceBounds.width / 2, FlameThrowerTowerPriceBounds.height / 2);
+
     m_modeText.setString(data.m_modeString);   // Set text
     FloatRect modeTextBounds = m_modeText.getLocalBounds();
     m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
 
-    m_gameOverText.setString(data.m_gameOverString);   // Set text
-    FloatRect gameOverTextBounds = m_gameOverText.getLocalBounds();
-    m_gameOverText.setOrigin(gameOverTextBounds.width/2, gameOverTextBounds.height/2);
+    m_gameOverText_1.setString(data.m_gameOverString1);   // Set text
+    FloatRect gameOverTextBounds_1 = m_gameOverText_1.getLocalBounds();
+    m_gameOverText_1.setOrigin(gameOverTextBounds_1.width/2, gameOverTextBounds_1.height/2);
+
+    m_gameOverText_2.setString(data.m_gameOverString2);   // Set text
+    FloatRect gameOverTextBounds_2 = m_gameOverText_2.getLocalBounds();
+    m_gameOverText_2.setOrigin(gameOverTextBounds_2.width/2, gameOverTextBounds_2.height/2);
+
+    m_gameOverText_3.setString(data.m_gameOverString3);   // Set text
+    FloatRect gameOverTextBounds_3 = m_gameOverText_3.getLocalBounds();
+    m_gameOverText_3.setOrigin(gameOverTextBounds_3.width/2, gameOverTextBounds_3.height/2);
 
     m_nextRoundText.setString(data.m_nextRoundString);   // Set text
     FloatRect nextRoundTextBounds = m_nextRoundText.getLocalBounds();
@@ -204,7 +203,17 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     FloatRect towerInstructionBounds_2 = m_towerInstructionText_2.getLocalBounds();
     m_towerInstructionText_2.setOrigin(towerInstructionBounds_2.width / 2, towerInstructionBounds_2.height / 2);
 
-    //m_upgradeText.setString(data.m_upgradeString);   // Set text
+    m_nextMonsterTitleText.setString(data.m_nextMonsterTitleString);   // Set text
+    FloatRect nextMonsterTitleBounds = m_nextMonsterTitleText.getLocalBounds();
+    m_nextMonsterTitleText.setOrigin(nextMonsterTitleBounds.width / 2, nextMonsterTitleBounds.height / 2);
+
+    m_nextMonsterLevelText.setString(data.m_nextMonsterLevelString);   // Set text
+    FloatRect nextMonsterLevelBounds = m_nextMonsterLevelText.getLocalBounds();
+    m_nextMonsterLevelText.setOrigin(nextMonsterLevelBounds.width / 2, nextMonsterLevelBounds.height / 2);
+
+    m_nextMonsterDescriptionText.setString(data.m_nextMonsterDescriptionString);   // Set text
+    FloatRect nextMonsterDescriptionBounds = m_nextMonsterDescriptionText.getLocalBounds();
+    m_nextMonsterDescriptionText.setOrigin(nextMonsterDescriptionBounds.width / 2, nextMonsterDescriptionBounds.height / 2);
 }
 
 void InfoUIView::UpdateUpgradeTextPosition(Vector2f position)
@@ -212,62 +221,35 @@ void InfoUIView::UpdateUpgradeTextPosition(Vector2f position)
     m_upgradeText.setPosition(position);
 }
 
-// void InfoUIView::LoadFromFile()
-// {
-//     #ifdef LINUX
-//     m_towerTexture1.loadFromFile("../src/Images/Tower1_Frame_1.png");
-//     m_towerTexture2.loadFromFile("../src/Images/Tower2_Frame_1.png");
-//     #endif
-//     #ifdef MAC
-//     m_towerTexture1.loadFromFile("Images/Tower1_Frame_1.png");
-//     m_towerTexture2.loadFromFile("Images/Tower2_Frame_1.png");
-//     #endif
-// }
-
-// void InfoUIView::InitializeTowerAssets()
-// {
-//     Tower tower1;
-//     tower1.SetTexture(m_towerTexture1);
-//     tower1.SetScale(Vector2f(0.7f, 0.7f));
-//     FloatRect tower1Bounds = tower1.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-//     tower1.SetOrigin(Vector2f(tower1Bounds.width / 2, tower1Bounds.height / 2));
-//     tower1.SetTextureRect(sf::IntRect(0,0,70,100));
-//     tower1.SetPosition(Vector2f(m_MapSize.x + 100, m_MapSize.y/3 + 75));
-//     a_TowerMenu.push_back(tower1);
-
-//     Tower tower2;
-//     tower2.SetTexture(m_towerTexture2);
-//     FloatRect tower2Bounds = tower2.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
-//     tower2.SetOrigin(Vector2f(tower2Bounds.width / 2, tower2Bounds.height / 2));
-//     tower2.SetScale(Vector2f(0.7f, 0.7f));
-//     tower2.SetTextureRect(sf::IntRect(0,0,70,100));
-//     tower2.SetPosition(Vector2f(m_MapSize.x + 200, m_MapSize.y/3 + 75));
-//     a_TowerMenu.push_back(tower2);
-
-// }
-
 void InfoUIView::InitializeTextAssets()
 {
 
-    Vector2f scoreTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 10);
-    Vector2f levelTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 35);
-    Vector2f instructionTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 105);
-    Vector2f warningTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y - 30);
-    Vector2f modeTextPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 65);
-    Vector2f woodTowerPricePosition = Vector2f(m_MapSize.x + 100, m_MapSize.y/3 + 125);
-    Vector2f stoneTowerPricePosition = Vector2f(m_MapSize.x + 200, m_MapSize.y/3 + 125);
-    Vector2f gameOverTextPosition = Vector2f(m_MapSize.x/2, m_MapSize.y/2);
+    Vector2f scoreTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 10);
+    Vector2f levelTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 35);
+    Vector2f instructionTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 115);
+    Vector2f warningTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y - 30);
+    Vector2f modeTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 65);
+    Vector2f woodTowerPricePosition = Vector2f(m_MapSize.x + m_infoUIWidth*1/4, m_MapSize.y/3 + 125);
+    Vector2f stoneTowerPricePosition = Vector2f(m_MapSize.x + m_infoUIWidth*2/4, m_MapSize.y/3 + 125);
+    Vector2f FlameThrowerTowerPricePosition = Vector2f(m_MapSize.x + m_infoUIWidth*1/4 + 200, m_MapSize.y/3 + 125);
+    Vector2f gameOverTextPosition1 = Vector2f(m_MapSize.x/2, m_MapSize.y/2 - 30);
+    Vector2f gameOverTextPosition2 = Vector2f(m_MapSize.x/2, m_MapSize.y/2);
+    Vector2f gameOverTextPosition3 = Vector2f(m_MapSize.x/2, m_MapSize.y/2 + 30);
 
-    Vector2f towerLevelPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 140);
-    Vector2f towerDamagePosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 170);
-    Vector2f towerCooldownPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 200);
-    Vector2f towerRangePosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 230);
-    Vector2f towerSpeedPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 260);
-    Vector2f towerUpgradeCostPosition = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 290);
-    Vector2f towerInstructionPosition_1 = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 340);
-    Vector2f towerInstructionPosition_2 = Vector2f(m_MapSize.x + 150, m_MapSize.y/10 + 370);
+    Vector2f towerLevelPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 145);
+    Vector2f towerDamagePosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 175);
+    Vector2f towerCooldownPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 205);
+    Vector2f towerRangePosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 235);
+    Vector2f towerSpeedPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 265);
+    Vector2f towerUpgradeCostPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 295);
+    Vector2f towerInstructionPosition_1 = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 360);
+    Vector2f towerInstructionPosition_2 = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 390);
 
-    Vector2f nextRoundTextPosition = Vector2f(m_MapSize.x + 230, m_MapSize.y/10 + 110); //Fix this because it should be the same values as instruciton but its not
+    Vector2f nextMonsterTitlePosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 165);
+    Vector2f nextMonsterLevelPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 245);
+    Vector2f nextMonsterDescriptionPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 270);
+
+    Vector2f nextRoundTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 80); //Fix this because it should be the same values as instruciton but its not
 
     // Score text 
     m_scoreText.setFont(m_Font);               // Set font
@@ -283,7 +265,7 @@ void InfoUIView::InitializeTextAssets()
 
     // Warning text 
     m_warningText.setFont(m_Font);               // Set font
-    m_warningText.setCharacterSize(15);        // Set size
+    m_warningText.setCharacterSize(16);        // Set size
     m_warningText.setPosition(warningTextPosition);       // Set position
 
     // Wood tower price
@@ -296,6 +278,10 @@ void InfoUIView::InitializeTextAssets()
     m_stoneTowerPriceText.setCharacterSize(12);        // Set size
     m_stoneTowerPriceText.setPosition(stoneTowerPricePosition);       // Set position
 
+    m_FlameThrowerTowerPriceText.setFont(m_Font);               // Set font
+    m_FlameThrowerTowerPriceText.setCharacterSize(12);        // Set size
+    m_FlameThrowerTowerPriceText.setPosition(FlameThrowerTowerPricePosition);       // Set position
+
     // Current mode text 
     m_modeText.setFont(m_Font);               // Set font
     m_modeText.setCharacterSize(18);        // Set size
@@ -303,14 +289,30 @@ void InfoUIView::InitializeTextAssets()
     m_modeText.setPosition(modeTextPosition);       // Set position
 
     // Game Over text 
-    m_gameOverText.setFont(m_Font);               // Set font
-    m_gameOverText.setCharacterSize(55);        // Set size
-    m_gameOverText.setFillColor(Color::Red);     // Set color
-    m_gameOverText.setPosition(gameOverTextPosition);       // Set position
+    m_gameOverText_1.setFont(m_Font);               // Set font
+    m_gameOverText_1.setCharacterSize(25);        // Set size
+    m_gameOverText_1.setFillColor(Color::Red);     // Set color
+    m_gameOverText_1.setOutlineColor(Color::White);
+    m_gameOverText_1.setOutlineThickness(3);
+    m_gameOverText_1.setPosition(gameOverTextPosition1);       // Set position
+
+    m_gameOverText_2.setFont(m_Font);               // Set font
+    m_gameOverText_2.setCharacterSize(20);        // Set size
+    m_gameOverText_2.setFillColor(Color::Red);     // Set color
+    m_gameOverText_2.setOutlineColor(Color::White);
+    m_gameOverText_2.setOutlineThickness(3);
+    m_gameOverText_2.setPosition(gameOverTextPosition2);       // Set position
+
+    m_gameOverText_3.setFont(m_Font);               // Set font
+    m_gameOverText_3.setCharacterSize(20);        // Set size
+    m_gameOverText_3.setFillColor(Color::Red);     // Set color
+    m_gameOverText_3.setOutlineColor(Color::White);
+    m_gameOverText_3.setOutlineThickness(3);
+    m_gameOverText_3.setPosition(gameOverTextPosition3);       // Set position
 
     // Next Round text 
     m_nextRoundText.setFont(m_Font);               // Set font
-    m_nextRoundText.setCharacterSize(15);        // Set size
+    m_nextRoundText.setCharacterSize(20);        // Set size
     m_nextRoundText.setFillColor(Color::Green);     // Set color
     m_nextRoundText.setPosition(nextRoundTextPosition);       // Set position
 
@@ -361,10 +363,21 @@ void InfoUIView::InitializeTextAssets()
     m_towerInstructionText_2.setFillColor(Color::Yellow);
     m_towerInstructionText_2.setPosition(towerInstructionPosition_2);       // Set position
 
-    // // Upgrade text
-    // m_upgradeText.setFont(m_Font);
-    // m_upgradeText.setCharacterSize(15);
-    // m_upgradeText.setFillColor(Color::White);
+    m_nextMonsterTitleText.setFont(m_Font);               // Set font
+    m_nextMonsterTitleText.setCharacterSize(15);        // Set size
+    m_nextMonsterTitleText.setFillColor(Color::White);    
+    m_nextMonsterTitleText.setPosition(nextMonsterTitlePosition);       // Set position
+
+    m_nextMonsterLevelText.setFont(m_Font);               // Set font
+    m_nextMonsterLevelText.setCharacterSize(15);        // Set size
+    m_nextMonsterLevelText.setFillColor(Color::White);
+    m_nextMonsterLevelText.setPosition(nextMonsterLevelPosition);       // Set position
+
+    m_nextMonsterDescriptionText.setFont(m_Font);               // Set font
+    m_nextMonsterDescriptionText.setCharacterSize(15);        // Set size
+    m_nextMonsterDescriptionText.setFillColor(Color::White);
+    m_nextMonsterDescriptionText.setPosition(nextMonsterDescriptionPosition);       // Set position
+
 }
 
 void InfoUIView::LoadCrossShapeAssets()

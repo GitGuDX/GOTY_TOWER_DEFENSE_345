@@ -16,7 +16,7 @@ void TowerEntity::InitializeStat()
 {
     // std::cout << "TowerEntity::InitializeStat() - Tower type: " << static_cast<int>(m_eType) << std::endl;
     // Access the appropriate struct based on the tower type
-    if (m_eType == TowerGenerator::TowerType::Basic) 
+    if (m_eType == TowerGenerator::TowerType::Basic)
     {
         m_fRange = TowerGenerator::TowerTypeData::Basic::fRange;
         m_fMaxCooldown = TowerGenerator::TowerTypeData::Basic::fMaxCooldown;
@@ -39,6 +39,18 @@ void TowerEntity::InitializeStat()
         m_fDamage = TowerGenerator::TowerTypeData::Rapid::fDamage;
         m_speed = TowerGenerator::TowerTypeData::Rapid::fspeed;
         m_iCost = TowerGenerator::TowerTypeData::Rapid::iCost;
+    }
+    else if (m_eType == TowerGenerator::TowerType::FlameThrower) 
+    {
+        m_fRange = TowerGenerator::TowerTypeData::FlameThrower::fRange;
+        m_fMaxCooldown = TowerGenerator::TowerTypeData::FlameThrower::fMaxCooldown;
+        m_fDamage = TowerGenerator::TowerTypeData::FlameThrower::fDamage;
+        m_speed = TowerGenerator::TowerTypeData::FlameThrower::fspeed;
+        m_iCost = TowerGenerator::TowerTypeData::FlameThrower::iCost;
+    }
+    else 
+    {
+        std::cerr << "Error: Invalid tower type" << std::endl;
     }
     NotifyStatsChanged();
 }

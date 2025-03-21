@@ -81,6 +81,8 @@
         "stack": "cpp",
         "format": "cpp",
         "span": "cpp",
-        "text_encoding": "cpp"
+        "text_encoding": "cpp",
+        "__errc": "cpp",
+        "__mutex_base": "cpp"
     }
 }

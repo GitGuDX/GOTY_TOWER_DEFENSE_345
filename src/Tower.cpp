@@ -36,6 +36,13 @@ Tower::Tower(TowerType type)
             m_speed = 400.f;
             m_iCost = 200;
             break;
+        case TowerType::FlameThrower:
+            m_fRange = 150.0f;
+            m_fMaxCooldown = 0.0f;
+            m_fDamage = 5.0f;
+            m_speed = 300.f;
+            m_iCost = 300;
+            break;
     }
 }
 

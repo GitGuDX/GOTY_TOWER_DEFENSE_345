@@ -4,7 +4,6 @@
 #include "../Platform.h"
 #include "../GameEvents.h"
 #include "../GUI/InfoUI.h"
-#include "../Tower.h"
 #include <SFML/Graphics.hpp>
 
 #include <iostream>
@@ -35,26 +34,23 @@ private:
         std::string m_modeString;
         std::string m_woodTowerPriceString;
         std::string m_stoneTowerPriceString;
-        std::string m_gameOverString;
+        std::string m_FlameThrowerTowerPriceString;
+        std::string m_gameOverString1;
+        std::string m_gameOverString2;
+        std::string m_gameOverString3;
         std::string m_nextRoundString;
         std::string m_upgradeString;
 
-        // int m_iCurrentLevel;
-        // int m_iCurrentWealth;
+        std::string m_nextMonsterTitleString;
+        std::string m_nextMonsterLevelString;
+        std::string m_nextMonsterDescriptionString;
 
-        // float m_hoverTowerDamage;
-        // float m_hoverTowerCooldown;
-        // float m_hoverTowerRange;
-        // float m_hoverTowerSpeed;
-
-
-        //Vector2f m_DraggedTowerPosition;
         Vector2f m_CrossPosition;
 
     };
 
 public:
-    InfoUIView(sf::RenderWindow& m_Window, Vector2i mapSize, sf::Font& font);
+    InfoUIView(sf::RenderWindow& m_Window, Vector2i mapSize, int infoUIWidth, sf::Font& font);
     ~InfoUIView() = default;
 
     void Update(const IGameSubject& subject);
@@ -63,29 +59,19 @@ public:
 
     void DrawTowerInfo();
 
-    void DrawDraggedTower();
-
     void DrawCrossShape();
 
     void DrawNextRoundText();
 
     void DrawUpgradeText();
 
-    void LoadDraggedSprite(Sprite* sprite);
-
-    void UpdateDraggedTowerAsset();
-
-    void UpdateDraggedTowerPosition(Vector2f position);
+    void DrawGameOverText();
 
     void UpdateCrossShapePosition(Vector2f position);
 
     void UpdateTextString(InfoUIData& data);
 
     void UpdateUpgradeTextPosition(Vector2f position);
-    
-    void LoadFromFile();
-
-    void InitializeTowerAssets();
 
     void InitializeTextAssets();
 
@@ -103,26 +89,7 @@ public:
         m_isHoveringOnTower = isHovering;
     }
 
-    // Sprite* GetDraggedSprite() const {
-    //     return m_DraggedSprite;
-    // }
-
-    // std::vector<Tower>& GetTowerMenu() {
-    //     return a_TowerMenu;
-    // }
-
-    // Tower& GetDraggedTower() {
-    //     return m_DraggedTower;
-    // }
-
-    // Texture& GetTowerTexture1() {
-    //     return m_towerTexture1;
-    // }
-
-    // Texture& GetTowerTexture2() {
-    //     return m_towerTexture2;
-    // }
-
+    void ClearSubjects() { m_GameSetupSubjects.clear(); }
 
 private:
     std::unordered_map<const InfoUI*, InfoUIData> m_GameSetupSubjects;
@@ -130,16 +97,9 @@ private:
     sf::RenderWindow& m_Window;
 
     Vector2i m_MapSize;
+    int m_infoUIWidth;
 
     sf::Font& m_Font;
-
-    // std::vector<Tower> a_TowerMenu;
-    // Tower m_DraggedTower;
-
-    // Sprite* m_DraggedSprite = nullptr;
-
-    // Texture m_towerTexture1;
-    // Texture m_towerTexture2;
 
     Text m_scoreText;
     Text m_levelText;
@@ -158,9 +118,16 @@ private:
     Text m_modeText;
     Text m_woodTowerPriceText;
     Text m_stoneTowerPriceText;
-    Text m_gameOverText;
+    Text m_FlameThrowerTowerPriceText;
+    Text m_gameOverText_1;
+    Text m_gameOverText_2;
+    Text m_gameOverText_3;
     Text m_nextRoundText;
     Text m_upgradeText;
+
+    Text m_nextMonsterTitleText;
+    Text m_nextMonsterLevelText;
+    Text m_nextMonsterDescriptionText;
 
     Color m_instructionTextColor;
     Color m_warningTextColor;

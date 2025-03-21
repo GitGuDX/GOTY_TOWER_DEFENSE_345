@@ -49,6 +49,8 @@ public:
     void SetIsSizeLimitTextShown(bool shown) { m_bIsSizeLimitTextShown = shown; }
     void SetCurrentlyActiveInputBox(ClickedInputBox box) { m_eCurrentlyActiveInputBox = box; }
 
+    void ClearSubjects() { m_GameSetupSubjects.clear(); }
+
 private:
     void InitializeIntroText();
     void InitializeEnterSizeText();

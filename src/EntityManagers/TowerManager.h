@@ -19,6 +19,8 @@ public:
 
     void SetMapSize(Vector2i mapSize) { m_mapSize = mapSize; }
 
+    void SetInfoUIWidth(int infoUIWidth) { m_infoUIWidth = infoUIWidth; }
+
     void InitializeGameSetup();
 
     std::vector<TowerEntity>& GetTemplateTowers() { return m_templateTowers; }
@@ -29,7 +31,11 @@ public:
 
     void CreateTower(TowerGenerator::TowerType towerType, const sf::Vector2f& position);
 
-    void RemoveTower(const sf::Vector2f& position);
+    void RemoveTowerAtPosition(const sf::Vector2f& position);
+
+    void RemoveAllTowers();
+
+    void UpdateTowerAnimations(const float m_fFrameTime);
 
     float GetSellRate() const { return m_sellRate; }
 
@@ -37,6 +43,7 @@ private:
     //RenderWindow& m_Window;
 
     Vector2i m_mapSize;
+    int m_infoUIWidth;
 
     TowerEntityView m_TowerEntityView;
     TowerGenerator m_TowerGenerator;

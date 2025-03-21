@@ -3,8 +3,6 @@
 
 MonsterGenerator::MonsterGenerator()
     : m_iBaseMonsters(3)
-    , m_aCurrentMonsterRoaster{MonsterType::Minotaur, MonsterType::Golem, MonsterType::Reaper, MonsterType::Ogre, MonsterType::Skeleton}
-    , m_iMonsterLevel(0)
 {
 }
 
@@ -17,10 +15,10 @@ void MonsterGenerator::UpdateMonsterRoster()
     // Once m_aCurrentMonsterRoaster is empty, it is time to use a new monster roster that is randomized
 
     // first make sure the vector is empty
-    m_aCurrentMonsterRoaster.clear();
+    m_aNextMonsterRoster.clear();
 
     // Refill m_aCurrentMonsterRoaster
-    m_aCurrentMonsterRoaster = {MonsterType::Ogre, MonsterType::Minotaur, MonsterType::Golem, MonsterType::Reaper, MonsterType::Skeleton};
+    m_aNextMonsterRoster = {MonsterType::Ogre, MonsterType::Minotaur, MonsterType::Golem, MonsterType::Reaper, MonsterType::Skeleton};
 
     // To randomize monster roster, use Fisher-Yates shuffle on m_aCurrentMonsterRoaster
     // Set up random number generator
@@ -28,13 +26,25 @@ void MonsterGenerator::UpdateMonsterRoster()
     std::mt19937 gen(rd());
 
     // Shuffle the enum vector
-    std::shuffle(m_aCurrentMonsterRoaster.begin(), m_aCurrentMonsterRoaster.end(), gen);
+    std::shuffle(m_aNextMonsterRoster.begin(), m_aNextMonsterRoster.end(), gen);
 }
 
 MonsterEntity MonsterGenerator::GenerateMonster()
 {
     // Initialize a new monster class
-    return MonsterEntity(m_aCurrentMonsterRoaster.back(), m_iMonsterLevel);
+    return MonsterEntity(m_aCurrentMonsterRoster.back(), m_iMonsterLevel);
+}
+
+MonsterEntity MonsterGenerator::GetNextMonster() const
+{
+    if (m_aCurrentMonsterRoster.size() > 1)
+    {
+        return MonsterEntity(m_aCurrentMonsterRoster[m_aCurrentMonsterRoster.size() - 2], m_iMonsterLevel);
+    }
+    else
+    {
+        return MonsterEntity(m_aNextMonsterRoster.back(), m_iMonsterLevel + 1);
+    }
 }
 
 int MonsterGenerator::GetWaveStrength(MonsterGenerator::MonsterType currentType)
@@ -67,7 +77,7 @@ int MonsterGenerator::GetWaveStrength(MonsterGenerator::MonsterType currentType)
 // Calculate how many monsters to spawn on this round depending on the monster level and its spawn rate
 int MonsterGenerator::GetMonsterCountForRound()
 {
-    MonsterGenerator::MonsterType currentType = m_aCurrentMonsterRoaster.back();
+    MonsterGenerator::MonsterType currentType = m_aCurrentMonsterRoster.back();
 
     int waveStrength = GetWaveStrength(currentType);
     std::cout << "Wave strength: " << waveStrength << '\n';
@@ -84,19 +94,32 @@ void MonsterGenerator::UpdateNextRoundMonsterGenerator()
 {
     //std::cout << "Preparing next round of monsters\n";
     // remove the last monster type that has been played form the roster
-    m_aCurrentMonsterRoaster.pop_back();
+    m_aCurrentMonsterRoster.pop_back();
     // Reset number of monster spawned
     // m_iNumberOfMonsterSpawned = 0;
     // Reset all monsters spawned flag
     //isAllMonstersSpawned = false;
 
+    // If only one monster type is left in the roster, refill the next roster
+    if (m_aCurrentMonsterRoster.size() == 1)
+    {
+        UpdateMonsterRoster();
+    }
     // If all monster types in the roster have been played, refill roster
-    if (m_aCurrentMonsterRoaster.empty())
+    else if (m_aCurrentMonsterRoster.empty())
     {
         //std::cout << "Monster roster updated\n";
         //Increase monster level after every roster
         m_iMonsterLevel += 1;
-        UpdateMonsterRoster();
+        m_aCurrentMonsterRoster.swap(m_aNextMonsterRoster);
     }
 
+}
+
+void MonsterGenerator::InitializeFirstRoaster()
+{
+    m_iMonsterLevel = 0;
+    m_aNextMonsterRoster.clear();
+    m_aCurrentMonsterRoster.clear();
+    m_aCurrentMonsterRoster = {MonsterType::Ogre, MonsterType::Minotaur, MonsterType::Golem, MonsterType::Reaper, MonsterType::Skeleton};
 }

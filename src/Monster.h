@@ -9,10 +9,10 @@
 #define MONSTER_H
 
 #include<iostream>
-#include "Entity.h"
-#include "Monster_Generator.h"
+#include "Entities/Entity.h"
+//#include "Monster_Generator.h"
 #include "GameEvents.h"
-#include "Tower.h"
+//#include "Tower.h"
 
 ////////// Monster Class ////////////
 /*
@@ -34,7 +34,7 @@ public:
     ~Monster();
 
     bool CanAttack();  // Checks if the monster is ready to attack
-    void Attack(Tower& tower);  // Attacks a nearby tower
+    //void Attack(Tower& tower);  // Attacks a nearby tower
     void UpdateAttackCooldown(float deltaTime);  // Updates attack timer
 
 public:
@@ -95,14 +95,19 @@ public:
         return m_iStrength;
     }
 
+    int GetDamage() const
+    {
+        return m_fAttackDamage;
+    }
+
     int GetReward() const
     {
         return m_iReward;
     }
 
-    Monster_Generator::Type GetMonsterType()
+    int GetMonsterType()
     {
-        return m_eMonsterType;
+        return 0;
     }
 
     void SetCurrentPathIndex(size_t newIndex)
@@ -159,11 +164,11 @@ public:
         NotifyStatsChanged();
     }
 
-    void SetMonsterType(Monster_Generator::Type newType)
-    {
-        m_eMonsterType = newType;
-        NotifyStatsChanged();
-    }
+    // void SetMonsterType(Monster_Generator::Type newType)
+    // {
+    //     m_eMonsterType = newType;
+    //     NotifyStatsChanged();
+    // }
 
 private:
     std::vector<IGameObserver*> m_observers;    
@@ -176,7 +181,7 @@ private:
     int m_iStrength;                           // Determines the rate that the monster steals coin from the player
     int m_iReward;
     int deathFrame = 0;
-    Monster_Generator::Type m_eMonsterType;
+    //Monster_Generator::Type m_eMonsterType;
 
     float m_fAttackCooldown = 2.0f;  // Time between attacks (seconds)
     float m_fTimeSinceLastAttack = 0.0f;  // Time tracker

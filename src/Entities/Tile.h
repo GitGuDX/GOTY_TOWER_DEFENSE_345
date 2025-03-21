@@ -22,10 +22,12 @@ public:
         Grass,
         Path,
         Entry,
-        Exit
+        Exit,
+        EntryHighlight,
+        ExitHighlight,
     };
 
-    virtual Type getType() 
+    virtual Type getType()
     {
         return m_type;
     }

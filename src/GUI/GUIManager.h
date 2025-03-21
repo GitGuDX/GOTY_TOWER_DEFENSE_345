@@ -6,13 +6,15 @@
 #include "../Views/GameSetupView.h"
 #include "MapSetup.h"
 #include "../Views/MapSetupView.h"
-#include "Tile.h"
+#include "../Entities/Tile.h"
 #include "InfoUI.h"
 #include "../Views/InfoUIView.h"
+#include "../Generators/MonsterGenerator.h"
 #include <SFML/Graphics.hpp>
 
 #include <memory>
 
+class TowerEntity;
 
 class GUIManager
 {
@@ -22,7 +24,7 @@ public:
 
     void InitializeGameSetup();
 
-    void InitializeMapSetup(Vector2i gridSize);
+    void InitializeMapSetup();
 
     void InitializeInfoUI();
 
@@ -56,8 +58,36 @@ public:
         return m_infoUIView.get();
     }
 
+    Vector2i GetGridSize() const;
+
+    Vector2i GetWindowSize() const;
+
+    Vector2i GetMapSize() const;
+
+    void InitiailizeTowerPrice(std::vector<TowerEntity>& templateTowers);
+
+    bool InitializeEntryTile(const sf::Vector2f& position);
+
+    bool InitializeExitTile(const sf::Vector2f& position);
+
+    bool FinalizeExitTile(const sf::Vector2f& position);
+
+    void UpdateTowerHoverUI(TowerEntity& tower);
+
+    void UpdateMonsterUi(MonsterGenerator::MonsterType type, int level);
+
+    void BlinkTiles(Tile::Type type, sf::Time deltaTime);
+
+    void UpdatePathTiles();
+
+    void SetInstructionAndColor(const std::string& instruction, const Color& color);
+
+    void SetWarningAndColor(const std::string& warning, const Color& color);
+
 private:
     sf::RenderWindow& m_Window;
+
+    float m_fElapsedTimeInSeconds;
 
     sf::Font m_Font;
 
@@ -69,7 +99,6 @@ private:
 
     std::unique_ptr<InfoUI> m_infoUI;
     std::unique_ptr<InfoUIView> m_infoUIView;
-    
 };
 
 

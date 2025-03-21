@@ -8,14 +8,15 @@
 #ifndef TOWER_H
 #define TOWER_H
 
-#include "Entity.h"
+#include "Entities/Entity.h"
 #include <iostream>
 #include "GameEvents.h"
 
 enum class TowerType {
     Basic,
     Sniper,
-    Rapid
+    Rapid,
+    FlameThrower
 };
 
 class Tower : public Entity, public IGameSubject
@@ -105,6 +106,13 @@ public:
                 m_fDamage = 5.0f;
                 m_speed = 400.f;
                 m_iCost = 200;
+                break;
+            case TowerType::FlameThrower:
+                m_fRange = 150.0f;
+                m_fMaxCooldown = 0.0f;
+                m_fDamage = 5.0f;
+                m_speed = 300.f;
+                m_iCost = 400;
                 break;
         }
         NotifyStatsChanged();

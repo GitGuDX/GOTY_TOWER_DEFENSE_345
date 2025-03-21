@@ -34,15 +34,15 @@ public:
 
 private:
     void notifyObservers() {
-        
         for (auto observer : m_observers) {
-
             observer->Update(*this);
         }
     }
 
 private:
     std::vector<IGameObserver*> m_observers;
+
+    int m_InfoUIWidth;
 
     std::string m_scoreString;
     std::string m_levelString;
@@ -61,9 +61,17 @@ private:
     std::string m_modeString;
     std::string m_woodTowerPriceString;
     std::string m_stoneTowerPriceString;
-    std::string m_gameOverString;
+    std::string m_FlameThrowerTowerPriceString;
+    std::string m_gameOverString1;
+    std::string m_gameOverString2;
+    std::string m_gameOverString3;
     std::string m_nextRoundString;
     std::string m_upgradeString;
+
+    std::string m_nextMonsterTitleString;
+    std::string m_nextMonsterLevelString;
+    std::string m_nextMonsterDescriptionString;
+
 
     int m_iCurrentLevel;
     int m_iCurrentWealth;
@@ -75,12 +83,14 @@ private:
     float m_hoverTowerSpeed;
     int m_hoverTowerUpgradeCost;
 
-    Vector2f m_DraggedTowerPosition;
     Vector2f m_CrossPosition; // Center the X at the hovered tower
 
     Clock m_warningShown;
 
 public:
+    int GetInfoUIWidth() const {
+        return m_InfoUIWidth;
+    }
 
     void SetScoreString(const String& score) {
         m_scoreString = score;
@@ -157,8 +167,23 @@ public:
         notifyObservers();
     }
 
-    void SetGameOverString(const String& gameOver) {
-        m_gameOverString = gameOver;
+    void SetFlameThrowerTowerPriceString(const String& price) {
+        m_FlameThrowerTowerPriceString = price;
+        notifyObservers();
+    }
+
+    void SetGameOverString1(const String& gameOver) {
+        m_gameOverString1 = gameOver;
+        notifyObservers();
+    }
+
+    void SetGameOverString2(const String& gameOver) {
+        m_gameOverString2 = gameOver;
+        notifyObservers();
+    }
+
+    void SetGameOverString3(const String& gameOver) {
+        m_gameOverString3 = gameOver;
         notifyObservers();
     }
 
@@ -174,7 +199,7 @@ public:
 
     void SetCurrentLevel(int level) {
         m_iCurrentLevel = level;
-        SetLevelString("Score: " + std::to_string(level));
+        SetLevelString("Level: " + std::to_string(level));
     }
 
     void SetCurrentWealth(int wealth) {
@@ -236,13 +261,23 @@ public:
         SetTowerUpgradeCostString("Upgrade Cost: " + std::to_string(cost));
     }
 
-    void SetDraggedTowerPosition(Vector2f position) {
-        m_DraggedTowerPosition = position;
+    void SetCrossPosition(Vector2f position) {
+        m_CrossPosition = position;
         notifyObservers();
     }
 
-    void SetCrossPosition(Vector2f position) {
-        m_CrossPosition = position;
+    void SetNextMonsterTitleString(const String& title) {
+        m_nextMonsterTitleString = title;
+        notifyObservers();
+    }
+
+    void SetNextMonsterLevelString(const String& level) {
+        m_nextMonsterLevelString = level;
+        notifyObservers();
+    }
+
+    void SetNextMonsterDescriptionString(const String& description) {
+        m_nextMonsterDescriptionString = description;
         notifyObservers();
     }
 
@@ -306,8 +341,20 @@ public:
         return m_stoneTowerPriceString;
     }
 
-    const std::string& GetGameOverString() const {
-        return m_gameOverString;
+    const std::string& GetFlameThrowerTowerPriceString() const {
+        return m_FlameThrowerTowerPriceString;
+    }
+
+    const std::string& GetGameOverString1() const {
+        return m_gameOverString1;
+    }
+
+    const std::string& GetGameOverString2() const {
+        return m_gameOverString2;
+    }
+
+    const std::string& GetGameOverString3() const {
+        return m_gameOverString3;
     }
 
     const std::string& GetNextRoundString() const {
@@ -316,6 +363,18 @@ public:
 
     const std::string& GetUpgradeString() const {
         return m_upgradeString;
+    }
+
+    const std::string& GetNextMonsterTitleString() const {
+        return m_nextMonsterTitleString;
+    }
+
+    const std::string& GetNextMonsterLevelString() const {
+        return m_nextMonsterLevelString;
+    }
+
+    const std::string& GetNextMonsterDescriptionString() const {
+        return m_nextMonsterDescriptionString;
     }
 
     int GetCurrentLevel() const {
@@ -342,10 +401,6 @@ public:
         return m_hoverTowerSpeed;
     }
 
-    Vector2f GetDraggedTowerPosition() const {
-        return m_DraggedTowerPosition;
-    }
-
     Vector2f GetCrossPosition() const {
         return m_CrossPosition;
     }
@@ -353,6 +408,9 @@ public:
     Clock& GetWarningShown() {
         return m_warningShown;
     }
+    
+
+
 };
 
 #endif // INFOUI_H
