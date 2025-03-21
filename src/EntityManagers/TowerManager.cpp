@@ -72,15 +72,15 @@ void TowerManager::InitializeGameSetup()
     // //std::cout << "sniper tower addres: " << &m_templateTowers[rapidTowerIndex] << std::endl;
 }
 
-std::vector<TowerEntity *> TowerManager::GetTemplateTowers()
-{
-    std::vector<TowerEntity*> result;
-    for (auto& tower : m_templateTowers)
-    {
-        result.push_back(tower.get());
-    }
-    return result;
-}
+// std::vector<TowerEntity *> TowerManager::GetTemplateTowers()
+// {
+//     std::vector<TowerEntity*> result;
+//     for (auto& tower : m_templateTowers)
+//     {
+//         result.push_back(tower.get());
+//     }
+//     return result;
+// }
 
 // std::vector<TowerEntity *> TowerManager::GetActiveTowers()
 // {

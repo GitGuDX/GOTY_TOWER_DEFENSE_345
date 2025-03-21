@@ -103,9 +103,9 @@ Vector2i GUIManager::GetMapSize() const
     return Vector2i(0, 0);
 }
 
-void GUIManager::InitiailizeTowerPrice(std::vector<TowerEntity*>& templateTowers)
+void GUIManager::InitiailizeTowerPrice(std::vector<std::unique_ptr<TowerEntity>>& templateTowers)
 {
-    for (const TowerEntity* towerPtr : templateTowers)
+    for (const std::unique_ptr<TowerEntity>& towerPtr : templateTowers)
     {
         if (towerPtr->GetType() == TowerGeneratorData::TowerType::Rapid)
         {

@@ -34,7 +34,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iInitialWealth(40)
+    , m_iInitialWealth(10000)
     #else
     , m_iInitialWealth(500)
     #endif
@@ -154,7 +154,7 @@ void Game::InitializeMapEnditorMode()
     m_MonsterManager.SetInfoUIWidth(infoUIWidth);
 
     // Get tower price from TowerManager and give it to the InfoUI
-    std::vector<TowerEntity*> templateTowers = m_TowerManager.GetTemplateTowers();
+    std::vector<std::unique_ptr<TowerEntity>>& templateTowers = m_TowerManager.GetTemplateTowers();
     m_GUIManager.InitiailizeTowerPrice(templateTowers);
 }
 
@@ -440,7 +440,7 @@ void Game::HandleInput()
             
             // std::vector<TowerEntity>& templateTowers = m_TowerManager.GetTemplateTowers();
             // std::vector<TowerEntity>& activeTowers = m_TowerManager.GetActiveTowers();
-            std::vector<TowerEntity*> templateTowers = m_TowerManager.GetTemplateTowers();
+            std::vector<std::unique_ptr<TowerEntity>>& templateTowers = m_TowerManager.GetTemplateTowers();
             std::vector<std::unique_ptr<TowerEntity>>& activeTowers = m_TowerManager.GetActiveTowers();
 
             InfoUIView* infoUIView = m_GUIManager.GetInfoUIView();
@@ -450,11 +450,12 @@ void Game::HandleInput()
             // Handle mouse click (start dragging)
             if (Mouse::isButtonPressed(Mouse::Left) && m_eCurrentEditState == FinishedPathingState) {
                 
-                for (size_t i = 0; i < templateTowers.size(); ++i)
+                //for (size_t i = 0; i < templateTowers.size(); ++i)
+                for (std::unique_ptr<TowerEntity>& towerPtr : templateTowers)
                 {
-                    TowerEntity* tower = templateTowers[i];
+                    // TowerEntity* tower = templateTowers[i];
                     
-                    const TowerEntityView::TowerEntityData* towerData = towerView.GetTowerEntityData(tower);
+                    const TowerEntityView::TowerEntityData* towerData = towerView.GetTowerEntityData(towerPtr.get());
 
                     // Check if tower exists in the view, the mouse is within the bounds of the tower sprite, and no tower is currently being dragged...
                     if (towerData != nullptr && towerData->sprite.getGlobalBounds().contains(mousePos) && draggedTowerData == nullptr) 
@@ -1062,23 +1063,13 @@ void Game::DrawPlayMode()
     // Draw template towers or tower info
     m_GUIManager.GetInfoUIView()->DrawTowerInfo(); 
 
-    // Draw Monsters
-    m_MonsterManager.GetMonsterEntityView().Draw();
+    if(m_bIsRoundEnded){
+        m_GUIManager.GetInfoUIView()->DrawNextRoundText();
+    }
 
-    m_MonsterManager.GetHealthBarView().Draw();
-    
-    //Draw Health Bars
-    //for (Monster& monster : m_aMonstersQueue)
-    // vector<MonsterEntity>& activeMonsters = m_MonsterManager.GetActiveMonsters();
-    // for (MonsterEntity& monster : activeMonsters)
-    // {
-    //     // if (monster.GetCurrentPathIndex() < m_aPath.size() - 1)
-    //     if (monster.GetCurrentPathIndex() < path.size() - 1)
-    //     {
-    //         UpdateHealthBar(monster);
-    //         m_Window.draw(monster.GetHealthBar());
-    //     }
-    // }
+    if(m_eGameMode == GameOver){
+        m_GUIManager.GetInfoUIView()->DrawGameOverText();
+    }
 
     // Draw Towers
     m_TowerManager.GetTowerEntityView().Draw();
@@ -1086,10 +1077,10 @@ void Game::DrawPlayMode()
     // Draw cross that indicate tower to be deleted
     m_GUIManager.GetInfoUIView()->DrawCrossShape();
 
-    
-    if(m_bIsRoundEnded){
-        m_GUIManager.GetInfoUIView()->DrawNextRoundText();
-    }
+    // Draw Monsters
+    m_MonsterManager.GetMonsterEntityView().Draw();
+
+    m_MonsterManager.GetHealthBarView().Draw();
 
     // Draw Axes
     for (const Entity& bullet : m_aAxes)
@@ -1101,10 +1092,6 @@ void Game::DrawPlayMode()
     // Draw path lines
     //m_Window.draw(m_sfPathLines);
     #endif
-
-    if(m_eGameMode == GameOver){
-        m_GUIManager.GetInfoUIView()->DrawGameOverText();
-    }
 
     m_Window.display();
 }

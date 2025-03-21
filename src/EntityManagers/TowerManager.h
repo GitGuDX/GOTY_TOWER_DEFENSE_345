@@ -35,9 +35,9 @@ public:
 
     // std::vector<TowerEntity>& GetActiveTowers() { return m_activeTowers; }
 
-    std::vector<TowerEntity*> GetTemplateTowers();
+    std::vector<std::unique_ptr<TowerEntity>>& GetTemplateTowers() { return m_templateTowers; }
 
-    std::vector<std::unique_ptr<TowerEntity>>& GetActiveTowers() { return m_activeTowers; };
+    std::vector<std::unique_ptr<TowerEntity>>& GetActiveTowers() { return m_activeTowers; }
 
     TowerEntityView& GetTowerEntityView() { return m_TowerEntityView; }
 

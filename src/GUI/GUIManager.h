@@ -64,7 +64,7 @@ public:
 
     Vector2i GetMapSize() const;
 
-    void InitiailizeTowerPrice(std::vector<TowerEntity*>& templateTowers);
+    void InitiailizeTowerPrice(std::vector<std::unique_ptr<TowerEntity>>& templateTowers);
 
     bool InitializeEntryTile(const sf::Vector2f& position);
 
