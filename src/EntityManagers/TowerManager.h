@@ -6,11 +6,11 @@
 #include "../Views/TowerEntityView.h"
 #include "../Generators/TowerGenerator.h"
 #include "../Generators/TowerGeneratorData.h"
-#include "../EntityDecorators/TowerDecorator.h"
-#include "../EntityDecorators/CooldownBoostDecorator.h"
-#include "../EntityDecorators/DamageBoostDecorator.h"
-#include "../EntityDecorators/RangeBoostDecorator.h"
-#include "../EntityDecorators/SpeedBoostDecorator.h"
+#include "../TowerDecorators/TowerDecorator.h"
+#include "../TowerDecorators/CooldownBoostDecorator.h"
+#include "../TowerDecorators/DamageBoostDecorator.h"
+#include "../TowerDecorators/RangeBoostDecorator.h"
+#include "../TowerDecorators/SpeedBoostDecorator.h"
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <iostream>
