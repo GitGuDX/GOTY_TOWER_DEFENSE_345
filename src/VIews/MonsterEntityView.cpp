@@ -139,7 +139,11 @@ void MonsterEntityView::LoadDyingMonsterTextures()
 
 void MonsterEntityView::Update(const IGameSubject &subject)
 {
-    const MonsterEntity* monsterEntityPtr = dynamic_cast<const MonsterEntity*>(&subject);
+    // Cast the subject (which is of type IGameSubject) to a const MonsterEntity*.
+    // This assumes that subject is a type of MonsterEntity or a derived class (e.g., MonsterEntityDecorator).
+    // Then, call GetBaseMonsterEntity() to retrieve the base MonsterEntity pointer that the decorator wraps.
+    // The final result is the actual base MonsterEntity pointer, not the decorator object itself.
+    const MonsterEntity *monsterEntityPtr = (dynamic_cast<const MonsterEntity *>(&subject))->GetBaseMonsterEntity();
 
     if (!monsterEntityPtr)
     {
@@ -329,7 +333,8 @@ void MonsterEntityView::RemoveMonster(const MonsterEntity* monsterPtr)
 {
     if (monsterPtr)  // Ensure the pointer is valid
     {
-        m_MonsterEntitySubjects.erase(monsterPtr);
+        const MonsterEntity* monsterBasePtr = monsterPtr->GetBaseMonsterEntity();
+        m_MonsterEntitySubjects.erase(monsterBasePtr);
     }
     else
     {
@@ -337,9 +342,10 @@ void MonsterEntityView::RemoveMonster(const MonsterEntity* monsterPtr)
     }
 }
 
-MonsterEntityView::MonsterEntityData *MonsterEntityView::GetMonsterEntityData(const MonsterEntity *monster)
+MonsterEntityView::MonsterEntityData *MonsterEntityView::GetMonsterEntityData(const MonsterEntity *monsterPtr)
 {
-    auto it = m_MonsterEntitySubjects.find(monster);
+    const MonsterEntity* monsterBasePtr = monsterPtr->GetBaseMonsterEntity();
+    auto it = m_MonsterEntitySubjects.find(monsterBasePtr);
     if (it != m_MonsterEntitySubjects.end())
     {
         return &it->second;

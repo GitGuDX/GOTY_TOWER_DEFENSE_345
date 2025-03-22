@@ -7,7 +7,7 @@
 class CooldownBoostDecorator : public TowerEntityDecorator
 {
 public:
-CooldownBoostDecorator(std::unique_ptr<TowerEntity> tower)
+    CooldownBoostDecorator(std::unique_ptr<TowerEntity> tower)
         : TowerEntityDecorator(std::move(tower))
     {}
 

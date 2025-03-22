@@ -42,8 +42,8 @@ void MonsterManager::ClearMonsters()
     m_MonsterEntityView.ClearSubjects();
 
     #ifdef DEBUG
-    std::cout << "Size of subjects: " << m_MonsterEntityView.GetSize() << std::endl;
-    std::cout << "MonsterManager::ClearMonsters() - Cleared all monsters" << std::endl;
+    //std::cout << "Size of subjects: " << m_MonsterEntityView.GetSize() << std::endl;
+    //std::cout << "MonsterManager::ClearMonsters() - Cleared all monsters" << std::endl;
     #endif
 }
 
@@ -70,7 +70,7 @@ void MonsterManager::PrepareFirstWave()
 
 void MonsterManager::PrepareNextWave()
 {
-    std::cout << "Preparing next wave" << std::endl;
+    //std::cout << "Preparing next wave" << std::endl;
     m_MonsterGenerator.UpdateNextRoundMonsterGenerator();
 
     PrepareWave();
@@ -106,17 +106,19 @@ void MonsterManager::GenerateCurrentWave(float addedTime)
         //m_activeMonsters.push_back(m_MonsterGenerator.GenerateMonster());
         //MonsterEntity &monster = m_activeMonsters.back();
         auto newMonster = std::make_unique<MonsterEntity>(m_MonsterGenerator.GenerateMonster());
+        // Wrap in decorator
+        newMonster = std::make_unique<MonsterEntityDecorator>(std::move(newMonster));
         newMonster->AddObserver(&m_HealthBarView);
         newMonster->AddObserver(&m_MonsterEntityView);
         newMonster->SetPosition(m_EntryTilePosition);
         
         #ifdef DEBUG
-        std::cout << "Monster " << static_cast<int>(newMonster->GetType()) << " spawned at position: " << newMonster->GetPosition().x << ", " << newMonster->GetPosition().y << std::endl;
-        std::cout << "Current monster health is: " << newMonster->GetHealth() << '\n';
-        std::cout << "Current monster speed is: " << newMonster->GetSpeed() << '\n';
-        std::cout << "Current monster strength is: " << newMonster->GetStrength() << '\n';
-        std::cout << "Current monster reward is: " << newMonster->GetReward() << '\n';
-        std::cout << "Current monster level is: " << newMonster->GetLevel() << '\n';
+        //std::cout << "Monster " << static_cast<int>(newMonster->GetType()) << " spawned at position: " << newMonster->GetPosition().x << ", " << newMonster->GetPosition().y << std::endl;
+        //std::cout << "Current monster health is: " << newMonster->GetHealth() << '\n';
+        //std::cout << "Current monster speed is: " << newMonster->GetSpeed() << '\n';
+        //std::cout << "Current monster strength is: " << newMonster->GetStrength() << '\n';
+        //std::cout << "Current monster reward is: " << newMonster->GetReward() << '\n';
+        //std::cout << "Current monster level is: " << newMonster->GetLevel() << '\n';
         #endif
 
         m_activeMonsters.push_back(std::move(newMonster));
@@ -158,6 +160,66 @@ void MonsterManager::UpdateMonsterAnimations(const float m_fFrameTime)
             IncrementMonsterFrameIndex(monsterPtr.get());
         }
         monsterAnimationDelay.restart();
+    }
+}
+
+void MonsterManager::ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity>& monsterPtr)
+{
+    // Check if the monster already has a SpeedDebuffDecorator
+    if (auto* debuff = dynamic_cast<SpeedDebuffDecorator*>(monsterPtr.get())) {
+        // If the monster has the debuff, reset the elapsed time
+        debuff->ResetElapsedTime();
+        std::cout << "Speed debuff elapsed time reset" << std::endl;
+    } else {
+        // If the monster doesn't have a debuff, apply the SpeedDebuffDecorator
+        monsterPtr = std::make_unique<SpeedDebuffDecorator>(std::move(monsterPtr));
+        std::cout << "Monster is now wrapped with: " << typeid(*monsterPtr).name() << std::endl;
+    }
+}
+
+void MonsterManager::UpdateSpeedDebuff(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime)
+{
+    // Start with the outermost decorator
+    MonsterEntityDecorator* decorator = dynamic_cast<MonsterEntityDecorator*>(monsterPtr.get());
+    // Will hold the previous decorator in the chain
+    MonsterEntityDecorator* outerPtr = nullptr;
+    
+    // Traverse the decorator chain
+    while (decorator)
+    {
+        //std::cout << "Decorator type: " << typeid(*decorator).name() << std::endl;
+        
+        // Check if the current decorator is a SpeedDebuffDecorator
+        if (SpeedDebuffDecorator* speedDebuff = dynamic_cast<SpeedDebuffDecorator*>(decorator))
+        {
+            //std::cout << "Decorator type: " << typeid(*speedDebuff).name() << std::endl;
+            //std::cout << "Found the Speed Debuff Decorator" <<std::endl;
+            
+            // Update the SpeedDebuffDecorator elapsed time with deltaTime
+            speedDebuff->Update(deltaTime);
+            
+            // If the decorator is marked for removal, handle it
+            if (speedDebuff->IsMarkedForRemoval())
+            {
+                // If outerPtr is nullptr, this is the outermost decorator
+                if(outerPtr == nullptr)
+                {
+                    // Transfer the ownership of the decorator one below the SpeedDebuffDecorator to the monsterPtr (the main entry point)
+                    monsterPtr = std::move(speedDebuff->GetDecoratedMonster());
+                }
+                else
+                {
+                    // Otherwise, link the previous decorator (outerPtr) to the next decorator (Inner decorator)
+                    outerPtr->SetDecoratedMonster(speedDebuff->GetDecoratedMonster());
+                }
+                // Exit the loop after removal (no need to check further decorators)
+                break;
+            }
+        }
+        // Update outerPtr to the current decorator (before moving to the next)
+        outerPtr = decorator;
+        // Move to the next inner decorator in the chain
+        decorator = dynamic_cast<MonsterEntityDecorator*>(decorator->GetDecoratedMonsterRef());
     }
 }
 

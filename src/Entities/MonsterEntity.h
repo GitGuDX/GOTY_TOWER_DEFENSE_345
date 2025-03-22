@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <memory>
 
 //class MonsterGenerator;
 
@@ -17,128 +18,146 @@ public:
     MonsterEntity(MonsterGeneratorData::MonsterType type, int level);
     ~MonsterEntity() = default;
 
-    void AddObserver(IGameObserver* observer) override {
+    virtual void AddObserver(IGameObserver* observer) override {
         m_observers.push_back(observer);
     }
 
-    void RemoveObserver(IGameObserver* observer) override {
+    virtual void RemoveObserver(IGameObserver* observer) override {
         m_observers.erase(
             std::remove(m_observers.begin(), m_observers.end(), observer),
             m_observers.end()
         );
     }
 
-    void RemoveAllObservers()
+    virtual void RemoveAllObservers()
     {
         m_observers.clear();
     }
 
-    void NotifyStatsChanged() {
+    virtual void NotifyStatsChanged() {
         for (auto observer : m_observers) {
             observer->Update(*this);
         }
     }
 
-    void SetPosition(const sf::Vector2f& position) override
+    virtual const MonsterEntity* GetBaseMonsterEntity() const
     {
-        Entity::SetPosition(position);
+        return this;  // In the base class, this is just the current object
+    }
 
+    // Explicitly Ignore the Parameter to avoid compiler's unused parameter warning
+    // virtual void Update(float /*deltaTime*/) 
+    // {
+    //     // No functionality here; just a placeholder
+    // }
+
+    virtual void SetPosition(const sf::Vector2f& position) override
+    {
+        m_vPosition = position;
         NotifyStatsChanged();
     }
 
-    void Move(const sf::Vector2f& offset) override
-    {
-        Entity::Move(offset);
+    // virtual void Move(const sf::Vector2f& offset) override
+    // {
+    //     Entity::Move(offset);
 
+    //     NotifyStatsChanged();
+    // }
+
+    virtual void Move(const sf::Vector2f& offset) override 
+    {
+        m_vPosition += offset;
         NotifyStatsChanged();
     }
 
-    void SetType(MonsterGeneratorData::MonsterType type) { 
+    virtual void SetType(MonsterGeneratorData::MonsterType type) { 
         m_eType = type; 
         NotifyStatsChanged();
     }
 
-    void SetHealth(float health) {
-        m_iHealth = health;
+    virtual void SetHealth(float health) { 
+        m_iHealth = health; 
         NotifyStatsChanged();
     }
 
-    void SetMaxHealth(float maxHealth) {
-        m_iMaxHealth = maxHealth;
+    virtual void SetMaxHealth(float maxHealth) { 
+        m_iMaxHealth = maxHealth; 
         NotifyStatsChanged();
     }
 
-    void SetSpeed(float speed) {
-        m_fSpeed = speed;
+    virtual void SetSpeed(float speed) { 
+        m_fSpeed = speed; 
         NotifyStatsChanged();
     }
 
-    void SetLevel(int level) {
-        m_iLevel = level;
+    virtual void SetLevel(int level) { 
+        m_iLevel = level; 
         NotifyStatsChanged();
     }
 
-    void SetStrength(int strength) {
-        m_iStrength = strength;
+    virtual void SetStrength(int strength) { 
+        m_iStrength = strength; 
         NotifyStatsChanged();
     }
 
-    void SetReward(int reward) {
-        m_iReward = reward;
+    virtual void SetReward(int reward) { 
+        m_iReward = reward; 
         NotifyStatsChanged();
     }
 
-    void SetCurrentPathIndex(size_t index) {
-        m_stCurrentPathIndex = index;
+    virtual void SetCurrentPathIndex(size_t index) { 
+        m_stCurrentPathIndex = index; 
         NotifyStatsChanged();
     }
 
-    void SetIsDying(bool isDying) { 
+    virtual void SetIsDying(bool isDying) { 
         m_bIsDying = isDying; 
         NotifyStatsChanged();
     }
 
-    void SetIsDead(bool isDead) { 
+    virtual void SetIsDead(bool isDead) { 
         m_bIsDead = isDead; 
         NotifyStatsChanged();
     }
 
-    void SetIsTemplate(bool isTemplate) { 
+    virtual void SetIsTemplate(bool isTemplate) { 
         m_bIsTemplate = isTemplate; 
         NotifyStatsChanged();
     }
 
-    void IncrementActiveFrameIndex(int indexLimit);
+    virtual void IncrementActiveFrameIndex(int indexLimit);
 
-    void IncrementDyingFrameIndex(int indexLimit);
+    virtual void IncrementDyingFrameIndex(int indexLimit);
 
-    MonsterGeneratorData::MonsterType GetType() const { return m_eType; }
+    virtual MonsterGeneratorData::MonsterType GetType() const { return m_eType; }
 
-    float GetHealth() const { return m_iHealth; }
+    virtual Vector2f GetPosition() const override { return m_vPosition; }
 
-    float GetMaxHealth() const { return m_iMaxHealth; }
+    virtual float GetHealth() const { return m_iHealth; }
 
-    float GetSpeed() const { return m_fSpeed; }
+    virtual float GetMaxHealth() const { return m_iMaxHealth; }
 
-    int GetLevel() const { return m_iLevel; }
+    virtual float GetSpeed() const { return m_fSpeed; }
 
-    int GetStrength() const { return m_iStrength; }
+    virtual int GetLevel() const { return m_iLevel; }
 
-    int GetReward() const { return m_iReward; }
+    virtual int GetStrength() const { return m_iStrength; }
 
-    size_t GetCurrentPathIndex() const { return m_stCurrentPathIndex; }
+    virtual int GetReward() const { return m_iReward; }
 
-    int GetActiveFrameIndex() const { return m_iActiveFrameIndex; }
+    virtual size_t GetCurrentPathIndex() const { return m_stCurrentPathIndex; }
 
-    int GetDyingFrameIndex() const { return m_iDyingFrameIndex; }
+    virtual int GetActiveFrameIndex() const { return m_iActiveFrameIndex; }
 
-    bool GetIsDying() const { return m_bIsDying; }
+    virtual int GetDyingFrameIndex() const { return m_iDyingFrameIndex; }
 
-    bool GetIsFinishedDying() const { return m_bIsFinishedDying; }
+    virtual bool GetIsDying() const { return m_bIsDying; }
 
-    bool GetIsDead() const { return m_bIsDead; }
+    virtual bool GetIsFinishedDying() const { return m_bIsFinishedDying; }
 
-    bool GetIsTemplate() const { return m_bIsTemplate; }
+    virtual bool GetIsDead() const { return m_bIsDead; }
+
+    virtual bool GetIsTemplate() const { return m_bIsTemplate; }
 
 private:
     void SetInitialStats();
@@ -152,6 +171,7 @@ private:
     std::vector<IGameObserver*> m_observers;
 
     MonsterGeneratorData::MonsterType m_eType;
+    sf::Vector2f m_vPosition;
     size_t m_stCurrentPathIndex;           // index of the monster's current path
     float m_iHealth;
     float m_iMaxHealth;

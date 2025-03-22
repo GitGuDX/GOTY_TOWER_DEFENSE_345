@@ -783,6 +783,8 @@ void Game::UpdateMonsters()
 
                 m_MonsterManager.RemoveMonster(monsterPtr.get()); 
             }
+
+            m_MonsterManager.UpdateSpeedDebuff(monsterPtr, m_DeltaTime.asSeconds());
         }
 
         // If monster is finished dying, remove monster
@@ -932,6 +934,7 @@ void Game::UpdateTowers()
                 //Regular Bullets
                 if(!m_aAxes.empty()){
                     Entity& newAxe = m_aAxes.back();
+                    newAxe.SetProjectileType(towerPtr->GetType());
                     FloatRect newAxeBounds = newAxe.GetSprite().getLocalBounds(); // Assuming getSprite() returns an sf::Sprite reference
                     newAxe.SetOrigin(Vector2f(newAxeBounds.width / 2, newAxeBounds.height / 2));
                     newAxe.SetPosition(Vector2f(towerPtr->GetPosition().x, towerPtr->GetPosition().y));
@@ -1060,7 +1063,13 @@ void Game::UpdateAxes()
 
                 hitMonster = true;
                 monsterPtr->SetHealth(monsterPtr->GetHealth() - it->GetDamage());
-
+                
+                if (it->GetProjectileType() == TowerGeneratorData::TowerType::Sniper)
+                {
+                    std::cout << "applying speed debuff" << std::endl;
+                    m_MonsterManager.ApplySpeedDebuffToMonster(monsterPtr);
+                }
+                
                 #ifdef DEBUG
                 std::cout << "\n" << monsterPtr->GetHealth() << "\n";
                 #endif

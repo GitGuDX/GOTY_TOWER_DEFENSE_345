@@ -8,8 +8,8 @@ HealthBarView::HealthBarView(RenderWindow &window)
 
 void HealthBarView::Update(const IGameSubject &subject)
 {
-    const MonsterEntity* monsterEntityPtr = dynamic_cast<const MonsterEntity*>(&subject);
-
+    const MonsterEntity *monsterEntityPtr = (dynamic_cast<const MonsterEntity *>(&subject))->GetBaseMonsterEntity();
+    
     if (!monsterEntityPtr)
     {
         //std::cout << "MonsterEntityView::Update() - Not a MonsterEntity\n";
@@ -106,8 +106,9 @@ void HealthBarView::RemoveMonster(const MonsterEntity *monsterPtr)
 {
     if (monsterPtr)  // Ensure the pointer is valid
     {
+        const MonsterEntity* monsterBasePtr = monsterPtr->GetBaseMonsterEntity();
         std::cout << "subject size before removal: " << m_MonsterEntitySubjects.size() << std::endl;
-        m_MonsterEntitySubjects.erase(monsterPtr);
+        m_MonsterEntitySubjects.erase(monsterBasePtr);
         std::cout << "subject size after removal: " << m_MonsterEntitySubjects.size() << std::endl;
     }
     else

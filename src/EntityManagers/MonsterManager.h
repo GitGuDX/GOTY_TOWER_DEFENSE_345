@@ -3,6 +3,8 @@
 
 #include "../Platform.h"
 #include "../Entities/MonsterEntity.h"
+#include "../MonsterDecorators/MonsterDecorator.h"
+#include "../MonsterDecorators/SpeedDebuffDecorator.h"
 #include "../Views/HealthBarView.h"
 #include "../Views/MonsterEntityView.h"
 #include "../Generators/MonsterGenerator.h"
@@ -54,6 +56,10 @@ public:
 
     void SetInfoUIWidth(int infoUIWidth) { m_infoUIWidth = infoUIWidth; }
 
+    void ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity>& monsterPtr);
+
+    void UpdateSpeedDebuff(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime);
+
 private:
 
     void IncrementTimeSinceLastGeneration(float addedTime)
@@ -78,6 +84,10 @@ private:
     {
         m_fTimeSinceLastGeneration = 0.f;
     }
+
+    void RemoveExpiredSpeedDebuffDecorator(std::unique_ptr<MonsterEntity>& monster);
+
+    std::unique_ptr<MonsterEntity> RemoveDecorator(std::unique_ptr<MonsterEntity> monster, MonsterEntityDecorator* decoratorToRemove); 
 
 private:
     //RenderWindow& m_Window;

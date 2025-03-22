@@ -38,9 +38,9 @@ public:
 
     void RemoveSubject(const TowerEntity* towerPtr);
 
-    void SyncTowerData(TowerEntityData& data, const TowerEntity* towerPtr);
+    // void SyncTowerData(TowerEntityData& data, const TowerEntity* towerPtr);
 
-    void SyncTowers(const std::vector<TowerEntity*>& templateTowers, const std::vector<TowerEntity*>& activeTowers);
+    // void SyncTowers(const std::vector<TowerEntity*>& templateTowers, const std::vector<TowerEntity*>& activeTowers);
 
     const TowerEntityData* GetDraggedTowerEntityData() const
     {

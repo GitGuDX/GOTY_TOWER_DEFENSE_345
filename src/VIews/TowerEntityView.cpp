@@ -155,43 +155,43 @@ void TowerEntityView::RemoveSubject(const TowerEntity * towerPtr)
     }
 }
 
-void TowerEntityView::SyncTowerData(TowerEntityData& data, const TowerEntity* towerPtr)
-{
-    SetTemplateTowerSprite(data, towerPtr->GetType());
-    data.sprite.setPosition(towerPtr->GetPosition());
-    data.range = towerPtr->GetRange();
-    data.maxCooldown = towerPtr->GetMaxCooldown();
-    data.damage = towerPtr->GetDamage();
-    data.speed = towerPtr->GetSpeed();
-    data.cost = towerPtr->GetCost();
-    data.level = towerPtr->GetLevel();
-    data.type = towerPtr->GetType();
-    data.isTemplate = towerPtr->GetIsTemplate();
-}
+// void TowerEntityView::SyncTowerData(TowerEntityData& data, const TowerEntity* towerPtr)
+// {
+//     SetTemplateTowerSprite(data, towerPtr->GetType());
+//     data.sprite.setPosition(towerPtr->GetPosition());
+//     data.range = towerPtr->GetRange();
+//     data.maxCooldown = towerPtr->GetMaxCooldown();
+//     data.damage = towerPtr->GetDamage();
+//     data.speed = towerPtr->GetSpeed();
+//     data.cost = towerPtr->GetCost();
+//     data.level = towerPtr->GetLevel();
+//     data.type = towerPtr->GetType();
+//     data.isTemplate = towerPtr->GetIsTemplate();
+// }
 
-void TowerEntityView::SyncTowers(const std::vector<TowerEntity*>& templateTowers, const std::vector<TowerEntity*> &activeTowers)
-{
-    // Clear the existing map to start fresh
-    m_TowerEntitySubjects.clear();
+// void TowerEntityView::SyncTowers(const std::vector<TowerEntity*>& templateTowers, const std::vector<TowerEntity*> &activeTowers)
+// {
+//     // Clear the existing map to start fresh
+//     m_TowerEntitySubjects.clear();
 
-    // Sync template towers
-    for (const TowerEntity* towerPtr : templateTowers)
-    {
-        TowerEntityData data;
-        SyncTowerData(data, towerPtr);
-        m_TowerEntitySubjects[towerPtr] = data;
-    }
+//     // Sync template towers
+//     for (const TowerEntity* towerPtr : templateTowers)
+//     {
+//         TowerEntityData data;
+//         SyncTowerData(data, towerPtr);
+//         m_TowerEntitySubjects[towerPtr] = data;
+//     }
 
-    // Sync active towers
-    for (const TowerEntity* towerPtr : activeTowers)
-    {
-        TowerEntityData data;
-        SyncTowerData(data, towerPtr);
-        m_TowerEntitySubjects[towerPtr] = data;
-    }
-}
+//     // Sync active towers
+//     for (const TowerEntity* towerPtr : activeTowers)
+//     {
+//         TowerEntityData data;
+//         SyncTowerData(data, towerPtr);
+//         m_TowerEntitySubjects[towerPtr] = data;
+//     }
+// }
 
-TowerEntityView::TowerEntityData *TowerEntityView::GetTowerEntityData(const TowerEntity *tower)
+TowerEntityView::TowerEntityData *TowerEntityView::GetTowerEntityData(const TowerEntity *towerPtr)
 {
     // Debugging
     // for (const auto &pair : m_TowerEntitySubjects)
@@ -199,8 +199,8 @@ TowerEntityView::TowerEntityData *TowerEntityView::GetTowerEntityData(const Towe
     //     std::cout << "TowerEntityView::GetTowerEntityData() - TowerEntity at: " << pair.first << std::endl;
     // }
     // std::cout << "passed tower pointer: " << tower << std::endl;
-    
-    auto it = m_TowerEntitySubjects.find(tower);
+    const TowerEntity* towerBasePtr = towerPtr->GetBaseTowerEntity();
+    auto it = m_TowerEntitySubjects.find(towerBasePtr);
     if (it != m_TowerEntitySubjects.end())
     {
         return &(it->second);
