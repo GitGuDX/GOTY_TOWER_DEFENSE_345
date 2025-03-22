@@ -175,7 +175,7 @@ private:
     
     // Time management
     Time m_DeltaTime;
-    float m_fTimeInPlayMode = 0.0f;
+    //float m_fTimeInPlayMode = 0.0f;
     
     Clock warningShown;
     Clock placementOrUpgradeTimer;
@@ -213,10 +213,16 @@ private:
 
     // **** Bullet assets. Implement observer pattern for bullet
     Texture m_RapidBulletTexture;
-    Texture  m_SniperBulletTexture;
+    Texture m_SniperBulletTexture;
+    Texture m_FlameThrowerBulletTexture;
     Entity m_RapidBulletTemplate;
     Entity m_SniperBulletTemplate;
+    Entity m_FlameThrowerBulletTemplate;
+    Entity m_InvisibleFlameThrowerBulletTemplate;
 	std::vector<Entity> m_aAxes;
+    std::vector<Texture> m_aFlames;
+    sf::Clock FlameThrowerClock;  // Use Clock to track time
+
 
     // Player stats
     int m_iCurrentLevel;
@@ -224,7 +230,7 @@ private:
     int m_iCurrentWealth;
 
     // REMOVE?
-    GameEventManager m_GameEventManager;   
+    GameEventManager m_GameEventManager;
     ProjectileManager m_ProjectileManager;
 
 };

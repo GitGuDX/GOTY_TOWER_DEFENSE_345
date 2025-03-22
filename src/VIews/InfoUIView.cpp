@@ -10,7 +10,7 @@ InfoUIView::InfoUIView(sf::RenderWindow& m_Window, Vector2i mapSize, int infoUIW
 {
     //LoadFromFile();
     //InitializeTowerAssets();
-    InitializeTextAssets(); 
+    InitializeTextAssets();
     LoadCrossShapeAssets();
 }
 
@@ -41,6 +41,7 @@ void InfoUIView::Update(const IGameSubject &subject)
         data.m_modeString = infoUI->GetModeString();
         data.m_woodTowerPriceString = infoUI->GetWoodTowerPriceString();
         data.m_stoneTowerPriceString = infoUI->GetStoneTowerPriceString();
+        data.m_FlameThrowerTowerPriceString = infoUI->GetFlameThrowerTowerPriceString();
         data.m_nextRoundString = infoUI->GetNextRoundString();
 
         data.m_gameOverString1 = infoUI->GetGameOverString1();
@@ -68,6 +69,7 @@ void InfoUIView::DrawTowerInfo()
     {
         m_Window.draw(m_woodTowerPriceText);
         m_Window.draw(m_stoneTowerPriceText);
+        m_Window.draw(m_FlameThrowerTowerPriceText);
         m_Window.draw(m_nextMonsterTitleText);
         m_Window.draw(m_nextMonsterLevelText);
         m_Window.draw(m_nextMonsterDescriptionText);
@@ -139,6 +141,10 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     m_stoneTowerPriceText.setString(sf::String("Cost: ") + data.m_stoneTowerPriceString);   // Set text
     FloatRect stoneTowerPriceBounds = m_stoneTowerPriceText.getLocalBounds();
     m_stoneTowerPriceText.setOrigin(stoneTowerPriceBounds.width / 2, stoneTowerPriceBounds.height / 2);
+
+    m_FlameThrowerTowerPriceText.setString(sf::String("Cost: ") + data.m_FlameThrowerTowerPriceString);   // Set text
+    FloatRect FlameThrowerTowerPriceBounds = m_FlameThrowerTowerPriceText.getLocalBounds();
+    m_FlameThrowerTowerPriceText.setOrigin(FlameThrowerTowerPriceBounds.width / 2, FlameThrowerTowerPriceBounds.height / 2);
 
     m_modeText.setString(data.m_modeString);   // Set text
     FloatRect modeTextBounds = m_modeText.getLocalBounds();
@@ -225,6 +231,7 @@ void InfoUIView::InitializeTextAssets()
     Vector2f modeTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 65);
     Vector2f woodTowerPricePosition = Vector2f(m_MapSize.x + m_infoUIWidth*1/4, m_MapSize.y/3 + 125);
     Vector2f stoneTowerPricePosition = Vector2f(m_MapSize.x + m_infoUIWidth*2/4, m_MapSize.y/3 + 125);
+    Vector2f FlameThrowerTowerPricePosition = Vector2f(m_MapSize.x + m_infoUIWidth*1/4 + 200, m_MapSize.y/3 + 125);
     Vector2f gameOverTextPosition1 = Vector2f(m_MapSize.x/2, m_MapSize.y/2 - 30);
     Vector2f gameOverTextPosition2 = Vector2f(m_MapSize.x/2, m_MapSize.y/2);
     Vector2f gameOverTextPosition3 = Vector2f(m_MapSize.x/2, m_MapSize.y/2 + 30);
@@ -270,6 +277,10 @@ void InfoUIView::InitializeTextAssets()
     m_stoneTowerPriceText.setFont(m_Font);               // Set font
     m_stoneTowerPriceText.setCharacterSize(12);        // Set size
     m_stoneTowerPriceText.setPosition(stoneTowerPricePosition);       // Set position
+
+    m_FlameThrowerTowerPriceText.setFont(m_Font);               // Set font
+    m_FlameThrowerTowerPriceText.setCharacterSize(12);        // Set size
+    m_FlameThrowerTowerPriceText.setPosition(FlameThrowerTowerPricePosition);       // Set position
 
     // Current mode text 
     m_modeText.setFont(m_Font);               // Set font

@@ -27,12 +27,11 @@ public:
     TowerEntity(TowerGeneratorData::TowerType type); // Default constructor takes a type
     ~TowerEntity() = default;
 
-    virtual void SetTargetStrategy(TowerTargetStrategy* strategy) { 
-        m_targetStrategy = strategy; 
+    virtual void SetTargetStrategy(TowerTargetStrategy* strategy) {
+        m_targetStrategy = strategy;
         std::cout << "Strategy set for tower at position: " << GetPosition().x << "," << GetPosition().y << std::endl;
     }
 
-   
 
     virtual MonsterEntity* SelectTarget(const std::vector<std::unique_ptr<MonsterEntity>>& enemies) const {
         if (m_targetStrategy) {
@@ -143,6 +142,24 @@ public:
 
     virtual float GetShootCooldown() const { return m_fShootCooldown; }
 
+    virtual bool GetIsFlameThrowerActive() const { return bIsFlameThrowerActive; }
+
+    virtual void SetIsFlameThrowerActive(bool isActive) { bIsFlameThrowerActive = isActive; }
+
+    int GetFlameFrame() const;
+
+    void SetFlameFrame(int frame);
+    
+    void IncrementFlameFrame();
+    
+    void DecrementFlameFrame();
+
+    // For flame clock
+    sf::Clock& GetFlameClock(); // Return by reference so you can call .restart()
+
+    // For flame sprite
+    Entity& GetFlameSprite();
+
     virtual bool CanShoot() const { return m_fShootCooldown <= 0.0f; }
 
     virtual void ResetCooldown() { m_fShootCooldown = GetMaxCooldown(); }
@@ -169,11 +186,13 @@ private:
     float m_speed;
     int m_iCost;
     int m_iLevel;
+    bool bIsFlameThrowerActive;
+    int iFlameFrame;
+    sf::Clock flameClock;
+    Entity flameSprite; // If your flame is visualized per tower
 
     float m_fShootCooldown;
     TowerTargetStrategy* m_targetStrategy = nullptr;
-
-
 
 
     bool m_isTemplate = false;

@@ -34,6 +34,7 @@ private:
         std::string m_modeString;
         std::string m_woodTowerPriceString;
         std::string m_stoneTowerPriceString;
+        std::string m_FlameThrowerTowerPriceString;
         std::string m_gameOverString1;
         std::string m_gameOverString2;
         std::string m_gameOverString3;
@@ -117,6 +118,7 @@ private:
     Text m_modeText;
     Text m_woodTowerPriceText;
     Text m_stoneTowerPriceText;
+    Text m_FlameThrowerTowerPriceText;
     Text m_gameOverText_1;
     Text m_gameOverText_2;
     Text m_gameOverText_3;

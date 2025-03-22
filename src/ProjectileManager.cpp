@@ -34,6 +34,12 @@ void ProjectileManager::FireProjectile(Tower tower, float damage, float speed, s
         } else if (tower.GetType() == TowerType::Sniper) {
             std::cout << "Firing Sniper projectile" << std::endl;
             m_aProjectiles.push_back(m_SniperBulletTemplate);
+        } else if (tower.GetType() == TowerType::FlameThrower) {
+            std::cout << "Firing FlameThrower projectile" << std::endl;
+            m_aProjectiles.push_back(m_FlameThrowerTemplate);
+        } else {
+            std::cerr << "Error: Invalid tower type" << std::endl;
+            return;
         }
 
         Entity& newProjectile = m_aProjectiles.back();
@@ -56,7 +62,7 @@ void ProjectileManager::FireProjectile(Tower tower, float damage, float speed, s
 }
 
 
-void ProjectileManager::UpdateProjectiles(std::vector<Monster>& monstersQueue, 
+void ProjectileManager::UpdateProjectiles(std::vector<Monster>& monstersQueue,
     std::vector<Monster*>& deadMonsters,
     int& currentWealth,
     const sf::Vector2f& windowSize)
@@ -189,6 +195,10 @@ void ProjectileManager::InitializeAssets()
         m_SniperBulletTemplate.SetTexture(m_SniperBulletTexture);
         m_SniperBulletTemplate.SetOrigin(Vector2f(8, 8));  // Use fixed values like in Game.cpp
         m_SniperBulletTemplate.SetScale(Vector2f(0.5, 0.5));
+
+        m_FlameThrowerTemplate.SetTexture(m_FlameThrowerTexture);
+        m_FlameThrowerTemplate.SetOrigin(Vector2f(8, 8));  // Use fixed values like in Game.cpp
+        m_FlameThrowerTemplate.SetScale(Vector2f(0.5, 0.5));
         
 }
 

@@ -27,7 +27,7 @@ public:
         ExitHighlight,
     };
 
-    virtual Type getType() 
+    virtual Type getType()
     {
         return m_type;
     }

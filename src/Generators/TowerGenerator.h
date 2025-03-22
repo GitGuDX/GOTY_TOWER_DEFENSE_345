@@ -48,12 +48,36 @@ public:
     //         static constexpr float fspeed = 400.f;
     //         static constexpr int iCost = 200;
     //     };
+
+    //     struct FlameThrower
+    //     {
+    //         static constexpr float fRange = 140.0f;
+    //         static constexpr float fMaxCooldown = 0.0f;
+    //         static constexpr float fDamage = 0.025f;
+    //         static constexpr float fspeed = 5000.f;
+    //         static constexpr int iCost = 400;
+    //         static constexpr bool bIsFlameThrowerActive = false;
+    //         static constexpr int iFlameFrame = 0;
+    //     };
+    // };
+    //     struct Rapid
+    //     {
+    //         static constexpr float fRange = 170.0f;
+    //         static constexpr float fMaxCooldown = 0.14f;
+    //         static constexpr float fDamage = 5.0f;
+    //         static constexpr float fspeed = 400.f;
+    //         static constexpr int iCost = 200;
+    //     };
     // };
 
 
     TowerEntity GenerateRapidTowerTemplate();
 
     TowerEntity GenerateSniperTowerTemplate();
+
+    TowerEntity GenerateFlameThrowerTowerTemplate();
+
+    //TowerEntity GenerateFlameThrowerTowerTemplate();
 
     TowerEntity GenerateTower(TowerGeneratorData::TowerType type);
 

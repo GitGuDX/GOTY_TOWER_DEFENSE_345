@@ -34,9 +34,7 @@ public:
 
 private:
     void notifyObservers() {
-        
         for (auto observer : m_observers) {
-
             observer->Update(*this);
         }
     }
@@ -63,6 +61,7 @@ private:
     std::string m_modeString;
     std::string m_woodTowerPriceString;
     std::string m_stoneTowerPriceString;
+    std::string m_FlameThrowerTowerPriceString;
     std::string m_gameOverString1;
     std::string m_gameOverString2;
     std::string m_gameOverString3;
@@ -165,6 +164,11 @@ public:
 
     void SetStoneTowerPriceString(const String& price) {
         m_stoneTowerPriceString = price;
+        notifyObservers();
+    }
+
+    void SetFlameThrowerTowerPriceString(const String& price) {
+        m_FlameThrowerTowerPriceString = price;
         notifyObservers();
     }
 
@@ -335,6 +339,10 @@ public:
 
     const std::string& GetStoneTowerPriceString() const {
         return m_stoneTowerPriceString;
+    }
+
+    const std::string& GetFlameThrowerTowerPriceString() const {
+        return m_FlameThrowerTowerPriceString;
     }
 
     const std::string& GetGameOverString1() const {

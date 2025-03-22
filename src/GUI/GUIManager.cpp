@@ -17,7 +17,7 @@ GUIManager::GUIManager(RenderWindow& m_Window)
     }
     #endif
     #ifdef MAC
-    if (!m_Font.loadFromFile("Fonts/Kreon-Medium.ttf")) {
+    if (!m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf")) {
         throw std::runtime_error("Failed to load font");
     }
     #endif
@@ -114,6 +114,10 @@ void GUIManager::InitiailizeTowerPrice(std::vector<std::unique_ptr<TowerEntity>>
         else if (towerPtr->GetType() == TowerGeneratorData::TowerType::Sniper)
         {
             m_infoUI->SetStoneTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
+        }
+        else if (towerPtr->GetType() == TowerGeneratorData::TowerType::FlameThrower)
+        {
+            m_infoUI->SetFlameThrowerTowerPriceString(sf::String(std::to_string(towerPtr->GetCost())));
         }
     }
 }

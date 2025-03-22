@@ -54,7 +54,7 @@ public:
     void ApplyUpgrades(std::unique_ptr<TowerEntity>* towerPtr);
 
 private:
-    RenderWindow& m_Window;
+    //RenderWindow& m_Window;
 
     Vector2i m_mapSize;
     MonsterManager& m_MonsterManager;

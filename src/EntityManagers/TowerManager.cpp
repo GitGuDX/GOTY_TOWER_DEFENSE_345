@@ -2,8 +2,7 @@
 #include "../Strategies/TowerTargetStrategies.h"
 
 TowerManager::TowerManager(RenderWindow &window, MonsterManager &monsterManager)
-    : m_Window(window)
-    , m_MonsterManager(monsterManager)// Set the sell rate to 50%
+    : m_MonsterManager(monsterManager)// Set the sell rate to 50%
     , m_TowerEntityView(window)
     , m_TowerGenerator()
     , m_sellRate(0.5f)
@@ -12,6 +11,7 @@ TowerManager::TowerManager(RenderWindow &window, MonsterManager &monsterManager)
 
 void TowerManager::InitializeGameSetup()
 {
+
     RemoveAllTowers();
 
     m_templateTowers.reserve(3);   // Reserve space to avoid memory reallocation
@@ -38,6 +38,19 @@ void TowerManager::InitializeGameSetup()
 
     // std::move(newTower) transfers ownership to m_templateTowers.
     m_templateTowers.push_back(std::move(sniperTower));
+    std::cout << m_templateTowers.size() << std::endl;
+
+    // Create a flame thrower Tower template
+    // Allocate TowerEntity on the heap using std::make_unique<TowerEntity>().
+    auto flameTower = std::make_unique<TowerEntity>(m_TowerGenerator.GenerateFlameThrowerTowerTemplate());
+    flameTower->AddObserver(&m_TowerEntityView);
+    flameTower->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4 + 100, m_mapSize.y / 3 + 75));
+    flameTower->SetCost(400);
+    flameTower->SetIsTemplate(true);
+
+
+    // std::move(newTower) transfers ownership to m_templateTowers.
+    m_templateTowers.push_back(std::move(flameTower));
     std::cout << m_templateTowers.size() << std::endl;
 
     // //// Create a rapid tower template ////

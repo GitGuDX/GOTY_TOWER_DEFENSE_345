@@ -27,6 +27,7 @@ void InfoUI::InitializeInfoUI()
     m_modeString = "";
     m_woodTowerPriceString = "Cost: 200";
     m_stoneTowerPriceString = "Cost: 300";
+    m_FlameThrowerTowerPriceString = "Cost: 400";
     m_nextRoundString = "Press Enter to Begin the Round!";
     m_upgradeString = "";
     m_gameOverString1 = "Game Over";

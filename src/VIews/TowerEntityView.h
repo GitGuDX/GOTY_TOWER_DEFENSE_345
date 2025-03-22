@@ -82,9 +82,11 @@ private:
 
     Texture m_TemplateRapidTowerTexture;
     Texture m_TemplateSniperTowerTexture;
+    Texture m_TemplateFlameThrowerTexture;
 
     std::vector<sf::Texture> m_RapidTowerTextures;
     std::vector<sf::Texture> m_SniperTowerTextures;
+    std::vector<sf::Texture> m_FlameThrowerTextures;
     //std::vector<sf::Texture> m_BasicTowerTextures;
 
     TowerEntityData* m_draggedTowerData = nullptr; // Pointer to the dragged tower data

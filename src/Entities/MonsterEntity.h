@@ -37,7 +37,7 @@ public:
         for (auto observer : m_observers) {
             observer->Update(*this);
         }
-    }    
+    }
 
     void SetPosition(const sf::Vector2f& position) override
     {
@@ -58,38 +58,38 @@ public:
         NotifyStatsChanged();
     }
 
-    void SetHealth(float health) { 
-        m_iHealth = health; 
+    void SetHealth(float health) {
+        m_iHealth = health;
         NotifyStatsChanged();
     }
 
-    void SetMaxHealth(float maxHealth) { 
-        m_iMaxHealth = maxHealth; 
+    void SetMaxHealth(float maxHealth) {
+        m_iMaxHealth = maxHealth;
         NotifyStatsChanged();
     }
 
-    void SetSpeed(float speed) { 
-        m_fSpeed = speed; 
+    void SetSpeed(float speed) {
+        m_fSpeed = speed;
         NotifyStatsChanged();
     }
 
-    void SetLevel(int level) { 
-        m_iLevel = level; 
+    void SetLevel(int level) {
+        m_iLevel = level;
         NotifyStatsChanged();
     }
 
-    void SetStrength(int strength) { 
-        m_iStrength = strength; 
+    void SetStrength(int strength) {
+        m_iStrength = strength;
         NotifyStatsChanged();
     }
 
-    void SetReward(int reward) { 
-        m_iReward = reward; 
+    void SetReward(int reward) {
+        m_iReward = reward;
         NotifyStatsChanged();
     }
 
-    void SetCurrentPathIndex(size_t index) { 
-        m_stCurrentPathIndex = index; 
+    void SetCurrentPathIndex(size_t index) {
+        m_stCurrentPathIndex = index;
         NotifyStatsChanged();
     }
 

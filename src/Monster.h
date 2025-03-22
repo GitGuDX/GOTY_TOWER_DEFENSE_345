@@ -95,6 +95,11 @@ public:
         return m_iStrength;
     }
 
+    int GetDamage() const
+    {
+        return m_fAttackDamage;
+    }
+
     int GetReward() const
     {
         return m_iReward;

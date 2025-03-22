@@ -8,8 +8,10 @@ TowerEntity::TowerEntity(TowerGeneratorData::TowerType type)
     , m_speed(0.0f)
     , m_iCost(0)
     , m_iLevel(1)  // Start at level 1
+    , bIsFlameThrowerActive(false)
+    , iFlameFrame(0)
     , m_fShootCooldown(0.0f)
-    , m_targetStrategy(nullptr) 
+    , m_targetStrategy(nullptr)
 
 {
 }
@@ -42,6 +44,20 @@ void TowerEntity::InitializeStat()
         m_speed = TowerGeneratorData::TowerTypeData::Rapid::fspeed;
         m_iCost = TowerGeneratorData::TowerTypeData::Rapid::iCost;
     }
+    else if (m_eType == TowerGeneratorData::TowerType::FlameThrower) 
+    {
+        m_fRange = TowerGeneratorData::TowerTypeData::FlameThrower::fRange;
+        m_fMaxCooldown = TowerGeneratorData::TowerTypeData::FlameThrower::fMaxCooldown;
+        m_fDamage = TowerGeneratorData::TowerTypeData::FlameThrower::fDamage;
+        m_speed = TowerGeneratorData::TowerTypeData::FlameThrower::fspeed;
+        m_iCost = TowerGeneratorData::TowerTypeData::FlameThrower::iCost;
+        bIsFlameThrowerActive = TowerGeneratorData::TowerTypeData::FlameThrower::bIsFlameThrowerActive;
+        iFlameFrame = TowerGeneratorData::TowerTypeData::FlameThrower::iFlameFrame;
+    }
+    else 
+    {
+        std::cerr << "Error: Invalid tower type" << std::endl;
+    }
     NotifyStatsChanged();
 }
 
@@ -71,4 +87,28 @@ int TowerEntity::GetUpgradeCost() const
     
     // Cost increases with each level
     return m_iCost * m_iLevel;
+}
+
+int TowerEntity::GetFlameFrame() const {
+    return iFlameFrame;
+}
+
+void TowerEntity::SetFlameFrame(int frame) {
+    iFlameFrame = frame;
+}
+
+void TowerEntity::IncrementFlameFrame() {
+    iFlameFrame++;
+}
+
+void TowerEntity::DecrementFlameFrame() {
+    iFlameFrame--;
+}
+
+sf::Clock& TowerEntity::GetFlameClock() {
+    return flameClock;
+}
+
+Entity& TowerEntity::GetFlameSprite() {
+    return flameSprite;
 }

@@ -8,13 +8,15 @@ private:
     std::vector<Entity> m_aProjectiles;
     Time m_DeltaTime;
     Texture m_RapidBulletTexture;
-    Texture  m_SniperBulletTexture;
+    Texture m_SniperBulletTexture;
+    Texture m_FlameThrowerTexture;
 
     Entity m_RapidBulletTemplate;
     Entity m_SniperBulletTemplate;
+    Entity m_FlameThrowerTemplate;
 public:
     void FireProjectile(Tower tower, float damage, float speed, sf::Vector2f direction, sf::Vector2f position, float angle);
-    void UpdateProjectiles(std::vector<Monster>& monstersQueue, 
+    void UpdateProjectiles(std::vector<Monster>& monstersQueue,
         std::vector<Monster*>& deadMonsters,
         int& currentWealth,
         const sf::Vector2f& windowSize);

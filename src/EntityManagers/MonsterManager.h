@@ -80,7 +80,7 @@ private:
     }
 
 private:
-    RenderWindow& m_Window;
+    //RenderWindow& m_Window;
     Vector2i m_mapSize;
     int m_infoUIWidth;
 
