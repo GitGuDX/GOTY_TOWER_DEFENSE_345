@@ -2,6 +2,7 @@
 #define INFOUI_H
 
 #include "../GameEvents.h"
+#include "../Generators/TowerGeneratorData.h"   
 #include <SFML/Graphics.hpp>
 
 #include <iostream>
@@ -67,6 +68,7 @@ private:
     std::string m_gameOverString3;
     std::string m_nextRoundString;
     std::string m_upgradeString;
+    std::string m_effectString;
 
     std::string m_nextMonsterTitleString;
     std::string m_nextMonsterLevelString;
@@ -82,6 +84,7 @@ private:
     float m_hoverTowerRange;
     float m_hoverTowerSpeed;
     int m_hoverTowerUpgradeCost;
+    std::string m_hoverTowerEffect;
 
     Vector2f m_CrossPosition; // Center the X at the hovered tower
 
@@ -197,6 +200,11 @@ public:
         notifyObservers();
     }
 
+    void SetEffectString(const String& effect) {
+        m_effectString = effect;
+        notifyObservers();
+    }
+
     void SetCurrentLevel(int level) {
         m_iCurrentLevel = level;
         SetLevelString("Level: " + std::to_string(level));
@@ -259,6 +267,28 @@ public:
     void SetHoverTowerUpgradeCost(int cost) {
         m_hoverTowerUpgradeCost = cost;
         SetTowerUpgradeCostString("Upgrade Cost: " + std::to_string(cost));
+    }
+
+    void SetHoverTowerEffect(TowerGeneratorData::TowerType type) {
+        switch (type)
+        {
+            case (TowerGeneratorData::TowerType::FlameThrower):
+                m_hoverTowerEffect = "Effect: Burn";
+                SetEffectString("Effect: Burn");
+                break;
+            case (TowerGeneratorData::TowerType::Sniper):
+                m_hoverTowerEffect = "Effect: Slow";
+                SetEffectString("Effect: Slow");
+                break;
+            case (TowerGeneratorData::TowerType::Rapid):
+                m_hoverTowerEffect = "Effect: None";
+                SetEffectString("Effect: None");
+                break;
+            default:
+                m_hoverTowerEffect = "Effect: None";
+                SetEffectString("Effect: None");
+                break;
+        }
     }
 
     void SetCrossPosition(Vector2f position) {
@@ -363,6 +393,10 @@ public:
 
     const std::string& GetUpgradeString() const {
         return m_upgradeString;
+    }
+
+    const std::string& GetEffectString() const {
+        return m_effectString;
     }
 
     const std::string& GetNextMonsterTitleString() const {

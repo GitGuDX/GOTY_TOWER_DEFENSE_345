@@ -17,13 +17,14 @@ public:
             //std::cout << "Elapsed time before the update: " << m_elapsedTime << std::endl;
             m_elapsedTime += deltaTime;
             m_elapsedTimeSinceLastBurn += deltaTime;
-
+            //m_decoratedMonster->SetIsOnBurnEffect(false);
             if (m_elapsedTimeSinceLastBurn >= 1.0f)
             {
                 ApplyBurnDamage();
-                m_elapsedTimeSinceLastBurn -= 1.0f;
+                //m_decoratedMonster->SetIsOnBurnEffect(true);
+                m_elapsedTimeSinceLastBurn = 0.0f;
             }
-
+            
             if (m_elapsedTime >= m_duration) {
                 //std::cout << "flagged as removal" << std::endl;
                 m_markedForRemoval = true;  // Flag for removal

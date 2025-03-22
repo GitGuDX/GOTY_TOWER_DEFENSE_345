@@ -27,6 +27,7 @@ private:
         std::string m_towerRangeString;
         std::string m_towerSpeedString;
         std::string m_towerUpgradeCostString;
+        std::string m_towerEffectString;
         std::string m_towerInstructionString_1;
         std::string m_towerInstructionString_2;
 
@@ -111,6 +112,7 @@ private:
     Text m_towerRangeText;
     Text m_towerSpeedText;
     Text m_towerUpgradeCostText;
+    Text m_towerEffectText;
     Text m_towerInstructionText_1;
     Text m_towerInstructionText_2;
 

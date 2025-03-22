@@ -188,6 +188,8 @@ void MonsterEntityView::Update(const IGameSubject &subject)
             data.dyingMonsterFrameIndex = monsterEntityPtr->GetDyingFrameIndex();
             data.isDying = monsterEntityPtr->GetIsDying();
             data.isDead = monsterEntityPtr->GetIsDead();
+            data.isOnSlowDebuff = monsterEntityPtr->GetIsOnSlowDebuff();
+            data.isOnBurnEffect = monsterEntityPtr->GetIsOnBurnEffect();
             data.isTemplate = monsterEntityPtr->GetIsTemplate();
             m_MonsterEntitySubjects[monsterEntityPtr] = data;
         }
@@ -223,7 +225,15 @@ void MonsterEntityView::Update(const IGameSubject &subject)
             {
                 data.isTemplate = monsterEntityPtr->GetIsTemplate();
             }
-
+            if (data.isOnSlowDebuff != monsterEntityPtr->GetIsOnSlowDebuff())
+            {
+                data.isOnSlowDebuff = monsterEntityPtr->GetIsOnSlowDebuff();
+            }
+            if (data.isOnBurnEffect != monsterEntityPtr->GetIsOnBurnEffect())
+            {
+                data.isOnBurnEffect = monsterEntityPtr->GetIsOnBurnEffect();
+            }
+            SetMonsterTint(data);
         }
     }
 }
@@ -327,6 +337,52 @@ void MonsterEntityView::SetMonsterTexture(MonsterEntityData &data, MonsterGenera
             std::cerr << "MonsterEntityView::SetMonsterTexture() - Invalid monster type\n";
             break;
     }
+}
+
+void MonsterEntityView::SetMonsterTint(MonsterEntityData& data)
+{
+    if (!data.isOnSlowDebuff && !data.isOnBurnEffect)
+    {
+        data.sprite.setColor(sf::Color::White);
+    }
+    else 
+    {
+        sf::Color tint = sf::Color::White;
+
+        // if (data.isOnSlowDebuff) or if (data.isOnBurnEffect) condition won't work. some reason the tint stays red...?
+        if (data.isOnSlowDebuff == true)
+        {
+            tint = sf::Color(0, 0, 255, 255); // Slow debuff: Blue
+        }
+        if (data.isOnBurnEffect == true)
+        {
+            tint = sf::Color(255, 0, 0, 255); // Burn effect: Red
+        }
+
+        data.sprite.setColor(tint);
+    }
+    // if (!data.isOnSlowDebuff && !data.isOnBurnEffect)
+    // {
+    //     data.sprite.setColor(sf::Color::White);  // No effects, reset to default
+    // }
+    // else 
+    // {
+    //     sf::Color tint = sf::Color::White;
+
+    //     // Apply the SlowDebuff effect (blue)
+    //     if (data.isOnSlowDebuff)
+    //     {
+    //         tint = sf::Color(0, 0, 255, 255); // Slow debuff: Blue
+    //     }
+
+    //     // Apply the BurnEffect (red), this could overwrite the SlowDebuff if both are active
+    //     if (data.isOnBurnEffect)
+    //     {
+    //         tint = sf::Color(255, 0, 0, 255); // Burn effect: Red
+    //     }
+
+    //     data.sprite.setColor(tint);
+    // }
 }
 
 void MonsterEntityView::RemoveMonster(const MonsterEntity* monsterPtr)

@@ -173,6 +173,7 @@ void GUIManager::UpdateTowerHoverUI(std::unique_ptr<TowerEntity>& towerPtr)
     m_infoUI->SetHoverTowerRange(roundTwoDecimals(towerPtr->GetRange()));
     m_infoUI->SetHoverTowerSpeed(roundTwoDecimals(towerPtr->GetSpeed()));
     m_infoUI->SetHoverTowerUpgradeCost(towerPtr->GetUpgradeCost());
+    m_infoUI->SetHoverTowerEffect(towerPtr->GetType());
 }
 
 void GUIManager::UpdateMonsterUi(MonsterGeneratorData::MonsterType type, int level)

@@ -28,6 +28,10 @@ public:
         int dyingMonsterFrameIndex;
         bool isDying;
         bool isDead;
+        
+        bool isOnSlowDebuff;
+        bool isOnBurnEffect;
+
         bool isTemplate;
     };
 
@@ -45,6 +49,8 @@ public:
     void SetTemplateMonsterSprite(MonsterEntityData& data, MonsterGeneratorData::MonsterType type);
 
     void SetMonsterTexture(MonsterEntityData& data, MonsterGeneratorData::MonsterType type);
+
+    void SetMonsterTint(MonsterEntityData& data);
 
     void SetHoveringOnTower(bool isHovering) { m_isHoveringOnTower = isHovering; }
 

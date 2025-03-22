@@ -65,14 +65,6 @@ public:
         return std::move(m_decoratedMonster); // Transfers ownership
     }
 
-    // void Update(float deltaTime) override
-    // {
-    //     m_decoratedMonster->Update(deltaTime);
-    // }
-
-    // Recursively remove expired decorators
-    void RemoveExpiredDecorators();
-
     void SetPosition(const sf::Vector2f& position) override
     {
         m_decoratedMonster->SetPosition(position);
@@ -136,6 +128,16 @@ public:
     void SetIsTemplate(bool isTemplate) override
     { 
         m_decoratedMonster->SetIsTemplate(isTemplate);
+    }
+
+    void SetIsOnSlowDebuff(bool isOnSlowDebuff) override
+    { 
+        m_decoratedMonster->SetIsOnSlowDebuff(isOnSlowDebuff);
+    }
+
+    void SetIsOnBurnEffect(bool isOnBurnEffect) override
+    { 
+        m_decoratedMonster->SetIsOnBurnEffect(isOnBurnEffect);
     }
 
     void IncrementActiveFrameIndex(int indexLimit) override
@@ -221,6 +223,16 @@ public:
     bool GetIsTemplate() const  override
     { 
         return m_decoratedMonster->GetIsTemplate(); 
+    }
+
+    bool GetIsOnSlowDebuff() const override
+    { 
+        return m_decoratedMonster->GetIsOnSlowDebuff(); 
+    }
+
+    bool GetIsOnBurnEffect() const override
+    { 
+        return m_decoratedMonster->GetIsOnBurnEffect(); 
     }
 };
 

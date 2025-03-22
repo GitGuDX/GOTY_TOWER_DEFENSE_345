@@ -30,6 +30,7 @@ void InfoUIView::Update(const IGameSubject &subject)
         data.m_towerRangeString = infoUI->GetTowerRangeString();
         data.m_towerSpeedString = infoUI->GetTowerSpeedString();
         data.m_towerUpgradeCostString = infoUI->GetTowerUpgradeCostString();
+        data.m_towerEffectString = infoUI->GetEffectString();
         data.m_towerInstructionString_1 = infoUI->GetTowerInstructionString_1();
         data.m_towerInstructionString_2 = infoUI->GetTowerInstructionString_2();
 
@@ -82,6 +83,7 @@ void InfoUIView::DrawTowerInfo()
         m_Window.draw(m_towerRangeText);
         m_Window.draw(m_towerSpeedText);
         m_Window.draw(m_towerUpgradeCostText);
+        m_Window.draw(m_towerEffectText);
         m_Window.draw(m_towerInstructionText_1);
         m_Window.draw(m_towerInstructionText_2);
     }
@@ -195,6 +197,10 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     FloatRect towerUpgradeCostBounds = m_towerUpgradeCostText.getLocalBounds();
     m_towerUpgradeCostText.setOrigin(towerUpgradeCostBounds.width / 2, towerUpgradeCostBounds.height / 2);
 
+    m_towerEffectText.setString(data.m_towerEffectString);   // Set text
+    FloatRect towerEffectBounds = m_towerEffectText.getLocalBounds();
+    m_towerEffectText.setOrigin(towerEffectBounds.width / 2, towerEffectBounds.height / 2);
+
     m_towerInstructionText_1.setString(data.m_towerInstructionString_1);   // Set text
     FloatRect towerInstructionBounds_1 = m_towerInstructionText_1.getLocalBounds();
     m_towerInstructionText_1.setOrigin(towerInstructionBounds_1.width / 2, towerInstructionBounds_1.height / 2);
@@ -242,6 +248,7 @@ void InfoUIView::InitializeTextAssets()
     Vector2f towerRangePosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 235);
     Vector2f towerSpeedPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 265);
     Vector2f towerUpgradeCostPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 295);
+    Vector2f towerEffectPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 325);
     Vector2f towerInstructionPosition_1 = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 360);
     Vector2f towerInstructionPosition_2 = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 390);
 
@@ -350,6 +357,11 @@ void InfoUIView::InitializeTextAssets()
     m_towerUpgradeCostText.setFont(m_Font);               // Set font
     m_towerUpgradeCostText.setCharacterSize(15);        // Set size
     m_towerUpgradeCostText.setPosition(towerUpgradeCostPosition);       // Set position
+
+    // Tower effect text
+    m_towerEffectText.setFont(m_Font);               // Set font
+    m_towerEffectText.setCharacterSize(15);        // Set size
+    m_towerEffectText.setPosition(towerEffectPosition);       // Set position
 
     // Tower instruction text 1
     m_towerInstructionText_1.setFont(m_Font);               // Set font

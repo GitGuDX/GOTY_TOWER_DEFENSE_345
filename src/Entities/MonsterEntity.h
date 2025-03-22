@@ -125,6 +125,18 @@ public:
         NotifyStatsChanged();
     }
 
+    virtual void SetIsOnSlowDebuff(bool isOnSlowDebuff)
+    { 
+        m_bIsOnSlowDebuff = isOnSlowDebuff; 
+        NotifyStatsChanged();
+    }
+
+    virtual void SetIsOnBurnEffect(bool isOnBurnEffect)
+    { 
+        m_bIsOnBurnEffect = isOnBurnEffect; 
+        NotifyStatsChanged();
+    }
+
     virtual void IncrementActiveFrameIndex(int indexLimit);
 
     virtual void IncrementDyingFrameIndex(int indexLimit);
@@ -159,6 +171,10 @@ public:
 
     virtual bool GetIsTemplate() const { return m_bIsTemplate; }
 
+    virtual bool GetIsOnSlowDebuff() const { return m_bIsOnSlowDebuff; }
+
+    virtual bool GetIsOnBurnEffect() const { return m_bIsOnBurnEffect; }
+
 private:
     void SetInitialStats();
 
@@ -184,6 +200,8 @@ private:
     bool m_bIsDying;
     bool m_bIsFinishedDying;
     bool m_bIsDead;
+    bool m_bIsOnSlowDebuff;
+    bool m_bIsOnBurnEffect;
 
     bool m_bIsTemplate;
 };

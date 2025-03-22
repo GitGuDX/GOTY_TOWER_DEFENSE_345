@@ -9,6 +9,8 @@ MonsterEntity::MonsterEntity()
     , m_bIsDying(false)
     , m_bIsFinishedDying(false)
     , m_bIsDead(false)
+    , m_bIsOnSlowDebuff(false)
+    , m_bIsOnBurnEffect(false)
     , m_bIsTemplate(true)
 {
 }

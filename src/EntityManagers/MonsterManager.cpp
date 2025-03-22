@@ -172,6 +172,7 @@ void MonsterManager::ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity>& m
         //std::cout << "Speed debuff elapsed time reset" << std::endl;
     } else {
         // If the monster doesn't have a debuff, apply the SpeedDebuffDecorator
+        //monsterPtr->SetIsOnSlowDebuff(true);
         monsterPtr = std::make_unique<SpeedDebuffDecorator>(std::move(monsterPtr));
         //std::cout << "Monster is now wrapped with: " << typeid(*monsterPtr).name() << std::endl;
     }
@@ -186,6 +187,7 @@ void MonsterManager::ApplyBurnEffectToMonster(std::unique_ptr<MonsterEntity>& mo
         //std::cout << "Burn debuff elapsed time reset" << std::endl;
     } else {
         // If the monster doesn't have a debuff, apply the BurnEffectDecorator
+        monsterPtr->SetIsOnBurnEffect(true);
         monsterPtr = std::make_unique<BurnEffectDecorator>(std::move(monsterPtr));
         //std::cout << "Monster is now wrapped with: " << typeid(*monsterPtr).name() << std::endl;
     }
@@ -215,6 +217,7 @@ void MonsterManager::UpdateSpeedDebuff(std::unique_ptr<MonsterEntity>& monsterPt
             // If the decorator is marked for removal, handle it
             if (speedDebuff->IsMarkedForRemoval())
             {
+                monsterPtr->SetIsOnSlowDebuff(false);
                 // If outerPtr is nullptr, this is the outermost decorator
                 if(outerPtr == nullptr)
                 {
@@ -261,6 +264,7 @@ void MonsterManager::UpdateBurnEffect(std::unique_ptr<MonsterEntity>& monsterPtr
             // If the decorator is marked for removal, handle it
             if (burnEffectPtr->IsMarkedForRemoval())
             {
+                monsterPtr->SetIsOnBurnEffect(false);
                 // If outerPtr is nullptr, this is the outermost decorator
                 if(outerPtr == nullptr)
                 {
