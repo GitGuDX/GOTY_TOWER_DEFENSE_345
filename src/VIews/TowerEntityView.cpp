@@ -151,7 +151,7 @@ void TowerEntityView::RemoveSubject(const TowerEntity * towerPtr)
     }
     else
     {
-        std::cerr << "TowerEntityView::RemoveSubject() - Invalid tower pointer\n";
+        //std::cerr << "TowerEntityView::RemoveSubject() - Invalid tower pointer\n";
     }
 }
 

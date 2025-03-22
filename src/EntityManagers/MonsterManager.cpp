@@ -62,7 +62,7 @@ void MonsterManager::PrepareWave()
 
 void MonsterManager::PrepareFirstWave()
 {
-    std::cout << "Preparing first wave" << std::endl;
+    //std::cout << "Preparing first wave" << std::endl;
     m_MonsterGenerator.InitializeFirstRoaster();
 
     PrepareWave();
@@ -102,7 +102,7 @@ void MonsterManager::GenerateCurrentWave(float addedTime)
     // std::cout << "Current wave strength: " << m_CurrentWaveStrength << '\n';
     if (m_fTimeSinceLastGeneration >= m_fGenerationCooldown && m_iNumberOfMonsterSpawned < m_CurrentWaveStrength)
     {
-        std::cout << "Generating monster\n";
+        //std::cout << "Generating monster\n";
         //m_activeMonsters.push_back(m_MonsterGenerator.GenerateMonster());
         //MonsterEntity &monster = m_activeMonsters.back();
         auto newMonster = std::make_unique<MonsterEntity>(m_MonsterGenerator.GenerateMonster());
@@ -194,6 +194,6 @@ void MonsterManager::UpdateMonsterTexture(MonsterEntity* monsterPtr)
     }
     else
     {
-        std::cerr << "MonsterManager::UpdateMonsterTexture() - Monster data not found\n";
+        //std::cerr << "MonsterManager::UpdateMonsterTexture() - Monster data not found\n";
     }
 }

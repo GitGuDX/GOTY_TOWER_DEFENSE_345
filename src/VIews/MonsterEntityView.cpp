@@ -333,7 +333,7 @@ void MonsterEntityView::RemoveMonster(const MonsterEntity* monsterPtr)
     }
     else
     {
-        std::cerr << "MonsterEntityView::RemoveMonster() - Invalid monster pointer\n";
+        //std::cerr << "MonsterEntityView::RemoveMonster() - Invalid monster pointer\n";
     }
 }
 
