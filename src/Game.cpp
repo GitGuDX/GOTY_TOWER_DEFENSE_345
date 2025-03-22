@@ -785,6 +785,7 @@ void Game::UpdateMonsters()
             }
 
             m_MonsterManager.UpdateSpeedDebuff(monsterPtr, m_DeltaTime.asSeconds());
+            m_MonsterManager.UpdateBurnEffect(monsterPtr, m_DeltaTime.asSeconds());
         }
 
         // If monster is finished dying, remove monster
@@ -1066,8 +1067,12 @@ void Game::UpdateAxes()
                 
                 if (it->GetProjectileType() == TowerGeneratorData::TowerType::Sniper)
                 {
-                    std::cout << "applying speed debuff" << std::endl;
+                    //std::cout << "applying speed debuff" << std::endl;
                     m_MonsterManager.ApplySpeedDebuffToMonster(monsterPtr);
+                }
+                else if (it->GetProjectileType() == TowerGeneratorData::TowerType::FlameThrower)
+                {
+                    m_MonsterManager.ApplyBurnEffectToMonster(monsterPtr);
                 }
                 
                 #ifdef DEBUG

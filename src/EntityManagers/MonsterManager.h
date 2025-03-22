@@ -5,6 +5,7 @@
 #include "../Entities/MonsterEntity.h"
 #include "../MonsterDecorators/MonsterDecorator.h"
 #include "../MonsterDecorators/SpeedDebuffDecorator.h"
+#include "../MonsterDecorators/BurnEffectDecorator.h"
 #include "../Views/HealthBarView.h"
 #include "../Views/MonsterEntityView.h"
 #include "../Generators/MonsterGenerator.h"
@@ -58,7 +59,11 @@ public:
 
     void ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity>& monsterPtr);
 
+    void ApplyBurnEffectToMonster(std::unique_ptr<MonsterEntity>& monsterPtr);
+
     void UpdateSpeedDebuff(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime);
+
+    void UpdateBurnEffect(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime);
 
 private:
 

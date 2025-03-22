@@ -1,12 +1,12 @@
-#ifndef SPEED_DEBUFF_DECORATOR_H
-#define SPEED_DEBUFF_DECORATOR_H
+#ifndef BURN_EFFECT_DECORATOR_H
+#define BURN_EFFECT_DECORATOR_H
 
 #include "MonsterDecorator.h"
 
-class SpeedDebuffDecorator : public MonsterEntityDecorator
+class BurnEffectDecorator : public MonsterEntityDecorator
 {
 public:
-    SpeedDebuffDecorator(std::unique_ptr<MonsterEntity> monsterPtr)
+    BurnEffectDecorator(std::unique_ptr<MonsterEntity> monsterPtr)
         : MonsterEntityDecorator(std::move(monsterPtr))
     {}
 
@@ -16,6 +16,14 @@ public:
         {
             //std::cout << "Elapsed time before the update: " << m_elapsedTime << std::endl;
             m_elapsedTime += deltaTime;
+            m_elapsedTimeSinceLastBurn += deltaTime;
+
+            if (m_elapsedTimeSinceLastBurn >= 1.0f)
+            {
+                ApplyBurnDamage();
+                m_elapsedTimeSinceLastBurn -= 1.0f;
+            }
+
             if (m_elapsedTime >= m_duration) {
                 //std::cout << "flagged as removal" << std::endl;
                 m_markedForRemoval = true;  // Flag for removal
@@ -26,21 +34,24 @@ public:
 
     bool IsMarkedForRemoval() { return m_markedForRemoval; }
 
-    float GetSpeed() const override
-    { 
-        return m_decoratedMonster->GetSpeed() * m_speedDebuff; 
-    }
-
     void ResetElapsedTime()
     {
         m_elapsedTime = 0.0f;
     }
 
 private:
+    void ApplyBurnDamage()
+    {
+        m_decoratedMonster->SetHealth(m_decoratedMonster->GetHealth() - m_burnDamagePerSecond);
+    }
+
+private:
     float m_duration = 5.0f;  // How long the slow effect lasts
     float m_elapsedTime = 0.0f;  // Tracks how long it's been active
-    float m_speedDebuff = 0.5f;
+    float m_elapsedTimeSinceLastBurn = 0.0f;
+    int m_burnDamagePerSecond = 25;
     bool m_markedForRemoval = false;
 };
+
 
 #endif

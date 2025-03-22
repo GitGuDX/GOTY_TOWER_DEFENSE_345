@@ -169,11 +169,25 @@ void MonsterManager::ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity>& m
     if (auto* debuff = dynamic_cast<SpeedDebuffDecorator*>(monsterPtr.get())) {
         // If the monster has the debuff, reset the elapsed time
         debuff->ResetElapsedTime();
-        std::cout << "Speed debuff elapsed time reset" << std::endl;
+        //std::cout << "Speed debuff elapsed time reset" << std::endl;
     } else {
         // If the monster doesn't have a debuff, apply the SpeedDebuffDecorator
         monsterPtr = std::make_unique<SpeedDebuffDecorator>(std::move(monsterPtr));
-        std::cout << "Monster is now wrapped with: " << typeid(*monsterPtr).name() << std::endl;
+        //std::cout << "Monster is now wrapped with: " << typeid(*monsterPtr).name() << std::endl;
+    }
+}
+
+void MonsterManager::ApplyBurnEffectToMonster(std::unique_ptr<MonsterEntity>& monsterPtr)
+{
+    // Check if the monster already has a BurnEffectDecorator
+    if (auto* debuff = dynamic_cast<BurnEffectDecorator*>(monsterPtr.get())) {
+        // If the monster has the debuff, reset the elapsed time
+        debuff->ResetElapsedTime();
+        //std::cout << "Burn debuff elapsed time reset" << std::endl;
+    } else {
+        // If the monster doesn't have a debuff, apply the BurnEffectDecorator
+        monsterPtr = std::make_unique<BurnEffectDecorator>(std::move(monsterPtr));
+        //std::cout << "Monster is now wrapped with: " << typeid(*monsterPtr).name() << std::endl;
     }
 }
 
@@ -211,6 +225,52 @@ void MonsterManager::UpdateSpeedDebuff(std::unique_ptr<MonsterEntity>& monsterPt
                 {
                     // Otherwise, link the previous decorator (outerPtr) to the next decorator (Inner decorator)
                     outerPtr->SetDecoratedMonster(speedDebuff->GetDecoratedMonster());
+                }
+                // Exit the loop after removal (no need to check further decorators)
+                break;
+            }
+        }
+        // Update outerPtr to the current decorator (before moving to the next)
+        outerPtr = decorator;
+        // Move to the next inner decorator in the chain
+        decorator = dynamic_cast<MonsterEntityDecorator*>(decorator->GetDecoratedMonsterRef());
+    }
+}
+
+void MonsterManager::UpdateBurnEffect(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime)
+{
+    // Start with the outermost decorator
+    MonsterEntityDecorator* decorator = dynamic_cast<MonsterEntityDecorator*>(monsterPtr.get());
+    // Will hold the previous decorator in the chain
+    MonsterEntityDecorator* outerPtr = nullptr;
+    
+    // Traverse the decorator chain
+    while (decorator)
+    {
+        //std::cout << "Decorator type: " << typeid(*decorator).name() << std::endl;
+        
+        // Check if the current decorator is a SpeedDebuffDecorator
+        if (BurnEffectDecorator* burnEffectPtr = dynamic_cast<BurnEffectDecorator*>(decorator))
+        {
+            //std::cout << "Decorator type: " << typeid(*speedDebuff).name() << std::endl;
+            //std::cout << "Found the Speed Debuff Decorator" <<std::endl;
+            
+            // Update the SpeedDebuffDecorator elapsed time with deltaTime
+            burnEffectPtr->Update(deltaTime);
+            
+            // If the decorator is marked for removal, handle it
+            if (burnEffectPtr->IsMarkedForRemoval())
+            {
+                // If outerPtr is nullptr, this is the outermost decorator
+                if(outerPtr == nullptr)
+                {
+                    // Transfer the ownership of the decorator one below the SpeedDebuffDecorator to the monsterPtr (the main entry point)
+                    monsterPtr = std::move(burnEffectPtr->GetDecoratedMonster());
+                }
+                else
+                {
+                    // Otherwise, link the previous decorator (outerPtr) to the next decorator (Inner decorator)
+                    outerPtr->SetDecoratedMonster(burnEffectPtr->GetDecoratedMonster());
                 }
                 // Exit the loop after removal (no need to check further decorators)
                 break;
