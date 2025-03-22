@@ -12,7 +12,10 @@ protected:
     std::unique_ptr<MonsterEntity> m_decoratedMonster;
 
 public:
-    MonsterEntityDecorator(std::unique_ptr<MonsterEntity> monsterPtr);
+    MonsterEntityDecorator(std::unique_ptr<MonsterEntity> monsterPtr)
+        : MonsterEntity(monsterPtr->GetType(), monsterPtr->GetLevel())
+        , m_decoratedMonster(std::move(monsterPtr))
+    {}
 
     virtual ~MonsterEntityDecorator() = default;
 
@@ -36,14 +39,19 @@ public:
         m_decoratedMonster->NotifyStatsChanged();
     }    
 
-    std::unique_ptr<MonsterEntity>& GetDecoratedMonster() {
-        return m_decoratedMonster;
+    std::unique_ptr<MonsterEntity> GetDecoratedMonster()
+    {
+        return std::move(m_decoratedMonster);
     }
 
-    void SetDecoratedMonster(MonsterEntity* monsterPtr)
+    MonsterEntity* GetDecoratedMonsterRef() const
     {
-        // Wrap the raw pointer into a unique_ptr and assign it to m_decoratedMonster
-        m_decoratedMonster = std::unique_ptr<MonsterEntity>(monsterPtr);
+        return m_decoratedMonster.get();
+    }
+
+    void SetDecoratedMonster(std::unique_ptr<MonsterEntity> monsterPtr)
+    {
+        m_decoratedMonster = std::move(monsterPtr);
     }
 
     const MonsterEntity* GetBaseMonsterEntity() const override
@@ -57,10 +65,10 @@ public:
         return std::move(m_decoratedMonster); // Transfers ownership
     }
 
-    void Update(float deltaTime) override
-    {
-        m_decoratedMonster->Update(deltaTime);
-    }
+    // void Update(float deltaTime) override
+    // {
+    //     m_decoratedMonster->Update(deltaTime);
+    // }
 
     // Recursively remove expired decorators
     void RemoveExpiredDecorators();

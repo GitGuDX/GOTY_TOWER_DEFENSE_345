@@ -768,7 +768,7 @@ void Game::UpdateMonsters()
                 m_MonsterManager.RemoveMonster(monsterPtr.get()); 
             }
 
-            m_MonsterManager.UpdateMonsterBuffs(monsterPtr, m_DeltaTime.asSeconds());
+            m_MonsterManager.UpdateSpeedDebuff(monsterPtr, m_DeltaTime.asSeconds());
         }
 
         // If monster is finished dying, remove monster
@@ -986,7 +986,7 @@ void Game::UpdateAxes()
                 
                 if (it->GetProjectileType() == TowerGeneratorData::TowerType::Sniper)
                 {
-                    monsterPtr = m_MonsterManager.ApplySpeedDebuffToMonster(std::move(monsterPtr));
+                    m_MonsterManager.ApplySpeedDebuffToMonster(monsterPtr);
                 }
                 
                 #ifdef DEBUG

@@ -56,9 +56,9 @@ public:
 
     void SetInfoUIWidth(int infoUIWidth) { m_infoUIWidth = infoUIWidth; }
 
-    std::unique_ptr<MonsterEntity> ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity> monsterPtr);
+    void ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity>& monsterPtr);
 
-    void UpdateMonsterBuffs(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime);
+    void UpdateSpeedDebuff(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime);
 
 private:
 
@@ -85,7 +85,7 @@ private:
         m_fTimeSinceLastGeneration = 0.f;
     }
 
-    void findSpeedDebuffDecorator(std::unique_ptr<MonsterEntity>& monster);
+    void RemoveExpiredSpeedDebuffDecorator(std::unique_ptr<MonsterEntity>& monster);
 
     std::unique_ptr<MonsterEntity> RemoveDecorator(std::unique_ptr<MonsterEntity> monster, MonsterEntityDecorator* decoratorToRemove); 
 

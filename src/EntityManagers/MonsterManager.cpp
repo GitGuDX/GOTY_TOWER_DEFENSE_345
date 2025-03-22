@@ -163,7 +163,7 @@ void MonsterManager::UpdateMonsterAnimations(const float m_fFrameTime)
     }
 }
 
-std::unique_ptr<MonsterEntity> MonsterManager::ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity> monsterPtr)
+void MonsterManager::ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity>& monsterPtr)
 {
     // Check if the monster already has a SpeedDebuffDecorator
     if (auto* debuff = dynamic_cast<SpeedDebuffDecorator*>(monsterPtr.get())) {
@@ -175,78 +175,52 @@ std::unique_ptr<MonsterEntity> MonsterManager::ApplySpeedDebuffToMonster(std::un
         monsterPtr = std::make_unique<SpeedDebuffDecorator>(std::move(monsterPtr));
         std::cout << "Monster is now wrapped with: " << typeid(*monsterPtr).name() << std::endl;
     }
-    return monsterPtr;
 }
 
-void MonsterManager::UpdateMonsterBuffs(std::unique_ptr<MonsterEntity>& monsterPtr, float /*deltaTime*/)
+void MonsterManager::UpdateSpeedDebuff(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime)
 {
-    // Try to cast to MonsterEntityDecorator (or its subclass)
-    // if (auto* decorator = dynamic_cast<MonsterEntityDecorator*>(monsterPtr.get())) {
-    //     //decorator->RemoveExpiredDecorators(); // Now you can call RemoveExpiredDecorators
-    //     //findSpeedDebuffDecorator(monsterPtr);
-    //     // Try to find and remove the SpeedDebuffDecorator if applied
-    //     //findSpeedDebuffDecorator(monsterPtr);
+    // Start with the outermost decorator
+    MonsterEntityDecorator* decorator = dynamic_cast<MonsterEntityDecorator*>(monsterPtr.get());
+    // Will hold the previous decorator in the chain
+    MonsterEntityDecorator* outerPtr = nullptr;
+    
+    // Traverse the decorator chain
+    while (decorator)
+    {
+        //std::cout << "Decorator type: " << typeid(*decorator).name() << std::endl;
         
-    //     // If we found and updated the monster pointer, we update it
-    //     // if (updatedMonsterPtr) {
-    //     //     monsterPtr = std::move(updatedMonsterPtr);
-    //     // }
-    //     // If the decorator exists, remove it from the chain
-    //     //if (speedDebuffDecorator) {
-    //     //    monsterPtr = RemoveDecorator(std::move(monsterPtr), speedDebuffDecorator);
-    //     //    decorator->Update(deltaTime); // The update will reflect the debuff if applied
-    //     //}
-    //     //decorator->Update(deltaTime); // The update will reflect the debuff if applied
-    // }
-    findSpeedDebuffDecorator(monsterPtr);
-}
-
-void MonsterManager::findSpeedDebuffDecorator(std::unique_ptr<MonsterEntity>& monster) 
-{
-    auto* decorator = dynamic_cast<MonsterEntityDecorator*>(monster.get());
-    
-    while (decorator) {
-        // Check if it's a SpeedDebuffDecorator
-        auto* speedDebuff = dynamic_cast<SpeedDebuffDecorator*>(decorator->GetDecoratedMonster().get());
-        if (speedDebuff) {
-            std::cout << "Found speed debuff decorator" << std::endl;
-
-            // Set the original decorator on the inner monster (if needed)
-            auto* innerMonster = dynamic_cast<MonsterEntityDecorator*>(speedDebuff->GetDecoratedMonster().get());
-            if (innerMonster) {
-                std::cout << "Removing speed debuff" << std::endl;
-                innerMonster->SetDecoratedMonster(decorator);
+        // Check if the current decorator is a SpeedDebuffDecorator
+        if (SpeedDebuffDecorator* speedDebuff = dynamic_cast<SpeedDebuffDecorator*>(decorator))
+        {
+            //std::cout << "Decorator type: " << typeid(*speedDebuff).name() << std::endl;
+            //std::cout << "Found the Speed Debuff Decorator" <<std::endl;
+            
+            // Update the SpeedDebuffDecorator elapsed time with deltaTime
+            speedDebuff->Update(deltaTime);
+            
+            // If the decorator is marked for removal, handle it
+            if (speedDebuff->IsMarkedForRemoval())
+            {
+                // If outerPtr is nullptr, this is the outermost decorator
+                if(outerPtr == nullptr)
+                {
+                    // Transfer the ownership of the decorator one below the SpeedDebuffDecorator to the monsterPtr (the main entry point)
+                    monsterPtr = std::move(speedDebuff->GetDecoratedMonster());
+                }
+                else
+                {
+                    // Otherwise, link the previous decorator (outerPtr) to the next decorator (Inner decorator)
+                    outerPtr->SetDecoratedMonster(speedDebuff->GetDecoratedMonster());
+                }
+                // Exit the loop after removal (no need to check further decorators)
+                break;
             }
-
-            return;
         }
-
-        // Move to the next decorator in the chain
-        decorator = dynamic_cast<MonsterEntityDecorator*>(decorator->GetDecoratedMonster().get());
+        // Update outerPtr to the current decorator (before moving to the next)
+        outerPtr = decorator;
+        // Move to the next inner decorator in the chain
+        decorator = dynamic_cast<MonsterEntityDecorator*>(decorator->GetDecoratedMonsterRef());
     }
-    
-}
-
-std::unique_ptr<MonsterEntity> MonsterManager::RemoveDecorator(std::unique_ptr<MonsterEntity> monster, MonsterEntityDecorator* decoratorToRemove) 
-{
-    if (!monster) return nullptr;
-
-    // If the monster is already a base entity (not a decorator), return it unchanged
-    auto* decorator = dynamic_cast<MonsterEntityDecorator*>(monster.get());
-    if (!decorator) return monster;  
-
-    // If the current decorator is the one to remove, return the wrapped entity
-    if (decorator == decoratorToRemove) {
-        std::cout << "Removed speed buff" << std::endl;
-        return std::move(decorator->GetDecoratedMonster());
-    }
-
-    // // Otherwise, recurse deeper
-    // if (auto* decorator = dynamic_cast<MonsterEntityDecorator*>(monster.get())) {
-    //     decorator->SetDecoratedMonster(RemoveDecorator(std::move(decorator->GetDecoratedMonster()), decoratorToRemove));
-    // }
-    return RemoveDecorator(std::move(decorator->GetDecoratedMonster()), decoratorToRemove);
-    // return monster;
 }
 
 void MonsterManager::IncrementActiveMonsterFrameIndex(MonsterEntity* monsterPtr)

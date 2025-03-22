@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <memory>
 
 //class MonsterGenerator;
 
@@ -45,10 +46,10 @@ public:
     }
 
     // Explicitly Ignore the Parameter to avoid compiler's unused parameter warning
-    virtual void Update(float /*deltaTime*/) 
-    {
-        // No functionality here; just a placeholder
-    }
+    // virtual void Update(float /*deltaTime*/) 
+    // {
+    //     // No functionality here; just a placeholder
+    // }
 
     virtual void SetPosition(const sf::Vector2f& position) override
     {
