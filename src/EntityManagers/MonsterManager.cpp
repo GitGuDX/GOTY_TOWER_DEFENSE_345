@@ -172,7 +172,7 @@ void MonsterManager::ApplySpeedDebuffToMonster(std::unique_ptr<MonsterEntity>& m
         //std::cout << "Speed debuff elapsed time reset" << std::endl;
     } else {
         // If the monster doesn't have a debuff, apply the SpeedDebuffDecorator
-        //monsterPtr->SetIsOnSlowDebuff(true);
+        monsterPtr->SetIsOnSlowDebuff(true);
         monsterPtr = std::make_unique<SpeedDebuffDecorator>(std::move(monsterPtr));
         //std::cout << "Monster is now wrapped with: " << typeid(*monsterPtr).name() << std::endl;
     }
