@@ -47,8 +47,8 @@ private:
 
     Texture m_GrassTexture;
     Texture m_PathTexture;
-    Texture m_EntryTileTexture;
-    Texture m_ExitTileTexture;
+    // Texture m_EntryTileTexture;
+    // Texture m_ExitTileTexture;
 
 };
 

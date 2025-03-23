@@ -16,69 +16,6 @@ TowerEntity::TowerEntity(TowerGeneratorData::TowerType type)
 {
 }
 
-void TowerEntity::InitializeStat()
-{
-    // std::cout << "TowerEntity::InitializeStat() - Tower type: " << static_cast<int>(m_eType) << std::endl;
-    // Access the appropriate struct based on the tower type
-    if (m_eType == TowerGeneratorData::TowerType::Basic) 
-    {
-        m_fRange = TowerGeneratorData::TowerTypeData::Basic::fRange;
-        m_fMaxCooldown = TowerGeneratorData::TowerTypeData::Basic::fMaxCooldown;
-        m_fDamage = TowerGeneratorData::TowerTypeData::Basic::fDamage;
-        m_speed = TowerGeneratorData::TowerTypeData::Basic::fspeed;
-        m_iCost = TowerGeneratorData::TowerTypeData::Basic::iCost;
-    }
-    else if (m_eType == TowerGeneratorData::TowerType::Sniper) 
-    {
-        m_fRange = TowerGeneratorData::TowerTypeData::Sniper::fRange;
-        m_fMaxCooldown = TowerGeneratorData::TowerTypeData::Sniper::fMaxCooldown;
-        m_fDamage = TowerGeneratorData::TowerTypeData::Sniper::fDamage;
-        m_speed = TowerGeneratorData::TowerTypeData::Sniper::fspeed;
-        m_iCost = TowerGeneratorData::TowerTypeData::Sniper::iCost;
-    }
-    else if (m_eType == TowerGeneratorData::TowerType::Rapid) 
-    {
-        m_fRange = TowerGeneratorData::TowerTypeData::Rapid::fRange;
-        m_fMaxCooldown = TowerGeneratorData::TowerTypeData::Rapid::fMaxCooldown;
-        m_fDamage = TowerGeneratorData::TowerTypeData::Rapid::fDamage;
-        m_speed = TowerGeneratorData::TowerTypeData::Rapid::fspeed;
-        m_iCost = TowerGeneratorData::TowerTypeData::Rapid::iCost;
-    }
-    else if (m_eType == TowerGeneratorData::TowerType::FlameThrower) 
-    {
-        m_fRange = TowerGeneratorData::TowerTypeData::FlameThrower::fRange;
-        m_fMaxCooldown = TowerGeneratorData::TowerTypeData::FlameThrower::fMaxCooldown;
-        m_fDamage = TowerGeneratorData::TowerTypeData::FlameThrower::fDamage;
-        m_speed = TowerGeneratorData::TowerTypeData::FlameThrower::fspeed;
-        m_iCost = TowerGeneratorData::TowerTypeData::FlameThrower::iCost;
-        bIsFlameThrowerActive = TowerGeneratorData::TowerTypeData::FlameThrower::bIsFlameThrowerActive;
-        iFlameFrame = TowerGeneratorData::TowerTypeData::FlameThrower::iFlameFrame;
-    }
-    else 
-    {
-        std::cerr << "Error: Invalid tower type" << std::endl;
-    }
-    NotifyStatsChanged();
-}
-
-bool TowerEntity::Upgrade()
-{
-    if (!CanUpgrade()) {
-        return false;
-    }
-
-    IncrementLevel();
-    
-    // m_fRange *= UpgradeRate::fRangeMultiplier;
-    // m_fMaxCooldown *= UpgradeRate::fCooldownMultiplier;
-    // m_fDamage *= UpgradeRate::fDamageMultiplier;
-    // m_speed *= UpgradeRate::fSpeedMultiplier;
-
-    NotifyStatsChanged();
-
-    return true;
-}
-
 int TowerEntity::GetUpgradeCost() const
 {
     if (!CanUpgrade()) {
@@ -89,26 +26,23 @@ int TowerEntity::GetUpgradeCost() const
     return m_iCost * m_iLevel;
 }
 
+// ** Should be in TowerObserver class/////////////
 int TowerEntity::GetFlameFrame() const {
     return iFlameFrame;
 }
-
 void TowerEntity::SetFlameFrame(int frame) {
     iFlameFrame = frame;
 }
-
 void TowerEntity::IncrementFlameFrame() {
     iFlameFrame++;
 }
-
 void TowerEntity::DecrementFlameFrame() {
     iFlameFrame--;
 }
-
 sf::Clock& TowerEntity::GetFlameClock() {
     return flameClock;
 }
-
 Entity& TowerEntity::GetFlameSprite() {
     return flameSprite;
 }
+///////////////////////////////////////////////////

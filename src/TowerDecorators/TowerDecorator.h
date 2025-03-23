@@ -47,11 +47,6 @@ public:
         // recursively unwrap all decorators until you get the true base instance
         return m_decoratedTower ? m_decoratedTower->GetBaseTowerEntity() : this;
     }
-        
-    void InitializeStat() override
-    {
-        m_decoratedTower->InitializeStat();
-    }
 
     void SetPosition(const sf::Vector2f& position) override
     {
@@ -61,6 +56,11 @@ public:
     void SetType(TowerGeneratorData::TowerType type) override
     {
         m_decoratedTower->SetType(type);
+    }
+
+    void SetMaxLevel(int maxLevel) override
+    {
+        m_decoratedTower->SetMaxLevel(maxLevel);
     }
 
     void SetRange(float range) override

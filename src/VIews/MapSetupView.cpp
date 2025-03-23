@@ -51,10 +51,10 @@ void MapSetupView::Update(const IGameSubject &subject)
 
 void MapSetupView::LoadTileTextures()
 {
-    m_GrassTexture.loadFromFile("../src/Images/grass_tile.png");
-    m_PathTexture.loadFromFile("../src/Images/path_tile.png");
-    m_EntryTileTexture.loadFromFile("../src/Images/entry_Zone_tile.png");
-    m_ExitTileTexture.loadFromFile("../src/Images/exit_Zone_tile.png");
+    m_GrassTexture.loadFromFile("../src/Images/Tiles/grass_tile.png");
+    m_PathTexture.loadFromFile("../src/Images/Tiles/path_tile.png");
+    // m_EntryTileTexture.loadFromFile("../src/Images/entry_Zone_tile.png");
+    // m_ExitTileTexture.loadFromFile("../src/Images/exit_Zone_tile.png");
 }
 
 void MapSetupView::InitializeTiles(std::vector<std::vector<Tile>> &tiles, const std::vector<std::vector<MapSetup::TileData>> &tilesData)

@@ -30,11 +30,7 @@ public:
     void SetInfoUIWidth(int infoUIWidth) { m_infoUIWidth = infoUIWidth; }
 
     void InitializeGameSetup();
-
-    // std::vector<TowerEntity>& GetTemplateTowers() { return m_templateTowers; }
-
-    // std::vector<TowerEntity>& GetActiveTowers() { return m_activeTowers; }
-
+    
     std::vector<std::unique_ptr<TowerEntity>>& GetTemplateTowers() { return m_templateTowers; }
 
     std::vector<std::unique_ptr<TowerEntity>>& GetActiveTowers() { return m_activeTowers; }

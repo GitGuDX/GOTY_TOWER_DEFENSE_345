@@ -72,8 +72,8 @@ void GameSetupView::Draw()
 
 void GameSetupView::LoadButtonTextures()
 {
-    m_SubmitButtonTexture.loadFromFile("../src/Images/placeholder_play_button.png");                    // placeholder image. Change button image
-    m_SubmitButtonPressedTexture.loadFromFile("../src/Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+    m_SubmitButtonTexture.loadFromFile("../src/Images/Buttons/placeholder_play_button.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("../src/Images/Buttons/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
 }
 
 void GameSetupView::InitializeIntroText()

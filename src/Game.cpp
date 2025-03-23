@@ -34,7 +34,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     #ifdef DEBUG
     , m_iInitialWealth(10000)
     #else
-    , m_iInitialWealth(1000)
+    , m_iInitialWealth(10000)
     #endif
    
 {

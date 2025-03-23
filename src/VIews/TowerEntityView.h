@@ -16,6 +16,7 @@ class TowerEntityView : public IGameObserver
 public:
     struct TowerEntityData
     {
+        TowerGeneratorData::TowerType type;
         Sprite sprite;
         float range;
         float maxCooldown;
@@ -23,7 +24,6 @@ public:
         float speed;
         int cost;
         int level;
-        TowerGeneratorData::TowerType type;
         bool isTemplate;
     };
 
@@ -37,10 +37,6 @@ public:
     void Update(const IGameSubject& subject);
 
     void RemoveSubject(const TowerEntity* towerPtr);
-
-    // void SyncTowerData(TowerEntityData& data, const TowerEntity* towerPtr);
-
-    // void SyncTowers(const std::vector<TowerEntity*>& templateTowers, const std::vector<TowerEntity*>& activeTowers);
 
     const TowerEntityData* GetDraggedTowerEntityData() const
     {
@@ -87,7 +83,6 @@ private:
     std::vector<sf::Texture> m_RapidTowerTextures;
     std::vector<sf::Texture> m_SniperTowerTextures;
     std::vector<sf::Texture> m_FlameThrowerTextures;
-    //std::vector<sf::Texture> m_BasicTowerTextures;
 
     TowerEntityData* m_draggedTowerData = nullptr; // Pointer to the dragged tower data
     bool m_isDraggingTower = false; // Flag to track if a tower is being dragged

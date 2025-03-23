@@ -14,22 +14,13 @@
 
 class TowerEntity : public Entity, public IGameSubject
 {
-// protected:
-//     struct UpgradeRate
-//     {
-//         static constexpr float fDamageMultiplier = 1.70f;
-//         static constexpr float fRangeMultiplier = 1.55f;
-//         static constexpr float fCooldownMultiplier = 1.4f;
-//         static constexpr float fSpeedMultiplier = 1.60f;
-//     };
-
 public:
     TowerEntity(TowerGeneratorData::TowerType type); // Default constructor takes a type
     ~TowerEntity() = default;
 
     virtual void SetTargetStrategy(TowerTargetStrategy* strategy) {
         m_targetStrategy = strategy;
-        std::cout << "Strategy set for tower at position: " << GetPosition().x << "," << GetPosition().y << std::endl;
+        //std::cout << "Strategy set for tower at position: " << GetPosition().x << "," << GetPosition().y << std::endl;
     }
 
 
@@ -37,7 +28,7 @@ public:
         if (m_targetStrategy) {
             return m_targetStrategy->SelectTarget(*this, enemies);
         }
-        std::cout << "No targeting strategy set!" << std::endl;
+        //std::cout << "No targeting strategy set!" << std::endl;
         return nullptr;
     }
 
@@ -68,7 +59,6 @@ public:
     virtual void SetPosition(const sf::Vector2f& position) override
     {
         //std::cout << "This pointer when set position is called: " << this << std::endl;
-        //Entity::SetPosition(position);
         m_vPosition = position;
 
         NotifyStatsChanged();
@@ -77,6 +67,11 @@ public:
     virtual void SetType(TowerGeneratorData::TowerType type) { 
         m_eType = type; 
         NotifyStatsChanged();
+    }
+
+    virtual void SetMaxLevel(int maxLevel) {
+        m_iMaxLevel = maxLevel;
+        // No need to notify observer
     }
 
     virtual void SetRange(float range) { 
@@ -120,8 +115,6 @@ public:
         NotifyStatsChanged();
     }
 
-    virtual void InitializeStat();
-
     virtual TowerGeneratorData::TowerType GetType() const { return m_eType; }
 
     virtual Vector2f GetPosition() const override { return m_vPosition; }
@@ -154,46 +147,46 @@ public:
     
     void DecrementFlameFrame();
 
-    // For flame clock
-    sf::Clock& GetFlameClock(); // Return by reference so you can call .restart()
-
-    // For flame sprite
-    Entity& GetFlameSprite();
-
     virtual bool CanShoot() const { return m_fShootCooldown <= 0.0f; }
 
     virtual void ResetCooldown() { m_fShootCooldown = GetMaxCooldown(); }
 
     virtual void UpdateCooldown(float deltaTime) { m_fShootCooldown -= deltaTime; }
 
-    virtual bool CanUpgrade() const { return m_iLevel < MAX_LEVEL; }
-
-    virtual bool Upgrade();
+    virtual bool CanUpgrade() const { return m_iLevel < m_iMaxLevel; }
 
     virtual int GetUpgradeCost() const;
 
 
+    // ** Should be in TowerObserver class/////////////
+    // For flame clock
+    sf::Clock& GetFlameClock(); // Return by reference so you can call .restart()
+    // For flame sprite
+    Entity& GetFlameSprite();
+    ///////////////////////////////////////////////////
 private:
 
     std::vector<IGameObserver*> m_observers;
-    static const int MAX_LEVEL = 3; // Maximum level a tower can reach
 
     TowerGeneratorData::TowerType m_eType;
     sf::Vector2f m_vPosition;
+    int m_iMaxLevel;
     float m_fRange;
     float m_fMaxCooldown;
     float m_fDamage;
     float m_speed;
     int m_iCost;
     int m_iLevel;
+    
+    // ** Should be in TowerObserver class///////
     bool bIsFlameThrowerActive;
     int iFlameFrame;
     sf::Clock flameClock;
     Entity flameSprite; // If your flame is visualized per tower
+    ////////////////////////////////////////////
 
     float m_fShootCooldown;
     TowerTargetStrategy* m_targetStrategy = nullptr;
-
 
     bool m_isTemplate = false;
 

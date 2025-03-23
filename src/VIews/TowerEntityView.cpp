@@ -8,62 +8,34 @@ TowerEntityView::TowerEntityView(RenderWindow &window)
     : m_Window(window)
 {
     LoadTemplateTowerTextures();
-
     LoadActiveTowerTextures();
 }
 
 void TowerEntityView::LoadTemplateTowerTextures()
 {
-    #ifdef LINUX
-    //m_BasicTowerTexture.loadFromFile("../src/Images/Tower1_Frame_1.png");
-    m_TemplateSniperTowerTexture.loadFromFile("../src/Images/Tower2_Frame_1.png");
-    m_TemplateRapidTowerTexture.loadFromFile("../src/Images/Tower1_Frame_1.png");
-    m_TemplateFlameThrowerTexture.loadFromFile("../src/Images/Tower3_Frame_1.png");
-    #endif
-    #ifdef MAC
-    //m_BasicTowerTexture.loadFromFile("Images/basic_tower.png");
-    m_TemplateSniperTowerTexture.loadFromFile("Images/Tower2_Frame_1.png");
-    m_TemplateRapidTowerTexture.loadFromFile("Images/Tower1_Frame_1.png");
-    m_TemplateFlameThrowerTexture.loadFromFile("Images/Tower3_Frame_1.png");
-    #endif
+    m_TemplateSniperTowerTexture.loadFromFile("../src/Images/Sniper_Tower/Tower2_Frame_1.png");
+    m_TemplateRapidTowerTexture.loadFromFile("../src/Images/Rapid_Tower/Tower1_Frame_1.png");
+    m_TemplateFlameThrowerTexture.loadFromFile("../src/Images/Flame_Thrower_Tower/Tower3_Frame_1.png");
 }
 
 void TowerEntityView::LoadActiveTowerTextures()
 {
     for (int i = 1; i <= 6; ++i) {
         sf::Texture texture;
-        #ifdef MAC
-        if (!texture.loadFromFile("Images/Tower1_Frame_" + std::to_string(i) + ".png")) {
+        if (!texture.loadFromFile("../src/Images/Rapid_Tower/Tower1_Frame_" + std::to_string(i) + ".png")) {
             std::cerr << "Failed to load tower frame " << i << std::endl;
         }
         m_RapidTowerTextures.push_back(texture);
 
-        if (!texture.loadFromFile("Images/Tower2_Frame_" + std::to_string(i) + ".png")) {
+        if (!texture.loadFromFile("../src/Images/Sniper_Tower/Tower2_Frame_" + std::to_string(i) + ".png")) {
             std::cerr << "Failed to load tower frame " << i << std::endl;
         }
         m_SniperTowerTextures.push_back(texture);
 
-        if (!texture.loadFromFile("Images/Tower3_Frame_" + std::to_string(i) + ".png")) {
-            std::cerr << "Failed to load tower frame " << i << std::endl;
-        }
-        m_FlameThrower.push_back(texture);
-       #endif
-       #ifdef LINUX
-        if (!texture.loadFromFile("../src/Images/Tower1_Frame_" + std::to_string(i) + ".png")) {
-            std::cerr << "Failed to load tower frame " << i << std::endl;
-        }
-        m_RapidTowerTextures.push_back(texture);
-
-        if (!texture.loadFromFile("../src/Images/Tower2_Frame_" + std::to_string(i) + ".png")) {
-            std::cerr << "Failed to load tower frame " << i << std::endl;
-        }
-        m_SniperTowerTextures.push_back(texture);
-
-        if (!texture.loadFromFile("../src/Images/Tower3_Frame_" + std::to_string(i) + ".png")) {
+        if (!texture.loadFromFile("../src/Images/Flame_Thrower_Tower/Tower3_Frame_" + std::to_string(i) + ".png")) {
             std::cerr << "Failed to load tower frame " << i << std::endl;
         }
         m_FlameThrowerTextures.push_back(texture);
-        #endif
     }
 }
 
@@ -154,42 +126,6 @@ void TowerEntityView::RemoveSubject(const TowerEntity * towerPtr)
         //std::cerr << "TowerEntityView::RemoveSubject() - Invalid tower pointer\n";
     }
 }
-
-// void TowerEntityView::SyncTowerData(TowerEntityData& data, const TowerEntity* towerPtr)
-// {
-//     SetTemplateTowerSprite(data, towerPtr->GetType());
-//     data.sprite.setPosition(towerPtr->GetPosition());
-//     data.range = towerPtr->GetRange();
-//     data.maxCooldown = towerPtr->GetMaxCooldown();
-//     data.damage = towerPtr->GetDamage();
-//     data.speed = towerPtr->GetSpeed();
-//     data.cost = towerPtr->GetCost();
-//     data.level = towerPtr->GetLevel();
-//     data.type = towerPtr->GetType();
-//     data.isTemplate = towerPtr->GetIsTemplate();
-// }
-
-// void TowerEntityView::SyncTowers(const std::vector<TowerEntity*>& templateTowers, const std::vector<TowerEntity*> &activeTowers)
-// {
-//     // Clear the existing map to start fresh
-//     m_TowerEntitySubjects.clear();
-
-//     // Sync template towers
-//     for (const TowerEntity* towerPtr : templateTowers)
-//     {
-//         TowerEntityData data;
-//         SyncTowerData(data, towerPtr);
-//         m_TowerEntitySubjects[towerPtr] = data;
-//     }
-
-//     // Sync active towers
-//     for (const TowerEntity* towerPtr : activeTowers)
-//     {
-//         TowerEntityData data;
-//         SyncTowerData(data, towerPtr);
-//         m_TowerEntitySubjects[towerPtr] = data;
-//     }
-// }
 
 TowerEntityView::TowerEntityData *TowerEntityView::GetTowerEntityData(const TowerEntity *towerPtr)
 {
