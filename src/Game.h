@@ -175,10 +175,10 @@ private:
     
     // Time management
     Time m_DeltaTime;
-    //float m_fTimeInPlayMode = 0.0f;
-    
+    // ** Handle Input class
     Clock warningShown;
     Clock placementOrUpgradeTimer;
+    // ** Update class
     const float m_fFrameTime = 0.07f; // Time per frame in seconds
 
     // Defines window dimensions (pixels), map size (pixels) and tile size (pixels).
@@ -190,16 +190,13 @@ private:
     std::vector<sf::Vector2f> m_aPath;
     sf::VertexArray m_sfPathLines; 
 
-    // GUI Driver class
+    // Managers
     GUIManager m_GUIManager;
-
-    // ** Tower
     TowerManager m_TowerManager;
-
-    // ** MONSTER
     MonsterManager m_MonsterManager;
 
     ///// Flags
+    // ** handle Input class
     // For path editing
     PathEditingState m_eCurrentEditState = EntryState;
     bool m_IsPathingMousePressed = false;
@@ -207,11 +204,12 @@ private:
     bool m_isHovering = false;
     // For tower reference for tower upgrade
     std::unique_ptr<TowerEntity>* m_lastHoveredTower = nullptr;
+    // ** Game class
     // For game mode transition
     bool m_bIsRoundEnded = false;
     bool m_bIsMonsterGeneratorUpdated = false;
 
-    // **** Bullet assets. Implement observer pattern for bullet
+    // **** Bullet assets. Implement observer pattern for bullet/////////
     Texture m_RapidBulletTexture;
     Texture m_SniperBulletTexture;
     Texture m_FlameThrowerBulletTexture;
@@ -222,17 +220,12 @@ private:
 	std::vector<Entity> m_aAxes;
     std::vector<Texture> m_aFlames;
     sf::Clock FlameThrowerClock;  // Use Clock to track time
-
+    /////////////////////////////////////////////////////////////////////
 
     // Player stats
     int m_iCurrentLevel;
     int m_iInitialWealth;
     int m_iCurrentWealth;
-
-    // REMOVE?
-    GameEventManager m_GameEventManager;
-    ProjectileManager m_ProjectileManager;
-
 };
 
 

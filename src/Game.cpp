@@ -1160,10 +1160,6 @@ void Game::DrawPlayMode()
         m_GUIManager.GetInfoUIView()->DrawNextRoundText();
     }
 
-    if(m_eGameMode == GameOver){
-        m_GUIManager.GetInfoUIView()->DrawGameOverText();
-    }
-
     // Draw Towers
     m_TowerManager.GetTowerEntityView().Draw();
 
@@ -1187,6 +1183,9 @@ void Game::DrawPlayMode()
         }
     }
 
+    if(m_eGameMode == GameOver){
+        m_GUIManager.GetInfoUIView()->DrawGameOverText();
+    }
 
     #ifdef DEBUG
     // Draw path lines
