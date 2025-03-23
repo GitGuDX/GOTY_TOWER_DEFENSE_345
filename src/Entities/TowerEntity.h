@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
-#include "../TowerTargetStrategy.h"
+#include "../Strategies/TowerTargetStrategy.h"
 
 //class TowerGenerator;
 

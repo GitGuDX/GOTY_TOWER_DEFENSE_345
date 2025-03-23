@@ -2,7 +2,7 @@
 #ifndef TOWER_TARGET_STRATEGIES_H
 #define TOWER_TARGET_STRATEGIES_H
 
-#include "../TowerTargetStrategy.h"
+#include "TowerTargetStrategy.h"
 #include "../Math_Helpers.h"
 
 

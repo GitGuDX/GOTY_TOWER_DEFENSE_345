@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
-#include "Entities/Entity.h"
-#include "Entities/TowerEntity.h"
-#include "Entities/MonsterEntity.h"
+#include "../Entities/Entity.h"
+#include "../Entities/TowerEntity.h"
+#include "../Entities/MonsterEntity.h"
 class TowerEntity;
 class MonsterEntity;
 

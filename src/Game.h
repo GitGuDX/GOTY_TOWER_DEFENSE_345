@@ -22,10 +22,6 @@ The Game class initializes the game, manages user input, and updates/draws the g
 // Tower
 #include "EntityManagers/TowerManager.h"
 
-
-#include "GameEventManager.h"
-#include "ProjectileManager.h"
-
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <array>

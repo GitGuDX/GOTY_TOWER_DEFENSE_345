@@ -860,25 +860,6 @@ void Game::UpdateUI()
     }
 }
 
-// **** Need its own Observer pattern
-void UpdateHealthBar(Monster& enemy) 
-{
-    float healthPercentage = enemy.GetHealth() / enemy.GetMaxHealth();
-
-    sf::RectangleShape& newHealthBar = enemy.GetHealthBar();
-    newHealthBar.setSize(sf::Vector2f(40.0f * healthPercentage, 5.0f));
-    newHealthBar.setFillColor(healthPercentage > 0.5 ? sf::Color::Green : sf::Color::Red);
-    newHealthBar.setOrigin(newHealthBar.getSize().x / 2, newHealthBar.getSize().y / 2);
-
-    // Position the health bar above the monster
-    sf::Vector2f enemyPos = enemy.GetSprite().getPosition(); // Use getter if m_Sprite is private
-    newHealthBar.setPosition(enemyPos.x, enemyPos.y - 15);
-
-    // Apply the updated health bar to the monster
-    //enemy.SetHealthBar(newHealthBar);
-}
-
-
 void Game::UpdateTowers()
 {
     std::vector<std::unique_ptr<TowerEntity>>& activeTowers = m_TowerManager.GetActiveTowers();
