@@ -13,7 +13,6 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include "Platform.h"
 
 // GUI and Map
-#include "Entities/Tile.h"
 #include "GUI/GUIManager.h"
 
 // Monster
@@ -65,13 +64,13 @@ public:
         GameOver,       ///< Game over state.
     };
 
-    // ** GAMESETUP VIEW
-    enum ClickedInputBox
-    {
-        Width,
-        Height,
-        None
-    };
+    // // ** GAMESETUP VIEW
+    // enum ClickedInputBox
+    // {
+    //     Width,
+    //     Height,
+    //     None
+    // };
 
     enum PathEditingState
     {
@@ -88,46 +87,28 @@ private:
 
     void InitializeMapEnditorMode();
 
-    /** * @brief Loads assets for the play mode. */
+    // ** Load class
     void LoadPlayModeAssets();
 
-    void HandlePlayAgain();
-
-    void HandleGameRestart();
-
-    /** * @brief Handles user input. */
+    // ** Handle input class
     void HandleInput();
-
     void EditMapSizeInputText(Event& event, std::string& currentText);
 
+    // Update class
+    void HandlePlayAgain();
+    void HandleGameRestart();
     void ResetEntities();
-
-    /** * @brief Updates tile states. */
     void UpdateTiles();
-
-    /** * @brief Updates game elements during play mode. */
     void UpdatePlay();
-
-    /** * @brief Updates all monsters. */
     void UpdateMonsters();
-
-    /** * @brief Updates tower mechanics. */
     void UpdateTowers();
-
     void UpdateAxes();
-
     void UpdateNextMonsterUI();
-
-    /** * @brief Updates UI components. */
     void UpdateUI();
 
-    /** * @brief Draws elements in initial setup mode. */
+    // Draw class
     void DrawInitialSetUp();
-
-    /** * @brief Draws elements in map editor mode. */
     void DrawMapEditorMode();
-
-    /** * @brief Draws elements in play mode. */
     void DrawPlayMode();
 
     void UpdateLevel()
