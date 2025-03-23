@@ -30,11 +30,12 @@ public:
 
     void Update(const IGameSubject& subject);
 
-    void Draw();
+    void Draw(const MapSetup* subject);
 
     void ClearSubjects() { m_MapSetupSubjects.clear(); }
 
 private:
+    void LoadTileTextures();
     void InitializeTiles(std::vector<std::vector<Tile>>& tilePositions, const std::vector<std::vector<MapSetup::TileData>>& tiles);
     void UpdateTilesType(Tile& tile, Tile::Type type);
 

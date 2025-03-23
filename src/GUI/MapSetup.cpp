@@ -5,7 +5,6 @@ MapSetup::MapSetup(Vector2i gridSize)
     : m_iTileSize(50)
     , m_vGridSize(gridSize)    
 {
-
 }
 
 void MapSetup::SetupTiles()
@@ -19,12 +18,6 @@ void MapSetup::SetupTiles()
             TileData tempGrassTile;
             tempGrassTile.position = Vector2f(j * m_iTileSize + m_iTileSize / 2, i * m_iTileSize + m_iTileSize / 2);
             tempGrassTile.type = Tile::Type::Grass;
-            // tempGrassTile.SetTexture(m_GrassTexture);
-            // tempGrassTile.SetScale(Vector2f(1.f, 1.f));
-            // tempGrassTile.SetTextureRect(sf::IntRect(0,0,50,50));
-            // tempGrassTile.SetOrigin(Vector2f(25, 25));
-            // tempGrassTile.SetPosition(Vector2f(j * m_iTileSize + m_iTileSize / 2, i * m_iTileSize + m_iTileSize / 2));
-            // tempGrassTile.setType(Tile::Type::Grass);                               // Define its tile type
             row.emplace_back(tempGrassTile);
         }
         m_aTiles.emplace_back(row);
@@ -44,7 +37,6 @@ void MapSetup::HighlightEdgeTiles(Tile::Type type)
             }
         }
     }
-
     notifyObservers();
 }
 
@@ -73,17 +65,6 @@ void MapSetup::SetTileType(sf::Vector2f position, Tile::Type type)
 {
     sf::Vector2i TileIndex = tileCenterPosToIndex(position);
     m_aTiles[TileIndex.y][TileIndex.x].type = type;
-    // for (auto& row : m_aTiles)
-    // {
-    //     for (auto& tile : row)
-    //     {
-    //         if (tile.position == position)
-    //         {
-    //             tile.type = type;
-    //             return;
-    //         }
-    //     }
-    // }
     notifyObservers();
 }
 

@@ -1103,7 +1103,7 @@ void Game::DrawMapEditorMode()
 	m_Window.clear();
 
     // Draw map
-    m_GUIManager.GetMapSetupView()->Draw();
+    m_GUIManager.GetMapSetupView()->Draw(m_GUIManager.GetMapSetup());
 
     // Draw HUD
     m_GUIManager.GetInfoUIView()->DrawHUD();
@@ -1128,7 +1128,7 @@ void Game::DrawPlayMode()
     m_Window.clear();
 
     // Draw Map
-    m_GUIManager.GetMapSetupView()->Draw();
+    m_GUIManager.GetMapSetupView()->Draw(m_GUIManager.GetMapSetup());
 
     // Draw HUD
     m_GUIManager.GetInfoUIView()->DrawHUD();
