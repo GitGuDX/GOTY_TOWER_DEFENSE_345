@@ -49,42 +49,37 @@ private:
     std::string m_levelString;
     std::string m_instructionString;
 
+    std::string m_TowerSelectionTitleString;
+    std::string m_towerNameString;
     std::string m_towerLevelString;
     std::string m_towerDamagStringe;
     std::string m_towerCooldownString;
     std::string m_towerRangeString;
     std::string m_towerSpeedString;
     std::string m_towerUpgradeCostString;
+    std::string m_towerEffectString;
     std::string m_towerInstructionString_1;
     std::string m_towerInstructionString_2;
 
-    std::string m_warningString;
-    std::string m_modeString;
+    //std::string m_modeString;
     std::string m_woodTowerPriceString;
     std::string m_stoneTowerPriceString;
     std::string m_FlameThrowerTowerPriceString;
+    std::string m_upgradeString;
+    
     std::string m_gameOverString1;
     std::string m_gameOverString2;
     std::string m_gameOverString3;
-    std::string m_nextRoundString;
-    std::string m_upgradeString;
-    std::string m_effectString;
 
     std::string m_nextMonsterTitleString;
     std::string m_nextMonsterLevelString;
     std::string m_nextMonsterDescriptionString;
 
+    std::string m_warningString;
+
 
     int m_iCurrentLevel;
     int m_iCurrentWealth;
-
-    int m_hoverTowerLevel;
-    float m_hoverTowerDamage;
-    float m_hoverTowerCooldown;
-    float m_hoverTowerRange;
-    float m_hoverTowerSpeed;
-    int m_hoverTowerUpgradeCost;
-    std::string m_hoverTowerEffect;
 
     Vector2f m_CrossPosition; // Center the X at the hovered tower
 
@@ -107,6 +102,11 @@ public:
 
     void SetInstructionString(const String& instruction) {
         m_instructionString = instruction;
+        notifyObservers();
+    }
+
+    void SetTowerNameString(const String& name) {
+        m_towerNameString = name;
         notifyObservers();
     }
 
@@ -155,10 +155,10 @@ public:
         notifyObservers();
     }
 
-    void SetModeString(const String& mode) {
-        m_modeString = mode;
-        notifyObservers();
-    }
+    // void SetModeString(const String& mode) {
+    //     m_modeString = mode;
+    //     notifyObservers();
+    // }
 
     void SetWoodTowerPriceString(const String& price) {
         m_woodTowerPriceString = price;
@@ -190,8 +190,8 @@ public:
         notifyObservers();
     }
 
-    void SetNextRoundString(const String& nextRound) {
-        m_nextRoundString = nextRound;
+    void SetTowerSelectionTitleString(const String& towerSelectionTitle) {
+        m_TowerSelectionTitleString = towerSelectionTitle;
         notifyObservers();
     }
 
@@ -201,7 +201,7 @@ public:
     }
 
     void SetEffectString(const String& effect) {
-        m_effectString = effect;
+        m_towerEffectString = effect;
         notifyObservers();
     }
 
@@ -215,14 +215,29 @@ public:
         SetScoreString("Score: " + std::to_string(wealth));
     }
 
+    void SetHoverTowerName(TowerGeneratorData::TowerType type) {
+        switch (type)
+        {
+            case (TowerGeneratorData::TowerType::FlameThrower):
+                SetTowerNameString("Flame Thrower Tower");
+                break;
+            case (TowerGeneratorData::TowerType::Sniper):
+                SetTowerNameString("Sniper Tower");
+                break;
+            case (TowerGeneratorData::TowerType::Rapid):
+                SetTowerNameString("Rapid Tower");
+                break;
+            default:
+                SetTowerNameString("No Type Tower");
+                break;
+        }
+    }
+
     void SetHoverTowerLevel(int level) {
-        m_hoverTowerLevel = level;
-        SetTowerLevelString("Tower Level: " + std::to_string(level));
+        SetTowerLevelString("Level: " + std::to_string(level));
     }
 
     void SetHoverTowerDamage(float damage) {
-        m_hoverTowerDamage = damage;
-
         // format to 2 decimal places
         std::stringstream ss;
         ss << std::fixed << std::setprecision(2) << damage;
@@ -232,8 +247,6 @@ public:
     }
 
     void SetHoverTowerCooldown(float cooldown) {
-        m_hoverTowerCooldown = cooldown;
-
         // format to 2 decimal places
         std::stringstream ss;
         ss << std::fixed << std::setprecision(2) << cooldown;
@@ -243,8 +256,6 @@ public:
     }  
 
     void SetHoverTowerRange(float range) {
-        m_hoverTowerRange = range;
-
         // format to 2 decimal places
         std::stringstream ss;
         ss << std::fixed << std::setprecision(2) << range;
@@ -254,8 +265,6 @@ public:
     }
 
     void SetHoverTowerSpeed(float speed) {
-        m_hoverTowerSpeed = speed;
-
         // format to 2 decimal places
         std::stringstream ss;
         ss << std::fixed << std::setprecision(2) << speed;
@@ -265,7 +274,6 @@ public:
     }
 
     void SetHoverTowerUpgradeCost(int cost) {
-        m_hoverTowerUpgradeCost = cost;
         SetTowerUpgradeCostString("Upgrade Cost: " + std::to_string(cost));
     }
 
@@ -273,19 +281,15 @@ public:
         switch (type)
         {
             case (TowerGeneratorData::TowerType::FlameThrower):
-                m_hoverTowerEffect = "Effect: Burn";
                 SetEffectString("Effect: Burn");
                 break;
             case (TowerGeneratorData::TowerType::Sniper):
-                m_hoverTowerEffect = "Effect: Slow";
                 SetEffectString("Effect: Slow");
                 break;
             case (TowerGeneratorData::TowerType::Rapid):
-                m_hoverTowerEffect = "Effect: None";
                 SetEffectString("Effect: None");
                 break;
             default:
-                m_hoverTowerEffect = "Effect: None";
                 SetEffectString("Effect: None");
                 break;
         }
@@ -321,6 +325,10 @@ public:
 
     const std::string& GetInstructionString() const {
         return m_instructionString;
+    }
+
+    const std::string& GetTowerNameString() const {
+        return m_towerNameString;
     }
 
     const std::string& GetTowerLevelString() const {
@@ -359,9 +367,9 @@ public:
         return m_warningString;
     }
 
-    const std::string& GetModeString() const {
-        return m_modeString;
-    }
+    // const std::string& GetModeString() const {
+    //     return m_modeString;
+    // }
 
     const std::string& GetWoodTowerPriceString() const {
         return m_woodTowerPriceString;
@@ -387,8 +395,8 @@ public:
         return m_gameOverString3;
     }
 
-    const std::string& GetNextRoundString() const {
-        return m_nextRoundString;
+    const std::string& GetTowerSelectionTitleString() const {
+        return m_TowerSelectionTitleString;
     }
 
     const std::string& GetUpgradeString() const {
@@ -396,7 +404,7 @@ public:
     }
 
     const std::string& GetEffectString() const {
-        return m_effectString;
+        return m_towerEffectString;
     }
 
     const std::string& GetNextMonsterTitleString() const {
@@ -417,22 +425,6 @@ public:
 
     int GetCurrentWealth() const {
         return m_iCurrentWealth;
-    }
-
-    float GetHoverTowerDamage() const {
-        return m_hoverTowerDamage;
-    }
-
-    float GetHoverTowerCooldown() const {
-        return m_hoverTowerCooldown;
-    }
-
-    float GetHoverTowerRange() const {
-        return m_hoverTowerRange;
-    } 
-
-    float GetHoverTowerSpeed() const {
-        return m_hoverTowerSpeed;
     }
 
     Vector2f GetCrossPosition() const {

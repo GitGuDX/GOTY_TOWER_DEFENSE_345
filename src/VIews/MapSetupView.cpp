@@ -1,7 +1,5 @@
 #include "MapSetupView.h"
 
-#include <iostream>
-
 using namespace sf;
 
 

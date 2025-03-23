@@ -854,7 +854,7 @@ void Game::UpdateUI()
             m_GUIManager.SetInstructionAndColor("Drag to draw a path from entry to exit", Color::Yellow);
             break;
         default:
-            m_GUIManager.SetInstructionAndColor("Tower Selection", Color::White);
+            m_GUIManager.SetInstructionAndColor("Press Enter to Begin the Round!", Color::Green);
             break;
     }
 }
@@ -1107,11 +1107,11 @@ void Game::DrawMapEditorMode()
 
     // Draw HUD
     m_GUIManager.GetInfoUIView()->DrawHUD();
+    m_GUIManager.GetInfoUIView()->DrawInstructionText();
 
     // Draw Template towers or tower info
     if(m_eCurrentEditState == FinishedPathingState)
     {
-        m_GUIManager.GetInfoUIView()->DrawNextRoundText();
         m_TowerManager.GetTowerEntityView().Draw();
         m_GUIManager.GetInfoUIView()->DrawTowerInfo();
         m_MonsterManager.GetMonsterEntityView().Draw();
@@ -1137,7 +1137,7 @@ void Game::DrawPlayMode()
     m_GUIManager.GetInfoUIView()->DrawTowerInfo(); 
 
     if(m_bIsRoundEnded){
-        m_GUIManager.GetInfoUIView()->DrawNextRoundText();
+        m_GUIManager.GetInfoUIView()->DrawInstructionText();
     }
 
     // Draw Towers

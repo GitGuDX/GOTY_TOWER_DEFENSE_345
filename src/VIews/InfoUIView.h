@@ -21,6 +21,8 @@ private:
         std::string m_levelString;
         std::string m_instructionString;
 
+        std::string m_towerSelectionTitleString;
+        std::string m_towerNameString;
         std::string m_towerLevelString;
         std::string m_towerDamagStringe;
         std::string m_towerCooldownString;
@@ -32,14 +34,14 @@ private:
         std::string m_towerInstructionString_2;
 
         std::string m_warningString;
-        std::string m_modeString;
+        //std::string m_modeString;
         std::string m_woodTowerPriceString;
         std::string m_stoneTowerPriceString;
         std::string m_FlameThrowerTowerPriceString;
         std::string m_gameOverString1;
         std::string m_gameOverString2;
         std::string m_gameOverString3;
-        std::string m_nextRoundString;
+        
         std::string m_upgradeString;
 
         std::string m_nextMonsterTitleString;
@@ -62,7 +64,7 @@ public:
 
     void DrawCrossShape();
 
-    void DrawNextRoundText();
+    void DrawInstructionText();
 
     void DrawUpgradeText();
 
@@ -106,6 +108,8 @@ private:
     Text m_levelText;
     Text m_instructionText;
 
+    Text m_towerNameText;
+    Text m_towerSelectionText;
     Text m_towerLevelText;
     Text m_towerDamageText;
     Text m_towerCooldownText;
@@ -124,7 +128,7 @@ private:
     Text m_gameOverText_1;
     Text m_gameOverText_2;
     Text m_gameOverText_3;
-    Text m_nextRoundText;
+    
     Text m_upgradeText;
 
     Text m_nextMonsterTitleText;

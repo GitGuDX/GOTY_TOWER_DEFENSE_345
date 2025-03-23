@@ -24,6 +24,8 @@ void InfoUIView::Update(const IGameSubject &subject)
         data.m_levelString = infoUI->GetLevelString();
         data.m_instructionString = infoUI->GetInstructionString();
 
+        data.m_towerSelectionTitleString = infoUI->GetTowerSelectionTitleString();
+        data.m_towerNameString = infoUI->GetTowerNameString();
         data.m_towerLevelString = infoUI->GetTowerLevelString();
         data.m_towerDamagStringe = infoUI->GetTowerDamageString();
         data.m_towerCooldownString = infoUI->GetTowerCooldownString();
@@ -39,11 +41,10 @@ void InfoUIView::Update(const IGameSubject &subject)
         data.m_nextMonsterDescriptionString = infoUI->GetNextMonsterDescriptionString();
         
         data.m_warningString = infoUI->GetWarningString();
-        data.m_modeString = infoUI->GetModeString();
+        //data.m_modeString = infoUI->GetModeString();
         data.m_woodTowerPriceString = infoUI->GetWoodTowerPriceString();
         data.m_stoneTowerPriceString = infoUI->GetStoneTowerPriceString();
         data.m_FlameThrowerTowerPriceString = infoUI->GetFlameThrowerTowerPriceString();
-        data.m_nextRoundString = infoUI->GetNextRoundString();
 
         data.m_gameOverString1 = infoUI->GetGameOverString1();
         data.m_gameOverString2 = infoUI->GetGameOverString2();
@@ -59,15 +60,15 @@ void InfoUIView::DrawHUD()
 {
     m_Window.draw(m_scoreText);
     m_Window.draw(m_levelText);
-    m_Window.draw(m_instructionText);
     m_Window.draw(m_warningText);
-    m_Window.draw(m_modeText);
+    //m_Window.draw(m_modeText);
 }
 
 void InfoUIView::DrawTowerInfo()
 {
     if (!m_isHoveringOnTower)
     {
+        m_Window.draw(m_towerSelectionText);
         m_Window.draw(m_woodTowerPriceText);
         m_Window.draw(m_stoneTowerPriceText);
         m_Window.draw(m_FlameThrowerTowerPriceText);
@@ -77,6 +78,7 @@ void InfoUIView::DrawTowerInfo()
     } 
     else
     {
+        m_Window.draw(m_towerNameText);
         m_Window.draw(m_towerLevelText);
         m_Window.draw(m_towerDamageText);
         m_Window.draw(m_towerCooldownText);
@@ -98,9 +100,10 @@ void InfoUIView::DrawCrossShape()
     }
 }
 
-void InfoUIView::DrawNextRoundText()
+void InfoUIView::DrawInstructionText()
 {
-    m_Window.draw(m_nextRoundText);
+    //m_Window.draw(m_towerSelectionText);
+    m_Window.draw(m_instructionText);
 }
 
 void InfoUIView::DrawUpgradeText()
@@ -148,9 +151,9 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     FloatRect FlameThrowerTowerPriceBounds = m_FlameThrowerTowerPriceText.getLocalBounds();
     m_FlameThrowerTowerPriceText.setOrigin(FlameThrowerTowerPriceBounds.width / 2, FlameThrowerTowerPriceBounds.height / 2);
 
-    m_modeText.setString(data.m_modeString);   // Set text
-    FloatRect modeTextBounds = m_modeText.getLocalBounds();
-    m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
+    // m_modeText.setString(data.m_modeString);   // Set text
+    // FloatRect modeTextBounds = m_modeText.getLocalBounds();
+    // m_modeText.setOrigin(modeTextBounds.width / 2, modeTextBounds.height / 2);
 
     m_gameOverText_1.setString(data.m_gameOverString1);   // Set text
     FloatRect gameOverTextBounds_1 = m_gameOverText_1.getLocalBounds();
@@ -164,14 +167,18 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     FloatRect gameOverTextBounds_3 = m_gameOverText_3.getLocalBounds();
     m_gameOverText_3.setOrigin(gameOverTextBounds_3.width/2, gameOverTextBounds_3.height/2);
 
-    m_nextRoundText.setString(data.m_nextRoundString);   // Set text
-    FloatRect nextRoundTextBounds = m_nextRoundText.getLocalBounds();
-    m_nextRoundText.setOrigin(nextRoundTextBounds.width/2, nextRoundTextBounds.height/2);
+    m_towerSelectionText.setString(data.m_towerSelectionTitleString);   // Set text
+    FloatRect nextRoundTextBounds = m_towerSelectionText.getLocalBounds();
+    m_towerSelectionText.setOrigin(nextRoundTextBounds.width/2, nextRoundTextBounds.height/2);
 
     m_instructionText.setString(data.m_instructionString);   // Set text
     FloatRect instructionTextBounds = m_instructionText.getLocalBounds();
     m_instructionText.setOrigin(instructionTextBounds.width / 2, instructionTextBounds.height / 2);
     m_instructionText.setFillColor(m_instructionTextColor);     // Set color
+
+    m_towerNameText.setString(data.m_towerNameString);   // Set text
+    FloatRect towerNameBounds = m_towerNameText.getLocalBounds();
+    m_towerNameText.setOrigin(towerNameBounds.width / 2, towerNameBounds.height / 2);
 
     m_towerLevelText.setString(data.m_towerLevelString);   // Set text
     FloatRect towerLevelBounds = m_towerLevelText.getLocalBounds();
@@ -232,9 +239,9 @@ void InfoUIView::InitializeTextAssets()
 
     Vector2f scoreTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 10);
     Vector2f levelTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 35);
-    Vector2f instructionTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 115);
+    Vector2f instructionTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 80);
     Vector2f warningTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y - 30);
-    Vector2f modeTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 65);
+    //Vector2f modeTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 65);
     Vector2f woodTowerPricePosition = Vector2f(m_MapSize.x + m_infoUIWidth*1/4, m_MapSize.y/3 + 125);
     Vector2f stoneTowerPricePosition = Vector2f(m_MapSize.x + m_infoUIWidth*2/4, m_MapSize.y/3 + 125);
     Vector2f FlameThrowerTowerPricePosition = Vector2f(m_MapSize.x + m_infoUIWidth*1/4 + 200, m_MapSize.y/3 + 125);
@@ -242,6 +249,8 @@ void InfoUIView::InitializeTextAssets()
     Vector2f gameOverTextPosition2 = Vector2f(m_MapSize.x/2, m_MapSize.y/2);
     Vector2f gameOverTextPosition3 = Vector2f(m_MapSize.x/2, m_MapSize.y/2 + 30);
 
+    Vector2f towerSelectionTitleTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 115);
+    Vector2f towerNamePosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 115);
     Vector2f towerLevelPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 145);
     Vector2f towerDamagePosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 175);
     Vector2f towerCooldownPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 205);
@@ -255,8 +264,6 @@ void InfoUIView::InitializeTextAssets()
     Vector2f nextMonsterTitlePosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 165);
     Vector2f nextMonsterLevelPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 245);
     Vector2f nextMonsterDescriptionPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 270);
-
-    Vector2f nextRoundTextPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 80); //Fix this because it should be the same values as instruciton but its not
 
     // Score text 
     m_scoreText.setFont(m_Font);               // Set font
@@ -290,10 +297,10 @@ void InfoUIView::InitializeTextAssets()
     m_FlameThrowerTowerPriceText.setPosition(FlameThrowerTowerPricePosition);       // Set position
 
     // Current mode text 
-    m_modeText.setFont(m_Font);               // Set font
-    m_modeText.setCharacterSize(18);        // Set size
-    m_modeText.setFillColor(Color::Red);     // Set color
-    m_modeText.setPosition(modeTextPosition);       // Set position
+    // m_modeText.setFont(m_Font);               // Set font
+    // m_modeText.setCharacterSize(18);        // Set size
+    // m_modeText.setFillColor(Color::Red);     // Set color
+    // m_modeText.setPosition(modeTextPosition);       // Set position
 
     // Game Over text 
     m_gameOverText_1.setFont(m_Font);               // Set font
@@ -318,15 +325,20 @@ void InfoUIView::InitializeTextAssets()
     m_gameOverText_3.setPosition(gameOverTextPosition3);       // Set position
 
     // Next Round text 
-    m_nextRoundText.setFont(m_Font);               // Set font
-    m_nextRoundText.setCharacterSize(20);        // Set size
-    m_nextRoundText.setFillColor(Color::Green);     // Set color
-    m_nextRoundText.setPosition(nextRoundTextPosition);       // Set position
+    m_towerSelectionText.setFont(m_Font);               // Set font
+    m_towerSelectionText.setCharacterSize(25);        // Set size
+    m_towerSelectionText.setFillColor(Color::White);     // Set color
+    m_towerSelectionText.setPosition(towerSelectionTitleTextPosition);       // Set position
 
     // instruction text 
     m_instructionText.setFont(m_Font);               // Set font
     m_instructionText.setCharacterSize(20);        // Set size
     m_instructionText.setPosition(instructionTextPosition);       // Set position
+
+    // Tower name text
+    m_towerNameText.setFont(m_Font);               // Set font
+    m_towerNameText.setCharacterSize(20);        // Set size
+    m_towerNameText.setPosition(towerNamePosition);       // Set position
 
     // Tower level text
     m_towerLevelText.setFont(m_Font);               // Set font

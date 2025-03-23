@@ -169,13 +169,15 @@ void GUIManager::UpdateTowerHoverUI(std::unique_ptr<TowerEntity>& towerPtr)
         return std::round(value * 100.0f) / 100.0f;
     };
 
+    TowerGeneratorData::TowerType type = towerPtr->GetType();
+    m_infoUI->SetHoverTowerName(type);
     m_infoUI->SetHoverTowerLevel(towerPtr->GetLevel());
     m_infoUI->SetHoverTowerDamage(roundTwoDecimals(towerPtr->GetDamage()));
     m_infoUI->SetHoverTowerCooldown(roundTwoDecimals(towerPtr->GetMaxCooldown()));
     m_infoUI->SetHoverTowerRange(roundTwoDecimals(towerPtr->GetRange()));
     m_infoUI->SetHoverTowerSpeed(roundTwoDecimals(towerPtr->GetSpeed()));
     m_infoUI->SetHoverTowerUpgradeCost(towerPtr->GetUpgradeCost());
-    m_infoUI->SetHoverTowerEffect(towerPtr->GetType());
+    m_infoUI->SetHoverTowerEffect(type);
 }
 
 void GUIManager::UpdateMonsterUi(MonsterGeneratorData::MonsterType type, int level)
