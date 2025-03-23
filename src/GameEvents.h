@@ -3,14 +3,13 @@
 #include <string>
 
 class Tower;
-
-
+class IGameSubject;
 
 // Observer interface
 class IGameObserver {
 public:
     virtual ~IGameObserver() = default;
-    virtual void OnTowerStatsChanged(const Tower& tower) = 0;
+    virtual void Update(const IGameSubject& subject) = 0;
 };
 
 // Subject interface

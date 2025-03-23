@@ -67,3 +67,22 @@ To run the game, navigate to the build directory and execute the program:
 
     - Run the game executable:
             ./Tower_Defense_Windows.exe
+
+
+To clean your build and re-run CMake, follow these steps:
+
+1. Remove Previous Build Files (Clean Build)
+        - From the root directory (GOTY_TOWER_DEFENSE_345)
+                rm -rf build
+
+
+1. Create a New Build Directory
+        - From the root directory (GOTY_TOWER_DEFENSE_345)
+                mkdir build && cd build
+
+2. Run CMake Again
+        - From the build directory     
+                cmake ..
+
+3. Build project and run the game
+        - Follow the step 4 and 5 from above.
