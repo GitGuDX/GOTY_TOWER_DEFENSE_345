@@ -22,8 +22,8 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include "EntityManagers/TowerManager.h"
 
 #include <SFML/Graphics.hpp>
+// ** Handle input class
 #include <string>
-#include <array>
 #include <vector>
 
 
@@ -169,8 +169,8 @@ private:
 
     // Managers
     GUIManager m_GUIManager;
-    TowerManager m_TowerManager;
     MonsterManager m_MonsterManager;
+    TowerManager m_TowerManager;
 
     ///// Flags
     // ** handle Input class

@@ -24,13 +24,11 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
     // Initialize previous game mode to InitialSetUp to track game mode transitions later 
     , m_ePrevGameMode(GameMode::InitialSetUp)
-    // Initialize GUI driver class
+    // Initialize managers
     , m_GUIManager(m_Window)
-    // ** TOWER
-    , m_TowerManager(m_Window, m_MonsterManager)
-    // ** MONSTER
     , m_MonsterManager(m_Window)
-    // ** GAME SETUP
+    , m_TowerManager(m_Window, m_MonsterManager)
+    // ** Projectile observer class
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
@@ -47,6 +45,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
 void Game::Run()
 {
     Clock clock;
+    // ** Projectile observer class
     Clock FlameThrowerClock;
     while (m_Window.isOpen())
     {

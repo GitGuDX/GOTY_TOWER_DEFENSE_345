@@ -52,11 +52,21 @@ public:
     void ClearSubjects() { m_GameSetupSubjects.clear(); }
 
 private:
+    // ** Load class
+    void LoadButtonTextures();
+
     void InitializeIntroText();
     void InitializeEnterSizeText();
     void InitializeSizeLimitText();
     void InitializeInputBox();
+    void InitializeInputBoxText();
     void InitializeSubmitButton();
+
+    void UpdateIntroText(std::string& title);
+    void UpdateEnterSizeText(std::string& enterSizeInstruction);
+    void UpdateSizeLimitText(std::string& sizeLimitWarning);
+    void UpdateWidthInputBoxText(std::string& initialWidth);
+    void UpdateHeightInputBoxText(std::string& initialHeight);
 
 private:
 

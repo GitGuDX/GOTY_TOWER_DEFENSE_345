@@ -13,20 +13,13 @@ GameSetupView::GameSetupView(RenderWindow &m_Window, sf::Font &font)
     , m_SubmitButtonClicked(false)
 
 {
-
-    #ifdef LINUX
-    m_SubmitButtonTexture.loadFromFile("../src/Images/placeholder_play_button.png");                    // placeholder image. Change button image
-    m_SubmitButtonPressedTexture.loadFromFile("../src/Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
-    #endif
-    #ifdef MAC
-    m_SubmitButtonTexture.loadFromFile("Images/placeholder_play_button.png");                    // placeholder image. Change button image
-    m_SubmitButtonPressedTexture.loadFromFile("Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
-    #endif
-    #ifdef WINDOW
-    // add for window
-    #endif
-    
-    
+    LoadButtonTextures();
+    InitializeIntroText();
+    InitializeEnterSizeText();
+    InitializeSizeLimitText();
+    InitializeInputBox();
+    InitializeInputBoxText();
+    InitializeSubmitButton();
 }
 
 void GameSetupView::Update(const IGameSubject &subject)
@@ -40,13 +33,13 @@ void GameSetupView::Update(const IGameSubject &subject)
         data.m_UserInputWindowHeight = gameSetup->GetUserInputWindowHeight();
         data.m_UserInputWindowWidth = gameSetup->GetUserInputWindowWidth();
         data.m_SizeLimitWarning = gameSetup->GetSizeLimitWarning();
-    }
 
-    InitializeIntroText();
-    InitializeEnterSizeText();
-    InitializeSizeLimitText();
-    InitializeInputBox();
-    InitializeSubmitButton();
+        UpdateIntroText(data.m_IntroTitle);
+        UpdateEnterSizeText(data.m_EnterSizeSign);
+        UpdateSizeLimitText(data.m_SizeLimitWarning);
+        UpdateWidthInputBoxText(data.m_UserInputWindowWidth);
+        UpdateHeightInputBoxText(data.m_UserInputWindowHeight);
+    }
 }
 
 void GameSetupView::Draw()
@@ -77,58 +70,36 @@ void GameSetupView::Draw()
     }
 }
 
+void GameSetupView::LoadButtonTextures()
+{
+    m_SubmitButtonTexture.loadFromFile("../src/Images/placeholder_play_button.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("../src/Images/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+}
+
 void GameSetupView::InitializeIntroText()
 {
     m_IntroText.setFont(m_Font);
-    if (!m_GameSetupSubjects.empty()) {
-        m_IntroText.setString(m_GameSetupSubjects.begin()->second.m_IntroTitle);
-    }
     m_IntroText.setCharacterSize(40);
     m_IntroText.setFillColor(Color::White);
-    // Get text size
-    float fIntroTextWidth = m_IntroText.getLocalBounds().width;
-    float fIntroTextHeight = m_IntroText.getLocalBounds().height;
-    // Reset the origin to the center of the text
-    m_IntroText.setOrigin(Vector2f(fIntroTextWidth/2, fIntroTextHeight/2));
-    // Set text to the center of the screen
-    m_IntroText.setPosition(Vector2f(m_Window.getSize().x/2, m_Window.getSize().y/5));
+    m_IntroText.setPosition(Vector2f(m_Window.getSize().x/2, m_Window.getSize().y/5));    
 }
 
 void GameSetupView::InitializeEnterSizeText()
 {
     // Initialize "Enter Size" text
     m_EnterSizeText.setFont(m_Font);
-    if (!m_GameSetupSubjects.empty()) {
-        m_EnterSizeText.setString(m_GameSetupSubjects.begin()->second.m_EnterSizeSign);
-    }
     m_EnterSizeText.setCharacterSize(25);
-    //m_SizeLimitText.setScale(0.80, 0.80);
-    // Get "Enter Size" text size
-    float fEnterSizeTextWidth = m_EnterSizeText.getLocalBounds().width;
-    float fEnterSizeTextHeight = m_EnterSizeText.getLocalBounds().height;
-    // Reset the origin to the center of the text
-    m_EnterSizeText.setOrigin(Vector2f(fEnterSizeTextWidth/2, fEnterSizeTextHeight/2));
-    // Set "Enter Size" text to the center of the screen
-    m_EnterSizeText.setPosition(Vector2f(m_Window.getSize().x/2, m_Window.getSize().y/3));
     m_EnterSizeText.setFillColor(Color::White);
+    m_EnterSizeText.setPosition(Vector2f(m_Window.getSize().x/2, m_Window.getSize().y/3));   
 }
 
 void GameSetupView::InitializeSizeLimitText()
 {
     // Initialize "Size Limit" text
     m_SizeLimitText.setFont(m_Font);
-    if (!m_GameSetupSubjects.empty()) {
-        m_SizeLimitText.setString(m_GameSetupSubjects.begin()->second.m_SizeLimitWarning);
-    }
     m_SizeLimitText.setCharacterSize(20);
-    // Get "Size Limit" text size
-    float fSizeLimitTextWidth = m_SizeLimitText.getLocalBounds().width;
-    float fSizeLimitTextHeight = m_SizeLimitText.getLocalBounds().height;
-    // Reset the origin to the center of the text
-    m_SizeLimitText.setOrigin(Vector2f(fSizeLimitTextWidth/2, fSizeLimitTextHeight/2));
-    // Set "Size Limit" text to the center of the screen
-    m_SizeLimitText.setPosition(Vector2f(m_Window.getSize().x/2, m_Window.getSize().y*4/5));
     m_SizeLimitText.setFillColor(Color::White);
+    m_SizeLimitText.setPosition(Vector2f(m_Window.getSize().x/2, m_Window.getSize().y*4/5));
 }
 
 void GameSetupView::InitializeInputBox()
@@ -146,26 +117,32 @@ void GameSetupView::InitializeInputBox()
     InputBoxHeight.setPosition(Vector2f(m_Window.getSize().x*5/8, m_Window.getSize().y/2));
     InputBoxHeight.setFillColor(Color::White);
     m_aUserInputBoxWindowSize[1] = InputBoxHeight;
+}
 
-    // Initialize window Width size input Text
-    m_WidthSizeInput.setFont(m_Font);
-    m_WidthSizeInput.setCharacterSize(m_iInputFontSize);
-    m_WidthSizeInput.setString(m_GameSetupSubjects.begin()->second.m_UserInputWindowWidth);                                                           // For test
-    m_WidthSizeInput.setFillColor(Color::Red);
-    float fWidthSizeInputHeight = m_WidthSizeInput.getLocalBounds().height;
-    m_WidthSizeInput.setOrigin(0, fWidthSizeInputHeight);
-    // Set position relative to the input box       
-    m_WidthSizeInput.setPosition(InputBoxWidth.getPosition().x - InputBoxWidth.getSize().x/2 + 3, InputBoxWidth.getPosition().y + 1);  
+void GameSetupView::InitializeInputBoxText()
+{
+    if (!m_aUserInputBoxWindowSize.empty())
+    {
+        RectangleShape& widthInputBox = m_aUserInputBoxWindowSize[0];
+        RectangleShape& heightInputBox = m_aUserInputBoxWindowSize[1];
+        // Initialize window Width size input Text
+        m_WidthSizeInput.setFont(m_Font);
+        m_WidthSizeInput.setCharacterSize(m_iInputFontSize);
+        m_WidthSizeInput.setFillColor(Color::Red);
+        m_WidthSizeInput.setPosition(widthInputBox.getPosition().x - widthInputBox.getSize().x/2 + 3, widthInputBox.getPosition().y + 1);  
 
-    // Initialize window height size input Text
-    m_HeightSizeInput.setFont(m_Font);
-    m_HeightSizeInput.setCharacterSize(m_iInputFontSize);
-    m_HeightSizeInput.setString(m_GameSetupSubjects.begin()->second.m_UserInputWindowHeight);                                                                // For test
-    m_HeightSizeInput.setFillColor(Color::Red);
-    float fHeightSizeInputHeight = m_HeightSizeInput.getLocalBounds().height;
-    m_HeightSizeInput.setOrigin(0, fHeightSizeInputHeight);
-    // Set position relative to the input box
-    m_HeightSizeInput.setPosition(InputBoxHeight.getPosition().x - InputBoxHeight.getSize().x/2 + 3, InputBoxHeight.getPosition().y + 1);
+        // Initialize window height size input Text
+        m_HeightSizeInput.setFont(m_Font);
+        m_HeightSizeInput.setCharacterSize(m_iInputFontSize);
+        m_HeightSizeInput.setFillColor(Color::Red);
+        m_HeightSizeInput.setPosition(heightInputBox.getPosition().x - heightInputBox.getSize().x/2 + 3, heightInputBox.getPosition().y + 1);
+    }
+    else
+    {
+        #ifdef DEBUG
+        std::cout << "Input box has not been loaded." << std::endl;
+        #endif
+    }
 }
 
 void GameSetupView::InitializeSubmitButton()
@@ -182,4 +159,48 @@ void GameSetupView::InitializeSubmitButton()
     submitButtonPressed.setOrigin(m_SubmitButtonPressedTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
     submitButtonPressed.setPosition(Vector2f(m_Window.getSize().x/2,m_Window.getSize().y*2/3));
     m_aButtonBoxes[1] = submitButtonPressed;
+}
+
+void GameSetupView::UpdateIntroText(std::string& title)
+{
+    m_IntroText.setString(title);
+    // Get text size
+    float fIntroTextWidth = m_IntroText.getLocalBounds().width;
+    float fIntroTextHeight = m_IntroText.getLocalBounds().height;
+    // Reset the origin to the center of the text
+    m_IntroText.setOrigin(Vector2f(fIntroTextWidth/2, fIntroTextHeight/2));
+}
+
+void GameSetupView::UpdateEnterSizeText(std::string& enterSizeInstruction)
+{
+    m_EnterSizeText.setString(enterSizeInstruction);
+    // Get "Enter Size" text size
+    float fEnterSizeTextWidth = m_EnterSizeText.getLocalBounds().width;
+    float fEnterSizeTextHeight = m_EnterSizeText.getLocalBounds().height;
+    // Reset the origin to the center of the text
+    m_EnterSizeText.setOrigin(Vector2f(fEnterSizeTextWidth/2, fEnterSizeTextHeight/2)); 
+}
+
+void GameSetupView::UpdateSizeLimitText(std::string& sizeLimitWarning)
+{
+    m_SizeLimitText.setString(sizeLimitWarning);
+    // Get "Size Limit" text size
+    float fSizeLimitTextWidth = m_SizeLimitText.getLocalBounds().width;
+    float fSizeLimitTextHeight = m_SizeLimitText.getLocalBounds().height;
+    // Reset the origin to the center of the text
+    m_SizeLimitText.setOrigin(Vector2f(fSizeLimitTextWidth/2, fSizeLimitTextHeight/2));
+}
+
+void GameSetupView::UpdateWidthInputBoxText(std::string& initialWidth)
+{
+    m_WidthSizeInput.setString(initialWidth);                                        
+    float fWidthSizeInputHeight = m_WidthSizeInput.getLocalBounds().height;
+    m_WidthSizeInput.setOrigin(0, fWidthSizeInputHeight);
+}
+
+void GameSetupView::UpdateHeightInputBoxText(std::string& initialHeight)
+{
+    m_HeightSizeInput.setString(initialHeight); 
+    float fHeightSizeInputHeight = m_HeightSizeInput.getLocalBounds().height;
+    m_HeightSizeInput.setOrigin(0, fHeightSizeInputHeight);
 }

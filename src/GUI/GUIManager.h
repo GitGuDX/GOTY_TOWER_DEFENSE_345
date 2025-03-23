@@ -22,6 +22,8 @@ public:
     GUIManager(sf::RenderWindow& m_Window);
     ~GUIManager() = default;
 
+    void LoadFonts();
+
     void InitializeGameSetup();
 
     void InitializeMapSetup();
@@ -30,7 +32,7 @@ public:
 
     GameSetup* GetGameSetup()
     {
-        return &m_gameSetup;
+        return m_gameSetup.get();
     }
 
     GameSetupView* GetGameSetupView() const
@@ -89,9 +91,10 @@ private:
 
     float m_fElapsedTimeInSeconds;
 
+    // ** Load class
     sf::Font m_Font;
 
-    GameSetup m_gameSetup;
+    std::unique_ptr<GameSetup> m_gameSetup;
     std::unique_ptr<GameSetupView> m_gameSetupView;
     
     std::unique_ptr<MapSetup> m_mapSetup;

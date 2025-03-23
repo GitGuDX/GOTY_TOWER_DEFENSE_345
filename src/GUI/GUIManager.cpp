@@ -11,17 +11,11 @@ GUIManager::GUIManager(RenderWindow& m_Window)
     : m_Window(m_Window)
     , m_fElapsedTimeInSeconds(0.0f)
 {
-    #ifdef LINUX
-    if (!m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf")) {
-        throw std::runtime_error("Failed to load font");
-    }
-    #endif
-    #ifdef MAC
-    if (!m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf")) {
-        throw std::runtime_error("Failed to load font");
-    }
-    #endif
 
+    // ** Load class
+    LoadFonts();
+
+    m_gameSetup = std::make_unique<GameSetup>();
     // Initialize GameSetupView dynamically
     m_gameSetupView = std::make_unique<GameSetupView>(m_Window, m_Font);
 
@@ -30,22 +24,30 @@ GUIManager::GUIManager(RenderWindow& m_Window)
     InitializeGameSetup();
 }
 
+// ** Load class
+void GUIManager::LoadFonts()
+{
+    if (!m_Font.loadFromFile("../src/Fonts/Kreon-Medium.ttf")) {
+        throw std::runtime_error("Failed to load font");
+    }
+}
+
 void GUIManager::InitializeGameSetup()
 {
     // If the game setup view is not nullptr, remove the observer before setting up the view
     if (m_gameSetupView != nullptr)
     {
-    m_gameSetup.RemoveObserver(m_gameSetupView.get());                       // Remove the observer before setting up the view
+    m_gameSetup->RemoveObserver(m_gameSetupView.get());                       // Remove the observer before setting up the view
     m_gameSetupView->ClearSubjects();                                        // Clear the subjects before setting up the view
     }
 
     // Pass the raw pointer of the unique_ptr to AddObserver
-    m_gameSetup.AddObserver(m_gameSetupView.get());                          // Must be done before setting up the view
-    m_gameSetup.SetIntroTitle("Welcome to Tower Defense!");
-    m_gameSetup.SetEnterSizeSign("Enter the size of the grid:");
-    m_gameSetup.SetUserInputWindowHeight("10");
-    m_gameSetup.SetUserInputWindowWidth("10");
-    m_gameSetup.SetSizeLimitWarning("Size must be between 10 and 20.");
+    m_gameSetup->AddObserver(m_gameSetupView.get());                          // Must be done before setting up the view
+    m_gameSetup->SetIntroTitle("Welcome to Tower Defense!");
+    m_gameSetup->SetEnterSizeSign("Enter the size of the grid:");
+    m_gameSetup->SetUserInputWindowHeight("10");
+    m_gameSetup->SetUserInputWindowWidth("10");
+    m_gameSetup->SetSizeLimitWarning("Size must be between 10 and 20.");
 }
 
 void GUIManager::InitializeMapSetup()
@@ -183,7 +185,7 @@ void GUIManager::UpdateMonsterUi(MonsterGeneratorData::MonsterType type, int lev
         std::cerr << "Error: InfoUI is nullptr\n";
         return;  // Prevent null pointer dereference
     }
-    m_infoUI->SetNextMonsterTitleString("Next Monster");
+    m_infoUI->SetNextMonsterTitleString("Up Next");
     m_infoUI->SetNextMonsterLevelString("Level: " + std::to_string(level + 1));
 
     switch (type)
@@ -266,7 +268,7 @@ void GUIManager::SetWarningAndColor(const std::string &warning, const Color &col
 Vector2i GUIManager::GetGridSize() const
 {
     Vector2i gridSize;
-    gridSize.x = std::stoi(m_gameSetup.GetUserInputWindowWidth());                // converting sf::String -> std::string -> unsigned int
-    gridSize.y = std::stoi(m_gameSetup.GetUserInputWindowHeight());
+    gridSize.x = std::stoi(m_gameSetup->GetUserInputWindowWidth());                // converting sf::String -> std::string -> unsigned int
+    gridSize.y = std::stoi(m_gameSetup->GetUserInputWindowHeight());
     return gridSize;
 }
