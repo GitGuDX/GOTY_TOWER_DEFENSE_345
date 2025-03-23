@@ -33,7 +33,7 @@ void TowerManager::InitializeGameSetup()
     auto sniperTower = std::make_unique<TowerEntity>(m_TowerGenerator.GenerateSniperTowerTemplate());
     sniperTower->AddObserver(&m_TowerEntityView);
     sniperTower->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth*2/4, m_mapSize.y / 3 + 75));
-    sniperTower->SetCost(200);
+    sniperTower->SetCost(300);
     sniperTower->SetIsTemplate(true);
 
     // std::move(newTower) transfers ownership to m_templateTowers.
