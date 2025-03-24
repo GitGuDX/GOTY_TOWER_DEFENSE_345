@@ -57,6 +57,8 @@ public:
     */
     enum GameMode
     {
+        None,
+        MainMenu,
         InitialSetUp,   ///< Setup mode for entering grid size.
         PlayMode,       ///< Main gameplay mode.
         MapEditorMode,  ///< Map creation mode.
@@ -107,6 +109,7 @@ private:
     void UpdateUI();
 
     // Draw class
+    void DrawMainMenu();
     void DrawInitialSetUp();
     void DrawMapEditorMode();
     void DrawPlayMode();

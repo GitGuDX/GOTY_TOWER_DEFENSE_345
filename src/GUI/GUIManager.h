@@ -2,6 +2,7 @@
 #define GUIMANAGER_H
 
 #include "../Platform.h"
+#include "MainMenu.h"
 #include "GameSetup.h"
 #include "../Views/GameSetupView.h"
 #include "MapSetup.h"
@@ -24,11 +25,18 @@ public:
 
     void LoadFonts();
 
+    void InitializeMainMenu();
+
     void InitializeGameSetup();
 
     void InitializeMapSetup();
 
     void InitializeInfoUI();
+
+    MainMenu* GetMainMenu()
+    {
+        return m_mainMenu.get();
+    }
 
     GameSetup* GetGameSetup()
     {
@@ -93,6 +101,8 @@ private:
 
     // ** Load class
     sf::Font m_Font;
+
+    std::unique_ptr<MainMenu> m_mainMenu;
 
     std::unique_ptr<GameSetup> m_gameSetup;
     std::unique_ptr<GameSetupView> m_gameSetupView;

@@ -32,6 +32,14 @@ void GUIManager::LoadFonts()
     }
 }
 
+void GUIManager::InitializeMainMenu()
+{
+    m_mainMenu = std::make_unique<MainMenu>(m_Window);
+    m_mainMenu->LoadTextures();
+    m_mainMenu->InitializeTitleLogo();
+    m_mainMenu->InitializeButtons();
+}
+
 void GUIManager::InitializeGameSetup()
 {
     // If the game setup view is not nullptr, remove the observer before setting up the view

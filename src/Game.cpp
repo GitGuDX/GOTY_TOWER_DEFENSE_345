@@ -21,9 +21,9 @@ using namespace std;
 Game::Game(int initialWindowWidth, int initialWindowHeight)
     : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense Game")           // Initiliaze window screen
     , m_vInitialWindowSize(Vector2i(initialWindowWidth, initialWindowHeight))                    // Set initial window sizes
-    , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
+    , m_eGameMode(GameMode::MainMenu)                                                       // set current game mode to intial set up
     // Initialize previous game mode to InitialSetUp to track game mode transitions later 
-    , m_ePrevGameMode(GameMode::InitialSetUp)
+    , m_ePrevGameMode(GameMode::None)
     // Initialize managers
     , m_GUIManager(m_Window)
     , m_MonsterManager(m_Window)
@@ -57,6 +57,17 @@ void Game::Run()
         // Depending on the game mode, update then draw
         switch (m_eGameMode)
         {
+        case MainMenu:
+        {
+            // Initialize main menu only once
+            if (m_ePrevGameMode == None)
+            {
+                m_GUIManager.InitializeMainMenu();
+                m_ePrevGameMode = MainMenu;
+            }
+            DrawMainMenu();
+            break;
+        }
         case InitialSetUp:
         {
             DrawInitialSetUp();
@@ -125,6 +136,8 @@ void Game::Run()
             DrawPlayMode();
             break;
         }
+        default:
+            break;
         }
     }
 }
@@ -1083,6 +1096,15 @@ void Game::UpdateNextMonsterUI()
 {
     std::unique_ptr<MonsterEntity>& nextMonster = m_MonsterManager.GetNextMonster();
     m_GUIManager.UpdateMonsterUi(nextMonster->GetType(), nextMonster->GetLevel());
+}
+
+void Game::DrawMainMenu()
+{
+    m_Window.clear();
+
+    m_GUIManager.GetMainMenu()->Draw();
+
+    m_Window.display();
 }
 
 // ** EDIT TO IMPLEMENT GAMESETUP VIEW CLASS
