@@ -2,7 +2,7 @@
 #define GUIMANAGER_H
 
 #include "../Platform.h"
-#include "MainMenu.h"
+#include "MainMenuDriver.h"
 #include "GameSetup.h"
 #include "../Views/GameSetupView.h"
 #include "MapSetup.h"
@@ -33,7 +33,9 @@ public:
 
     void InitializeInfoUI();
 
-    MainMenu* GetMainMenu()
+    void ResetGameSetup();
+
+    MainMenuDriver* GetMainMenu()
     {
         return m_mainMenu.get();
     }
@@ -102,7 +104,7 @@ private:
     // ** Load class
     sf::Font m_Font;
 
-    std::unique_ptr<MainMenu> m_mainMenu;
+    std::unique_ptr<MainMenuDriver> m_mainMenu;
 
     std::unique_ptr<GameSetup> m_gameSetup;
     std::unique_ptr<GameSetupView> m_gameSetupView;

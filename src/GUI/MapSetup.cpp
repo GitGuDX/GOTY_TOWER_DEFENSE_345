@@ -1,5 +1,5 @@
 #include "MapSetup.h"
-#include "../Math_Helpers.h"
+#include "../Helpers/Math_Helpers.h"
 
 MapSetup::MapSetup(Vector2i gridSize)
     : m_iTileSize(50)

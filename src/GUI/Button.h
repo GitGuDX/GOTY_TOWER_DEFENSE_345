@@ -11,12 +11,7 @@ public:
         m_sprite.setPosition(position);
     }
 
-    void Draw(sf::RenderWindow& window)
-    {
-        window.draw(m_sprite);
-    }
-
-    bool IsClicked(sf::Vector2f mousePos) const
+    bool IsMouseOver(sf::Vector2f mousePos) const
     {
         return m_sprite.getGlobalBounds().contains(mousePos);
     }
@@ -40,6 +35,11 @@ public:
     {
         sf::Vector2u spriteSize = m_sprite.getTexture()->getSize();
         m_sprite.setOrigin(spriteSize.x/2, spriteSize.y/2);
+    }
+
+    const sf::Sprite& GetSprite() const
+    {
+        return m_sprite;
     }
 
 private:

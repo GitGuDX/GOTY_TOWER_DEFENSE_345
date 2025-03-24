@@ -19,7 +19,7 @@ GameSetupView::GameSetupView(RenderWindow &m_Window, sf::Font &font)
     InitializeSizeLimitText();
     InitializeInputBox();
     InitializeInputBoxText();
-    InitializeSubmitButton();
+    InitializeButtons();
 }
 
 void GameSetupView::Update(const IGameSubject &subject)
@@ -60,20 +60,27 @@ void GameSetupView::Draw()
     m_Window.draw(m_HeightSizeInput);
 
     // Apply submit button press effect
-    if (m_SubmitButtonClicked)
-    {
-        m_Window.draw(m_aButtonBoxes[1]);
-    }
-    else
-    {
-        m_Window.draw(m_aButtonBoxes[0]);
-    }
+    // if (m_SubmitButtonClicked)
+    // {
+    //     m_Window.draw(m_aButtonBoxes[1]);
+    // }
+    // else
+    // {
+    //     m_Window.draw(m_aButtonBoxes[0]);
+    // }
+    m_Window.draw(m_PlayButton->GetSprite());
+    m_Window.draw(m_BackButton->GetSprite());
 }
 
 void GameSetupView::LoadButtonTextures()
 {
-    m_SubmitButtonTexture.loadFromFile("../src/Images/Buttons/placeholder_play_button.png");                    // placeholder image. Change button image
-    m_SubmitButtonPressedTexture.loadFromFile("../src/Images/Buttons/placeholder_play_button_pressed.png");                    // placeholder image. Change button image
+    m_SubmitButtonTexture.loadFromFile("../src/Images/Buttons/button_play.png");                    // placeholder image. Change button image
+    m_SubmitButtonPressedTexture.loadFromFile("../src/Images/Buttons/button_play_pressed.png");                    // placeholder image. Change button image
+    m_SubmitButtonHoverTexture.loadFromFile("../src/Images/Buttons/button_play_hover.png");
+
+    m_BackButtonTexture.loadFromFile("../src/Images/Buttons/button_back.png");                    // placeholder image. Change button image
+    m_BackButtonHoverTexture.loadFromFile("../src/Images/Buttons/button_back_hover.png");                    // placeholder image. Change button image
+    m_BackButtonPressedTexture.loadFromFile("../src/Images/Buttons/button_back_pressed.png");
 }
 
 void GameSetupView::InitializeIntroText()
@@ -99,7 +106,7 @@ void GameSetupView::InitializeSizeLimitText()
     m_SizeLimitText.setFont(m_Font);
     m_SizeLimitText.setCharacterSize(20);
     m_SizeLimitText.setFillColor(Color::White);
-    m_SizeLimitText.setPosition(Vector2f(m_Window.getSize().x/2, m_Window.getSize().y*4/5));
+    m_SizeLimitText.setPosition(Vector2f(m_Window.getSize().x/2, m_Window.getSize().y*7/8));
 }
 
 void GameSetupView::InitializeInputBox()
@@ -145,20 +152,27 @@ void GameSetupView::InitializeInputBoxText()
     }
 }
 
-void GameSetupView::InitializeSubmitButton()
+void GameSetupView::InitializeButtons()
 {
-    // Initialize submit button and store it in the m_abuttonboxes array
-    Sprite submitButton(m_SubmitButtonTexture);
-    submitButton.setScale(Vector2f(5.f, 5.f));
-    submitButton.setOrigin(m_SubmitButtonTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
-    submitButton.setPosition(Vector2f(m_Window.getSize().x/2,m_Window.getSize().y*2/3));
-    m_aButtonBoxes[0] = submitButton;
-    //Initialise submit button text
-    Sprite submitButtonPressed(m_SubmitButtonPressedTexture);
-    submitButtonPressed.setScale(Vector2f(5.f, 5.f));
-    submitButtonPressed.setOrigin(m_SubmitButtonPressedTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
-    submitButtonPressed.setPosition(Vector2f(m_Window.getSize().x/2,m_Window.getSize().y*2/3));
-    m_aButtonBoxes[1] = submitButtonPressed;
+    m_PlayButton = std::make_unique<Button>(m_SubmitButtonTexture, Vector2f(m_Window.getSize().x/2,m_Window.getSize().y*2/3));
+    m_PlayButton->SetScale(Vector2f(0.9f, 0.9f));
+    m_PlayButton->SetOriginToCenter();
+
+    m_BackButton = std::make_unique<Button>(m_BackButtonTexture, Vector2f(m_Window.getSize().x/2,m_Window.getSize().y*4/5));
+    m_BackButton->SetScale(Vector2f(0.6f, 0.6f));
+    m_BackButton->SetOriginToCenter();
+
+    // Sprite submitButton(m_SubmitButtonTexture);
+    // submitButton.setScale(Vector2f(5.f, 5.f));
+    // submitButton.setOrigin(m_SubmitButtonTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
+    // submitButton.setPosition(Vector2f(m_Window.getSize().x/2,m_Window.getSize().y*2/3));
+    // m_aButtonBoxes[0] = submitButton;
+    // //Initialise submit button text
+    // Sprite submitButtonPressed(m_SubmitButtonPressedTexture);
+    // submitButtonPressed.setScale(Vector2f(0.7f, 0.7f));
+    // submitButtonPressed.setOrigin(m_SubmitButtonPressedTexture.getSize().x/2, m_SubmitButtonTexture.getSize().y/2);
+    // submitButtonPressed.setPosition(Vector2f(m_Window.getSize().x/2,m_Window.getSize().y*2/3));
+    // m_aButtonBoxes[1] = submitButtonPressed;
 }
 
 void GameSetupView::UpdateIntroText(std::string& title)
@@ -203,4 +217,42 @@ void GameSetupView::UpdateHeightInputBoxText(std::string& initialHeight)
     m_HeightSizeInput.setString(initialHeight); 
     float fHeightSizeInputHeight = m_HeightSizeInput.getLocalBounds().height;
     m_HeightSizeInput.setOrigin(0, fHeightSizeInputHeight);
+}
+
+void GameSetupView::HandleButtonHover(Vector2f mousePos)
+{
+    if (m_PlayButton->IsMouseOver(mousePos))
+    {
+        m_PlayButton->SetTexture(m_SubmitButtonHoverTexture);
+    }
+    else if (m_BackButton->IsMouseOver(mousePos))
+    {
+        m_BackButton->SetTexture(m_BackButtonHoverTexture);
+    }
+    else
+    {
+        SetButtonDefaultTexture();
+    }
+}
+
+void GameSetupView::HandleButtonCliked(Vector2f mousePos)
+{
+    if (m_PlayButton->IsMouseOver(mousePos))
+    {
+        m_PlayButton->SetTexture(m_SubmitButtonPressedTexture);
+    }
+    else if (m_BackButton->IsMouseOver(mousePos))
+    {
+        m_BackButton->SetTexture(m_BackButtonPressedTexture);
+    }
+    else
+    {
+        SetButtonDefaultTexture();
+    }
+}
+
+void GameSetupView::SetButtonDefaultTexture()
+{
+    m_PlayButton->SetTexture(m_SubmitButtonTexture);
+    m_BackButton->SetTexture(m_BackButtonTexture);
 }

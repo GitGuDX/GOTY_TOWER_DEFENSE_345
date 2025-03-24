@@ -8,7 +8,7 @@
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
 #include "Game.h"
-#include "Math_Helpers.h"
+#include "Helpers/Math_Helpers.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
@@ -279,13 +279,57 @@ void Game::HandleInput()
         {
             m_Window.close();
         }
-        // Handle inputs for initial SetUp //
-        if (m_eGameMode == InitialSetUp)
+        if (m_ePrevGameMode == MainMenu && m_eGameMode == MainMenu)
         {
             Vector2i mousePosition = Mouse::getPosition(m_Window);                                  // Get mouse position by pixel
+            Vector2f translatedPosition = m_Window.mapPixelToCoords(mousePosition);
+            MainMenuDriver* mainMenuPtr = m_GUIManager.GetMainMenu();
+            mainMenuPtr->HandleButtonHover(translatedPosition);
+
+            if (event.type == Event::MouseButtonPressed)
+            {
+                mainMenuPtr->HandleButtonCliked(translatedPosition);
+            }
+            if (event.type == Event::MouseButtonReleased)
+            {
+                const Button* chooseMapButtonPtr = mainMenuPtr->GetChooseMapButton();
+                const Button* MapEditorButtonPtr = mainMenuPtr->GetMapEditorButton();
+                const Button* ExitButtonPtr = mainMenuPtr->GetExitButton(); 
+                if (chooseMapButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    std::cout << "choose map button release" << std::endl;
+                }
+                else if (MapEditorButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    //std::cout << "Map editor button release" << std::endl;
+                    m_eGameMode = InitialSetUp;
+                    //m_ePrevGameMode = InitialSetUp;
+                } 
+                else if (ExitButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    //std::cout << "Exit button release" << std::endl;
+                    m_Window.close();
+                }
+
+            }
+        }
+        // Handle inputs for initial SetUp //
+        else if (m_eGameMode == InitialSetUp)
+        {
+            
+            if (m_ePrevGameMode == MainMenu)
+            {
+                // Some logic 
+                m_ePrevGameMode = InitialSetUp;
+            }
+            
+            Vector2i mousePosition = Mouse::getPosition(m_Window);                                  // Get mouse position by pixel
             Vector2f translatedPosition = m_Window.mapPixelToCoords(mousePosition);                 // Translate mouse position to game tile coordinate
-            std::array<sf::Sprite, 2>& buttonBoxArray = m_GUIManager.GetGameSetupView()->GetButtonBoxes();              
-            if (event.type == Event::MouseButtonPressed) {
+            //std::array<sf::Sprite, 2>& buttonBoxArray = m_GUIManager.GetGameSetupView()->GetButtonBoxes();              
+            GameSetupView* gameSetupViewPtr = m_GUIManager.GetGameSetupView();
+            gameSetupViewPtr->HandleButtonHover(translatedPosition);
+            if (event.type == Event::MouseButtonPressed) 
+            {
                 // When input box is clicked
                 std::array<sf::RectangleShape, 2>& userInputBoxArray = m_GUIManager.GetGameSetupView()->GetUserInputBoxWindowSize();
                 if (userInputBoxArray[0].getGlobalBounds().contains(translatedPosition))        // Check if mouse position is within the width input box
@@ -298,17 +342,19 @@ void Game::HandleInput()
                 }
                 else                                                                                    // If clicked anywhere outside the input box
                 {   
+                    gameSetupViewPtr->HandleButtonCliked(translatedPosition);
                     m_GUIManager.GetGameSetupView()->SetCurrentlyActiveInputBox(GameSetupView::None);                     
                 }
             }
             if (event.type == Event::MouseButtonReleased)
             {
-                // When submit button click is released, resize window with given inputs, switch game mode, and load map editor assets
-                if (buttonBoxArray[1].getGlobalBounds().contains(translatedPosition))
+                const Button* playButtonPtr = gameSetupViewPtr->GetPlayButton();
+                const Button* backButtonPtr = gameSetupViewPtr->GetBackButton();
+                if (playButtonPtr->IsMouseOver(translatedPosition))
                 {
-                    // Get the grid size from the user input
+                    //std::cout << "Play button release" << std::endl;
+                    //Get the grid size from the user input
                     Vector2i gridSize = m_GUIManager.GetGridSize();
-
                     // Apply input limit from 10 to 20
                     if (gridSize.x >= 10 && gridSize.x <= 20 && gridSize.y >= 10 && gridSize.y <= 20)
                     {
@@ -319,6 +365,29 @@ void Game::HandleInput()
                         m_GUIManager.GetGameSetupView()->SetIsSizeLimitTextShown(true);
                     }
                 }
+                else if (backButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    //std::cout << "Back button release" << std::endl;
+                    m_GUIManager.ResetGameSetup();
+                    m_eGameMode = MainMenu;
+                    m_ePrevGameMode = MainMenu;
+                } 
+                // When submit button click is released, resize window with given inputs, switch game mode, and load map editor assets
+                //if (buttonBoxArray[1].getGlobalBounds().contains(translatedPosition))
+                //{
+                //    // Get the grid size from the user input
+                //    Vector2i gridSize = m_GUIManager.GetGridSize();
+//
+                //    // Apply input limit from 10 to 20
+                //    if (gridSize.x >= 10 && gridSize.x <= 20 && gridSize.y >= 10 && gridSize.y <= 20)
+                //    {
+                //        m_eGameMode = MapEditorMode;
+                //    }
+                //    else
+                //    {
+                //        m_GUIManager.GetGameSetupView()->SetIsSizeLimitTextShown(true);
+                //    }
+                //}
             }
 
             // **** Need separate class for InputHandle

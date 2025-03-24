@@ -1,5 +1,5 @@
-#ifndef MAIN_MENU_H
-#define MAIN_MENU_H
+#ifndef MAIN_MENU_DRIVER_H
+#define MAIN_MENU_DRIVER_H
 
 #include "Button.h"
 #include <SFML/Graphics.hpp>
@@ -8,11 +8,11 @@
 
 using namespace sf;
 
-class MainMenu
+class MainMenuDriver
 {
 public:
-    MainMenu(RenderWindow& m_Window);
-    ~MainMenu() = default;
+    MainMenuDriver(RenderWindow& m_Window);
+    ~MainMenuDriver() = default;
 
     void LoadTextures();
 
@@ -20,6 +20,27 @@ public:
 
     void InitializeButtons();
 
+    const Button* GetChooseMapButton() const
+    {
+        return m_ChooseMapButton.get();
+    }
+
+    const Button* GetMapEditorButton() const
+    {
+        return m_MapEditorButton.get();
+    }
+
+    const Button* GetExitButton() const
+    {
+        return m_ExitButton.get();
+    }
+
+    void HandleButtonHover(Vector2f mousePos);
+
+    void HandleButtonCliked(Vector2f mousePos);
+
+    void SetButtonDefaultTexture();
+    
     void Draw();
 
 private:

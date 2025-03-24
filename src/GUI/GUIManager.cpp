@@ -34,7 +34,7 @@ void GUIManager::LoadFonts()
 
 void GUIManager::InitializeMainMenu()
 {
-    m_mainMenu = std::make_unique<MainMenu>(m_Window);
+    m_mainMenu = std::make_unique<MainMenuDriver>(m_Window);
     m_mainMenu->LoadTextures();
     m_mainMenu->InitializeTitleLogo();
     m_mainMenu->InitializeButtons();
@@ -51,7 +51,7 @@ void GUIManager::InitializeGameSetup()
 
     // Pass the raw pointer of the unique_ptr to AddObserver
     m_gameSetup->AddObserver(m_gameSetupView.get());                          // Must be done before setting up the view
-    m_gameSetup->SetIntroTitle("Welcome to Tower Defense!");
+    m_gameSetup->SetIntroTitle("Create your own map!");
     m_gameSetup->SetEnterSizeSign("Enter the size of the grid:");
     m_gameSetup->SetUserInputWindowHeight("10");
     m_gameSetup->SetUserInputWindowWidth("10");
@@ -91,6 +91,13 @@ void GUIManager::InitializeInfoUI()
     m_infoUIView = std::make_unique<InfoUIView>(m_Window, mapSize, infoUIWidth, m_Font);
     m_infoUI->AddObserver(m_infoUIView.get());
     m_infoUI->InitializeInfoUI();
+}
+
+void GUIManager::ResetGameSetup()
+{
+    m_gameSetup->SetUserInputWindowHeight("10");
+    m_gameSetup->SetUserInputWindowWidth("10");
+    m_gameSetupView->SetIsSizeLimitTextShown(false);
 }
 
 Vector2i GUIManager::GetWindowSize() const

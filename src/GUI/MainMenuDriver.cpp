@@ -1,11 +1,12 @@
-#include "MainMenu.h"
+#include "MainMenuDriver.h"
 
-MainMenu::MainMenu(RenderWindow &m_Window)
+
+MainMenuDriver::MainMenuDriver(RenderWindow &m_Window)
     : m_Window(m_Window)
 {
 }
 
-void MainMenu::LoadTextures()
+void MainMenuDriver::LoadTextures()
 {
     m_TitleLogoTexture.loadFromFile("../src/Images/Title_Logos/Title_Logo_4.png");
 
@@ -22,7 +23,7 @@ void MainMenu::LoadTextures()
     m_ExitButtonPressedTexture.loadFromFile("../src/Images/Buttons/button_exit_pressed.png");
 }
 
-void MainMenu::InitializeTitleLogo()
+void MainMenuDriver::InitializeTitleLogo()
 {
     m_TitleLogo.setTexture(m_TitleLogoTexture);
     m_TitleLogo.setScale(Vector2f(0.45f, 0.45f));
@@ -30,7 +31,7 @@ void MainMenu::InitializeTitleLogo()
     m_TitleLogo.setPosition(Vector2f(m_Window.getSize().x/2, m_Window.getSize().y*3/9));
 }
 
-void MainMenu::InitializeButtons()
+void MainMenuDriver::InitializeButtons()
 {
     Vector2f chooseButtonPosition = Vector2f(m_Window.getSize().x/2, m_Window.getSize().y*6/9);
     Vector2f mapEditorButtonPosition = Vector2f(m_Window.getSize().x/2, m_Window.getSize().y*7/9);
@@ -50,10 +51,57 @@ void MainMenu::InitializeButtons()
     m_ExitButton->SetScale(buttonScale);
 }
 
-void MainMenu::Draw()
+void MainMenuDriver::HandleButtonHover(Vector2f mousePos)
+{
+    if (m_ChooseMapButton->IsMouseOver(mousePos))
+    {
+        m_ChooseMapButton->SetTexture(m_ChooseMapButtonHoverTexture);
+    }
+    else if (m_MapEditorButton->IsMouseOver(mousePos))
+    {
+        m_MapEditorButton->SetTexture(m_MapEditorButtonHoverTexture);
+    }
+    else if (m_ExitButton->IsMouseOver(mousePos))
+    {
+        m_ExitButton->SetTexture(m_ExitButtonHoverTexture);
+    }
+    else
+    {
+        SetButtonDefaultTexture();
+    }
+}
+
+void MainMenuDriver::HandleButtonCliked(Vector2f mousePos)
+{
+    if (m_ChooseMapButton->IsMouseOver(mousePos))
+    {
+        m_ChooseMapButton->SetTexture(m_ChooseMapButtonPressedTexture);
+    }
+    else if (m_MapEditorButton->IsMouseOver(mousePos))
+    {
+        m_MapEditorButton->SetTexture(m_MapEditorButtonPressedTexture);
+    }
+    else if (m_ExitButton->IsMouseOver(mousePos))
+    {
+        m_ExitButton->SetTexture(m_ExitButtonPressedTexture);
+    }
+    else
+    {
+        SetButtonDefaultTexture();
+    }
+}
+
+void MainMenuDriver::SetButtonDefaultTexture()
+{
+    m_ChooseMapButton->SetTexture(m_ChooseMapButtonTexture);
+    m_MapEditorButton->SetTexture(m_MapEditorButtonTexture);
+    m_ExitButton->SetTexture(m_ExitButtonTexture);
+}
+
+void MainMenuDriver::Draw()
 {
     m_Window.draw(m_TitleLogo);
-    m_ChooseMapButton->Draw(m_Window);
-    m_MapEditorButton->Draw(m_Window);
-    m_ExitButton->Draw(m_Window);
+    m_Window.draw(m_ChooseMapButton->GetSprite());
+    m_Window.draw(m_MapEditorButton->GetSprite());
+    m_Window.draw(m_ExitButton->GetSprite());
 }
