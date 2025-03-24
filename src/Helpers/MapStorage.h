@@ -1,48 +1,67 @@
 #include <fstream>
 #include <vector>
 #include <string>
-
-struct TileData {
-    int x, y;
-    int type;
-};
+#include <SFML/Graphics.hpp>
 
 class MapStorage {
 private:
-    std::string filename = "AverageMap";
+    std::string filename = "../SavedMaps/AverageMap.txt";
 
 public:
-    void saveMap(const std::vector<std::vector<TileData>>& map) {
-        std::ofstream file(filename, std::ios::binary);
+    // Save Path and GridSize
+    void saveData(const std::vector<sf::Vector2f>& path, const sf::Vector2i& gridSize) {
+        std::ofstream file(filename);
         if (!file.is_open()) return;
-        
-        size_t rows = map.size();
-        file.write(reinterpret_cast<const char*>(&rows), sizeof(rows));
-        
-        for (const auto& row : map) {
-            size_t cols = row.size();
-            file.write(reinterpret_cast<const char*>(&cols), sizeof(cols));
-            file.write(reinterpret_cast<const char*>(row.data()), cols * sizeof(TileData));
+    
+        // Write GridSize as text (could be comma-separated or space-separated)
+        file << gridSize.x << " " << gridSize.y << "\n";
+    
+        // Write Path size
+        file << path.size() << "\n";
+    
+        // Write each path point
+        for (const auto& point : path) {
+            file << point.x << " " << point.y << "\n";  // Space-separated values
         }
+    
         file.close();
     }
+    
 
-    std::vector<std::vector<TileData>> loadMap() {
-        std::vector<std::vector<TileData>> map;
-        std::ifstream file(filename, std::ios::binary);
-        if (!file.is_open()) return map;
+    // Load Path and GridSize
+    bool loadData(std::vector<sf::Vector2f>& newPath, sf::Vector2i& gridSize) {
+        std::ifstream file(filename);
+        if (!file.is_open()) return false;
+
+        // Read GridSize (space-separated values)
+        file >> gridSize.x >> gridSize.y;
+        //std::cout << "Loaded grid width: " << gridSize.x << ", height: " << gridSize.y << std::endl;
+
+        // Read Path size
+        size_t pathSize;
+        file >> pathSize;
+        //std::cout << "Path Size: " << pathSize << std::endl;
+
+        if (pathSize <= 0) return false;
+
+        // Resize vector to hold the path data
+        newPath.clear();
+        newPath.resize(pathSize);
+
+        // Read each path point
+        for (size_t i = 0; i < pathSize; ++i) {
+            sf::Vector2f point;  // Create a Vector2i object to hold the point
+            file >> point.x >> point.y;  // Read the x and y values into the Vector2i object
         
-        size_t rows;
-        file.read(reinterpret_cast<char*>(&rows), sizeof(rows));
-        map.resize(rows);
+            // Optionally, you can print the point to debug
+            //std::cout << "Read point: (" << point.x << ", " << point.y << ")" << std::endl;
         
-        for (auto& row : map) {
-            size_t cols;
-            file.read(reinterpret_cast<char*>(&cols), sizeof(cols));
-            row.resize(cols);
-            file.read(reinterpret_cast<char*>(row.data()), cols * sizeof(TileData));
+            // Now push the point into the newPath vector
+            newPath[i] = point;
         }
+
         file.close();
-        return map;
+        return true;
     }
+    
 };

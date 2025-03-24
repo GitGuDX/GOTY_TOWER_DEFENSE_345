@@ -7,7 +7,7 @@ MapSetup::MapSetup(Vector2i gridSize)
 {
 }
 
-void MapSetup::SetupTiles()
+void MapSetup::SetupDefaultTiles()
 {
     m_aTiles.clear();
     for (int i = 0; i < m_vGridSize.y; ++i)
@@ -23,6 +23,25 @@ void MapSetup::SetupTiles()
         m_aTiles.emplace_back(row);
     }
     notifyObservers();
+}
+
+void MapSetup::EditTilesFromPath()
+{
+    for (size_t i = 0; i < m_aPath.size(); ++i)
+    {
+        Tile::Type type = Tile::Type::Path;
+        if (i == 0)
+        {
+            type = Tile::Type::Entry;
+            m_vEntryTile = m_aPath[i];
+        }
+        else if (i == m_aPath.size() - 1)
+        {
+            type = Tile::Type::Exit;
+            m_vExitTile = m_aPath[i];
+        }
+        SetTileType(m_aPath[i], type);
+    }
 }
 
 void MapSetup::HighlightEdgeTiles(Tile::Type type)

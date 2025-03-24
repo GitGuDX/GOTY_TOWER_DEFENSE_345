@@ -26,9 +26,7 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include <string>
 #include <vector>
 
-#ifdef SAVE_MAP
 #include "Helpers/MapStorage.h"
-#endif
 
 using namespace sf;
 using namespace std;
@@ -90,7 +88,11 @@ public:
 
 private:
 
-    void InitializeMapEnditorMode();
+    void InitializeUIAndEntities();
+
+    void InitializeLoadedMap();
+
+    void InitializeMapEditorMode();
 
     // ** Load class
     void LoadPlayModeAssets();
@@ -173,9 +175,7 @@ private:
     std::vector<sf::Vector2f> m_aPath;
     sf::VertexArray m_sfPathLines; 
 
-    #ifdef SAVE_MAP
     MapStorage m_MapStorage;
-    #endif
 
     // Managers
     GUIManager m_GUIManager;

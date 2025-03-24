@@ -34,7 +34,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     #ifdef DEBUG
     , m_iInitialWealth(10000)
     #else
-    , m_iInitialWealth(10000)
+    , m_iInitialWealth(0)
     #endif
    
 {
@@ -62,6 +62,7 @@ void Game::Run()
             // Initialize main menu only once
             if (m_ePrevGameMode == None)
             {
+                m_iCurrentWealth = m_iInitialWealth;
                 m_GUIManager.InitializeMainMenu();
                 m_ePrevGameMode = MainMenu;
             }
@@ -78,9 +79,7 @@ void Game::Run()
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode)
             {
-                m_iCurrentWealth = m_iInitialWealth;
-
-                InitializeMapEnditorMode();
+                InitializeMapEditorMode();
 
                 m_eCurrentEditState = PathEditingState::EntryState;
                 m_ePrevGameMode = MapEditorMode;
@@ -142,11 +141,8 @@ void Game::Run()
     }
 }
 
-void Game::InitializeMapEnditorMode()
+void Game::InitializeUIAndEntities()
 {
-    // Initialize the Map with user given grid size and GameSetupView objects and load thier assets
-    m_GUIManager.InitializeMapSetup();
-
     // Initialize InfoUI and InfoUIView objects and load their assets
     m_GUIManager.InitializeInfoUI();
     m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
@@ -171,6 +167,47 @@ void Game::InitializeMapEnditorMode()
     // Get tower price from TowerManager and give it to the InfoUI
     std::vector<std::unique_ptr<TowerEntity>>& templateTowers = m_TowerManager.GetTemplateTowers();
     m_GUIManager.InitiailizeTowerPrice(templateTowers);
+}
+
+void Game::InitializeLoadedMap()
+{
+    std::cout << "Running InitializeLoadedMap" <<std::endl;
+    std::vector<sf::Vector2f> newPath;
+    Vector2i gridSize; 
+    if (!m_MapStorage.loadData(newPath, gridSize))
+    {
+        #ifdef DEBUG
+        std::cout << "Map loading failed" << std:endl;
+        #endif
+    }
+    #ifdef DEBUG
+    std::cout << "Loaded grid width: " << gridSize.x << std::endl;
+    std::cout << "Loaded grid height: " << gridSize.y << std::endl;
+    for (auto& pos : newPath)
+    {
+        std::cout << pos.x << " " << pos.y << std::endl;
+    }
+    std::cout << "Path size: " << newPath.size() << std::endl;
+    #endif
+
+    m_GUIManager.InitializeLoadedMapSetup(gridSize);
+    m_GUIManager.GetMapSetup()->SetupDefaultTiles();
+    m_GUIManager.GetMapSetup()->SetPath(newPath);
+    m_GUIManager.GetMapSetup()->EditTilesFromPath();
+
+    InitializeUIAndEntities();
+
+    m_eCurrentEditState = PathEditingState::FinishedPathingState;
+    m_ePrevGameMode = MapEditorMode;
+}
+
+void Game::InitializeMapEditorMode()
+{
+    // Initialize the Map with user given grid size and GameSetupView objects and load thier assets
+    m_GUIManager.InitializeMapSetup();
+    m_GUIManager.GetMapSetup()->SetupDefaultTiles();
+    
+    InitializeUIAndEntities();
 }
 
 
@@ -298,6 +335,8 @@ void Game::HandleInput()
                 if (chooseMapButtonPtr->IsMouseOver(translatedPosition))
                 {
                     std::cout << "choose map button release" << std::endl;
+                    InitializeLoadedMap();
+                    m_eGameMode = MapEditorMode;
                 }
                 else if (MapEditorButtonPtr->IsMouseOver(translatedPosition))
                 {
@@ -515,9 +554,15 @@ void Game::HandleInput()
             {
                 if (!bTWasPressedLastUpdate)
                 {
+                    std::cout << "Map editor mode enter pressed" << std::endl;
+                    std::cout << "Is path validated: " << (m_GUIManager.GetMapSetup()->ValidatePath()) << std::endl;
                     // Go to play mode only when there is a valid path
                     if (m_GUIManager.GetMapSetup()->ValidatePath())
                     {
+                        #ifdef SAVE_MAP
+                        std::cout << "path size: " << m_GUIManager.GetMapSetup()->GetPath().size() << std::endl;
+                        m_MapStorage.saveData(m_GUIManager.GetMapSetup()->GetPath(), m_GUIManager.GetMapSetup()->GetGridSize());
+                        #endif
                         m_eGameMode = PlayMode;
                     }
                 }

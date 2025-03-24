@@ -58,6 +58,20 @@ void GUIManager::InitializeGameSetup()
     m_gameSetup->SetSizeLimitWarning("Size must be between 10 and 20.");
 }
 
+void GUIManager::InitializeLoadedMapSetup(sf::Vector2i gridSize)
+{
+    // If the map setup view is not nullptr, remove the observer before setting up the view
+    if (m_mapSetup != nullptr && m_mapSetupView != nullptr)
+    {
+        m_mapSetup->RemoveObserver(m_mapSetupView.get());
+        m_mapSetupView->ClearSubjects();
+    }
+    m_mapSetup = std::make_unique<MapSetup>(gridSize);
+    m_mapSetupView = std::make_unique<MapSetupView>(m_Window);
+    m_mapSetup->AddObserver(m_mapSetupView.get());
+    std::cout << "Map setup address: " << m_mapSetup.get() << std::endl;
+}
+
 void GUIManager::InitializeMapSetup()
 {
     // If the map setup view is not nullptr, remove the observer before setting up the view
@@ -71,7 +85,7 @@ void GUIManager::InitializeMapSetup()
     m_mapSetup = std::make_unique<MapSetup>(gridSize);
     m_mapSetupView = std::make_unique<MapSetupView>(m_Window);
     m_mapSetup->AddObserver(m_mapSetupView.get());
-    m_mapSetup->SetupTiles();
+    //m_mapSetup->SetupDefaultTiles();
 }
 
 void GUIManager::InitializeInfoUI()

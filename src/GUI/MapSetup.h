@@ -63,6 +63,12 @@ public:
         SetTileType(exitTile, Tile::Type::Exit); // Set the tile type to Exit
     }
 
+    void SetPath(std::vector<sf::Vector2f>& newPath)
+    {
+        m_aPath.swap(newPath);
+        notifyObservers();
+    }
+
     void PushPathTile(sf::Vector2f pathTile) 
     { 
         m_aPath.push_back(pathTile); 
@@ -95,7 +101,9 @@ public:
 
     bool isEdgeTile(sf::Vector2f tile);
 
-    void SetupTiles();
+    void SetupDefaultTiles();
+
+    void EditTilesFromPath();
 
     void HighlightEdgeTiles(Tile::Type type);
 

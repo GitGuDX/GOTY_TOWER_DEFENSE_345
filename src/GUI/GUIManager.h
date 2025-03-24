@@ -29,6 +29,8 @@ public:
 
     void InitializeGameSetup();
 
+    void InitializeLoadedMapSetup(sf::Vector2i gridSize);
+
     void InitializeMapSetup();
 
     void InitializeInfoUI();
@@ -75,6 +77,11 @@ public:
     Vector2i GetWindowSize() const;
 
     Vector2i GetMapSize() const;
+
+    void LoadNewMapSetup(std::unique_ptr<MapSetup>&& mapSetupPtr)
+    {
+        m_mapSetup = std::move(mapSetupPtr);
+    }
 
     void InitiailizeTowerPrice(std::vector<std::unique_ptr<TowerEntity>>& templateTowers);
 
