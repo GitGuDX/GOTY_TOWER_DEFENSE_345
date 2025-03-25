@@ -279,8 +279,8 @@ void Game::HandleGameRestart()
 {
     m_Window.create(VideoMode(m_vInitialWindowSize.x, m_vInitialWindowSize.y), "Tower Defense Game");
 
-    m_eGameMode = InitialSetUp;
-    m_ePrevGameMode = InitialSetUp;
+    m_ePrevGameMode = None;
+    m_eGameMode = MainMenu;
 
     // Reset flags
     m_eCurrentEditState = EntryState;
