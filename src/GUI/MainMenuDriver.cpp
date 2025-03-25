@@ -71,7 +71,7 @@ void MainMenuDriver::HandleButtonHover(Vector2f mousePos)
     }
 }
 
-void MainMenuDriver::HandleButtonCliked(Vector2f mousePos)
+void MainMenuDriver::HandleButtonClicked(Vector2f mousePos)
 {
     if (m_ChooseMapButton->IsMouseOver(mousePos))
     {

@@ -60,6 +60,7 @@ public:
     {
         None,
         MainMenu,
+        MapSelectionMenu,
         InitialSetUp,   ///< Setup mode for entering grid size.
         PlayMode,       ///< Main gameplay mode.
         MapEditorMode,  ///< Map creation mode.
@@ -90,7 +91,9 @@ private:
 
     void InitializeUIAndEntities();
 
-    void InitializeLoadedMap();
+    void LoadMap(std::string& filepath);
+
+    void InitializeLoadedMap(std::vector<sf::Vector2f>& newPath, Vector2i& gridSize);
 
     void InitializeMapEditorMode();
 
@@ -115,6 +118,7 @@ private:
 
     // Draw class
     void DrawMainMenu();
+    void DrawMapSelectionMenu();
     void DrawInitialSetUp();
     void DrawMapEditorMode();
     void DrawPlayMode();

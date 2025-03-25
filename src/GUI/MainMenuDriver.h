@@ -37,7 +37,7 @@ public:
 
     void HandleButtonHover(Vector2f mousePos);
 
-    void HandleButtonCliked(Vector2f mousePos);
+    void HandleButtonClicked(Vector2f mousePos);
 
     void SetButtonDefaultTexture();
     

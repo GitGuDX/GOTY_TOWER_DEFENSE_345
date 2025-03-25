@@ -3,6 +3,7 @@
 
 #include "../Platform.h"
 #include "MainMenuDriver.h"
+#include "MapSelectionDriver.h"
 #include "GameSetup.h"
 #include "../Views/GameSetupView.h"
 #include "MapSetup.h"
@@ -27,6 +28,8 @@ public:
 
     void InitializeMainMenu();
 
+    void InitializeMapSelectionMenu();
+
     void InitializeGameSetup();
 
     void InitializeLoadedMapSetup(sf::Vector2i gridSize);
@@ -40,6 +43,11 @@ public:
     MainMenuDriver* GetMainMenu()
     {
         return m_mainMenu.get();
+    }
+
+    MapSelectionDriver* GetMapSelectionMenu()
+    {
+        return m_mapSelectionMenu.get();
     }
 
     GameSetup* GetGameSetup()
@@ -112,6 +120,7 @@ private:
     sf::Font m_Font;
 
     std::unique_ptr<MainMenuDriver> m_mainMenu;
+    std::unique_ptr<MapSelectionDriver> m_mapSelectionMenu;
 
     std::unique_ptr<GameSetup> m_gameSetup;
     std::unique_ptr<GameSetupView> m_gameSetupView;

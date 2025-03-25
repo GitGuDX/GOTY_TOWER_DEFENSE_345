@@ -5,11 +5,19 @@
 
 class MapStorage {
 private:
-    std::string filename = "../SavedMaps/AverageMap.txt";
+    std::string m_MediumMapPath = "../SavedMaps/AverageMap.txt";
+    std::string m_HardMapPath = "../SavedMaps/HardMap.txt";
+    std::string m_PlaceHolderPath = "../SavedMaps/PlaceHolderMap.txt";
 
 public:
+    std::string& GetMediumMapFilePath() {return m_MediumMapPath; }
+
+    std::string& GetHardMapFilePath() {return m_HardMapPath; }
+
+    std::string& GetPlaceHolderFilePath() {return m_PlaceHolderPath; }
+
     // Save Path and GridSize
-    void saveData(const std::vector<sf::Vector2f>& path, const sf::Vector2i& gridSize) {
+    void saveData(const std::vector<sf::Vector2f>& path, const sf::Vector2i& gridSize, std::string filename) {
         std::ofstream file(filename);
         if (!file.is_open()) return;
     
@@ -29,7 +37,7 @@ public:
     
 
     // Load Path and GridSize
-    bool loadData(std::vector<sf::Vector2f>& newPath, sf::Vector2i& gridSize) {
+    bool loadData(std::vector<sf::Vector2f>& newPath, sf::Vector2i& gridSize, std::string filename) {
         std::ifstream file(filename);
         if (!file.is_open()) return false;
 

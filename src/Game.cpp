@@ -32,9 +32,9 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iInitialWealth(10000)
-    #else
     , m_iInitialWealth(0)
+    #else
+    , m_iInitialWealth(1000)
     #endif
    
 {
@@ -69,6 +69,14 @@ void Game::Run()
             DrawMainMenu();
             break;
         }
+        case MapSelectionMenu:
+            if (m_ePrevGameMode == MainMenu)
+            {
+                m_GUIManager.InitializeMapSelectionMenu();
+                m_ePrevGameMode = MapSelectionMenu;
+            }
+            DrawMapSelectionMenu();
+            break;
         case InitialSetUp:
         {
             DrawInitialSetUp();
@@ -169,27 +177,22 @@ void Game::InitializeUIAndEntities()
     m_GUIManager.InitiailizeTowerPrice(templateTowers);
 }
 
-void Game::InitializeLoadedMap()
+void Game::LoadMap(std::string& filepath)
 {
-    std::cout << "Running InitializeLoadedMap" <<std::endl;
     std::vector<sf::Vector2f> newPath;
     Vector2i gridSize; 
-    if (!m_MapStorage.loadData(newPath, gridSize))
+    if (!m_MapStorage.loadData(newPath, gridSize, filepath))
     {
         #ifdef DEBUG
-        std::cout << "Map loading failed" << std:endl;
+        std::cout << "Map loading failed" << std::endl;
         #endif
     }
-    #ifdef DEBUG
-    std::cout << "Loaded grid width: " << gridSize.x << std::endl;
-    std::cout << "Loaded grid height: " << gridSize.y << std::endl;
-    for (auto& pos : newPath)
-    {
-        std::cout << pos.x << " " << pos.y << std::endl;
-    }
-    std::cout << "Path size: " << newPath.size() << std::endl;
-    #endif
 
+    InitializeLoadedMap(newPath, gridSize);
+}
+
+void Game::InitializeLoadedMap(std::vector<sf::Vector2f>& newPath, Vector2i& gridSize)
+{
     m_GUIManager.InitializeLoadedMapSetup(gridSize);
     m_GUIManager.GetMapSetup()->SetupDefaultTiles();
     m_GUIManager.GetMapSetup()->SetPath(newPath);
@@ -325,7 +328,7 @@ void Game::HandleInput()
 
             if (event.type == Event::MouseButtonPressed)
             {
-                mainMenuPtr->HandleButtonCliked(translatedPosition);
+                mainMenuPtr->HandleButtonClicked(translatedPosition);
             }
             if (event.type == Event::MouseButtonReleased)
             {
@@ -334,22 +337,51 @@ void Game::HandleInput()
                 const Button* ExitButtonPtr = mainMenuPtr->GetExitButton(); 
                 if (chooseMapButtonPtr->IsMouseOver(translatedPosition))
                 {
-                    std::cout << "choose map button release" << std::endl;
-                    InitializeLoadedMap();
-                    m_eGameMode = MapEditorMode;
+                    m_eGameMode = MapSelectionMenu;
                 }
                 else if (MapEditorButtonPtr->IsMouseOver(translatedPosition))
                 {
-                    //std::cout << "Map editor button release" << std::endl;
                     m_eGameMode = InitialSetUp;
-                    //m_ePrevGameMode = InitialSetUp;
                 } 
                 else if (ExitButtonPtr->IsMouseOver(translatedPosition))
                 {
-                    //std::cout << "Exit button release" << std::endl;
                     m_Window.close();
                 }
 
+            }
+        }
+        else if (m_ePrevGameMode == MapSelectionMenu && m_eGameMode == MapSelectionMenu)
+        {
+            Vector2i mousePosition = Mouse::getPosition(m_Window);                                  // Get mouse position by pixel
+            Vector2f translatedPosition = m_Window.mapPixelToCoords(mousePosition);
+            MapSelectionDriver* mapSelectionMenuPtr = m_GUIManager.GetMapSelectionMenu();
+            mapSelectionMenuPtr->HandleButtonHover(translatedPosition);
+            if (event.type == Event::MouseButtonPressed)
+            {
+                mapSelectionMenuPtr->HandleButtonClicked(translatedPosition);
+            }
+            if (event.type == Event::MouseButtonReleased)
+            {
+                const Button* MediumButtonPtr = mapSelectionMenuPtr->GetMediumMapButton();
+                const Button* HardButtonPtr = mapSelectionMenuPtr->GetHardMapButton();
+                const Button* BackButtonPtr = mapSelectionMenuPtr->GetBackButton(); 
+                if (MediumButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    LoadMap(m_MapStorage.GetMediumMapFilePath());
+                    m_eGameMode = MapSelectionMenu;
+                    m_eGameMode = MapEditorMode;
+                }
+                else if (HardButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    LoadMap(m_MapStorage.GetHardMapFilePath());
+                    m_eGameMode = MapSelectionMenu;
+                    m_eGameMode = MapEditorMode;
+                } 
+                else if (BackButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    m_eGameMode = MainMenu;
+                    m_ePrevGameMode = MainMenu;
+                }
             }
         }
         // Handle inputs for initial SetUp //
@@ -554,14 +586,11 @@ void Game::HandleInput()
             {
                 if (!bTWasPressedLastUpdate)
                 {
-                    std::cout << "Map editor mode enter pressed" << std::endl;
-                    std::cout << "Is path validated: " << (m_GUIManager.GetMapSetup()->ValidatePath()) << std::endl;
                     // Go to play mode only when there is a valid path
                     if (m_GUIManager.GetMapSetup()->ValidatePath())
                     {
                         #ifdef SAVE_MAP
-                        std::cout << "path size: " << m_GUIManager.GetMapSetup()->GetPath().size() << std::endl;
-                        m_MapStorage.saveData(m_GUIManager.GetMapSetup()->GetPath(), m_GUIManager.GetMapSetup()->GetGridSize());
+                        m_MapStorage.saveData(m_GUIManager.GetMapSetup()->GetPath(), m_GUIManager.GetMapSetup()->GetGridSize(), m_MapStorage.GetPlaceHolderFilePath());
                         #endif
                         m_eGameMode = PlayMode;
                     }
@@ -1217,6 +1246,15 @@ void Game::DrawMainMenu()
     m_Window.clear();
 
     m_GUIManager.GetMainMenu()->Draw();
+
+    m_Window.display();
+}
+
+void Game::DrawMapSelectionMenu()
+{
+    m_Window.clear();
+
+    m_GUIManager.GetMapSelectionMenu()->Draw();
 
     m_Window.display();
 }

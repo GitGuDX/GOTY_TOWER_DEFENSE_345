@@ -40,6 +40,13 @@ void GUIManager::InitializeMainMenu()
     m_mainMenu->InitializeButtons();
 }
 
+void GUIManager::InitializeMapSelectionMenu()
+{
+    m_mapSelectionMenu = std::make_unique<MapSelectionDriver>(m_Window, m_Font);
+    m_mapSelectionMenu->LoadMapSelectionMenuTextures();
+    m_mapSelectionMenu->InitializeMapSelectionAssets();
+}
+
 void GUIManager::InitializeGameSetup()
 {
     // If the game setup view is not nullptr, remove the observer before setting up the view
