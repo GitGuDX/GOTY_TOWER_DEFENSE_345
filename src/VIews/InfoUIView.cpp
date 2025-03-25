@@ -279,21 +279,28 @@ void InfoUIView::InitializeTextAssets()
 
     // Warning text 
     m_warningText.setFont(m_Font);               // Set font
-    m_warningText.setCharacterSize(16);        // Set size
+    m_warningText.setCharacterSize(32);        // Set size
+    m_warningText.setScale(0.5f, 0.5f);
     m_warningText.setPosition(warningTextPosition);       // Set position
 
     // Wood tower price
     m_woodTowerPriceText.setFont(m_Font);               // Set font
-    m_woodTowerPriceText.setCharacterSize(12);        // Set size
+    m_woodTowerPriceText.setCharacterSize(30);        // Set size
+    m_woodTowerPriceText.setScale(0.5f, 0.5f);
+    m_woodTowerPriceText.setStyle(sf::Text::Bold);
     m_woodTowerPriceText.setPosition(woodTowerPricePosition);       // Set position
 
     // Stone tower price
     m_stoneTowerPriceText.setFont(m_Font);               // Set font
-    m_stoneTowerPriceText.setCharacterSize(12);        // Set size
+    m_stoneTowerPriceText.setCharacterSize(30);        // Set size
+    m_stoneTowerPriceText.setScale(0.5f, 0.5f);
+    m_stoneTowerPriceText.setStyle(sf::Text::Bold);
     m_stoneTowerPriceText.setPosition(stoneTowerPricePosition);       // Set position
 
     m_FlameThrowerTowerPriceText.setFont(m_Font);               // Set font
-    m_FlameThrowerTowerPriceText.setCharacterSize(12);        // Set size
+    m_FlameThrowerTowerPriceText.setCharacterSize(30);        // Set size
+    m_FlameThrowerTowerPriceText.setScale(0.5f, 0.5f);
+    m_FlameThrowerTowerPriceText.setStyle(sf::Text::Bold);
     m_FlameThrowerTowerPriceText.setPosition(FlameThrowerTowerPricePosition);       // Set position
 
     // Current mode text 
@@ -342,63 +349,87 @@ void InfoUIView::InitializeTextAssets()
 
     // Tower level text
     m_towerLevelText.setFont(m_Font);               // Set font
-    m_towerLevelText.setCharacterSize(15);        // Set size
+    m_towerLevelText.setCharacterSize(30);  // Larger font size for clarity
+    m_towerLevelText.setScale(0.5f, 0.5f); // Scale down to 50% of the size
+    m_towerLevelText.setStyle(sf::Text::Bold);
     m_towerLevelText.setPosition(towerLevelPosition);       // Set position
 
     // Damage text 
     m_towerDamageText.setFont(m_Font);               // Set font
-    m_towerDamageText.setCharacterSize(15);        // Set size
+    m_towerDamageText.setCharacterSize(30);        // Set size
+    m_towerDamageText.setScale(0.5f, 0.5f);
+    m_towerDamageText.setStyle(sf::Text::Bold);
     m_towerDamageText.setPosition(towerDamagePosition);       // Set position
 
     // Cooldown text 
     m_towerCooldownText.setFont(m_Font);               // Set font
-    m_towerCooldownText.setCharacterSize(15);        // Set size
+    m_towerCooldownText.setCharacterSize(30);        // Set size
+    m_towerCooldownText.setScale(0.5f, 0.5f);
+    m_towerCooldownText.setStyle(sf::Text::Bold);
     m_towerCooldownText.setPosition(towerCooldownPosition);       // Set position
 
     // Range text 
     m_towerRangeText.setFont(m_Font);               // Set font
-    m_towerRangeText.setCharacterSize(15);        // Set size
+    m_towerRangeText.setCharacterSize(30);        // Set size
+    m_towerRangeText.setScale(0.5f, 0.5f);
+    m_towerRangeText.setStyle(sf::Text::Bold);
     m_towerRangeText.setPosition(towerRangePosition);       // Set position
 
     // Speed text 
     m_towerSpeedText.setFont(m_Font);               // Set font
-    m_towerSpeedText.setCharacterSize(15);        // Set size
+    m_towerSpeedText.setCharacterSize(30);        // Set size
+    m_towerSpeedText.setScale(0.5f, 0.5f);
+    m_towerSpeedText.setStyle(sf::Text::Bold);
     m_towerSpeedText.setPosition(towerSpeedPosition);       // Set position
 
     // Upgrade cost text
     m_towerUpgradeCostText.setFont(m_Font);               // Set font
-    m_towerUpgradeCostText.setCharacterSize(15);        // Set size
+    m_towerUpgradeCostText.setCharacterSize(30);        // Set size
+    m_towerUpgradeCostText.setScale(0.5f, 0.5f);
+    m_towerUpgradeCostText.setStyle(sf::Text::Bold);
     m_towerUpgradeCostText.setPosition(towerUpgradeCostPosition);       // Set position
 
     // Tower effect text
     m_towerEffectText.setFont(m_Font);               // Set font
-    m_towerEffectText.setCharacterSize(15);        // Set size
+    m_towerEffectText.setCharacterSize(30);        // Set size
+    m_towerEffectText.setScale(0.5f, 0.5f);
+    m_towerEffectText.setStyle(sf::Text::Bold);
     m_towerEffectText.setPosition(towerEffectPosition);       // Set position
 
     // Tower instruction text 1
     m_towerInstructionText_1.setFont(m_Font);               // Set font
-    m_towerInstructionText_1.setCharacterSize(15);        // Set size
+    m_towerInstructionText_1.setCharacterSize(30);        // Set size
+    m_towerInstructionText_1.setScale(0.5f, 0.5f);
+    m_towerInstructionText_1.setStyle(sf::Text::Bold);
     m_towerInstructionText_1.setFillColor(Color::Yellow);
     m_towerInstructionText_1.setPosition(towerInstructionPosition_1);       // Set position
 
     // Tower instruction text 2
     m_towerInstructionText_2.setFont(m_Font);               // Set font
-    m_towerInstructionText_2.setCharacterSize(15);        // Set size
+    m_towerInstructionText_2.setCharacterSize(30);        // Set size
+    m_towerInstructionText_2.setScale(0.5f, 0.5f);
+    m_towerInstructionText_2.setStyle(sf::Text::Bold);
     m_towerInstructionText_2.setFillColor(Color::Yellow);
     m_towerInstructionText_2.setPosition(towerInstructionPosition_2);       // Set position
 
     m_nextMonsterTitleText.setFont(m_Font);               // Set font
-    m_nextMonsterTitleText.setCharacterSize(15);        // Set size
+    m_nextMonsterTitleText.setCharacterSize(30);        // Set size
+    m_nextMonsterTitleText.setScale(0.5f, 0.5f);
+    m_nextMonsterTitleText.setStyle(sf::Text::Bold);
     m_nextMonsterTitleText.setFillColor(Color::White);    
     m_nextMonsterTitleText.setPosition(nextMonsterTitlePosition);       // Set position
 
     m_nextMonsterLevelText.setFont(m_Font);               // Set font
-    m_nextMonsterLevelText.setCharacterSize(15);        // Set size
+    m_nextMonsterLevelText.setCharacterSize(30);        // Set size
+    m_nextMonsterLevelText.setScale(0.5f, 0.5f);
+    m_nextMonsterLevelText.setStyle(sf::Text::Bold);
     m_nextMonsterLevelText.setFillColor(Color::White);
     m_nextMonsterLevelText.setPosition(nextMonsterLevelPosition);       // Set position
 
     m_nextMonsterDescriptionText.setFont(m_Font);               // Set font
-    m_nextMonsterDescriptionText.setCharacterSize(15);        // Set size
+    m_nextMonsterDescriptionText.setCharacterSize(30);        // Set size
+    m_nextMonsterDescriptionText.setScale(0.5f, 0.5f);
+    m_nextMonsterDescriptionText.setStyle(sf::Text::Bold);
     m_nextMonsterDescriptionText.setFillColor(Color::White);
     m_nextMonsterDescriptionText.setPosition(nextMonsterDescriptionPosition);       // Set position
 

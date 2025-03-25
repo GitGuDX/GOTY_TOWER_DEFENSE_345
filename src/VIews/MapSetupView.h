@@ -19,7 +19,8 @@ private:
     {
         std::vector<std::vector<Tile>> tiles;
         std::vector<sf::Vector2f> pathPositions;
-        std::vector<sf::Vector2f> deletedPathPositions;                                                    // Stores the path tiles
+        std::vector<sf::Vector2f> deletedPathPositions;     // Stores the path tiles
+        sf::VertexArray pathLines;                      // Draws path line 
         sf::Vector2f entryTile = sf::Vector2f(-1, -1); // Default value indicating uninitialized state
         sf::Vector2f exitTile = sf::Vector2f(-1, -1);  // Default value indicating uninitialized state
     };
@@ -30,13 +31,16 @@ public:
 
     void Update(const IGameSubject& subject);
 
-    void Draw(const MapSetup* subject);
+    void Draw(const MapSetup* mapSetup);
+
+    void DrawPathLine(const MapSetup* mapSetup);
 
     void ClearSubjects() { m_MapSetupSubjects.clear(); }
 
 private:
     void LoadTileTextures();
-    void InitializeTiles(std::vector<std::vector<Tile>>& tilePositions, const std::vector<std::vector<MapSetup::TileData>>& tiles);
+    void InitializeTiles(MapSetupData& data, const std::vector<std::vector<MapSetup::TileData>>& tiles);
+    void UpdatePath(MapSetupData& data);
     void UpdateTilesType(Tile& tile, Tile::Type type);
 
 
@@ -47,9 +51,6 @@ private:
 
     Texture m_GrassTexture;
     Texture m_PathTexture;
-    // Texture m_EntryTileTexture;
-    // Texture m_ExitTileTexture;
-
 };
 
 #endif      // MAPSETUPVIEW_H

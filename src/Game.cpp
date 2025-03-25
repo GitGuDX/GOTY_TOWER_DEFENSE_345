@@ -32,7 +32,7 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iInitialWealth(0)
+    , m_iInitialWealth(10000)
     #else
     , m_iInitialWealth(1000)
     #endif
@@ -1278,6 +1278,8 @@ void Game::DrawMapEditorMode()
 
     // Draw map
     m_GUIManager.GetMapSetupView()->Draw(m_GUIManager.GetMapSetup());
+    // Draw Path lines
+    m_GUIManager.GetMapSetupView()->DrawPathLine(m_GUIManager.GetMapSetup());
 
     // Draw HUD
     m_GUIManager.GetInfoUIView()->DrawHUD();
@@ -1303,6 +1305,10 @@ void Game::DrawPlayMode()
 
     // Draw Map
     m_GUIManager.GetMapSetupView()->Draw(m_GUIManager.GetMapSetup());
+    #ifdef DEBUG
+    // Draw path lines
+    m_GUIManager.GetMapSetupView()->DrawPathLine(m_GUIManager.GetMapSetup());
+    #endif
 
     // Draw HUD
     m_GUIManager.GetInfoUIView()->DrawHUD();
@@ -1340,11 +1346,6 @@ void Game::DrawPlayMode()
     if(m_eGameMode == GameOver){
         m_GUIManager.GetInfoUIView()->DrawGameOverText();
     }
-
-    #ifdef DEBUG
-    // Draw path lines
-    //m_Window.draw(m_sfPathLines);
-    #endif
 
     m_Window.display();
 }

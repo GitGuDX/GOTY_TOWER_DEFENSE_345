@@ -77,10 +77,16 @@ void GameSetupView::LoadButtonTextures()
     m_SubmitButtonTexture.loadFromFile("../src/Images/Buttons/button_play.png");                    // placeholder image. Change button image
     m_SubmitButtonPressedTexture.loadFromFile("../src/Images/Buttons/button_play_pressed.png");                    // placeholder image. Change button image
     m_SubmitButtonHoverTexture.loadFromFile("../src/Images/Buttons/button_play_hover.png");
+    m_SubmitButtonTexture.setSmooth(true);
+    m_SubmitButtonPressedTexture.setSmooth(true);
+    m_SubmitButtonHoverTexture.setSmooth(true);
 
     m_BackButtonTexture.loadFromFile("../src/Images/Buttons/button_back.png");                    // placeholder image. Change button image
     m_BackButtonHoverTexture.loadFromFile("../src/Images/Buttons/button_back_hover.png");                    // placeholder image. Change button image
     m_BackButtonPressedTexture.loadFromFile("../src/Images/Buttons/button_back_pressed.png");
+    m_BackButtonTexture.setSmooth(true);
+    m_BackButtonHoverTexture.setSmooth(true);
+    m_BackButtonPressedTexture.setSmooth(true);
 }
 
 void GameSetupView::InitializeIntroText()

@@ -10,10 +10,16 @@ void MapSelectionDriver::LoadMapSelectionMenuTextures()
 {
     m_MediumMapButtonTexture.loadFromFile("../src/Images/Map_Icons/Medium_Map.png");
     m_HardMapButtonTexture.loadFromFile("../src/Images/Map_Icons/Hard_Map.png");
+    m_MediumMapButtonTexture.setSmooth(true);
+    m_HardMapButtonTexture.setSmooth(true);
 
     m_BackButtonTexture.loadFromFile("../src/Images/Buttons/button_back.png");  
     m_BackButtonHoverTexture.loadFromFile("../src/Images/Buttons/button_back_hover.png");                    // placeholder image. Change button image
     m_BackButtonPressedTexture.loadFromFile("../src/Images/Buttons/button_back_pressed.png");
+    m_BackButtonTexture.setSmooth(true);
+    m_BackButtonHoverTexture.setSmooth(true);
+    m_BackButtonPressedTexture.setSmooth(true);
+
 }
 
 void MapSelectionDriver::InitializeMapSelectionAssets()
