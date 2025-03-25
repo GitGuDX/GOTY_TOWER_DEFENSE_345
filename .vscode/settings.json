@@ -83,6 +83,7 @@
         "span": "cpp",
         "text_encoding": "cpp",
         "__errc": "cpp",
-        "__mutex_base": "cpp"
+        "__mutex_base": "cpp",
+        "fstream": "cpp"
     }
 }

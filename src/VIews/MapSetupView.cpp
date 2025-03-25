@@ -13,7 +13,7 @@ MapSetupView::MapSetupView(RenderWindow &m_Window)
 void MapSetupView::Update(const IGameSubject &subject)
 {
     const MapSetup *mapSetup = dynamic_cast<const MapSetup *>(&subject);
-    
+    //std::cout << "Getting data for address: " << mapSetup << std::endl;
     if (mapSetup)
     {
         auto &data = m_MapSetupSubjects[mapSetup];
@@ -33,12 +33,12 @@ void MapSetupView::Update(const IGameSubject &subject)
                     if (tiles[i][j].type == Tile::Entry)
                     {
                         //std::cout << "Entry tile at: " << tiles[i][j].position.x << ", " << tiles[i][j].position.y << std::endl;
-                        data.entryTile = mapSetup->GetEntryTile();
+                        data.entryTile = tiles[i][j].position;
                     }
                     else if (tiles[i][j].type == Tile::Exit)
                     {
                         //std::cout << "Exit tile at: " << tiles[i][j].position.x << ", " << tiles[i][j].position.y << std::endl;
-                        data.exitTile = mapSetup->GetExitTile();
+                        data.exitTile = tiles[i][j].position;
                     }
                 }
             }

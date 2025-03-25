@@ -32,6 +32,21 @@ void GUIManager::LoadFonts()
     }
 }
 
+void GUIManager::InitializeMainMenu()
+{
+    m_mainMenu = std::make_unique<MainMenuDriver>(m_Window);
+    m_mainMenu->LoadTextures();
+    m_mainMenu->InitializeTitleLogo();
+    m_mainMenu->InitializeButtons();
+}
+
+void GUIManager::InitializeMapSelectionMenu()
+{
+    m_mapSelectionMenu = std::make_unique<MapSelectionDriver>(m_Window, m_Font);
+    m_mapSelectionMenu->LoadMapSelectionMenuTextures();
+    m_mapSelectionMenu->InitializeMapSelectionAssets();
+}
+
 void GUIManager::InitializeGameSetup()
 {
     // If the game setup view is not nullptr, remove the observer before setting up the view
@@ -43,11 +58,25 @@ void GUIManager::InitializeGameSetup()
 
     // Pass the raw pointer of the unique_ptr to AddObserver
     m_gameSetup->AddObserver(m_gameSetupView.get());                          // Must be done before setting up the view
-    m_gameSetup->SetIntroTitle("Welcome to Tower Defense!");
+    m_gameSetup->SetIntroTitle("Create your own map!");
     m_gameSetup->SetEnterSizeSign("Enter the size of the grid:");
     m_gameSetup->SetUserInputWindowHeight("10");
     m_gameSetup->SetUserInputWindowWidth("10");
     m_gameSetup->SetSizeLimitWarning("Size must be between 10 and 20.");
+}
+
+void GUIManager::InitializeLoadedMapSetup(sf::Vector2i gridSize)
+{
+    // If the map setup view is not nullptr, remove the observer before setting up the view
+    if (m_mapSetup != nullptr && m_mapSetupView != nullptr)
+    {
+        m_mapSetup->RemoveObserver(m_mapSetupView.get());
+        m_mapSetupView->ClearSubjects();
+    }
+    m_mapSetup = std::make_unique<MapSetup>(gridSize);
+    m_mapSetupView = std::make_unique<MapSetupView>(m_Window);
+    m_mapSetup->AddObserver(m_mapSetupView.get());
+    std::cout << "Map setup address: " << m_mapSetup.get() << std::endl;
 }
 
 void GUIManager::InitializeMapSetup()
@@ -63,7 +92,7 @@ void GUIManager::InitializeMapSetup()
     m_mapSetup = std::make_unique<MapSetup>(gridSize);
     m_mapSetupView = std::make_unique<MapSetupView>(m_Window);
     m_mapSetup->AddObserver(m_mapSetupView.get());
-    m_mapSetup->SetupTiles();
+    //m_mapSetup->SetupDefaultTiles();
 }
 
 void GUIManager::InitializeInfoUI()
@@ -83,6 +112,13 @@ void GUIManager::InitializeInfoUI()
     m_infoUIView = std::make_unique<InfoUIView>(m_Window, mapSize, infoUIWidth, m_Font);
     m_infoUI->AddObserver(m_infoUIView.get());
     m_infoUI->InitializeInfoUI();
+}
+
+void GUIManager::ResetGameSetup()
+{
+    m_gameSetup->SetUserInputWindowHeight("10");
+    m_gameSetup->SetUserInputWindowWidth("10");
+    m_gameSetupView->SetIsSizeLimitTextShown(false);
 }
 
 Vector2i GUIManager::GetWindowSize() const

@@ -16,7 +16,7 @@ void InfoUI::InitializeInfoUI()
     m_towerInstructionString_2 = "Right click to destroy tower";
     m_TowerSelectionTitleString = "Tower Selection";
     m_gameOverString1 = "Game Over";
-    m_gameOverString2 = "Press S to set up a new game";
+    m_gameOverString2 = "Press S to go to main menu";
     m_gameOverString3 = "Press R to restart with the same map.";
 
     notifyObservers();

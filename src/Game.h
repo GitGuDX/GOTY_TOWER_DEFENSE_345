@@ -26,6 +26,7 @@ The Game class initializes the game, manages user input, and updates/draws the g
 #include <string>
 #include <vector>
 
+#include "Helpers/MapStorage.h"
 
 using namespace sf;
 using namespace std;
@@ -57,6 +58,9 @@ public:
     */
     enum GameMode
     {
+        None,
+        MainMenu,
+        MapSelectionMenu,
         InitialSetUp,   ///< Setup mode for entering grid size.
         PlayMode,       ///< Main gameplay mode.
         MapEditorMode,  ///< Map creation mode.
@@ -85,7 +89,13 @@ public:
 
 private:
 
-    void InitializeMapEnditorMode();
+    void InitializeUIAndEntities();
+
+    void LoadMap(std::string& filepath);
+
+    void InitializeLoadedMap(std::vector<sf::Vector2f>& newPath, Vector2i& gridSize);
+
+    void InitializeMapEditorMode();
 
     // ** Load class
     void LoadPlayModeAssets();
@@ -107,6 +117,8 @@ private:
     void UpdateUI();
 
     // Draw class
+    void DrawMainMenu();
+    void DrawMapSelectionMenu();
     void DrawInitialSetUp();
     void DrawMapEditorMode();
     void DrawPlayMode();
@@ -166,6 +178,8 @@ private:
     // **** Not used. Assign it if used multiple times
     std::vector<sf::Vector2f> m_aPath;
     sf::VertexArray m_sfPathLines; 
+
+    MapStorage m_MapStorage;
 
     // Managers
     GUIManager m_GUIManager;

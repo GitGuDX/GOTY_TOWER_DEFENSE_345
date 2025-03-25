@@ -8,7 +8,7 @@
 // NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
 #include "Game.h"
-#include "Math_Helpers.h"
+#include "Helpers/Math_Helpers.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
@@ -21,9 +21,9 @@ using namespace std;
 Game::Game(int initialWindowWidth, int initialWindowHeight)
     : m_Window(VideoMode(initialWindowWidth, initialWindowHeight), "Tower Defense Game")           // Initiliaze window screen
     , m_vInitialWindowSize(Vector2i(initialWindowWidth, initialWindowHeight))                    // Set initial window sizes
-    , m_eGameMode(GameMode::InitialSetUp)                                                       // set current game mode to intial set up
+    , m_eGameMode(GameMode::MainMenu)                                                       // set current game mode to intial set up
     // Initialize previous game mode to InitialSetUp to track game mode transitions later 
-    , m_ePrevGameMode(GameMode::InitialSetUp)
+    , m_ePrevGameMode(GameMode::None)
     // Initialize managers
     , m_GUIManager(m_Window)
     , m_MonsterManager(m_Window)
@@ -32,9 +32,9 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     , m_RapidBulletTemplate()
     , m_iCurrentLevel(1)
     #ifdef DEBUG
-    , m_iInitialWealth(10000)
+    , m_iInitialWealth(0)
     #else
-    , m_iInitialWealth(10000)
+    , m_iInitialWealth(1000)
     #endif
    
 {
@@ -57,6 +57,26 @@ void Game::Run()
         // Depending on the game mode, update then draw
         switch (m_eGameMode)
         {
+        case MainMenu:
+        {
+            // Initialize main menu only once
+            if (m_ePrevGameMode == None)
+            {
+                m_iCurrentWealth = m_iInitialWealth;
+                m_GUIManager.InitializeMainMenu();
+                m_ePrevGameMode = MainMenu;
+            }
+            DrawMainMenu();
+            break;
+        }
+        case MapSelectionMenu:
+            if (m_ePrevGameMode == MainMenu)
+            {
+                m_GUIManager.InitializeMapSelectionMenu();
+                m_ePrevGameMode = MapSelectionMenu;
+            }
+            DrawMapSelectionMenu();
+            break;
         case InitialSetUp:
         {
             DrawInitialSetUp();
@@ -67,9 +87,7 @@ void Game::Run()
             // Load MapEditorMode assets only when MapEditorMode is initialized for the first time
             if (m_ePrevGameMode != MapEditorMode)
             {
-                m_iCurrentWealth = m_iInitialWealth;
-
-                InitializeMapEnditorMode();
+                InitializeMapEditorMode();
 
                 m_eCurrentEditState = PathEditingState::EntryState;
                 m_ePrevGameMode = MapEditorMode;
@@ -125,15 +143,14 @@ void Game::Run()
             DrawPlayMode();
             break;
         }
+        default:
+            break;
         }
     }
 }
 
-void Game::InitializeMapEnditorMode()
+void Game::InitializeUIAndEntities()
 {
-    // Initialize the Map with user given grid size and GameSetupView objects and load thier assets
-    m_GUIManager.InitializeMapSetup();
-
     // Initialize InfoUI and InfoUIView objects and load their assets
     m_GUIManager.InitializeInfoUI();
     m_GUIManager.GetInfoUI()->SetCurrentWealth(m_iCurrentWealth);
@@ -158,6 +175,42 @@ void Game::InitializeMapEnditorMode()
     // Get tower price from TowerManager and give it to the InfoUI
     std::vector<std::unique_ptr<TowerEntity>>& templateTowers = m_TowerManager.GetTemplateTowers();
     m_GUIManager.InitiailizeTowerPrice(templateTowers);
+}
+
+void Game::LoadMap(std::string& filepath)
+{
+    std::vector<sf::Vector2f> newPath;
+    Vector2i gridSize; 
+    if (!m_MapStorage.loadData(newPath, gridSize, filepath))
+    {
+        #ifdef DEBUG
+        std::cout << "Map loading failed" << std::endl;
+        #endif
+    }
+
+    InitializeLoadedMap(newPath, gridSize);
+}
+
+void Game::InitializeLoadedMap(std::vector<sf::Vector2f>& newPath, Vector2i& gridSize)
+{
+    m_GUIManager.InitializeLoadedMapSetup(gridSize);
+    m_GUIManager.GetMapSetup()->SetupDefaultTiles();
+    m_GUIManager.GetMapSetup()->SetPath(newPath);
+    m_GUIManager.GetMapSetup()->EditTilesFromPath();
+
+    InitializeUIAndEntities();
+
+    m_eCurrentEditState = PathEditingState::FinishedPathingState;
+    m_ePrevGameMode = MapEditorMode;
+}
+
+void Game::InitializeMapEditorMode()
+{
+    // Initialize the Map with user given grid size and GameSetupView objects and load thier assets
+    m_GUIManager.InitializeMapSetup();
+    m_GUIManager.GetMapSetup()->SetupDefaultTiles();
+    
+    InitializeUIAndEntities();
 }
 
 
@@ -226,8 +279,8 @@ void Game::HandleGameRestart()
 {
     m_Window.create(VideoMode(m_vInitialWindowSize.x, m_vInitialWindowSize.y), "Tower Defense Game");
 
-    m_eGameMode = InitialSetUp;
-    m_ePrevGameMode = InitialSetUp;
+    m_ePrevGameMode = None;
+    m_eGameMode = MainMenu;
 
     // Reset flags
     m_eCurrentEditState = EntryState;
@@ -266,13 +319,88 @@ void Game::HandleInput()
         {
             m_Window.close();
         }
-        // Handle inputs for initial SetUp //
-        if (m_eGameMode == InitialSetUp)
+        if (m_ePrevGameMode == MainMenu && m_eGameMode == MainMenu)
         {
             Vector2i mousePosition = Mouse::getPosition(m_Window);                                  // Get mouse position by pixel
+            Vector2f translatedPosition = m_Window.mapPixelToCoords(mousePosition);
+            MainMenuDriver* mainMenuPtr = m_GUIManager.GetMainMenu();
+            mainMenuPtr->HandleButtonHover(translatedPosition);
+
+            if (event.type == Event::MouseButtonPressed)
+            {
+                mainMenuPtr->HandleButtonClicked(translatedPosition);
+            }
+            if (event.type == Event::MouseButtonReleased)
+            {
+                const Button* chooseMapButtonPtr = mainMenuPtr->GetChooseMapButton();
+                const Button* MapEditorButtonPtr = mainMenuPtr->GetMapEditorButton();
+                const Button* ExitButtonPtr = mainMenuPtr->GetExitButton(); 
+                if (chooseMapButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    m_eGameMode = MapSelectionMenu;
+                }
+                else if (MapEditorButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    m_eGameMode = InitialSetUp;
+                } 
+                else if (ExitButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    m_Window.close();
+                }
+
+            }
+        }
+        else if (m_ePrevGameMode == MapSelectionMenu && m_eGameMode == MapSelectionMenu)
+        {
+            Vector2i mousePosition = Mouse::getPosition(m_Window);                                  // Get mouse position by pixel
+            Vector2f translatedPosition = m_Window.mapPixelToCoords(mousePosition);
+            MapSelectionDriver* mapSelectionMenuPtr = m_GUIManager.GetMapSelectionMenu();
+            mapSelectionMenuPtr->HandleButtonHover(translatedPosition);
+            if (event.type == Event::MouseButtonPressed)
+            {
+                mapSelectionMenuPtr->HandleButtonClicked(translatedPosition);
+            }
+            if (event.type == Event::MouseButtonReleased)
+            {
+                const Button* MediumButtonPtr = mapSelectionMenuPtr->GetMediumMapButton();
+                const Button* HardButtonPtr = mapSelectionMenuPtr->GetHardMapButton();
+                const Button* BackButtonPtr = mapSelectionMenuPtr->GetBackButton(); 
+                if (MediumButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    LoadMap(m_MapStorage.GetMediumMapFilePath());
+                    m_eGameMode = MapSelectionMenu;
+                    m_eGameMode = MapEditorMode;
+                }
+                else if (HardButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    LoadMap(m_MapStorage.GetHardMapFilePath());
+                    m_eGameMode = MapSelectionMenu;
+                    m_eGameMode = MapEditorMode;
+                } 
+                else if (BackButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    m_eGameMode = MainMenu;
+                    m_ePrevGameMode = MainMenu;
+                }
+            }
+        }
+        // Handle inputs for initial SetUp //
+        else if (m_eGameMode == InitialSetUp)
+        {
+            
+            if (m_ePrevGameMode == MainMenu)
+            {
+                // Some logic 
+                m_ePrevGameMode = InitialSetUp;
+            }
+            
+            Vector2i mousePosition = Mouse::getPosition(m_Window);                                  // Get mouse position by pixel
             Vector2f translatedPosition = m_Window.mapPixelToCoords(mousePosition);                 // Translate mouse position to game tile coordinate
-            std::array<sf::Sprite, 2>& buttonBoxArray = m_GUIManager.GetGameSetupView()->GetButtonBoxes();              
-            if (event.type == Event::MouseButtonPressed) {
+            //std::array<sf::Sprite, 2>& buttonBoxArray = m_GUIManager.GetGameSetupView()->GetButtonBoxes();              
+            GameSetupView* gameSetupViewPtr = m_GUIManager.GetGameSetupView();
+            gameSetupViewPtr->HandleButtonHover(translatedPosition);
+            if (event.type == Event::MouseButtonPressed) 
+            {
                 // When input box is clicked
                 std::array<sf::RectangleShape, 2>& userInputBoxArray = m_GUIManager.GetGameSetupView()->GetUserInputBoxWindowSize();
                 if (userInputBoxArray[0].getGlobalBounds().contains(translatedPosition))        // Check if mouse position is within the width input box
@@ -285,17 +413,19 @@ void Game::HandleInput()
                 }
                 else                                                                                    // If clicked anywhere outside the input box
                 {   
+                    gameSetupViewPtr->HandleButtonCliked(translatedPosition);
                     m_GUIManager.GetGameSetupView()->SetCurrentlyActiveInputBox(GameSetupView::None);                     
                 }
             }
             if (event.type == Event::MouseButtonReleased)
             {
-                // When submit button click is released, resize window with given inputs, switch game mode, and load map editor assets
-                if (buttonBoxArray[1].getGlobalBounds().contains(translatedPosition))
+                const Button* playButtonPtr = gameSetupViewPtr->GetPlayButton();
+                const Button* backButtonPtr = gameSetupViewPtr->GetBackButton();
+                if (playButtonPtr->IsMouseOver(translatedPosition))
                 {
-                    // Get the grid size from the user input
+                    //std::cout << "Play button release" << std::endl;
+                    //Get the grid size from the user input
                     Vector2i gridSize = m_GUIManager.GetGridSize();
-
                     // Apply input limit from 10 to 20
                     if (gridSize.x >= 10 && gridSize.x <= 20 && gridSize.y >= 10 && gridSize.y <= 20)
                     {
@@ -306,6 +436,29 @@ void Game::HandleInput()
                         m_GUIManager.GetGameSetupView()->SetIsSizeLimitTextShown(true);
                     }
                 }
+                else if (backButtonPtr->IsMouseOver(translatedPosition))
+                {
+                    //std::cout << "Back button release" << std::endl;
+                    m_GUIManager.ResetGameSetup();
+                    m_eGameMode = MainMenu;
+                    m_ePrevGameMode = MainMenu;
+                } 
+                // When submit button click is released, resize window with given inputs, switch game mode, and load map editor assets
+                //if (buttonBoxArray[1].getGlobalBounds().contains(translatedPosition))
+                //{
+                //    // Get the grid size from the user input
+                //    Vector2i gridSize = m_GUIManager.GetGridSize();
+//
+                //    // Apply input limit from 10 to 20
+                //    if (gridSize.x >= 10 && gridSize.x <= 20 && gridSize.y >= 10 && gridSize.y <= 20)
+                //    {
+                //        m_eGameMode = MapEditorMode;
+                //    }
+                //    else
+                //    {
+                //        m_GUIManager.GetGameSetupView()->SetIsSizeLimitTextShown(true);
+                //    }
+                //}
             }
 
             // **** Need separate class for InputHandle
@@ -436,6 +589,9 @@ void Game::HandleInput()
                     // Go to play mode only when there is a valid path
                     if (m_GUIManager.GetMapSetup()->ValidatePath())
                     {
+                        #ifdef SAVE_MAP
+                        m_MapStorage.saveData(m_GUIManager.GetMapSetup()->GetPath(), m_GUIManager.GetMapSetup()->GetGridSize(), m_MapStorage.GetPlaceHolderFilePath());
+                        #endif
                         m_eGameMode = PlayMode;
                     }
                 }
@@ -1083,6 +1239,24 @@ void Game::UpdateNextMonsterUI()
 {
     std::unique_ptr<MonsterEntity>& nextMonster = m_MonsterManager.GetNextMonster();
     m_GUIManager.UpdateMonsterUi(nextMonster->GetType(), nextMonster->GetLevel());
+}
+
+void Game::DrawMainMenu()
+{
+    m_Window.clear();
+
+    m_GUIManager.GetMainMenu()->Draw();
+
+    m_Window.display();
+}
+
+void Game::DrawMapSelectionMenu()
+{
+    m_Window.clear();
+
+    m_GUIManager.GetMapSelectionMenu()->Draw();
+
+    m_Window.display();
 }
 
 // ** EDIT TO IMPLEMENT GAMESETUP VIEW CLASS

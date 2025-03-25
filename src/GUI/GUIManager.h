@@ -2,6 +2,8 @@
 #define GUIMANAGER_H
 
 #include "../Platform.h"
+#include "MainMenuDriver.h"
+#include "MapSelectionDriver.h"
 #include "GameSetup.h"
 #include "../Views/GameSetupView.h"
 #include "MapSetup.h"
@@ -24,11 +26,29 @@ public:
 
     void LoadFonts();
 
+    void InitializeMainMenu();
+
+    void InitializeMapSelectionMenu();
+
     void InitializeGameSetup();
+
+    void InitializeLoadedMapSetup(sf::Vector2i gridSize);
 
     void InitializeMapSetup();
 
     void InitializeInfoUI();
+
+    void ResetGameSetup();
+
+    MainMenuDriver* GetMainMenu()
+    {
+        return m_mainMenu.get();
+    }
+
+    MapSelectionDriver* GetMapSelectionMenu()
+    {
+        return m_mapSelectionMenu.get();
+    }
 
     GameSetup* GetGameSetup()
     {
@@ -66,6 +86,11 @@ public:
 
     Vector2i GetMapSize() const;
 
+    void LoadNewMapSetup(std::unique_ptr<MapSetup>&& mapSetupPtr)
+    {
+        m_mapSetup = std::move(mapSetupPtr);
+    }
+
     void InitiailizeTowerPrice(std::vector<std::unique_ptr<TowerEntity>>& templateTowers);
 
     bool InitializeEntryTile(const sf::Vector2f& position);
@@ -93,6 +118,9 @@ private:
 
     // ** Load class
     sf::Font m_Font;
+
+    std::unique_ptr<MainMenuDriver> m_mainMenu;
+    std::unique_ptr<MapSelectionDriver> m_mapSelectionMenu;
 
     std::unique_ptr<GameSetup> m_gameSetup;
     std::unique_ptr<GameSetupView> m_gameSetupView;
