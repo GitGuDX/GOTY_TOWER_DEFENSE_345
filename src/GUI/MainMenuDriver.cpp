@@ -9,18 +9,28 @@ MainMenuDriver::MainMenuDriver(RenderWindow &m_Window)
 void MainMenuDriver::LoadTextures()
 {
     m_TitleLogoTexture.loadFromFile("../src/Images/Title_Logos/Title_Logo_4.png");
+    m_TitleLogoTexture.setSmooth(true);
 
     m_ChooseMapButtonTexture.loadFromFile("../src/Images/Buttons/button_choose-a-map.png");
     m_ChooseMapButtonHoverTexture.loadFromFile("../src/Images/Buttons/button_choose-a-map_hover.png");
     m_ChooseMapButtonPressedTexture.loadFromFile("../src/Images/Buttons/button_choose-a-map_pressed.png");
+    m_ChooseMapButtonTexture.setSmooth(true);
+    m_ChooseMapButtonHoverTexture.setSmooth(true);
+    m_ChooseMapButtonPressedTexture.setSmooth(true);
 
     m_MapEditorButtonTexture.loadFromFile("../src/Images/Buttons/button_map-editor.png");
     m_MapEditorButtonHoverTexture.loadFromFile("../src/Images/Buttons/button_map-editor_hover.png");
     m_MapEditorButtonPressedTexture.loadFromFile("../src/Images/Buttons/button_map-editor_pressed.png");
+    m_MapEditorButtonTexture.setSmooth(true);
+    m_MapEditorButtonHoverTexture.setSmooth(true);
+    m_MapEditorButtonPressedTexture.setSmooth(true);
 
     m_ExitButtonTexture.loadFromFile("../src/Images/Buttons/button_exit.png");
     m_ExitButtonHoverTexture.loadFromFile("../src/Images/Buttons/button_exit_hover.png");
     m_ExitButtonPressedTexture.loadFromFile("../src/Images/Buttons/button_exit_pressed.png");
+    m_ExitButtonTexture.setSmooth(true);
+    m_ExitButtonHoverTexture.setSmooth(true);
+    m_ExitButtonPressedTexture.setSmooth(true);
 }
 
 void MainMenuDriver::InitializeTitleLogo()
