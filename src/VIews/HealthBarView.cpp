@@ -107,9 +107,9 @@ void HealthBarView::RemoveMonster(const MonsterEntity *monsterPtr)
     if (monsterPtr)  // Ensure the pointer is valid
     {
         const MonsterEntity* monsterBasePtr = monsterPtr->GetBaseMonsterEntity();
-        std::cout << "subject size before removal: " << m_MonsterEntitySubjects.size() << std::endl;
+        //std::cout << "subject size before removal: " << m_MonsterEntitySubjects.size() << std::endl;
         m_MonsterEntitySubjects.erase(monsterBasePtr);
-        std::cout << "subject size after removal: " << m_MonsterEntitySubjects.size() << std::endl;
+        //std::cout << "subject size after removal: " << m_MonsterEntitySubjects.size() << std::endl;
     }
     else
     {

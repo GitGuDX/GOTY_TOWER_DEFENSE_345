@@ -50,7 +50,7 @@ void TowerManager::InitializeGameSetup()
     sniperTower->SetIsTemplate(true);
 
     m_templateTowers.push_back(std::move(sniperTower));
-    std::cout << m_templateTowers.size() << std::endl;
+    //std::cout << m_templateTowers.size() << std::endl;
 
     // Create a flame thrower Tower template
     // Allocate TowerEntity on the heap using std::make_unique<TowerEntity>().
@@ -60,7 +60,7 @@ void TowerManager::InitializeGameSetup()
     flameTower->SetIsTemplate(true);
 
     m_templateTowers.push_back(std::move(flameTower));
-    std::cout << m_templateTowers.size() << std::endl;
+    //std::cout << m_templateTowers.size() << std::endl;
 
 }
 
@@ -222,7 +222,7 @@ void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
 void TowerManager::ApplyUpgrades(std::unique_ptr<TowerEntity>* towerPtr)
 {
     #ifdef DEBUG
-    std::cout << "applying upgrade to " << (*towerPtr).get() << std::endl;
+    //std::cout << "applying upgrade to " << (*towerPtr).get() << std::endl;
     #endif
 
     // Apply decorators for range, speed, damage, and cooldown
@@ -232,9 +232,9 @@ void TowerManager::ApplyUpgrades(std::unique_ptr<TowerEntity>* towerPtr)
     *towerPtr = std::make_unique<CooldownBoostDecorator>(std::move(*towerPtr)); // Always wrap with CooldownBoostDecorator
 
     #ifdef DEBUG
-    std::cout << "applied range decorator: " << (*towerPtr)->GetRange() << std::endl;
-    std::cout << "applied tower speed: " << (*towerPtr)->GetSpeed() << std::endl;
-    std::cout << "applied tower damage: " << (*towerPtr)->GetDamage() << std::endl;
-    std::cout << "applied tower cooldown: " << (*towerPtr)->GetMaxCooldown() << std::endl;
+    //std::cout << "applied range decorator: " << (*towerPtr)->GetRange() << std::endl;
+    //std::cout << "applied tower speed: " << (*towerPtr)->GetSpeed() << std::endl;
+    //std::cout << "applied tower damage: " << (*towerPtr)->GetDamage() << std::endl;
+    //std::cout << "applied tower cooldown: " << (*towerPtr)->GetMaxCooldown() << std::endl;
     #endif
 }

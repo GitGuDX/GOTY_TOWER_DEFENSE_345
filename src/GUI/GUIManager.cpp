@@ -76,7 +76,6 @@ void GUIManager::InitializeLoadedMapSetup(sf::Vector2i gridSize)
     m_mapSetup = std::make_unique<MapSetup>(gridSize);
     m_mapSetupView = std::make_unique<MapSetupView>(m_Window);
     m_mapSetup->AddObserver(m_mapSetupView.get());
-    std::cout << "Map setup address: " << m_mapSetup.get() << std::endl;
 }
 
 void GUIManager::InitializeMapSetup()
