@@ -1,11 +1,11 @@
 var indexSectionsWithContent =
 {
-  0: "begimoprst~",
-  1: "begmorst",
-  2: "egmt",
+  0: "gimpr~",
+  1: "gi",
+  2: "g",
   3: "gr~",
   4: "g",
-  5: "imp"
+  5: "gimp"
 };
 
 var indexSectionNames =

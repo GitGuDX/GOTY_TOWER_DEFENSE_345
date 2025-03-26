@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['entity_0',['Entity',['../class_entity.html',1,'']]],
-  ['entity_2ecpp_1',['Entity.cpp',['../_entity_8cpp.html',1,'']]],
-  ['entity_2eh_2',['Entity.h',['../_entity_8h.html',1,'']]]
+  ['igameobserver_0',['IGameObserver',['../class_i_game_observer.html',1,'']]],
+  ['igamesubject_1',['IGameSubject',['../class_i_game_subject.html',1,'']]],
+  ['initialsetup_2',['InitialSetUp',['../class_game.html#ac2b04dd85ce59ea4aa71a5779c97bfefa9eca143cd7f6c34a1d6690251d5d9ede',1,'Game']]]
 ];

@@ -12,18 +12,18 @@ Main game management class.
 \doxysubsubsection*{Public Types}
 \begin{DoxyCompactItemize}
 \item 
-enum \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfef}{Game\+Mode}} \{ \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa9eca143cd7f6c34a1d6690251d5d9ede}{Initial\+Set\+Up}}
-, \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa871e5f91f99bd8c8c49d80e4b951fc48}{Play\+Mode}}
+enum \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfef}{Game\+Mode}} \{ \newline
+{\bfseries None}
+, {\bfseries Main\+Menu}
+, {\bfseries Map\+Selection\+Menu}
+, \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa9eca143cd7f6c34a1d6690251d5d9ede}{Initial\+Set\+Up}}
+, \newline
+\mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa871e5f91f99bd8c8c49d80e4b951fc48}{Play\+Mode}}
 , \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefa6057c797d374044b36f4ae9b8f2b3ea0}{Map\+Editor\+Mode}}
 , \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefab2cf7098808338abae856bf46ac82b91}{Pause}}
+, \mbox{\hyperlink{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefaeffae165495b9c49fd2b48055cd3abde}{Game\+Over}}
  \}
 \begin{DoxyCompactList}\small\item\em Enumeration for different game modes. \end{DoxyCompactList}\item 
-\Hypertarget{class_game_ad790ef11acf1a0a0fcec0377c7fd3c82}\label{class_game_ad790ef11acf1a0a0fcec0377c7fd3c82} 
-enum {\bfseries Clicked\+Input\+Box} \{ {\bfseries Width}
-, {\bfseries Height}
-, {\bfseries None}
- \}
-\item 
 \Hypertarget{class_game_ac485057f97b549dcb399159dad1dc55b}\label{class_game_ac485057f97b549dcb399159dad1dc55b} 
 enum {\bfseries Path\+Editing\+State} \{ {\bfseries Entry\+State}
 , {\bfseries Exit\+State}
@@ -36,18 +36,11 @@ enum {\bfseries Path\+Editing\+State} \{ {\bfseries Entry\+State}
 \item 
 \mbox{\hyperlink{class_game_a3fdcea78422790fd85667e634d76c587}{Game}} (int initial\+Window\+Width, int initial\+Window\+Height)
 \begin{DoxyCompactList}\small\item\em Constructs the game window. \end{DoxyCompactList}\item 
-\Hypertarget{class_game_ae3d112ca6e0e55150d2fdbc704474530}\label{class_game_ae3d112ca6e0e55150d2fdbc704474530} 
-{\bfseries \texorpdfstring{$\sim$}{\string~}\+Game} ()
+\Hypertarget{class_game_a3d09cd0b68ef69107d36360ca903e023}\label{class_game_a3d09cd0b68ef69107d36360ca903e023} 
+{\bfseries \texorpdfstring{$\sim$}{\string~}\+Game} ()=default
 \begin{DoxyCompactList}\small\item\em Destructor for \doxylink{class_game}{Game}. \end{DoxyCompactList}\item 
-\Hypertarget{class_game_a96341ca5b54d90adc3ecb3bf0bcd2312}\label{class_game_a96341ca5b54d90adc3ecb3bf0bcd2312} 
-void {\bfseries Run} ()
+void \mbox{\hyperlink{class_game_a96341ca5b54d90adc3ecb3bf0bcd2312}{Run}} ()
 \begin{DoxyCompactList}\small\item\em Runs the game loop. \end{DoxyCompactList}\end{DoxyCompactItemize}
-\doxysubsubsection*{Friends}
-\begin{DoxyCompactItemize}
-\item 
-\Hypertarget{class_game_a8b9901e17ad1cfa96b43ef6978947b10}\label{class_game_a8b9901e17ad1cfa96b43ef6978947b10} 
-class {\bfseries Monster\+Generator}
-\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -83,6 +76,10 @@ Map\+Editor\+Mode&Map creation mode. \\
 Pause&Paused state. \\
 \hline
 
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GameOver@{GameOver}!Game@{Game}}\index{Game@{Game}!GameOver@{GameOver}}}\Hypertarget{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefaeffae165495b9c49fd2b48055cd3abde}\label{class_game_ac2b04dd85ce59ea4aa71a5779c97bfefaeffae165495b9c49fd2b48055cd3abde} 
+Game\+Over&\doxylink{class_game}{Game} over state. \\
+\hline
+
 \end{DoxyEnumFields}
 
 
@@ -104,6 +101,26 @@ Constructs the game window.
 {\em initial\+Window\+Height} & Initial height of the game window. \\
 \hline
 \end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_game_a96341ca5b54d90adc3ecb3bf0bcd2312}\index{Game@{Game}!Run@{Run}}
+\index{Run@{Run}!Game@{Game}}
+\doxysubsubsection{\texorpdfstring{Run()}{Run()}}
+{\footnotesize\ttfamily \label{class_game_a96341ca5b54d90adc3ecb3bf0bcd2312} 
+void Game\+::\+Run (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Runs the game loop. 
+
+Main game loop that manages game states and updates the game accordingly.
+
+This function runs the main loop of the game, handling user input, updating game logic, and rendering different game states such as the main menu, map selection, map editor mode, and play mode. It ensures that assets are loaded only once when entering a new state and updates elements like UI and game entities as needed.
+
+\begin{DoxyNote}{Note}
+The function uses a game clock to manage time-\/based updates and handles transitions between different game modes. 
+\end{DoxyNote}
 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}

@@ -105,7 +105,6 @@ $(function(){initNavTree('class_game.html',''); initResizable(true); });
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#friends">Friends</a> &#124;
 <a href="class_game-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">Game Class Reference</div></div>
 </div><!--header-->
@@ -118,18 +117,20 @@ $(function(){initNavTree('class_game.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac2b04dd85ce59ea4aa71a5779c97bfef" id="r_ac2b04dd85ce59ea4aa71a5779c97bfef"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2b04dd85ce59ea4aa71a5779c97bfef">GameMode</a> { <a class="el" href="#ac2b04dd85ce59ea4aa71a5779c97bfefa9eca143cd7f6c34a1d6690251d5d9ede">InitialSetUp</a>
-, <a class="el" href="#ac2b04dd85ce59ea4aa71a5779c97bfefa871e5f91f99bd8c8c49d80e4b951fc48">PlayMode</a>
+<tr class="memitem:ac2b04dd85ce59ea4aa71a5779c97bfef" id="r_ac2b04dd85ce59ea4aa71a5779c97bfef"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2b04dd85ce59ea4aa71a5779c97bfef">GameMode</a> { <br />
+&#160;&#160;<b>None</b>
+, <b>MainMenu</b>
+, <b>MapSelectionMenu</b>
+, <a class="el" href="#ac2b04dd85ce59ea4aa71a5779c97bfefa9eca143cd7f6c34a1d6690251d5d9ede">InitialSetUp</a>
+, <br />
+&#160;&#160;<a class="el" href="#ac2b04dd85ce59ea4aa71a5779c97bfefa871e5f91f99bd8c8c49d80e4b951fc48">PlayMode</a>
 , <a class="el" href="#ac2b04dd85ce59ea4aa71a5779c97bfefa6057c797d374044b36f4ae9b8f2b3ea0">MapEditorMode</a>
 , <a class="el" href="#ac2b04dd85ce59ea4aa71a5779c97bfefab2cf7098808338abae856bf46ac82b91">Pause</a>
+, <a class="el" href="#ac2b04dd85ce59ea4aa71a5779c97bfefaeffae165495b9c49fd2b48055cd3abde">GameOver</a>
+<br />
  }</td></tr>
 <tr class="memdesc:ac2b04dd85ce59ea4aa71a5779c97bfef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration for different game modes.  <a href="#ac2b04dd85ce59ea4aa71a5779c97bfef">More...</a><br /></td></tr>
 <tr class="separator:ac2b04dd85ce59ea4aa71a5779c97bfef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad790ef11acf1a0a0fcec0377c7fd3c82" id="r_ad790ef11acf1a0a0fcec0377c7fd3c82"><td class="memItemLeft" align="right" valign="top"><a id="ad790ef11acf1a0a0fcec0377c7fd3c82" name="ad790ef11acf1a0a0fcec0377c7fd3c82"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ClickedInputBox</b> { <b>Width</b>
-, <b>Height</b>
-, <b>None</b>
- }</td></tr>
-<tr class="separator:ad790ef11acf1a0a0fcec0377c7fd3c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac485057f97b549dcb399159dad1dc55b" id="r_ac485057f97b549dcb399159dad1dc55b"><td class="memItemLeft" align="right" valign="top"><a id="ac485057f97b549dcb399159dad1dc55b" name="ac485057f97b549dcb399159dad1dc55b"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>PathEditingState</b> { <b>EntryState</b>
 , <b>ExitState</b>
 , <b>PathState</b>
@@ -142,20 +143,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3fdcea78422790fd85667e634d76c587" id="r_a3fdcea78422790fd85667e634d76c587"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3fdcea78422790fd85667e634d76c587">Game</a> (int initialWindowWidth, int initialWindowHeight)</td></tr>
 <tr class="memdesc:a3fdcea78422790fd85667e634d76c587"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the game window.  <br /></td></tr>
 <tr class="separator:a3fdcea78422790fd85667e634d76c587"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3d112ca6e0e55150d2fdbc704474530" id="r_ae3d112ca6e0e55150d2fdbc704474530"><td class="memItemLeft" align="right" valign="top"><a id="ae3d112ca6e0e55150d2fdbc704474530" name="ae3d112ca6e0e55150d2fdbc704474530"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>~Game</b> ()</td></tr>
-<tr class="memdesc:ae3d112ca6e0e55150d2fdbc704474530"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="class_game.html" title="Main game management class.">Game</a>. <br /></td></tr>
-<tr class="separator:ae3d112ca6e0e55150d2fdbc704474530"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96341ca5b54d90adc3ecb3bf0bcd2312" id="r_a96341ca5b54d90adc3ecb3bf0bcd2312"><td class="memItemLeft" align="right" valign="top"><a id="a96341ca5b54d90adc3ecb3bf0bcd2312" name="a96341ca5b54d90adc3ecb3bf0bcd2312"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Run</b> ()</td></tr>
-<tr class="memdesc:a96341ca5b54d90adc3ecb3bf0bcd2312"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the game loop. <br /></td></tr>
+<tr class="memitem:a3d09cd0b68ef69107d36360ca903e023" id="r_a3d09cd0b68ef69107d36360ca903e023"><td class="memItemLeft" align="right" valign="top"><a id="a3d09cd0b68ef69107d36360ca903e023" name="a3d09cd0b68ef69107d36360ca903e023"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>~Game</b> ()=default</td></tr>
+<tr class="memdesc:a3d09cd0b68ef69107d36360ca903e023"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="class_game.html" title="Main game management class.">Game</a>. <br /></td></tr>
+<tr class="separator:a3d09cd0b68ef69107d36360ca903e023"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96341ca5b54d90adc3ecb3bf0bcd2312" id="r_a96341ca5b54d90adc3ecb3bf0bcd2312"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96341ca5b54d90adc3ecb3bf0bcd2312">Run</a> ()</td></tr>
+<tr class="memdesc:a96341ca5b54d90adc3ecb3bf0bcd2312"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the game loop.  <br /></td></tr>
 <tr class="separator:a96341ca5b54d90adc3ecb3bf0bcd2312"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a8b9901e17ad1cfa96b43ef6978947b10" id="r_a8b9901e17ad1cfa96b43ef6978947b10"><td class="memItemLeft" align="right" valign="top"><a id="a8b9901e17ad1cfa96b43ef6978947b10" name="a8b9901e17ad1cfa96b43ef6978947b10"></a>
-class&#160;</td><td class="memItemRight" valign="bottom"><b>MonsterGenerator</b></td></tr>
-<tr class="separator:a8b9901e17ad1cfa96b43ef6978947b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Main game management class. </p>
@@ -182,6 +176,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MonsterGenerator</b>
 <tr><td class="fieldname"><a id="ac2b04dd85ce59ea4aa71a5779c97bfefa6057c797d374044b36f4ae9b8f2b3ea0" name="ac2b04dd85ce59ea4aa71a5779c97bfefa6057c797d374044b36f4ae9b8f2b3ea0"></a>MapEditorMode&#160;</td><td class="fielddoc"><p>Map creation mode. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ac2b04dd85ce59ea4aa71a5779c97bfefab2cf7098808338abae856bf46ac82b91" name="ac2b04dd85ce59ea4aa71a5779c97bfefab2cf7098808338abae856bf46ac82b91"></a>Pause&#160;</td><td class="fielddoc"><p>Paused state. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac2b04dd85ce59ea4aa71a5779c97bfefaeffae165495b9c49fd2b48055cd3abde" name="ac2b04dd85ce59ea4aa71a5779c97bfefaeffae165495b9c49fd2b48055cd3abde"></a>GameOver&#160;</td><td class="fielddoc"><p><a class="el" href="class_game.html" title="Main game management class.">Game</a> over state. </p>
 </td></tr>
 </table>
 
@@ -215,6 +211,29 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MonsterGenerator</b>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a96341ca5b54d90adc3ecb3bf0bcd2312" name="a96341ca5b54d90adc3ecb3bf0bcd2312"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96341ca5b54d90adc3ecb3bf0bcd2312">&#9670;&#160;</a></span>Run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Game::Run </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runs the game loop. </p>
+<p>Main game loop that manages game states and updates the game accordingly.</p>
+<p>This function runs the main loop of the game, handling user input, updating game logic, and rendering different game states such as the main menu, map selection, map editor mode, and play mode. It ensures that assets are loaded only once when entering a new state and updates elements like UI and game entities as needed.</p>
+<dl class="section note"><dt>Note</dt><dd>The function uses a game clock to manage time-based updates and handles transitions between different game modes. </dd></dl>
 
 </div>
 </div>
