@@ -12,6 +12,8 @@ The Game class initializes the game, manages user input, and updates/draws the g
 
 #include "Platform.h"
 
+#include "Helpers/DebugLogger.h"
+
 // GUI and Map
 #include "GUI/GUIManager.h"
 
@@ -25,6 +27,7 @@ The Game class initializes the game, manages user input, and updates/draws the g
 // ** Handle input class
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "Helpers/MapStorage.h"
 
@@ -217,6 +220,11 @@ private:
     int m_iCurrentLevel;
     int m_iInitialWealth;
     int m_iCurrentWealth;
+
+    #ifdef DEBUG
+    DebugLogger m_DebugLogger;
+    #endif
+
 };
 
 

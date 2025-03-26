@@ -76,6 +76,9 @@ void Game::Run()
                 m_iCurrentWealth = m_iInitialWealth;
                 m_GUIManager.InitializeMainMenu();
                 m_ePrevGameMode = MainMenu;
+                #ifdef DEBUG
+                m_DebugLogger.Log("Main menu assets initialized.");
+                #endif
             }
             DrawMainMenu();
             break;
@@ -85,6 +88,9 @@ void Game::Run()
             {
                 m_GUIManager.InitializeMapSelectionMenu();
                 m_ePrevGameMode = MapSelectionMenu;
+                #ifdef DEBUG
+                m_DebugLogger.Log("Map selection menu assets initialized.");
+                #endif
             }
             DrawMapSelectionMenu();
             break;
@@ -102,6 +108,9 @@ void Game::Run()
 
                 m_eCurrentEditState = PathEditingState::EntryState;
                 m_ePrevGameMode = MapEditorMode;
+                #ifdef DEBUG
+                m_DebugLogger.Log("Map editor assets initialized.");
+                #endif
             }
 
             UpdateTiles();
@@ -119,9 +128,11 @@ void Game::Run()
             {
                 // Bullet texture is loaded here. Need to be implemented by the bullet observer pattern
                 LoadPlayModeAssets();
-
-                
                 m_ePrevGameMode = PlayMode;
+
+                #ifdef DEBUG
+                m_DebugLogger.Log("Play mode assets initialized.");
+                #endif
             }
 
             // If round hasn't ended, game is still playing so keep updating
@@ -190,12 +201,15 @@ void Game::InitializeUIAndEntities()
 
 void Game::LoadMap(std::string& filepath)
 {
+    #ifdef DEBUG
+    m_DebugLogger.Log("Loading a map. Filename: " + filepath);
+    #endif
     std::vector<sf::Vector2f> newPath;
     Vector2i gridSize; 
     if (!m_MapStorage.loadData(newPath, gridSize, filepath))
     {
         #ifdef DEBUG
-        std::cout << "Map loading failed" << std::endl;
+        m_DebugLogger.Log("Map loading failed");
         #endif
     }
 
@@ -434,7 +448,6 @@ void Game::HandleInput()
                 const Button* backButtonPtr = gameSetupViewPtr->GetBackButton();
                 if (playButtonPtr->IsMouseOver(translatedPosition))
                 {
-                    //std::cout << "Play button release" << std::endl;
                     //Get the grid size from the user input
                     Vector2i gridSize = m_GUIManager.GetGridSize();
                     // Apply input limit from 10 to 20
@@ -449,27 +462,10 @@ void Game::HandleInput()
                 }
                 else if (backButtonPtr->IsMouseOver(translatedPosition))
                 {
-                    //std::cout << "Back button release" << std::endl;
                     m_GUIManager.ResetGameSetup();
                     m_eGameMode = MainMenu;
                     m_ePrevGameMode = MainMenu;
                 } 
-                // When submit button click is released, resize window with given inputs, switch game mode, and load map editor assets
-                //if (buttonBoxArray[1].getGlobalBounds().contains(translatedPosition))
-                //{
-                //    // Get the grid size from the user input
-                //    Vector2i gridSize = m_GUIManager.GetGridSize();
-//
-                //    // Apply input limit from 10 to 20
-                //    if (gridSize.x >= 10 && gridSize.x <= 20 && gridSize.y >= 10 && gridSize.y <= 20)
-                //    {
-                //        m_eGameMode = MapEditorMode;
-                //    }
-                //    else
-                //    {
-                //        m_GUIManager.GetGameSetupView()->SetIsSizeLimitTextShown(true);
-                //    }
-                //}
             }
 
             // **** Need separate class for InputHandle
@@ -532,10 +528,6 @@ void Game::HandleInput()
                     }
                     else if (m_eCurrentEditState == PathState)
                     {
-                        #ifdef DEBUG
-                        m_GUIManager.GetMapSetup()->debugPrint();
-                        #endif
-
                         m_IsPathingMousePressed = true;
                     }
                 }
@@ -813,8 +805,6 @@ void Game::HandleInput()
 
                         // Upgrade the tower level and notifychange 
                         (*m_lastHoveredTower)->IncrementLevel();
-                        
-                        //std::cout << "level: " << (*m_lastHoveredTower)->GetLevel() << std::endl;
 
                         m_GUIManager.SetWarningAndColor("Tower upgraded successfully!", sf::Color::Green);
                     }
@@ -937,7 +927,7 @@ void Game::UpdateMonsters()
             if (monsterPtr->GetHealth() <= 0)
             {
                 #ifdef DEBUG
-                std::cout << "Monster destroyed!" << std::endl;
+                m_DebugLogger.Log("Monster destroyed!");
                 #endif
                 UpdateWealth(monsterPtr->GetReward());
                 monsterPtr->SetIsDying(true);
@@ -1056,8 +1046,6 @@ void Game::UpdateTowers()
     
             if (pNearestEnemy != nullptr)
             {
-                // Vector2f monsterPosition = pNearestEnemy->GetPosition();
-                // std::cout << "target monster position: " << monsterPosition.x << " " << monsterPosition.y << std::endl;
                 // Create and setup new axe
                 if (towerPtr->GetType() == TowerGeneratorData::TowerType::Rapid) 
                 {
@@ -1195,37 +1183,36 @@ void Game::UpdateAxes()
                 std::string hitMonsterName;
 
                 #ifdef DEBUG
-                switch (static_cast<int>(monsterPtr->GetType()))
-                {
-                    case 0: hitMonsterName = "Skeleton"; break;
-                    case 1: hitMonsterName = "Reaper"; break;
-                    case 2: hitMonsterName = "Golem"; break;
-                    case 3: hitMonsterName = "Ogre"; break;
-                    case 4: hitMonsterName = "Minotaur"; break;
-                    default: hitMonsterName = "Unknown"; break;
-                }
-                std::cout << "Debug: Axe hit " << hitMonsterName << " at position ("
-                        << monsterPtr->GetPosition().x << ", "
-                        << monsterPtr->GetPosition().y << ")" << std::endl;
+                    switch (static_cast<int>(monsterPtr->GetType()))
+                    {
+                        case 0: hitMonsterName = "Skeleton"; break;
+                        case 1: hitMonsterName = "Reaper"; break;
+                        case 2: hitMonsterName = "Golem"; break;
+                        case 3: hitMonsterName = "Ogre"; break;
+                        case 4: hitMonsterName = "Minotaur"; break;
+                        default: hitMonsterName = "Unknown"; break;
+                    }
+                    m_DebugLogger.Log("Debug: Axe hit %s at position (%.2f, %.2f)", 
+                       hitMonsterName.c_str(), 
+                       monsterPtr->GetPosition().x, 
+                       monsterPtr->GetPosition().y);
                 #endif
+
 
                 hitMonster = true;
                 monsterPtr->SetHealth(monsterPtr->GetHealth() - it->GetDamage());
                 
                 if (it->GetProjectileType() == TowerGeneratorData::TowerType::Sniper)
                 {
-                    //std::cout << "applying speed debuff" << std::endl;
+                    #ifdef DEBUG
+                    m_DebugLogger.Log("applying speed debuff");
+                    #endif
                     m_MonsterManager.ApplySpeedDebuffToMonster(monsterPtr);
                 }
                 else if (it->GetProjectileType() == TowerGeneratorData::TowerType::FlameThrower)
                 {
                     m_MonsterManager.ApplyBurnEffectToMonster(monsterPtr);
                 }
-                
-                #ifdef DEBUG
-                std::cout << "\n" << monsterPtr->GetHealth() << "\n";
-                #endif
-
                 break;
             }
         }
