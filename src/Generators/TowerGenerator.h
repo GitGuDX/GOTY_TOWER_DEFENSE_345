@@ -7,6 +7,24 @@
 
 class TowerEntity;
 
+/**
+ * @class TowerGenerator
+ * @brief A class responsible for generating and initializing towers of different types.
+ * 
+ * The `TowerGenerator` class provides functionality to generate towers based on their type and initialize 
+ * their attributes (such as max level, range, cooldown, damage, speed, and cost) using predefined data.
+ * 
+ * The class includes:
+ * - A default constructor and destructor.
+ * - `GenerateTower`: A method that generates a tower of a specified type and initializes its stats.
+ * - `InitializeStat`: A method that initializes the stats of a tower based on its type.
+ * 
+ * @note The tower types supported include:
+ * - Basic
+ * - Sniper
+ * - Rapid
+ * - FlameThrower
+ */
 class TowerGenerator
 {
 public:

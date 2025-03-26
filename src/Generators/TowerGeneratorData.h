@@ -1,6 +1,23 @@
 #ifndef TOWER_GENERATOR_DATA_H
 #define TOWER_GENERATOR_DATA_H
 
+/**
+ * @namespace TowerGeneratorData
+ * @brief Contains data structures and constants for tower types and their attributes.
+ * 
+ * The `TowerGeneratorData` namespace includes definitions for various tower types, their stats, and upgrade rates.
+ * 
+ * It consists of:
+ * - `TowerType`: An enumeration listing all available tower types (Basic, Sniper, Rapid, and FlameThrower).
+ * - `TowerTypeData`: A struct containing nested structs for each tower type, with static constants defining attributes like:
+ *   - `iMaxLevel`: The maximum level for the tower.
+ *   - `fRange`: The range of the tower's attack.
+ *   - `fMaxCooldown`: The cooldown time between attacks.
+ *   - `fDamage`: The damage dealt by the tower.
+ *   - `fspeed`: The speed of the tower's attack.
+ *   - `iCost`: The cost of the tower.
+ * - `UpgradeRate`: A struct with static constants that define the multipliers used to upgrade tower attributes (damage, range, cooldown, and speed).
+ */
 namespace TowerGeneratorData {  // Renamed namespace to TowerGeneratorData
     enum class TowerType {
         Basic,

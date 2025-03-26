@@ -11,6 +11,23 @@
 
 using namespace sf;
 
+/**
+ * @class TowerEntityView
+ * @brief Handles the visual representation and updates of towers in the game.
+ * 
+ * This class observes the state of `TowerEntity` objects and updates their corresponding visual representation, including animation frames, range, damage, and level. It also manages textures for template and active towers and displays the towers on the window.
+ * 
+ * Key Methods:
+ * - `Update()`: Updates the tower view based on changes in the game state.
+ * - `Draw()`: Draws the towers to the window.
+ * - `StartDraggingTower()`: Initiates the dragging of a tower.
+ * - `UpdateDraggedTower()`: Updates the position of a dragged tower.
+ * - `StopDraggingTower()`: Stops the dragging of the tower.
+ * - `SetActiveTowerTexture()`: Sets the texture for an active tower.
+ * - `IncrementCurentTowerFrameIndex()`: Increments the current frame index for tower animation.
+ * - `RemoveSubject()`: Removes a tower from the view.
+ * - `EmptyTowerEntitySubjects()`: Clears all tower data from the view.
+ */
 class TowerEntityView : public IGameObserver
 {
 public:

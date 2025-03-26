@@ -3,6 +3,21 @@
 using namespace sf;
 
 
+/**
+ * @class MapSetupView
+ * @brief Handles the visual representation of the map setup in the game.
+ * 
+ * This class is responsible for rendering the map tiles, including the grass, path, entry, and exit tiles, as well as drawing the path lines. It listens for changes from the `MapSetup` and updates the view accordingly.
+ * 
+ * Key Methods:
+ * - `Update()`: Updates the view with new tile data from the `MapSetup` subject. It initializes or updates tiles and path lines.
+ * - `LoadTileTextures()`: Loads textures for tiles (grass and path).
+ * - `InitializeTiles()`: Sets up the tiles based on the data received, including their textures and types.
+ * - `UpdatePath()`: Updates the path lines based on the current path positions.
+ * - `UpdateTilesType()`: Modifies the tile's texture and color depending on its type.
+ * - `Draw()`: Draws the tiles of the map to the window.
+ * - `DrawPathLine()`: Draws the path lines to the window.
+ */
 MapSetupView::MapSetupView(RenderWindow &m_Window)
     : m_Window(m_Window)
 {

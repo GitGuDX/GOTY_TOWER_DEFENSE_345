@@ -4,6 +4,24 @@
 #include "../Entities/TowerEntity.h"
 #include "../Generators/TowerGeneratorData.h"
 
+/**
+ * @class TowerEntityDecorator
+ * @brief A decorator class that adds additional functionality to a `TowerEntity`.
+ * 
+ * The `TowerEntityDecorator` class is a base decorator for the `TowerEntity`, which allows adding extra behavior or functionality without modifying the original `TowerEntity`. It delegates the calls to the decorated `TowerEntity` while allowing the behavior to be extended in subclasses.
+ * This class supports various actions like setting target strategies, selecting targets, observing changes, and notifying about changes in stats.
+ * 
+ * Public Methods:
+ * - `SetTargetStrategy(TowerTargetStrategy* strategy)`: Delegates setting the target strategy to the decorated tower.
+ * - `SelectTarget(const std::vector<std::unique_ptr<MonsterEntity>>& enemies)`: Delegates the selection of a target to the decorated tower.
+ * - `AddObserver(IGameObserver* observer)`: Adds an observer to the decorated tower.
+ * - `RemoveObserver(IGameObserver* observer)`: Removes an observer from the decorated tower.
+ * - `NotifyStatsChanged()`: Notifies the decorated tower about stats changes.
+ * - `GetBaseTowerEntity()`: Recursively unwraps all decorators to return the original base `TowerEntity`.
+ * 
+ * Private Attributes:
+ * - `m_decoratedTower`: A unique pointer to the decorated `TowerEntity`, which holds the core functionality.
+ */
 class TowerEntityDecorator : public TowerEntity
 {
 protected:

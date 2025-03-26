@@ -3,6 +3,31 @@
 
 #include "MonsterDecorator.h"
 
+/**
+ * @class BurnEffectDecorator
+ * @brief A decorator class that adds a burn effect to a `MonsterEntity`.
+ * 
+ * The `BurnEffectDecorator` class is a concrete implementation of the `MonsterEntityDecorator` that adds burn damage over time to the decorated monster.
+ * It periodically applies damage to the monster based on the `m_burnDamagePerSecond` value, and continues to apply the effect for a specified duration (`m_duration`).
+ * After the duration is complete, the decorator flags itself for removal.
+ * 
+ * @note The burn effect updates at regular intervals and removes itself once its duration has ended.
+ * 
+ * Public Methods:
+ * - `Update(float deltaTime)`: Updates the burn effect based on elapsed time and applies burn damage every second.
+ * - `IsMarkedForRemoval()`: Returns whether the burn effect is marked for removal.
+ * - `ResetElapsedTime()`: Resets the elapsed time for the burn effect.
+ * 
+ * Private Methods:
+ * - `ApplyBurnDamage()`: Applies burn damage to the decorated monster.
+ * 
+ * Attributes:
+ * - `m_duration`: The duration for which the burn effect lasts (default: 5.0f seconds).
+ * - `m_elapsedTime`: Tracks how long the burn effect has been active.
+ * - `m_elapsedTimeSinceLastBurn`: Tracks time since the last burn damage was applied.
+ * - `m_burnDamagePerSecond`: The amount of damage dealt to the monster per second (default: 25).
+ * - `m_markedForRemoval`: A flag indicating whether the burn effect has completed and should be removed.
+ */
 class BurnEffectDecorator : public MonsterEntityDecorator
 {
 public:

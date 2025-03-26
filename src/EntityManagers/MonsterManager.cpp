@@ -1,5 +1,9 @@
 #include "MonsterManager.h"
 
+/**
+ * @class MonsterManager
+ * @brief Manages the lifecycle and behavior of all monsters in the game.
+ */
 MonsterManager::MonsterManager(RenderWindow &window)
     //: m_Window(window)
     : m_HealthBarView(window)
@@ -78,20 +82,20 @@ void MonsterManager::PrepareNextWave()
 
 void MonsterManager::UpdateNextMonster()
 {
-    // Clear the previous monster (if any) and remove observer
-    //m_MonsterEntityView.RemoveMonster(&m_nextMonsters[0]);
-    //m_nextMonsters[0].RemoveObserver(&m_MonsterEntityView);
-    
-    // The size of m_nextMonsters is fixed at 1, so we directly update the first element
-    //m_nextMonsters[0] = m_MonsterGenerator.GetNextMonster();
-    // MonsterEntity &monster = m_nextMonsters[0];  // Use the first (and only) monster in the array
-
     m_nextMonsterPtr = std::make_unique<MonsterEntity>(m_MonsterGenerator.GetNextMonster());
     m_nextMonsterPtr->AddObserver(&m_MonsterEntityView);
     m_nextMonsterPtr->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth/2, m_mapSize.y / 3 + 210));
     m_nextMonsterPtr->SetIsTemplate(true);
 }
 
+/**
+ * @brief Generates monsters for the current wave based on the cooldown timer.
+ * 
+ * @param addedTime Time increment since the last monster generation.
+ * 
+ * If enough time has passed, a new monster is created, wrapped in a decorator, 
+ * assigned observers, positioned at the entry tile, and added to the active monsters list.
+ */
 void MonsterManager::GenerateCurrentWave(float addedTime)
 {
     IncrementTimeSinceLastGeneration(addedTime);
@@ -103,8 +107,6 @@ void MonsterManager::GenerateCurrentWave(float addedTime)
     if (m_fTimeSinceLastGeneration >= m_fGenerationCooldown && m_iNumberOfMonsterSpawned < m_CurrentWaveStrength)
     {
         //std::cout << "Generating monster\n";
-        //m_activeMonsters.push_back(m_MonsterGenerator.GenerateMonster());
-        //MonsterEntity &monster = m_activeMonsters.back();
         auto newMonster = std::make_unique<MonsterEntity>(m_MonsterGenerator.GenerateMonster());
         // Wrap in decorator
         newMonster = std::make_unique<MonsterEntityDecorator>(std::move(newMonster));
@@ -193,6 +195,16 @@ void MonsterManager::ApplyBurnEffectToMonster(std::unique_ptr<MonsterEntity>& mo
     }
 }
 
+/**
+ * @brief Updates the speed debuff of the given monster, handling its decorator chain.
+ * 
+ * @param monsterPtr The monster being updated.
+ * @param deltaTime Time elapsed since the last update.
+ * 
+ * Traverses the monster's decorator chain to find a SpeedDebuffDecorator. If found, 
+ * it updates the debuff's elapsed time and handles removal if necessary by updating 
+ * the monster's state and adjusting the decorator chain.
+ */
 void MonsterManager::UpdateSpeedDebuff(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime)
 {
     // Start with the outermost decorator
@@ -240,6 +252,10 @@ void MonsterManager::UpdateSpeedDebuff(std::unique_ptr<MonsterEntity>& monsterPt
     }
 }
 
+/**
+ * @brief Updates the burn debuff of the given monster, handling its decorator chain. Similar to speed debuff
+ * 
+ */
 void MonsterManager::UpdateBurnEffect(std::unique_ptr<MonsterEntity>& monsterPtr, float deltaTime)
 {
     // Start with the outermost decorator

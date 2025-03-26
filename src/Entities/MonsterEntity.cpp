@@ -1,5 +1,10 @@
 #include "MonsterEntity.h"
 
+/**
+ * @brief Default constructor for MonsterEntity.
+ * 
+ * Initializes a MonsterEntity with default values. The monster is marked as a template and not yet leveled up.
+ */
 MonsterEntity::MonsterEntity()
     : m_eType(MonsterGeneratorData::MonsterType::SIZE)
     , m_stCurrentPathIndex(0)
@@ -15,6 +20,14 @@ MonsterEntity::MonsterEntity()
 {
 }
 
+/**
+ * @brief Constructor for MonsterEntity with specified type and level.
+ * 
+ * Initializes the MonsterEntity with the given type and level, and calls SetInitialStats() to calculate the stats.
+ * 
+ * @param type The type of the monster.
+ * @param level The level of the monster.
+ */
 MonsterEntity::MonsterEntity(MonsterGeneratorData::MonsterType type, int level)
     : m_eType(type)
     , m_stCurrentPathIndex(0)
@@ -48,6 +61,18 @@ void MonsterEntity::IncrementDyingFrameIndex(int indexLimit)
     NotifyStatsChanged();
 }
 
+/**
+ * @brief Sets the initial stats for the monster based on its type and level.
+ * 
+ * This function calculates and sets the monster's maximum health, health, speed, strength,
+ * and reward based on its type (Skeleton, Reaper, Golem, Minotaur, Ogre) and its current level.
+ * The stats are adjusted using predefined differences and the level-up rate for each attribute.
+ * 
+ * @note The stats are dynamically updated by multiplying the base stats with the level-up rate
+ *       at the given level. The stats for each monster type are calculated individually.
+ * 
+ * @see GetLevelUpRateAtLevel()
+ */
 void MonsterEntity::SetInitialStats()
 {
     // Calculate and set the stats based on typeData and level
