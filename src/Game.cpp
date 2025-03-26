@@ -5,7 +5,6 @@
 @brief Implements game logic, handling updates and rendering.
 */
 
-// NOTE: When path creation is completed, press enter on the keyboard to go to play mode
 
 #include "Game.h"
 #include "Helpers/Math_Helpers.h"
@@ -41,6 +40,18 @@ Game::Game(int initialWindowWidth, int initialWindowHeight)
     m_Window.setFramerateLimit(60);
     m_Window.setVerticalSyncEnabled(true);
 }
+
+/**
+ * @brief Main game loop that manages game states and updates the game accordingly.
+ * 
+ * This function runs the main loop of the game, handling user input, updating game logic, 
+ * and rendering different game states such as the main menu, map selection, map editor mode, 
+ * and play mode. It ensures that assets are loaded only once when entering a new state 
+ * and updates elements like UI and game entities as needed.
+ * 
+ * @note The function uses a game clock to manage time-based updates and handles transitions 
+ * between different game modes.
+ */
 
 void Game::Run()
 {

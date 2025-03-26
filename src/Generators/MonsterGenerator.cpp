@@ -6,7 +6,18 @@ MonsterGenerator::MonsterGenerator()
 {
 }
 
-// Update monster roster when all types of monster have spawned
+/**
+ * @brief Updates the monster roster for the next round of spawning.
+ * 
+ * This function updates the list of monsters to be spawned in the next round. Initially, the roster
+ * is cleared, and then refilled with a predefined set of monster types (Ogre, Minotaur, Golem, Reaper, Skeleton).
+ * The roster is randomized using the Fisher-Yates shuffle to ensure varied monster types each round.
+ * 
+ * @note The monster types for each round follow the order specified in the vector `m_aCurrentMonsterRoaster`.
+ *       Once all the monsters from the current roster have been spawned, a new randomized roster is created.
+ * 
+ * @see std::shuffle() for randomizing the roster using Fisher-Yates.
+ */
 void MonsterGenerator::UpdateMonsterRoster()
 {
     // There will be only one type of monster spawned each round
@@ -80,25 +91,25 @@ int MonsterGenerator::GetMonsterCountForRound()
     MonsterGeneratorData::MonsterType currentType = m_aCurrentMonsterRoster.back();
 
     int waveStrength = GetWaveStrength(currentType);
-    std::cout << "Wave strength: " << waveStrength << '\n';
+    //std::cout << "Wave strength: " << waveStrength << '\n';
     // Game balance: change 1 in pow to be dependent on a game difficulty setting ie. m_iMonsterLevel
     return m_iBaseMonsters + std::pow(1, 1.2) * waveStrength;
 }
 
-// float MonsterGenerator::GetLevelUpRateAtLevel(int level, float baseRate)
-// {
-//     return baseRate * std::pow(1.1f, level - 1); // Assuming a 10% increase per level.
-// }
-
+/**
+ * @brief Updates the monster generator for the next round of spawning.
+ * 
+ * This function updates the current monster roster by removing the last spawned monster type. If only one
+ * monster type remains in the roster, it refills the next roster using `UpdateMonsterRoster`. If all the monster
+ * types have been played, the roster is swapped with the new roster, and the monster level is incremented.
+ * 
+ * @note This function ensures that the monster types are cycled through and increases the monster level after each full roster.
+ */
 void MonsterGenerator::UpdateNextRoundMonsterGenerator()
 {
     //std::cout << "Preparing next round of monsters\n";
     // remove the last monster type that has been played form the roster
     m_aCurrentMonsterRoster.pop_back();
-    // Reset number of monster spawned
-    // m_iNumberOfMonsterSpawned = 0;
-    // Reset all monsters spawned flag
-    //isAllMonstersSpawned = false;
 
     // If only one monster type is left in the roster, refill the next roster
     if (m_aCurrentMonsterRoster.size() == 1)

@@ -1,6 +1,15 @@
 #include "TowerManager.h"
 #include "../Strategies/TowerTargetStrategies.h"
 
+/**
+ * @brief Constructs a TowerManager instance with a specified window and monster manager.
+ * 
+ * Initializes the tower entity view, tower generator, and sets the default sell rate to 50%.
+ * The constructor also establishes a reference to the MonsterManager for tower-monster interaction.
+ * 
+ * @param window The render window for drawing tower entities.
+ * @param monsterManager A reference to the MonsterManager to manage monster-related operations.
+ */
 TowerManager::TowerManager(RenderWindow &window, MonsterManager &monsterManager)
     : m_MonsterManager(monsterManager)// Set the sell rate to 50%
     , m_TowerEntityView(window)
@@ -9,6 +18,13 @@ TowerManager::TowerManager(RenderWindow &window, MonsterManager &monsterManager)
 {
 }
 
+/**
+ * @brief Initializes the game setup, including tower templates and reserves memory.
+ * 
+ * This method creates and initializes tower templates (Rapid, Sniper, and FlameThrower), 
+ * sets their initial positions, and adds them as template towers. It also reserves space 
+ * for active and template towers to optimize memory allocation.
+ */
 void TowerManager::InitializeGameSetup()
 {
 
@@ -48,6 +64,18 @@ void TowerManager::InitializeGameSetup()
 
 }
 
+/**
+ * @brief Creates and initializes a tower of the specified type at the given position.
+ * 
+ * This function generates a new tower using the provided tower type, applies a corresponding 
+ * target strategy (Weakest, Strongest, or Closest), and adds it to the active towers list.
+ * It also wraps the tower in a decorator to manage additional functionality.
+ * 
+ * @param towerType The type of the tower to be created (Rapid, Sniper, FlameThrower).
+ * @param position The position where the tower will be placed in the game world.
+ * 
+ * @throws std::exception if tower creation, initialization, or strategy assignment fails.
+ */
 void TowerManager::CreateTower(TowerGeneratorData::TowerType towerType, const sf::Vector2f &position)
 {
     try {
@@ -106,6 +134,15 @@ void TowerManager::CreateTower(TowerGeneratorData::TowerType towerType, const sf
         std::cout << "Tower creation failed: " << e.what() << std::endl;
     }
 }
+
+/**
+ * @brief Removes the tower at the specified position.
+ * 
+ * This function searches for a tower at the given position and removes it from the active towers list. 
+ * It also ensures the tower’s observer is removed and notifies the TowerEntityView of the removal.
+ * 
+ * @param position The position of the tower to be removed.
+ */
 void TowerManager::RemoveTowerAtPosition(const sf::Vector2f &position)
 {
     // Use std::find_if to find the tower by position.
@@ -174,7 +211,14 @@ void TowerManager::UpdateTowerAnimations(const float m_fFrameTime)
     }
 }
 
-// Function to apply all decorators to a tower
+/**
+ * @brief Applies a series of upgrades to the tower.
+ * 
+ * This function applies decorators to the tower, boosting its range, speed, damage, and cooldown. 
+ * The tower is wrapped in a series of decorators that modify these attributes.
+ * 
+ * @param towerPtr A pointer to the tower entity to be upgraded.
+ */
 void TowerManager::ApplyUpgrades(std::unique_ptr<TowerEntity>* towerPtr)
 {
     #ifdef DEBUG

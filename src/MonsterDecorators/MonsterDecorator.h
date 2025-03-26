@@ -4,6 +4,20 @@
 #include "../Entities/MonsterEntity.h"
 #include <memory>
 
+/**
+ * @class MonsterEntityDecorator
+ * @brief A decorator class that extends the functionality of a `MonsterEntity` object.
+ * 
+ * The `MonsterEntityDecorator` class is used to modify or add additional behaviors to a `MonsterEntity` object while maintaining the original interface. 
+ * It follows the Decorator design pattern to dynamically add features to the `MonsterEntity` without modifying its base class.
+ * 
+ * In addition to the attributes and methods of `MonsterEntity`, this decorator forwards observer management operations to the decorated monster:
+ * - `AddObserver()`: Adds an observer to the decorated monster.
+ * - `RemoveObserver()`: Removes a specific observer from the decorated monster.
+ * - `RemoveAllObservers()`: Removes all observers from the decorated monster.
+ * 
+ * @note The class uses a `std::unique_ptr` to manage the lifecycle of the decorated monster object.
+ */
 class SpeedDebuffDecorator;
 
 class MonsterEntityDecorator : public MonsterEntity

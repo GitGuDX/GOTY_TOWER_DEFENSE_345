@@ -1,6 +1,19 @@
 #ifndef MONSTER_GENERATOR_DATA_H
 #define MONSTER_GENERATOR_DATA_H
 
+/**
+ * @namespace MonsterGeneratorData
+ * @brief Contains data related to monster types and their stats in the game.
+ * 
+ * This namespace defines enumerations and structures for different types of monsters, their base stats, and
+ * how they evolve as they level up. It includes:
+ * - `MonsterType`: An enumeration representing the different types of monsters.
+ * - `MonsterTypeData`: A structure containing nested structures for each monster type with their specific stats.
+ * - `StatsLevelUpRate`: A structure that defines the level-up rate for different stats like health, speed, strength, and reward.
+ * 
+ * @note The `MonsterTypeData` structure defines base stats for all monster types as well as differences in stats 
+ * specific to each monster type, including health, speed, strength, reward, and wave strength.
+ */
 namespace MonsterGeneratorData {  // Renamed namespace to TowerGeneratorData
     enum class MonsterType
     {

@@ -11,6 +11,30 @@
 
 using namespace sf;
 
+/**
+ * @class MonsterEntityView
+ * @brief Handles the visual representation and updates of monsters in the game.
+ * 
+ * This class observes the state of `MonsterEntity` objects and updates their corresponding visual representation, including animation frames, health, and effects. It also manages textures for active and dying monsters and displays the monsters on the window.
+ * 
+ * Key Methods:
+ * - `Update()`: Updates the monster view based on changes in the game state.
+ * - `Draw()`: Draws the monsters to the window.
+ * - `SetTemplateMonsterSprite()`: Sets the sprite for a template monster.
+ * - `SetMonsterTexture()`: Sets the texture for a monster based on its type.
+ * - `SetMonsterTint()`: Sets the color tint for a monster (e.g., to indicate debuffs).
+ * - `RemoveMonster()`: Removes a monster from the view.
+ * - `ClearSubjects()`: Clears all monster data from the view.
+ * - `GetMonsterEntityData()`: Retrieves the data associated with a specific monster.
+ * - `GetMonsterAnimationDelay()`: Gets the clock that tracks the animation delay for monsters.
+ * 
+ * Private Attributes:
+ * - `m_MonsterEntitySubjects`: A map storing the data for each monster.
+ * - `m_Window`: The SFML window to render the monsters to.
+ * - Texture arrays for different monster types and death animations (e.g., `m_SkeletonTextures`, `m_SkeletonDeathTextures`).
+ * - `m_monsterAnimationDelay`: The clock used for handling animation delays.
+ * - `m_isHoveringOnTower`: Flag to determine if the mouse is hovering over a tower (to prevent drawing the next monster).
+ */
 class MonsterEntityView : public IGameObserver
 {
 public:
