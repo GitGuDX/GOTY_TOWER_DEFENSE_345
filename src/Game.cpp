@@ -250,6 +250,9 @@ void Game::LoadPlayModeAssets()
     m_MonsterManager.UpdateNextMonster();
     UpdateNextMonsterUI();
 
+    m_MonsterManager.UpdateCurrentMonster();
+    UpdateCurrentMonsterUI();
+
     // Bullet observer pattern need to be implemented
     #ifdef LINUX
     m_RapidBulletTexture.loadFromFile("../src/Images/Rapid_Bullet.png");
@@ -834,6 +837,9 @@ void Game::HandleInput()
                     m_MonsterManager.UpdateNextMonster();
                     UpdateNextMonsterUI();
 
+                    m_MonsterManager.UpdateCurrentMonster();
+                    UpdateCurrentMonsterUI();
+
                     m_bIsRoundEnded = false;
                     m_bIsMonsterGeneratorUpdated = false;
                 }
@@ -1237,6 +1243,12 @@ void Game::UpdateNextMonsterUI()
 {
     std::unique_ptr<MonsterEntity>& nextMonster = m_MonsterManager.GetNextMonster();
     m_GUIManager.UpdateMonsterUi(nextMonster->GetType(), nextMonster->GetLevel());
+}
+
+void Game::UpdateCurrentMonsterUI()
+{
+    std::unique_ptr<MonsterEntity>& currentMonster = m_MonsterManager.GetCurrentMonster();
+    m_GUIManager.UpdateCurrentMonsterUi(currentMonster->GetType(), currentMonster->GetLevel());
 }
 
 void Game::DrawMainMenu()

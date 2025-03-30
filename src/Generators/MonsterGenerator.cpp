@@ -58,6 +58,18 @@ MonsterEntity MonsterGenerator::GetNextMonster() const
     }
 }
 
+MonsterEntity MonsterGenerator::GetCurrentMonster() const
+{
+    if (!m_aCurrentMonsterRoster.empty())
+    {
+        return MonsterEntity(m_aCurrentMonsterRoster.back(), m_iMonsterLevel);
+    }
+    else
+    {
+        return MonsterEntity(m_aNextMonsterRoster.back(), m_iMonsterLevel);
+    }
+}
+
 int MonsterGenerator::GetWaveStrength(MonsterGeneratorData::MonsterType currentType)
 {
     int waveStrength = 0;

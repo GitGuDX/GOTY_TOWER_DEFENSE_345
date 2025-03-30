@@ -39,6 +39,10 @@ void InfoUIView::Update(const IGameSubject &subject)
         data.m_nextMonsterTitleString = infoUI->GetNextMonsterTitleString();
         data.m_nextMonsterLevelString = infoUI->GetNextMonsterLevelString();
         data.m_nextMonsterDescriptionString = infoUI->GetNextMonsterDescriptionString();
+
+        data.m_currentMonsterTitleString = infoUI->GetCurrentMonsterTitleString();
+        data.m_currentMonsterLevelString = infoUI->GetCurrentMonsterLevelString();
+        data.m_currentMonsterDescriptionString = infoUI->GetCurrentMonsterDescriptionString();
         
         data.m_warningString = infoUI->GetWarningString();
         //data.m_modeString = infoUI->GetModeString();
@@ -75,6 +79,9 @@ void InfoUIView::DrawTowerInfo()
         m_Window.draw(m_nextMonsterTitleText);
         m_Window.draw(m_nextMonsterLevelText);
         m_Window.draw(m_nextMonsterDescriptionText);
+        m_Window.draw(m_currentMonsterTitleText);
+        m_Window.draw(m_currentMonsterLevelText);
+        m_Window.draw(m_currentMonsterDescriptionText);
     } 
     else
     {
@@ -227,6 +234,19 @@ void InfoUIView::UpdateTextString(InfoUIData& data)
     m_nextMonsterDescriptionText.setString(data.m_nextMonsterDescriptionString);   // Set text
     FloatRect nextMonsterDescriptionBounds = m_nextMonsterDescriptionText.getLocalBounds();
     m_nextMonsterDescriptionText.setOrigin(nextMonsterDescriptionBounds.width / 2, nextMonsterDescriptionBounds.height / 2);
+
+
+    m_currentMonsterTitleText.setString(data.m_currentMonsterTitleString);   // Set text
+    FloatRect currentMonsterTitleBounds = m_currentMonsterTitleText.getLocalBounds();
+    m_currentMonsterTitleText.setOrigin(currentMonsterTitleBounds.width / 2, currentMonsterTitleBounds.height / 2);
+
+    m_currentMonsterLevelText.setString(data.m_currentMonsterLevelString);   // Set text
+    FloatRect currentMonsterLevelBounds = m_currentMonsterLevelText.getLocalBounds();
+    m_currentMonsterLevelText.setOrigin(currentMonsterLevelBounds.width / 2, currentMonsterLevelBounds.height / 2);
+
+    m_currentMonsterDescriptionText.setString(data.m_currentMonsterDescriptionString);   // Set text
+    FloatRect currentMonsterDescriptionBounds = m_currentMonsterDescriptionText.getLocalBounds();
+    m_currentMonsterDescriptionText.setOrigin(currentMonsterDescriptionBounds.width / 2, nextMonsterDescriptionBounds.height / 2);
 }
 
 void InfoUIView::UpdateUpgradeTextPosition(Vector2f position)
@@ -261,9 +281,14 @@ void InfoUIView::InitializeTextAssets()
     Vector2f towerInstructionPosition_1 = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 360);
     Vector2f towerInstructionPosition_2 = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/10 + 390);
 
-    Vector2f nextMonsterTitlePosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 165);
-    Vector2f nextMonsterLevelPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 245);
-    Vector2f nextMonsterDescriptionPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 270);
+    Vector2f nextMonsterTitlePosition = Vector2f(m_MapSize.x + m_infoUIWidth -40 , m_MapSize.y - 90);
+    //Vector2f nextMonsterLevelPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y / 3 + 245);
+    //Vector2f nextMonsterDescriptionPosition = Vector2f(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y /3 + 270);
+
+       // Current Monster Text Positions
+    Vector2f currentMonsterTitlePosition(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/3 + 165);
+    Vector2f currentMonsterLevelPosition(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/3 + 245);
+    Vector2f currentMonsterDescriptionPosition(m_MapSize.x + m_infoUIWidth/2, m_MapSize.y/3 + 270);
 
     // Score text 
     m_scoreText.setFont(m_Font);               // Set font
@@ -419,19 +444,45 @@ void InfoUIView::InitializeTextAssets()
     m_nextMonsterTitleText.setFillColor(Color::White);    
     m_nextMonsterTitleText.setPosition(nextMonsterTitlePosition);       // Set position
 
-    m_nextMonsterLevelText.setFont(m_Font);               // Set font
+    /*m_nextMonsterLevelText.setFont(m_Font);               // Set font
     m_nextMonsterLevelText.setCharacterSize(30);        // Set size
     m_nextMonsterLevelText.setScale(0.5f, 0.5f);
     m_nextMonsterLevelText.setStyle(sf::Text::Bold);
     m_nextMonsterLevelText.setFillColor(Color::White);
-    m_nextMonsterLevelText.setPosition(nextMonsterLevelPosition);       // Set position
+  //m_nextMonsterLevelText.setPosition(nextMonsterLevelPosition);       // Set position
 
     m_nextMonsterDescriptionText.setFont(m_Font);               // Set font
     m_nextMonsterDescriptionText.setCharacterSize(30);        // Set size
     m_nextMonsterDescriptionText.setScale(0.5f, 0.5f);
     m_nextMonsterDescriptionText.setStyle(sf::Text::Bold);
     m_nextMonsterDescriptionText.setFillColor(Color::White);
-    m_nextMonsterDescriptionText.setPosition(nextMonsterDescriptionPosition);       // Set position
+  //ß  m_nextMonsterDescriptionText.setPosition(nextMonsterDescriptionPosition);  
+   */ 
+   
+
+    
+        // Initialize Current Monster Title
+        m_currentMonsterTitleText.setFont(m_Font);               // Set font
+        m_currentMonsterTitleText.setCharacterSize(30);        // Set size
+        m_currentMonsterTitleText.setScale(0.5f, 0.5f);
+        m_currentMonsterTitleText.setStyle(sf::Text::Bold);
+        m_currentMonsterTitleText.setFillColor(Color::White);    
+        m_currentMonsterTitleText.setPosition(currentMonsterTitlePosition);
+               // Set positicurrent
+        m_currentMonsterLevelText.setFont(m_Font);               // Set font
+        m_currentMonsterLevelText.setCharacterSize(30);        // Set size
+        m_currentMonsterLevelText.setScale(0.5f, 0.5f);
+        m_currentMonsterLevelText.setStyle(sf::Text::Bold);
+        m_currentMonsterLevelText.setFillColor(Color::White);
+        m_currentMonsterLevelText.setPosition(currentMonsterLevelPosition); 
+              // Set positicurrent
+        m_currentMonsterDescriptionText.setFont(m_Font);               // Set font
+        m_currentMonsterDescriptionText.setCharacterSize(30);        // Set size
+        m_currentMonsterDescriptionText.setScale(0.5f, 0.5f);
+        m_currentMonsterDescriptionText.setStyle(sf::Text::Bold);
+        m_currentMonsterDescriptionText.setFillColor(Color::White);
+        m_currentMonsterDescriptionText.setPosition(currentMonsterDescriptionPosition); 
+    // Set position
 
 }
 

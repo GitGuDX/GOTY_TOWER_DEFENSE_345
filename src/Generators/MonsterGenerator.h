@@ -20,6 +20,8 @@ public:
 
     MonsterEntity GenerateMonster();
 
+    
+
     //static float GetLevelUpRateAtLevel(int level, float baseRate);
 
     void UpdateNextRoundMonsterGenerator();
@@ -29,6 +31,7 @@ public:
     MonsterGeneratorData::MonsterType GetCurrentMonsterType() const { return m_aCurrentMonsterRoster.back(); }
 
     MonsterEntity GetNextMonster() const;
+    MonsterEntity GetCurrentMonster() const;
 
 private:
     int GetWaveStrength(MonsterGeneratorData::MonsterType currentType);

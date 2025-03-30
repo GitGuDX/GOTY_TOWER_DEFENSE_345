@@ -70,6 +70,8 @@ void MonsterManager::PrepareFirstWave()
     m_MonsterGenerator.InitializeFirstRoaster();
 
     PrepareWave();
+    UpdateCurrentMonster();  
+    UpdateNextMonster();
 }
 
 void MonsterManager::PrepareNextWave()
@@ -78,14 +80,24 @@ void MonsterManager::PrepareNextWave()
     m_MonsterGenerator.UpdateNextRoundMonsterGenerator();
 
     PrepareWave();
+    UpdateCurrentMonster();  
+    UpdateNextMonster();
 }
 
 void MonsterManager::UpdateNextMonster()
 {
     m_nextMonsterPtr = std::make_unique<MonsterEntity>(m_MonsterGenerator.GetNextMonster());
     m_nextMonsterPtr->AddObserver(&m_MonsterEntityView);
-    m_nextMonsterPtr->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth/2, m_mapSize.y / 3 + 210));
+    m_nextMonsterPtr->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth -35 , m_mapSize.y - 50));
     m_nextMonsterPtr->SetIsTemplate(true);
+}
+
+void MonsterManager::UpdateCurrentMonster()
+{
+    m_currentMonsterPtr = std::make_unique<MonsterEntity>(m_MonsterGenerator.GetCurrentMonster());
+    m_currentMonsterPtr->AddObserver(&m_MonsterEntityView);
+    m_currentMonsterPtr->SetPosition(Vector2f(m_mapSize.x + m_infoUIWidth/2 , m_mapSize.y / 3 + 210));
+    m_currentMonsterPtr->SetIsTemplate(true);
 }
 
 /**

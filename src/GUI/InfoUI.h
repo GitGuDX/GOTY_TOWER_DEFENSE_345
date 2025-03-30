@@ -75,6 +75,10 @@ private:
     std::string m_nextMonsterLevelString;
     std::string m_nextMonsterDescriptionString;
 
+    std::string m_currentMonsterTitleString;
+    std::string m_currentMonsterLevelString;
+    std::string m_currentMonsterDescriptionString;
+
     std::string m_warningString;
 
 
@@ -315,6 +319,19 @@ public:
         notifyObservers();
     }
 
+    void SetCurrentMonsterTitleString(const std::string& str) { 
+        m_currentMonsterTitleString = str; 
+        notifyObservers(); 
+    }
+    void SetCurrentMonsterLevelString(const std::string& str) { 
+        m_currentMonsterLevelString = str; 
+        notifyObservers(); 
+    }
+    void SetCurrentMonsterDescriptionString(const std::string& str) { 
+        m_currentMonsterDescriptionString = str; 
+        notifyObservers(); 
+    }
+
     const std::string& GetScoreString() const {
         return m_scoreString;
     }
@@ -419,6 +436,17 @@ public:
         return m_nextMonsterDescriptionString;
     }
 
+    const std::string& GetCurrentMonsterTitleString() const {
+        return m_currentMonsterTitleString;
+    }
+
+    const std::string& GetCurrentMonsterLevelString() const {
+        return m_currentMonsterLevelString;
+    }
+
+    const std::string& GetCurrentMonsterDescriptionString() const {
+        return m_currentMonsterDescriptionString;
+    }
     int GetCurrentLevel() const {
         return m_iCurrentLevel;
     }

@@ -48,6 +48,10 @@ private:
         std::string m_nextMonsterLevelString;
         std::string m_nextMonsterDescriptionString;
 
+        std::string  m_currentMonsterTitleString;
+        std::string  m_currentMonsterLevelString;
+        std::string  m_currentMonsterDescriptionString;
+
         Vector2f m_CrossPosition;
 
     };
@@ -134,6 +138,10 @@ private:
     Text m_nextMonsterTitleText;
     Text m_nextMonsterLevelText;
     Text m_nextMonsterDescriptionText;
+
+    Text m_currentMonsterTitleText;
+    Text m_currentMonsterLevelText;
+    Text m_currentMonsterDescriptionText;
 
     Color m_instructionTextColor;
     Color m_warningTextColor;

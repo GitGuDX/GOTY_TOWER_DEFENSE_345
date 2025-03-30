@@ -117,6 +117,7 @@ private:
     void UpdateTowers();
     void UpdateAxes();
     void UpdateNextMonsterUI();
+    void UpdateCurrentMonsterUI();
     void UpdateUI();
 
     // Draw class

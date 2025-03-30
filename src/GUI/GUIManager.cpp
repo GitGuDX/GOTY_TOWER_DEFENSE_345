@@ -248,6 +248,37 @@ void GUIManager::UpdateMonsterUi(MonsterGeneratorData::MonsterType type, int lev
     }
 }
 
+void GUIManager::UpdateCurrentMonsterUi(MonsterGeneratorData::MonsterType type, int level) {
+    if (!m_infoUI) {
+        std::cerr << "Error: InfoUI is nullptr\n";
+        return;  // Prevent null pointer dereference
+    }
+    m_infoUI->SetCurrentMonsterTitleString("Current Monster");
+    m_infoUI->SetCurrentMonsterLevelString("Level: " + std::to_string(level));
+
+    switch (type)
+    {
+        case MonsterGeneratorData::MonsterType::Skeleton:
+            m_infoUI->SetCurrentMonsterDescriptionString("Basic, vanilla baby");
+            break;
+        case MonsterGeneratorData::MonsterType::Reaper:
+            m_infoUI->SetCurrentMonsterDescriptionString("Fast and weak");
+            break;
+        case MonsterGeneratorData::MonsterType::Golem:
+            m_infoUI->SetCurrentMonsterDescriptionString("Slow but tanky");
+            break;
+        case MonsterGeneratorData::MonsterType::Minotaur:
+            m_infoUI->SetCurrentMonsterDescriptionString("Strong and swift");
+            break;
+        case MonsterGeneratorData::MonsterType::Ogre:
+            m_infoUI->SetCurrentMonsterDescriptionString("Balanced all-rounder");
+            break;
+        default:
+            m_infoUI->SetCurrentMonsterDescriptionString("Unknown monster type");
+            break;
+    }
+}
+
 void GUIManager::BlinkTiles(Tile::Type type, sf::Time deltaTime)
 {
     m_fElapsedTimeInSeconds += deltaTime.asSeconds();  // Use the passed deltaTime

@@ -103,6 +103,8 @@ public:
 
     void UpdateMonsterUi(MonsterGeneratorData::MonsterType type, int level);
 
+    void UpdateCurrentMonsterUi(MonsterGeneratorData::MonsterType type, int level);
+
     void BlinkTiles(Tile::Type type, sf::Time deltaTime);
 
     void UpdatePathTiles();

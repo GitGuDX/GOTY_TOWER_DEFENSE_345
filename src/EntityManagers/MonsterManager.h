@@ -33,6 +33,8 @@ public:
 
     void UpdateNextMonster();
 
+    void UpdateCurrentMonster();
+
     void GenerateCurrentWave(float addedTime);
 
     bool IsAllMonstersSpawned();
@@ -48,6 +50,8 @@ public:
     std::vector<std::unique_ptr<MonsterEntity>>& GetActiveMonsters() { return m_activeMonsters; }
 
     std::unique_ptr<MonsterEntity>& GetNextMonster() { return m_nextMonsterPtr; }
+
+    std::unique_ptr<MonsterEntity>& GetCurrentMonster() { return m_currentMonsterPtr; }
 
     void RemoveMonster(MonsterEntity* monsterPtr);
 
@@ -110,6 +114,7 @@ private:
     std::vector<std::unique_ptr<MonsterEntity>> m_activeMonsters;
 
     std::unique_ptr<MonsterEntity> m_nextMonsterPtr;
+    std::unique_ptr<MonsterEntity> m_currentMonsterPtr;
 
     int m_iNumberOfMonsterSpawned;
 
